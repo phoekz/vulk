@@ -1,0 +1,30 @@
+[workspace]
+members = ["crates/*"]
+resolver = "2"
+
+[workspace.package]
+authors = ["Vinh Truong <vinhphuc.truong@gmail.com>"]
+edition = "2021"
+
+[workspace.dependencies]
+anyhow = "1.0.70"
+bitflags = "2.1.0"
+bytemuck = "1.13.1"
+clap = { version = "4.2.1", features = ["derive"] }
+env_logger = "0.10.0"
+glam = { version = "0.23.0", features = ["bytemuck"] }
+heck = "0.4.1"
+imagelib = { version = "0.24.6", default-features = false, features = [
+    "png",
+], package = "image" }
+libloading = "0.8.0"
+log = "0.4.17"
+palette = "0.7.0"
+rand = "0.8.5"
+rand_pcg = "0.3.1"
+ron = "0.8.0"
+roxmltree = "0.18.0"
+serde = { version = "1.0.160", features = ["derive"] }
+shaderc = "0.8.2"
+tempfile = "3.5.0"
+thiserror = "1.0.40"

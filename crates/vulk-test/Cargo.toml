@@ -1,0 +1,13 @@
+[package]
+authors.workspace = true
+edition.workspace = true
+name = "vulk-test"
+version = "0.1.0"
+
+[dependencies]
+vulk = { path = "../vulk" }
+
+anyhow.workspace = true
+env_logger.workspace = true
+log.workspace = true
+shaderc.workspace = true
