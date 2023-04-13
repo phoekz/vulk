@@ -14,11 +14,13 @@ use std::{
 };
 
 use anyhow::{bail, ensure, Context, Result};
+use docs::DescriptionMap;
 use log::{debug, info, warn};
 use manifest::Manifest;
 use registry::Registry;
 
 mod codegen;
+mod docs;
 mod manifest;
 mod registry;
 
@@ -34,6 +36,13 @@ fn main() -> Result<()> {
     env_logger::builder()
         .filter_level(log::LevelFilter::Info)
         .try_init()?;
+
+    // Parse descriptions.
+    let descriptions = docs::parse_descriptions(&vulkan_docs_chapters_dir())?;
+    std::fs::write(
+        work_dir_or_create()?.join("descriptions.ron"),
+        ron::ser::to_string_pretty(&descriptions, ron::ser::PrettyConfig::default())?,
+    )?;
 
     // Load vk.xml.
     let vk_xml_file = vk_xml_file();
@@ -74,7 +83,7 @@ fn main() -> Result<()> {
     let vulk_lib_dir = vulk_lib_dir();
     ensure!(vulk_lib_dir.exists());
     ensure!(vulk_lib_dir.is_dir());
-    codegen::generate(&registry, &vulk_lib_dir)?;
+    codegen::generate(&registry, &descriptions, &vulk_lib_dir)?;
 
     // Execution time.
     info!(
@@ -101,6 +110,10 @@ fn vulkan_docs_dir() -> PathBuf {
 
 fn vk_xml_file() -> PathBuf {
     vulkan_docs_dir().join("xml").join("vk.xml")
+}
+
+fn vulkan_docs_chapters_dir() -> PathBuf {
+    vulkan_docs_dir().join("chapters")
 }
 
 fn manifest_file() -> PathBuf {

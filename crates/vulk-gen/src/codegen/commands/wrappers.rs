@@ -5,6 +5,8 @@ const TEMPLATE_PARAM_IDENT: &str = r#"{{rs_param_ident}}"#;
 const TEMPLATE_DEFAULT: &str = r#"
 #[must_use]
 #[inline]
+#[doc = "Description: {{vk_desc}}"]
+#[doc = "<br>"]
 #[doc = "Reference: [`{{vk_ident}}`]({{vk_doc}})"]
 pub unsafe fn {{rs_ident}}(&self, {{rs_params}}) -> {{rs_return_type}} {
     (self.{{rs_ident}})({{rs_param_idents}})
@@ -12,6 +14,8 @@ pub unsafe fn {{rs_ident}}(&self, {{rs_params}}) -> {{rs_return_type}} {
 "#;
 const TEMPLATE_VOID: &str = r#"
 #[inline]
+#[doc = "Description: {{vk_desc}}"]
+#[doc = "<br>"]
 #[doc = "Reference: [`{{vk_ident}}`]({{vk_doc}})"]
 pub unsafe fn {{rs_ident}}(&self, {{rs_params}}) {
     (self.{{rs_ident}})({{rs_param_idents}});
@@ -19,6 +23,8 @@ pub unsafe fn {{rs_ident}}(&self, {{rs_params}}) {
 "#;
 const TEMPLATE_VOID_RESULT: &str = r#"
 #[inline]
+#[doc = "Description: {{vk_desc}}"]
+#[doc = "<br>"]
 #[doc = "Reference: [`{{vk_ident}}`]({{vk_doc}})"]
 pub unsafe fn {{rs_ident}}(&self, {{rs_params}}) -> Result<(), Error> {
     match (self.{{rs_ident}})({{rs_param_idents}}) {
@@ -29,6 +35,8 @@ pub unsafe fn {{rs_ident}}(&self, {{rs_params}}) -> Result<(), Error> {
 "#;
 const TEMPLATE_HANDLE_RESULT: &str = r#"
 #[inline]
+#[doc = "Description: {{vk_desc}}"]
+#[doc = "<br>"]
 #[doc = "Reference: [`{{vk_ident}}`]({{vk_doc}})"]
 pub unsafe fn {{rs_ident}}(&self, {{rs_params}}) -> Result<{{rs_handle_type}}, Error> {
     let mut {{rs_handle_ident}} = std::mem::MaybeUninit::uninit();
@@ -48,6 +56,7 @@ pub struct Rendered {
 pub fn generate(
     registry: &Registry,
     translator: &Translator,
+    description_map: &DescriptionMap,
     groups: &analysis::CommandGroups,
 ) -> Result<Rendered> {
     let mut handle_map = HashSet::new();
@@ -58,9 +67,12 @@ pub fn generate(
         handle_map.insert(registry_ty.name.as_str());
     }
 
-    let loader_wrappers = generate_wrappers(translator, &handle_map, &groups.loader)?;
-    let instance_wrappers = generate_wrappers(translator, &handle_map, &groups.instance)?;
-    let device_wrappers = generate_wrappers(translator, &handle_map, &groups.device)?;
+    let loader_wrappers =
+        generate_wrappers(translator, description_map, &handle_map, &groups.loader)?;
+    let instance_wrappers =
+        generate_wrappers(translator, description_map, &handle_map, &groups.instance)?;
+    let device_wrappers =
+        generate_wrappers(translator, description_map, &handle_map, &groups.device)?;
 
     Ok(Rendered {
         loader_wrappers,
@@ -71,6 +83,7 @@ pub fn generate(
 
 fn generate_wrappers(
     translator: &Translator,
+    description_map: &DescriptionMap,
     handle_map: &HashSet<&str>,
     commands: &[&registry::Command],
 ) -> Result<String> {
@@ -78,7 +91,8 @@ fn generate_wrappers(
 
     for command in commands {
         let vk_ident = &command.name;
-        let vk_doc = doc::reference_url(vk_ident);
+        let vk_desc = &description_map.get(vk_ident).context("Missing desc")?.desc;
+        let vk_doc = docs::reference_url(vk_ident);
         let rs_ident = Translator::vk_simple_function(vk_ident)?;
         let rs_ident = Translator::vk_simple_ident(&rs_ident)?;
         let vk_return_type = &command.return_type;
@@ -122,6 +136,7 @@ fn generate_wrappers(
                     str,
                     "{}",
                     TEMPLATE_DEFAULT
+                        .replace("{{vk_desc}}", vk_desc)
                         .replace("{{vk_ident}}", vk_ident)
                         .replace("{{vk_doc}}", &vk_doc)
                         .replace("{{rs_ident}}", &rs_ident)
@@ -135,6 +150,7 @@ fn generate_wrappers(
                     str,
                     "{}",
                     TEMPLATE_VOID
+                        .replace("{{vk_desc}}", vk_desc)
                         .replace("{{vk_ident}}", vk_ident)
                         .replace("{{vk_doc}}", &vk_doc)
                         .replace("{{rs_ident}}", &rs_ident)
@@ -147,6 +163,7 @@ fn generate_wrappers(
                     str,
                     "{}",
                     TEMPLATE_VOID_RESULT
+                        .replace("{{vk_desc}}", vk_desc)
                         .replace("{{vk_ident}}", vk_ident)
                         .replace("{{vk_doc}}", &vk_doc)
                         .replace("{{rs_ident}}", &rs_ident)
@@ -162,6 +179,7 @@ fn generate_wrappers(
                     str,
                     "{}",
                     TEMPLATE_HANDLE_RESULT
+                        .replace("{{vk_desc}}", vk_desc)
                         .replace("{{vk_ident}}", vk_ident)
                         .replace("{{vk_doc}}", &vk_doc)
                         .replace("{{rs_ident}}", &rs_ident)

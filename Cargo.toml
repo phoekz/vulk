@@ -28,3 +28,4 @@ serde = { version = "1.0.160", features = ["derive"] }
 shaderc = "0.8.2"
 tempfile = "3.5.0"
 thiserror = "1.0.40"
+walkdir = "2.3.3"

@@ -3,6 +3,8 @@ use super::*;
 const TEMPLATE: &str = r#"
 #[repr(C)]
 #[derive(Clone, Copy)]
+#[doc = "Description: {{vk_desc}}"]
+#[doc = "<br>"]
 #[doc = "Reference: [`{{vk_ident}}`]({{vk_doc}})"]
 pub union {{rs_ident}} {
     {{rs_members}}
@@ -17,7 +19,11 @@ impl std::fmt::Debug for {{rs_ident}} {
 
 const TEMPLATE_MEMBER: &str = r#"pub {{rs_member_ident}}: {{rs_member_type}},"#;
 
-pub fn generate(registry: &Registry, translator: &Translator) -> Result<String> {
+pub fn generate(
+    registry: &Registry,
+    translator: &Translator,
+    description_map: &DescriptionMap,
+) -> Result<String> {
     let mut str = String::new();
 
     for registry_type in &registry.types {
@@ -26,7 +32,8 @@ pub fn generate(registry: &Registry, translator: &Translator) -> Result<String> 
         };
 
         let vk_ident = &registry_type.name;
-        let vk_doc = doc::reference_url(vk_ident);
+        let vk_desc = &description_map.get(vk_ident).context("Missing desc")?.desc;
+        let vk_doc = docs::reference_url(vk_ident);
         let rs_ident = Translator::vk_simple_type(vk_ident)?;
         let mut rs_members = String::new();
         for member in members {
@@ -47,6 +54,7 @@ pub fn generate(registry: &Registry, translator: &Translator) -> Result<String> 
             str,
             "{}",
             TEMPLATE
+                .replace("{{vk_desc}}", vk_desc)
                 .replace("{{vk_ident}}", vk_ident)
                 .replace("{{vk_doc}}", &vk_doc)
                 .replace("{{rs_ident}}", &rs_ident)

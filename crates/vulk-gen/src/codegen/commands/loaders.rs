@@ -15,6 +15,7 @@ pub struct Rendered {
 pub fn generate(
     _registry: &Registry,
     _translator: &Translator,
+    _description_map: &DescriptionMap,
     groups: &analysis::CommandGroups,
 ) -> Result<Rendered> {
     let loader_struct_members = generate_struct_members(&groups.loader)?;

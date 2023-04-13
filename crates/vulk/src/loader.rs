@@ -66,6 +66,8 @@ impl LoaderFunctions {
     }
 
     #[inline]
+    #[doc = "Description: Create a new Vulkan instance"]
+    #[doc = "<br>"]
     #[doc = "Reference: [`vkCreateInstance`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateInstance.html)"]
     pub unsafe fn create_instance(&self, p_create_info: *const vk::InstanceCreateInfo, p_allocator: *const vk::AllocationCallbacks) -> Result<vk::Instance, Error> {
         let mut p_instance = std::mem::MaybeUninit::uninit();
@@ -77,6 +79,8 @@ impl LoaderFunctions {
 
     #[must_use]
     #[inline]
+    #[doc = "Description: Return a function pointer for a command"]
+    #[doc = "<br>"]
     #[doc = "Reference: [`vkGetInstanceProcAddr`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetInstanceProcAddr.html)"]
     pub unsafe fn get_instance_proc_addr(&self, instance: vk::Instance, p_name: *const c_char) -> vk::PfnVoidFunction {
         (self.get_instance_proc_addr)(instance, p_name)
@@ -123,12 +127,16 @@ impl InstanceFunctions {
     }
 
     #[inline]
+    #[doc = "Description: Destroy an instance of Vulkan"]
+    #[doc = "<br>"]
     #[doc = "Reference: [`vkDestroyInstance`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroyInstance.html)"]
     pub unsafe fn destroy_instance(&self, instance: vk::Instance, p_allocator: *const vk::AllocationCallbacks) {
         (self.destroy_instance)(instance, p_allocator);
     }
 
     #[inline]
+    #[doc = "Description: Enumerates the physical devices accessible to a Vulkan instance"]
+    #[doc = "<br>"]
     #[doc = "Reference: [`vkEnumeratePhysicalDevices`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkEnumeratePhysicalDevices.html)"]
     pub unsafe fn enumerate_physical_devices(&self, instance: vk::Instance, p_physical_device_count: *mut u32, p_physical_devices: *mut vk::PhysicalDevice) -> Result<(), Error> {
         match (self.enumerate_physical_devices)(instance, p_physical_device_count, p_physical_devices) {
@@ -139,12 +147,16 @@ impl InstanceFunctions {
 
     #[must_use]
     #[inline]
+    #[doc = "Description: Return a function pointer for a command"]
+    #[doc = "<br>"]
     #[doc = "Reference: [`vkGetDeviceProcAddr`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetDeviceProcAddr.html)"]
     pub unsafe fn get_device_proc_addr(&self, device: vk::Device, p_name: *const c_char) -> vk::PfnVoidFunction {
         (self.get_device_proc_addr)(device, p_name)
     }
 
     #[inline]
+    #[doc = "Description: Create a new device instance"]
+    #[doc = "<br>"]
     #[doc = "Reference: [`vkCreateDevice`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateDevice.html)"]
     pub unsafe fn create_device(&self, physical_device: vk::PhysicalDevice, p_create_info: *const vk::DeviceCreateInfo, p_allocator: *const vk::AllocationCallbacks) -> Result<vk::Device, Error> {
         let mut p_device = std::mem::MaybeUninit::uninit();
@@ -155,12 +167,16 @@ impl InstanceFunctions {
     }
 
     #[inline]
+    #[doc = "Description: Returns properties of a physical device"]
+    #[doc = "<br>"]
     #[doc = "Reference: [`vkGetPhysicalDeviceProperties2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceProperties2.html)"]
     pub unsafe fn get_physical_device_properties2(&self, physical_device: vk::PhysicalDevice, p_properties: *mut vk::PhysicalDeviceProperties2) {
         (self.get_physical_device_properties2)(physical_device, p_properties);
     }
 
     #[inline]
+    #[doc = "Description: Reports properties of the queues of the specified physical device"]
+    #[doc = "<br>"]
     #[doc = "Reference: [`vkGetPhysicalDeviceQueueFamilyProperties2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceQueueFamilyProperties2.html)"]
     pub unsafe fn get_physical_device_queue_family_properties2(
         &self,
@@ -172,12 +188,16 @@ impl InstanceFunctions {
     }
 
     #[inline]
+    #[doc = "Description: Reports memory information for the specified physical device"]
+    #[doc = "<br>"]
     #[doc = "Reference: [`vkGetPhysicalDeviceMemoryProperties2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceMemoryProperties2.html)"]
     pub unsafe fn get_physical_device_memory_properties2(&self, physical_device: vk::PhysicalDevice, p_memory_properties: *mut vk::PhysicalDeviceMemoryProperties2) {
         (self.get_physical_device_memory_properties2)(physical_device, p_memory_properties);
     }
 
     #[inline]
+    #[doc = "Description: Create a debug messenger object"]
+    #[doc = "<br>"]
     #[doc = "Reference: [`vkCreateDebugUtilsMessengerEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateDebugUtilsMessengerEXT.html)"]
     pub unsafe fn create_debug_utils_messenger_ext(
         &self,
@@ -193,6 +213,8 @@ impl InstanceFunctions {
     }
 
     #[inline]
+    #[doc = "Description: Destroy a debug messenger object"]
+    #[doc = "<br>"]
     #[doc = "Reference: [`vkDestroyDebugUtilsMessengerEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroyDebugUtilsMessengerEXT.html)"]
     pub unsafe fn destroy_debug_utils_messenger_ext(&self, instance: vk::Instance, messenger: vk::DebugUtilsMessengerEXT, p_allocator: *const vk::AllocationCallbacks) {
         (self.destroy_debug_utils_messenger_ext)(instance, messenger, p_allocator);
@@ -293,12 +315,16 @@ impl DeviceFunctions {
     }
 
     #[inline]
+    #[doc = "Description: Destroy a logical device"]
+    #[doc = "<br>"]
     #[doc = "Reference: [`vkDestroyDevice`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroyDevice.html)"]
     pub unsafe fn destroy_device(&self, device: vk::Device, p_allocator: *const vk::AllocationCallbacks) {
         (self.destroy_device)(device, p_allocator);
     }
 
     #[inline]
+    #[doc = "Description: Wait for a queue to become idle"]
+    #[doc = "<br>"]
     #[doc = "Reference: [`vkQueueWaitIdle`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkQueueWaitIdle.html)"]
     pub unsafe fn queue_wait_idle(&self, queue: vk::Queue) -> Result<(), Error> {
         match (self.queue_wait_idle)(queue) {
@@ -308,6 +334,8 @@ impl DeviceFunctions {
     }
 
     #[inline]
+    #[doc = "Description: Wait for a device to become idle"]
+    #[doc = "<br>"]
     #[doc = "Reference: [`vkDeviceWaitIdle`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDeviceWaitIdle.html)"]
     pub unsafe fn device_wait_idle(&self, device: vk::Device) -> Result<(), Error> {
         match (self.device_wait_idle)(device) {
@@ -317,6 +345,8 @@ impl DeviceFunctions {
     }
 
     #[inline]
+    #[doc = "Description: Allocate device memory"]
+    #[doc = "<br>"]
     #[doc = "Reference: [`vkAllocateMemory`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkAllocateMemory.html)"]
     pub unsafe fn allocate_memory(&self, device: vk::Device, p_allocate_info: *const vk::MemoryAllocateInfo, p_allocator: *const vk::AllocationCallbacks) -> Result<vk::DeviceMemory, Error> {
         let mut p_memory = std::mem::MaybeUninit::uninit();
@@ -327,12 +357,16 @@ impl DeviceFunctions {
     }
 
     #[inline]
+    #[doc = "Description: Free device memory"]
+    #[doc = "<br>"]
     #[doc = "Reference: [`vkFreeMemory`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkFreeMemory.html)"]
     pub unsafe fn free_memory(&self, device: vk::Device, memory: vk::DeviceMemory, p_allocator: *const vk::AllocationCallbacks) {
         (self.free_memory)(device, memory, p_allocator);
     }
 
     #[inline]
+    #[doc = "Description: Create a new queue semaphore object"]
+    #[doc = "<br>"]
     #[doc = "Reference: [`vkCreateSemaphore`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateSemaphore.html)"]
     pub unsafe fn create_semaphore(&self, device: vk::Device, p_create_info: *const vk::SemaphoreCreateInfo, p_allocator: *const vk::AllocationCallbacks) -> Result<vk::Semaphore, Error> {
         let mut p_semaphore = std::mem::MaybeUninit::uninit();
@@ -343,12 +377,16 @@ impl DeviceFunctions {
     }
 
     #[inline]
+    #[doc = "Description: Destroy a semaphore object"]
+    #[doc = "<br>"]
     #[doc = "Reference: [`vkDestroySemaphore`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroySemaphore.html)"]
     pub unsafe fn destroy_semaphore(&self, device: vk::Device, semaphore: vk::Semaphore, p_allocator: *const vk::AllocationCallbacks) {
         (self.destroy_semaphore)(device, semaphore, p_allocator);
     }
 
     #[inline]
+    #[doc = "Description: Create a new buffer object"]
+    #[doc = "<br>"]
     #[doc = "Reference: [`vkCreateBuffer`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateBuffer.html)"]
     pub unsafe fn create_buffer(&self, device: vk::Device, p_create_info: *const vk::BufferCreateInfo, p_allocator: *const vk::AllocationCallbacks) -> Result<vk::Buffer, Error> {
         let mut p_buffer = std::mem::MaybeUninit::uninit();
@@ -359,12 +397,16 @@ impl DeviceFunctions {
     }
 
     #[inline]
+    #[doc = "Description: Destroy a buffer object"]
+    #[doc = "<br>"]
     #[doc = "Reference: [`vkDestroyBuffer`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroyBuffer.html)"]
     pub unsafe fn destroy_buffer(&self, device: vk::Device, buffer: vk::Buffer, p_allocator: *const vk::AllocationCallbacks) {
         (self.destroy_buffer)(device, buffer, p_allocator);
     }
 
     #[inline]
+    #[doc = "Description: Creates a new pipeline layout object"]
+    #[doc = "<br>"]
     #[doc = "Reference: [`vkCreatePipelineLayout`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreatePipelineLayout.html)"]
     pub unsafe fn create_pipeline_layout(
         &self,
@@ -380,12 +422,16 @@ impl DeviceFunctions {
     }
 
     #[inline]
+    #[doc = "Description: Destroy a pipeline layout object"]
+    #[doc = "<br>"]
     #[doc = "Reference: [`vkDestroyPipelineLayout`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroyPipelineLayout.html)"]
     pub unsafe fn destroy_pipeline_layout(&self, device: vk::Device, pipeline_layout: vk::PipelineLayout, p_allocator: *const vk::AllocationCallbacks) {
         (self.destroy_pipeline_layout)(device, pipeline_layout, p_allocator);
     }
 
     #[inline]
+    #[doc = "Description: Create a new descriptor set layout"]
+    #[doc = "<br>"]
     #[doc = "Reference: [`vkCreateDescriptorSetLayout`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateDescriptorSetLayout.html)"]
     pub unsafe fn create_descriptor_set_layout(
         &self,
@@ -401,12 +447,16 @@ impl DeviceFunctions {
     }
 
     #[inline]
+    #[doc = "Description: Destroy a descriptor set layout object"]
+    #[doc = "<br>"]
     #[doc = "Reference: [`vkDestroyDescriptorSetLayout`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroyDescriptorSetLayout.html)"]
     pub unsafe fn destroy_descriptor_set_layout(&self, device: vk::Device, descriptor_set_layout: vk::DescriptorSetLayout, p_allocator: *const vk::AllocationCallbacks) {
         (self.destroy_descriptor_set_layout)(device, descriptor_set_layout, p_allocator);
     }
 
     #[inline]
+    #[doc = "Description: Create a new command pool object"]
+    #[doc = "<br>"]
     #[doc = "Reference: [`vkCreateCommandPool`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateCommandPool.html)"]
     pub unsafe fn create_command_pool(&self, device: vk::Device, p_create_info: *const vk::CommandPoolCreateInfo, p_allocator: *const vk::AllocationCallbacks) -> Result<vk::CommandPool, Error> {
         let mut p_command_pool = std::mem::MaybeUninit::uninit();
@@ -417,12 +467,16 @@ impl DeviceFunctions {
     }
 
     #[inline]
+    #[doc = "Description: Destroy a command pool object"]
+    #[doc = "<br>"]
     #[doc = "Reference: [`vkDestroyCommandPool`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroyCommandPool.html)"]
     pub unsafe fn destroy_command_pool(&self, device: vk::Device, command_pool: vk::CommandPool, p_allocator: *const vk::AllocationCallbacks) {
         (self.destroy_command_pool)(device, command_pool, p_allocator);
     }
 
     #[inline]
+    #[doc = "Description: Reset a command pool"]
+    #[doc = "<br>"]
     #[doc = "Reference: [`vkResetCommandPool`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkResetCommandPool.html)"]
     pub unsafe fn reset_command_pool(&self, device: vk::Device, command_pool: vk::CommandPool, flags: vk::CommandPoolResetFlags) -> Result<(), Error> {
         match (self.reset_command_pool)(device, command_pool, flags) {
@@ -432,6 +486,8 @@ impl DeviceFunctions {
     }
 
     #[inline]
+    #[doc = "Description: Allocate command buffers from an existing command pool"]
+    #[doc = "<br>"]
     #[doc = "Reference: [`vkAllocateCommandBuffers`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkAllocateCommandBuffers.html)"]
     pub unsafe fn allocate_command_buffers(&self, device: vk::Device, p_allocate_info: *const vk::CommandBufferAllocateInfo, p_command_buffers: *mut vk::CommandBuffer) -> Result<(), Error> {
         match (self.allocate_command_buffers)(device, p_allocate_info, p_command_buffers) {
@@ -441,12 +497,16 @@ impl DeviceFunctions {
     }
 
     #[inline]
+    #[doc = "Description: Free command buffers"]
+    #[doc = "<br>"]
     #[doc = "Reference: [`vkFreeCommandBuffers`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkFreeCommandBuffers.html)"]
     pub unsafe fn free_command_buffers(&self, device: vk::Device, command_pool: vk::CommandPool, command_buffer_count: u32, p_command_buffers: *const vk::CommandBuffer) {
         (self.free_command_buffers)(device, command_pool, command_buffer_count, p_command_buffers);
     }
 
     #[inline]
+    #[doc = "Description: Start recording a command buffer"]
+    #[doc = "<br>"]
     #[doc = "Reference: [`vkBeginCommandBuffer`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkBeginCommandBuffer.html)"]
     pub unsafe fn begin_command_buffer(&self, command_buffer: vk::CommandBuffer, p_begin_info: *const vk::CommandBufferBeginInfo) -> Result<(), Error> {
         match (self.begin_command_buffer)(command_buffer, p_begin_info) {
@@ -456,6 +516,8 @@ impl DeviceFunctions {
     }
 
     #[inline]
+    #[doc = "Description: Finish recording a command buffer"]
+    #[doc = "<br>"]
     #[doc = "Reference: [`vkEndCommandBuffer`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkEndCommandBuffer.html)"]
     pub unsafe fn end_command_buffer(&self, command_buffer: vk::CommandBuffer) -> Result<(), Error> {
         match (self.end_command_buffer)(command_buffer) {
@@ -465,12 +527,16 @@ impl DeviceFunctions {
     }
 
     #[inline]
+    #[doc = "Description: Dispatch compute work items"]
+    #[doc = "<br>"]
     #[doc = "Reference: [`vkCmdDispatch`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdDispatch.html)"]
     pub unsafe fn cmd_dispatch(&self, command_buffer: vk::CommandBuffer, group_count_x: u32, group_count_y: u32, group_count_z: u32) {
         (self.cmd_dispatch)(command_buffer, group_count_x, group_count_y, group_count_z);
     }
 
     #[inline]
+    #[doc = "Description: Bind device memory to buffer objects"]
+    #[doc = "<br>"]
     #[doc = "Reference: [`vkBindBufferMemory2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkBindBufferMemory2.html)"]
     pub unsafe fn bind_buffer_memory2(&self, device: vk::Device, bind_info_count: u32, p_bind_infos: *const vk::BindBufferMemoryInfo) -> Result<(), Error> {
         match (self.bind_buffer_memory2)(device, bind_info_count, p_bind_infos) {
@@ -480,18 +546,24 @@ impl DeviceFunctions {
     }
 
     #[inline]
+    #[doc = "Description: Returns the memory requirements for specified Vulkan object"]
+    #[doc = "<br>"]
     #[doc = "Reference: [`vkGetDeviceBufferMemoryRequirements`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetDeviceBufferMemoryRequirements.html)"]
     pub unsafe fn get_device_buffer_memory_requirements(&self, device: vk::Device, p_info: *const vk::DeviceBufferMemoryRequirements, p_memory_requirements: *mut vk::MemoryRequirements2) {
         (self.get_device_buffer_memory_requirements)(device, p_info, p_memory_requirements);
     }
 
     #[inline]
+    #[doc = "Description: Get a queue handle from a device"]
+    #[doc = "<br>"]
     #[doc = "Reference: [`vkGetDeviceQueue2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetDeviceQueue2.html)"]
     pub unsafe fn get_device_queue2(&self, device: vk::Device, p_queue_info: *const vk::DeviceQueueInfo2, p_queue: *mut vk::Queue) {
         (self.get_device_queue2)(device, p_queue_info, p_queue);
     }
 
     #[inline]
+    #[doc = "Description: Wait for timeline semaphores on the host"]
+    #[doc = "<br>"]
     #[doc = "Reference: [`vkWaitSemaphores`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkWaitSemaphores.html)"]
     pub unsafe fn wait_semaphores(&self, device: vk::Device, p_wait_info: *const vk::SemaphoreWaitInfo, timeout: u64) -> Result<(), Error> {
         match (self.wait_semaphores)(device, p_wait_info, timeout) {
@@ -502,12 +574,16 @@ impl DeviceFunctions {
 
     #[must_use]
     #[inline]
+    #[doc = "Description: Query an address of a buffer"]
+    #[doc = "<br>"]
     #[doc = "Reference: [`vkGetBufferDeviceAddress`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetBufferDeviceAddress.html)"]
     pub unsafe fn get_buffer_device_address(&self, device: vk::Device, p_info: *const vk::BufferDeviceAddressInfo) -> vk::DeviceAddress {
         (self.get_buffer_device_address)(device, p_info)
     }
 
     #[inline]
+    #[doc = "Description: Submits command buffers to a queue"]
+    #[doc = "<br>"]
     #[doc = "Reference: [`vkQueueSubmit2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkQueueSubmit2.html)"]
     pub unsafe fn queue_submit2(&self, queue: vk::Queue, submit_count: u32, p_submits: *const vk::SubmitInfo2, fence: vk::Fence) -> Result<(), Error> {
         match (self.queue_submit2)(queue, submit_count, p_submits, fence) {
@@ -517,24 +593,32 @@ impl DeviceFunctions {
     }
 
     #[inline]
+    #[doc = "Description: Get the size of a descriptor set layout in memory"]
+    #[doc = "<br>"]
     #[doc = "Reference: [`vkGetDescriptorSetLayoutSizeEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetDescriptorSetLayoutSizeEXT.html)"]
     pub unsafe fn get_descriptor_set_layout_size_ext(&self, device: vk::Device, layout: vk::DescriptorSetLayout, p_layout_size_in_bytes: *mut vk::DeviceSize) {
         (self.get_descriptor_set_layout_size_ext)(device, layout, p_layout_size_in_bytes);
     }
 
     #[inline]
+    #[doc = "Description: To get a descriptor to place in a buffer"]
+    #[doc = "<br>"]
     #[doc = "Reference: [`vkGetDescriptorEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetDescriptorEXT.html)"]
     pub unsafe fn get_descriptor_ext(&self, device: vk::Device, p_descriptor_info: *const vk::DescriptorGetInfoEXT, data_size: usize, p_descriptor: *mut c_void) {
         (self.get_descriptor_ext)(device, p_descriptor_info, data_size, p_descriptor);
     }
 
     #[inline]
+    #[doc = "Description: Binding descriptor buffers to a command buffer"]
+    #[doc = "<br>"]
     #[doc = "Reference: [`vkCmdBindDescriptorBuffersEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdBindDescriptorBuffersEXT.html)"]
     pub unsafe fn cmd_bind_descriptor_buffers_ext(&self, command_buffer: vk::CommandBuffer, buffer_count: u32, p_binding_infos: *const vk::DescriptorBufferBindingInfoEXT) {
         (self.cmd_bind_descriptor_buffers_ext)(command_buffer, buffer_count, p_binding_infos);
     }
 
     #[inline]
+    #[doc = "Description: Setting descriptor buffer offsets in a command buffer"]
+    #[doc = "<br>"]
     #[doc = "Reference: [`vkCmdSetDescriptorBufferOffsetsEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetDescriptorBufferOffsetsEXT.html)"]
     pub unsafe fn cmd_set_descriptor_buffer_offsets_ext(
         &self,
@@ -550,6 +634,8 @@ impl DeviceFunctions {
     }
 
     #[inline]
+    #[doc = "Description: Map a memory object into application address space"]
+    #[doc = "<br>"]
     #[doc = "Reference: [`vkMapMemory2KHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkMapMemory2KHR.html)"]
     pub unsafe fn map_memory2_khr(&self, device: vk::Device, p_memory_map_info: *const vk::MemoryMapInfoKHR, pp_data: *mut *mut c_void) -> Result<(), Error> {
         match (self.map_memory2_khr)(device, p_memory_map_info, pp_data) {
@@ -559,6 +645,8 @@ impl DeviceFunctions {
     }
 
     #[inline]
+    #[doc = "Description: Unmap a previously mapped memory object"]
+    #[doc = "<br>"]
     #[doc = "Reference: [`vkUnmapMemory2KHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkUnmapMemory2KHR.html)"]
     pub unsafe fn unmap_memory2_khr(&self, device: vk::Device, p_memory_unmap_info: *const vk::MemoryUnmapInfoKHR) -> Result<(), Error> {
         match (self.unmap_memory2_khr)(device, p_memory_unmap_info) {
@@ -568,6 +656,8 @@ impl DeviceFunctions {
     }
 
     #[inline]
+    #[doc = "Description: Create one or more new shaders"]
+    #[doc = "<br>"]
     #[doc = "Reference: [`vkCreateShadersEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateShadersEXT.html)"]
     pub unsafe fn create_shaders_ext(
         &self,
@@ -584,12 +674,16 @@ impl DeviceFunctions {
     }
 
     #[inline]
+    #[doc = "Description: Destroy a shader object"]
+    #[doc = "<br>"]
     #[doc = "Reference: [`vkDestroyShaderEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroyShaderEXT.html)"]
     pub unsafe fn destroy_shader_ext(&self, device: vk::Device, shader: vk::ShaderEXT, p_allocator: *const vk::AllocationCallbacks) {
         (self.destroy_shader_ext)(device, shader, p_allocator);
     }
 
     #[inline]
+    #[doc = "Description: Bind shader objects to a command buffer"]
+    #[doc = "<br>"]
     #[doc = "Reference: [`vkCmdBindShadersEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdBindShadersEXT.html)"]
     pub unsafe fn cmd_bind_shaders_ext(&self, command_buffer: vk::CommandBuffer, stage_count: u32, p_stages: *const vk::ShaderStageFlagBits, p_shaders: *const vk::ShaderEXT) {
         (self.cmd_bind_shaders_ext)(command_buffer, stage_count, p_stages, p_shaders);

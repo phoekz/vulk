@@ -3,6 +3,8 @@ use super::*;
 const TEMPLATE: &str = r#"
 #[repr(C)]
 #[derive(Clone, Copy, Debug)]
+#[doc = "Description: {{vk_desc}}"]
+#[doc = "<br>"]
 #[doc = "Reference: [`{{vk_ident}}`]({{vk_doc}})"]
 {{vk_structextends_docs}}
 #[doc = "<br>"]
@@ -28,7 +30,11 @@ let {{rs_init_ident}} = vk::{{rs_ident}} {
 
 const TEMPLATE_INIT_MEMBER: &str = r#"    {{rs_init_member_ident}}: {{rs_init_member_value}},"#;
 
-pub fn generate(registry: &Registry, translator: &Translator) -> Result<String> {
+pub fn generate(
+    registry: &Registry,
+    translator: &Translator,
+    description_map: &DescriptionMap,
+) -> Result<String> {
     let mut extend_map: HashMap<_, Vec<_>> = HashMap::new();
     for registry_type in &registry.types {
         let registry::TypeCategory::Struct { structextends, .. } = &registry_type.category else {
@@ -51,12 +57,13 @@ pub fn generate(registry: &Registry, translator: &Translator) -> Result<String> 
         };
 
         let vk_ident = &registry_type.name;
-        let vk_doc = doc::reference_url(vk_ident);
+        let vk_desc = &description_map.get(vk_ident).context("Missing desc")?.desc;
+        let vk_doc = docs::reference_url(vk_ident);
         let mut vk_structextends_docs = String::new();
         if let Some(structextends) = extend_map.get(vk_ident.as_str()) {
             for structextend in structextends {
                 let vk_structextends_ident = structextend;
-                let vk_structextends_doc = &doc::reference_url(vk_structextends_ident);
+                let vk_structextends_doc = &docs::reference_url(vk_structextends_ident);
                 writeln!(
                     vk_structextends_docs,
                     "{}",
@@ -132,6 +139,7 @@ pub fn generate(registry: &Registry, translator: &Translator) -> Result<String> 
             str,
             "{}",
             TEMPLATE
+                .replace("{{vk_desc}}", vk_desc)
                 .replace("{{vk_ident}}", vk_ident)
                 .replace("{{vk_doc}}", &vk_doc)
                 .replace("{{vk_structextends_docs}}", &vk_structextends_docs)

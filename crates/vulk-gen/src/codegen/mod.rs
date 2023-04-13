@@ -4,7 +4,6 @@ mod api_constants;
 mod base_types;
 mod bitmasks;
 mod commands;
-mod doc;
 mod enumerations;
 mod function_pointers;
 mod handles;
@@ -17,21 +16,27 @@ mod unions;
 use std::fmt::Write;
 use translation::Translator;
 
-pub fn generate(registry: &Registry, vulk_lib_dir: &Path) -> Result<()> {
+pub fn generate(
+    registry: &Registry,
+    description_map: &DescriptionMap,
+    vulk_lib_dir: &Path,
+) -> Result<()> {
     // Generate.
     let translator = translation::Translator::new(registry);
-    let api_constants = api_constants::generate(registry, &translator)?;
-    let base_types = base_types::generate(registry, &translator)?;
-    let function_pointers = function_pointers::generate(registry, &translator)?;
-    let handles = handles::generate(registry, &translator)?;
-    let enumerations = enumerations::generate(registry, &translator)?;
-    let bitmasks = bitmasks::generate(registry, &translator)?;
-    let structures = structures::generate(registry, &translator)?;
-    let unions = unions::generate(registry, &translator)?;
-    let command_types = commands::types::generate(registry, &translator)?;
+    let api_constants = api_constants::generate(registry, &translator, description_map)?;
+    let base_types = base_types::generate(registry, &translator, description_map)?;
+    let function_pointers = function_pointers::generate(registry, &translator, description_map)?;
+    let handles = handles::generate(registry, &translator, description_map)?;
+    let enumerations = enumerations::generate(registry, &translator, description_map)?;
+    let bitmasks = bitmasks::generate(registry, &translator, description_map)?;
+    let structures = structures::generate(registry, &translator, description_map)?;
+    let unions = unions::generate(registry, &translator, description_map)?;
+    let command_types = commands::types::generate(registry, &translator, description_map)?;
     let command_groups = commands::analysis::group_by_loader(registry);
-    let command_loaders = commands::loaders::generate(registry, &translator, &command_groups)?;
-    let command_wrappers = commands::wrappers::generate(registry, &translator, &command_groups)?;
+    let command_loaders =
+        commands::loaders::generate(registry, &translator, description_map, &command_groups)?;
+    let command_wrappers =
+        commands::wrappers::generate(registry, &translator, description_map, &command_groups)?;
 
     // Render.
     let loader_rs = loader_file::TEMPLATE

@@ -1,6 +1,8 @@
 use super::*;
 
 const TEMPLATE: &str = r#"
+#[doc = "Description: {{vk_desc}}"]
+#[doc = "<br>"]
 #[doc = "Reference: [`{{vk_ident}}`]({{vk_doc}})"]
 pub type {{rs_ident}} = unsafe extern "C" fn(
     {{rs_params}}
@@ -9,12 +11,17 @@ pub type {{rs_ident}} = unsafe extern "C" fn(
 
 const TEMPLATE_PARAM: &str = r#"{{rs_param_ident}}: {{rs_param_type}}, //"#;
 
-pub fn generate(registry: &Registry, translator: &Translator) -> Result<String> {
+pub fn generate(
+    registry: &Registry,
+    translator: &Translator,
+    description_map: &DescriptionMap,
+) -> Result<String> {
     let mut str = String::new();
 
     for command in &registry.commands {
         let vk_ident = &command.name;
-        let vk_doc = doc::reference_url(vk_ident);
+        let vk_desc = &description_map.get(vk_ident).context("Missing desc")?.desc;
+        let vk_doc = docs::reference_url(vk_ident);
         let rs_ident = Translator::vk_simple_function(vk_ident)?;
         let mut rs_params = String::new();
         for param in &command.params {
@@ -42,6 +49,7 @@ pub fn generate(registry: &Registry, translator: &Translator) -> Result<String> 
             str,
             "{}",
             TEMPLATE
+                .replace("{{vk_desc}}", vk_desc)
                 .replace("{{vk_ident}}", vk_ident)
                 .replace("{{vk_doc}}", &vk_doc)
                 .replace("{{rs_ident}}", &rs_ident)
