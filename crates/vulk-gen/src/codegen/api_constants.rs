@@ -22,7 +22,7 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
         }
 
         let c_ident = &member.name;
-        let c_desc = ctx.vkspec.type_desc(c_ident).context("Missing desc")?;
+        let c_desc = ctx.vkspec.type_desc(c_ident);
         let c_doc = docs::reference_url(c_ident);
         let rs_ident = translation::c_define(c_ident)?;
         let rs_type =

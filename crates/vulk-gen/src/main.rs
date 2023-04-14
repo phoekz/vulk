@@ -37,10 +37,10 @@ fn main() -> Result<()> {
         .try_init()?;
 
     // Parse vkspec.adoc.
-    let doc_vkspec = docs::Vkspec::parse(&vulkan_docs_dir()).context("Parsing vkspec.adoc")?;
+    let vkspec = docs::Vkspec::parse(&vulkan_docs_dir()).context("Parsing vkspec.adoc")?;
     std::fs::write(
         work_dir_or_create()?.join("docs.ron"),
-        ron::ser::to_string_pretty(&doc_vkspec, ron::ser::PrettyConfig::default())?,
+        ron::ser::to_string_pretty(&vkspec, ron::ser::PrettyConfig::default())?,
     )?;
 
     // Load vk.xml.
@@ -80,11 +80,18 @@ fn main() -> Result<()> {
         ron::ser::to_string_pretty(&registry, ron::ser::PrettyConfig::default())?,
     )?;
 
+    // Ordering registry.
+    let registry = registry.ordered(&vkspec).context("Ordering registry")?;
+    std::fs::write(
+        work_dir_or_create()?.join("ordered.ron"),
+        ron::ser::to_string_pretty(&registry, ron::ser::PrettyConfig::default())?,
+    )?;
+
     // Codegen.
     let vulk_lib_dir = vulk_lib_dir();
     ensure!(vulk_lib_dir.exists());
     ensure!(vulk_lib_dir.is_dir());
-    codegen::generate(&registry, &doc_vkspec, &vulk_lib_dir).context("Code generating")?;
+    codegen::generate(&registry, &vkspec, &vulk_lib_dir).context("Code generating")?;
 
     // Execution time.
     info!(

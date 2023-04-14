@@ -1,6 +1,7 @@
 [workspace]
 members = ["crates/*"]
 resolver = "2"
+exclude = ["crates/vulk-test"]
 
 [workspace.package]
 authors = ["Vinh Truong <vinhphuc.truong@gmail.com>"]

@@ -4,6 +4,8 @@ use super::*;
 pub struct Vkspec {
     pub chapters: Vec<Chapter>,
     pub type_descriptions: HashMap<String, String>,
+    pub type_chapters: HashMap<String, String>,
+    pub type_order: HashMap<String, usize>,
 }
 
 impl Vkspec {
@@ -53,27 +55,45 @@ impl Vkspec {
             chapters
         };
 
-        let type_descriptions = {
-            let mut map = HashMap::new();
-            for chapter in &chapters {
-                for ty in &chapter.types {
-                    map.insert(ty.name.clone(), ty.desc.clone());
-                }
+        let mut type_descriptions = HashMap::new();
+        let mut type_chapters = HashMap::new();
+        let mut type_order = HashMap::new();
+        let mut current_order = 0;
+        for chapter in &chapters {
+            for ty in &chapter.types {
+                type_descriptions.insert(ty.name.clone(), ty.desc.clone());
+                type_chapters.insert(ty.name.clone(), chapter.heading.clone());
+                type_order.insert(ty.name.clone(), current_order);
+                current_order += 1;
             }
-            map
-        };
+        }
 
         let docs = Vkspec {
             chapters,
             type_descriptions,
+            type_chapters,
+            type_order,
         };
 
         Ok(docs)
     }
 
-    pub fn type_desc(&self, name: &str) -> Option<&str> {
-        let desc = self.type_descriptions.get(name)?;
-        Some(desc.as_str())
+    pub fn type_desc(&self, name: &str) -> &str {
+        self.type_descriptions
+            .get(name)
+            .unwrap_or_else(|| panic!("Missing desc for type={name}"))
+            .as_str()
+    }
+
+    pub fn type_chapter(&self, name: &str) -> &str {
+        self.type_chapters
+            .get(name)
+            .unwrap_or_else(|| panic!("Missing chapter for type={name}"))
+            .as_str()
+    }
+
+    pub fn type_order(&self, name: &str) -> usize {
+        *self.type_order.get(name).unwrap_or(&usize::MAX)
     }
 }
 

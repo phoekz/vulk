@@ -5,6 +5,8 @@ const TEMPLATE_PARAM_IDENT: &str = r#"{{rs_param_ident}}"#;
 const TEMPLATE_DEFAULT: &str = r#"
 #[must_use]
 #[inline]
+#[doc = "Chapter: **{{vk_chapter}}**"]
+#[doc = "<br>"]
 #[doc = "Description: {{vk_desc}}"]
 #[doc = "<br>"]
 #[doc = "Reference: [`{{vk_ident}}`]({{vk_doc}})"]
@@ -14,6 +16,8 @@ pub unsafe fn {{rs_ident}}(&self, {{rs_params}}) -> {{rs_return_type}} {
 "#;
 const TEMPLATE_VOID: &str = r#"
 #[inline]
+#[doc = "Chapter: **{{vk_chapter}}**"]
+#[doc = "<br>"]
 #[doc = "Description: {{vk_desc}}"]
 #[doc = "<br>"]
 #[doc = "Reference: [`{{vk_ident}}`]({{vk_doc}})"]
@@ -23,6 +27,8 @@ pub unsafe fn {{rs_ident}}(&self, {{rs_params}}) {
 "#;
 const TEMPLATE_VOID_RESULT: &str = r#"
 #[inline]
+#[doc = "Chapter: **{{vk_chapter}}**"]
+#[doc = "<br>"]
 #[doc = "Description: {{vk_desc}}"]
 #[doc = "<br>"]
 #[doc = "Reference: [`{{vk_ident}}`]({{vk_doc}})"]
@@ -35,6 +41,8 @@ pub unsafe fn {{rs_ident}}(&self, {{rs_params}}) -> Result<(), Error> {
 "#;
 const TEMPLATE_HANDLE_RESULT: &str = r#"
 #[inline]
+#[doc = "Chapter: **{{vk_chapter}}**"]
+#[doc = "<br>"]
 #[doc = "Description: {{vk_desc}}"]
 #[doc = "<br>"]
 #[doc = "Reference: [`{{vk_ident}}`]({{vk_doc}})"]
@@ -82,7 +90,8 @@ fn generate_wrappers(
 
     for command in commands {
         let vk_ident = &command.name;
-        let vk_desc = ctx.vkspec.type_desc(vk_ident).context("Missing desc")?;
+        let vk_chapter = ctx.vkspec.type_chapter(vk_ident);
+        let vk_desc = ctx.vkspec.type_desc(vk_ident);
         let vk_doc = docs::reference_url(vk_ident);
         let rs_ident = translation::vk_simple_function(vk_ident)?;
         let rs_ident = translation::vk_simple_ident(&rs_ident)?;
@@ -133,6 +142,7 @@ fn generate_wrappers(
                     str,
                     "{}",
                     TEMPLATE_DEFAULT
+                        .replace("{{vk_chapter}}", vk_chapter)
                         .replace("{{vk_desc}}", vk_desc)
                         .replace("{{vk_ident}}", vk_ident)
                         .replace("{{vk_doc}}", &vk_doc)
@@ -147,6 +157,7 @@ fn generate_wrappers(
                     str,
                     "{}",
                     TEMPLATE_VOID
+                        .replace("{{vk_chapter}}", vk_chapter)
                         .replace("{{vk_desc}}", vk_desc)
                         .replace("{{vk_ident}}", vk_ident)
                         .replace("{{vk_doc}}", &vk_doc)
@@ -160,6 +171,7 @@ fn generate_wrappers(
                     str,
                     "{}",
                     TEMPLATE_VOID_RESULT
+                        .replace("{{vk_chapter}}", vk_chapter)
                         .replace("{{vk_desc}}", vk_desc)
                         .replace("{{vk_ident}}", vk_ident)
                         .replace("{{vk_doc}}", &vk_doc)
@@ -181,6 +193,7 @@ fn generate_wrappers(
                     str,
                     "{}",
                     TEMPLATE_HANDLE_RESULT
+                        .replace("{{vk_chapter}}", vk_chapter)
                         .replace("{{vk_desc}}", vk_desc)
                         .replace("{{vk_ident}}", vk_ident)
                         .replace("{{vk_doc}}", &vk_doc)

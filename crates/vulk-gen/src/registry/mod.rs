@@ -99,6 +99,43 @@ impl Registry {
             extensions: vec![],
         })
     }
+
+    pub fn ordered(self, vkspec: &docs::Vkspec) -> Result<Self> {
+        let mut types = self.types;
+        let mut enums = self.enums;
+        let mut commands = self.commands;
+        types.sort_by(|a, b| {
+            let a_order = vkspec.type_order(&a.name);
+            let b_order = vkspec.type_order(&b.name);
+            if a_order != b_order {
+                return a_order.cmp(&b_order);
+            }
+            a.name.cmp(&b.name)
+        });
+        enums.sort_by(|a, b| {
+            let a_order = vkspec.type_order(&a.name);
+            let b_order = vkspec.type_order(&b.name);
+            if a_order != b_order {
+                return a_order.cmp(&b_order);
+            }
+            a.name.cmp(&b.name)
+        });
+        commands.sort_by(|a, b| {
+            let a_order = vkspec.type_order(&a.name);
+            let b_order = vkspec.type_order(&b.name);
+            if a_order != b_order {
+                return a_order.cmp(&b_order);
+            }
+            a.name.cmp(&b.name)
+        });
+        Ok(Self {
+            types,
+            enums,
+            commands,
+            features: self.features,
+            extensions: self.extensions,
+        })
+    }
 }
 
 fn extend_enums_with_requires(

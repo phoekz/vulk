@@ -4,6 +4,8 @@ const TEMPLATE: &str = r#"
 bitflags! {
     #[repr(C)]
     #[derive(Clone, Copy, PartialEq, Eq, Debug)]
+    #[doc = "Chapter: **{{vk_flags_chapter}}**"]
+    #[doc = "<br>"]
     #[doc = "Description: {{vk_flags_desc}}"]
     #[doc = "<br>"]
     #[doc = "Reference: [`{{vk_flags_ident}}`]({{vk_flags_doc}})"]
@@ -14,6 +16,8 @@ bitflags! {
     }
 }
 
+#[doc = "Chapter: **{{vk_bits_chapter}}**"]
+#[doc = "<br>"]
 #[doc = "Description: {{vk_bits_desc}}"]
 #[doc = "<br>"]
 #[doc = "Reference: [`{{vk_bits_ident}}`]({{vk_bits_doc}})"]
@@ -24,6 +28,8 @@ const TEMPLATE_NO_BITS: &str = r#"
 bitflags! {
     #[repr(C)]
     #[derive(Clone, Copy, PartialEq, Eq, Debug)]
+    #[doc = "Chapter: **{{vk_flags_chapter}}**"]
+    #[doc = "<br>"]
     #[doc = "Description: {{vk_flags_desc}}"]
     #[doc = "<br>"]
     #[doc = "Reference: [`{{vk_flags_ident}}`]({{vk_flags_doc}})"]
@@ -61,10 +67,8 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
         };
 
         let vk_flags_ident = &registry_type.name;
-        let vk_flags_desc = ctx
-            .vkspec
-            .type_desc(vk_flags_ident)
-            .context("Missing desc")?;
+        let vk_flags_chapter = ctx.vkspec.type_chapter(vk_flags_ident);
+        let vk_flags_desc = ctx.vkspec.type_desc(vk_flags_ident);
         let vk_flags_doc = docs::reference_url(vk_flags_ident);
         let rs_flags_ident = translation::vk_simple_type(vk_flags_ident)?;
         let rs_flags_type = match ty.as_str() {
@@ -83,10 +87,8 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
 
         if let Some(bitvalues) = bitvalues {
             let vk_bits_ident = bitvalues;
-            let vk_bits_desc = &ctx
-                .vkspec
-                .type_desc(vk_bits_ident)
-                .context("Missing desc")?;
+            let vk_bits_chapter = ctx.vkspec.type_chapter(vk_bits_ident);
+            let vk_bits_desc = &ctx.vkspec.type_desc(vk_bits_ident);
             let vk_bits_doc = docs::reference_url(vk_bits_ident);
             let rs_bits_ident = translation::vk_simple_type(vk_bits_ident)?;
 
@@ -131,11 +133,13 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
                 str,
                 "{}",
                 TEMPLATE
+                    .replace("{{vk_flags_chapter}}", vk_flags_chapter)
                     .replace("{{vk_flags_desc}}", vk_flags_desc)
                     .replace("{{vk_flags_ident}}", vk_flags_ident)
                     .replace("{{vk_flags_doc}}", &vk_flags_doc)
                     .replace("{{rs_flags_ident}}", &rs_flags_ident)
                     .replace("{{rs_flags_type}}", rs_flags_type)
+                    .replace("{{vk_bits_chapter}}", vk_bits_chapter)
                     .replace("{{vk_bits_desc}}", vk_bits_desc)
                     .replace("{{vk_bits_ident}}", vk_bits_ident)
                     .replace("{{vk_bits_doc}}", &vk_bits_doc)
@@ -147,6 +151,7 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
                 str,
                 "{}",
                 TEMPLATE_NO_BITS
+                    .replace("{{vk_flags_chapter}}", vk_flags_chapter)
                     .replace("{{vk_flags_desc}}", vk_flags_desc)
                     .replace("{{vk_flags_ident}}", vk_flags_ident)
                     .replace("{{vk_flags_doc}}", &vk_flags_doc)

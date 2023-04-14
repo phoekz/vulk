@@ -12,7 +12,7 @@ pub struct Rendered {
     pub device_loaders: String,
 }
 
-pub fn generate(ctx: &GeneratorContext<'_>, groups: &analysis::CommandGroups) -> Result<Rendered> {
+pub fn generate(_ctx: &GeneratorContext<'_>, groups: &analysis::CommandGroups) -> Result<Rendered> {
     let loader_struct_members = generate_struct_members(&groups.loader)?;
     let instance_struct_members = generate_struct_members(&groups.instance)?;
     let device_struct_members = generate_struct_members(&groups.device)?;

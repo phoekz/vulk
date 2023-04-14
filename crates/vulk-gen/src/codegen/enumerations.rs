@@ -3,6 +3,8 @@ use super::*;
 const TEMPLATE: &str = r#"
 #[repr(i32)]
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[doc = "Chapter: **{{vk_chapter}}**"]
+#[doc = "<br>"]
 #[doc = "Description: {{vk_desc}}"]
 #[doc = "<br>"]
 #[doc = "Reference: [`{{vk_ident}}`]({{vk_doc}})"]
@@ -23,7 +25,8 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
         };
 
         let vk_ident = &registry_enum.name;
-        let vk_desc = ctx.vkspec.type_desc(vk_ident).context("Missing desc")?;
+        let vk_chapter = ctx.vkspec.type_chapter(vk_ident);
+        let vk_desc = ctx.vkspec.type_desc(vk_ident);
         let vk_doc = docs::reference_url(vk_ident);
         let rs_ident = translation::vk_simple_type(vk_ident)?;
         let mut rs_members = String::new();
@@ -45,6 +48,7 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
             str,
             "{}",
             TEMPLATE
+                .replace("{{vk_chapter}}", vk_chapter)
                 .replace("{{vk_desc}}", vk_desc)
                 .replace("{{vk_ident}}", vk_ident)
                 .replace("{{vk_doc}}", &vk_doc)
