@@ -1,9 +1,6 @@
 use super::*;
 
-const TEMPLATE: &str = r#"
-#[doc = "Description: {{c_desc}}"]
-#[doc = "<br>"]
-#[doc = "Reference: [`{{c_ident}}`]({{c_doc}})"]
+const TEMPLATE: &str = r#"{{c_attr}}
 pub const {{rs_ident}}: {{rs_type}} = {{rs_value}};
 "#;
 
@@ -22,8 +19,11 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
         }
 
         let c_ident = &member.name;
-        let c_desc = ctx.vkspec.type_desc(c_ident);
-        let c_doc = docs::reference_url(c_ident);
+        let c_attr = attributes::Builder::new()
+            .doc_desc(ctx.vkspec.type_desc(c_ident))
+            .doc_br()
+            .doc_ref(c_ident)
+            .build();
         let rs_ident = translation::c_define(c_ident)?;
         let rs_type =
             translation::c_type(ctx.c_type_map, member.ty.as_ref().context("Missing type")?)?;
@@ -32,9 +32,7 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
             str,
             "{}",
             TEMPLATE
-                .replace("{{c_ident}}", c_ident)
-                .replace("{{c_desc}}", c_desc)
-                .replace("{{c_doc}}", &c_doc)
+                .replace("{{c_attr}}", &c_attr)
                 .replace("{{rs_ident}}", &rs_ident)
                 .replace("{{rs_type}}", rs_type)
                 .replace("{{rs_value}}", &rs_value)

@@ -1,20 +1,12 @@
 use super::*;
 
-const TEMPLATE: &str = r#"
-#[repr(i32)]
-#[derive(Clone, Copy, PartialEq, Eq, Debug)]
-#[doc = "Chapter: **{{vk_chapter}}**"]
-#[doc = "<br>"]
-#[doc = "Description: {{vk_desc}}"]
-#[doc = "<br>"]
-#[doc = "Reference: [`{{vk_ident}}`]({{vk_doc}})"]
+const TEMPLATE: &str = r#"{{vk_attr}}
 pub enum {{rs_ident}} {
     {{rs_members}}
 }
 "#;
 
-const TEMPLATE_MEMBER: &str =
-    r#"#[doc = "Translated from: `{{vk_ident}}`"] {{rs_member_ident}} = {{rs_member_value}},"#;
+const TEMPLATE_MEMBER: &str = r#"{{vk_member_attr}}{{rs_member_ident}} = {{rs_member_value}},"#;
 
 pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
     let mut str = String::new();
@@ -25,13 +17,22 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
         };
 
         let vk_ident = &registry_enum.name;
-        let vk_chapter = ctx.vkspec.type_chapter(vk_ident);
-        let vk_desc = ctx.vkspec.type_desc(vk_ident);
-        let vk_doc = docs::reference_url(vk_ident);
+        let vk_attr = attributes::Builder::new()
+            .repr("i32")
+            .derive("Clone, Copy, PartialEq, Eq, Debug")
+            .doc_chapter(ctx.vkspec.type_chapter(vk_ident))
+            .doc_br()
+            .doc_desc(ctx.vkspec.type_desc(vk_ident))
+            .doc_br()
+            .doc_ref(vk_ident)
+            .build();
         let rs_ident = translation::vk_simple_type(vk_ident)?;
         let mut rs_members = String::new();
         for member in &registry_enum.members {
             let vk_member_ident = &member.name;
+            let vk_member_attr = attributes::Builder::new()
+                .doc_translated(vk_member_ident)
+                .build();
             let vk_member_value = member.value.as_ref().context("Missing type")?;
             let rs_member_ident = translation::vk_enum_member(vk_ident, vk_member_ident)?;
             let rs_member_value = vk_member_value;
@@ -39,7 +40,7 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
                 rs_members,
                 "{}",
                 TEMPLATE_MEMBER
-                    .replace("{{vk_ident}}", vk_member_ident)
+                    .replace("{{vk_member_attr}}", &vk_member_attr)
                     .replace("{{rs_member_ident}}", &rs_member_ident)
                     .replace("{{rs_member_value}}", rs_member_value)
             )?;
@@ -48,10 +49,8 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
             str,
             "{}",
             TEMPLATE
-                .replace("{{vk_chapter}}", vk_chapter)
-                .replace("{{vk_desc}}", vk_desc)
+                .replace("{{vk_attr}}", &vk_attr)
                 .replace("{{vk_ident}}", vk_ident)
-                .replace("{{vk_doc}}", &vk_doc)
                 .replace("{{rs_ident}}", &rs_ident)
                 .replace("{{rs_members}}", &rs_members)
         )?;

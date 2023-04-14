@@ -1,15 +1,6 @@
 use super::*;
 
-const TEMPLATE: &str = r#"
-#[repr(C)]
-#[derive(Clone, Copy, Debug)]
-#[doc = "Chapter: **{{vk_chapter}}**"]
-#[doc = "<br>"]
-#[doc = "Description: {{vk_desc}}"]
-#[doc = "<br>"]
-#[doc = "Reference: [`{{vk_ident}}`]({{vk_doc}})"]
-{{vk_structextends_docs}}
-#[doc = "<br>"]
+const TEMPLATE: &str = r#"{{vk_attr}}
 #[doc = "Initialization template:"]
 #[doc = {{rs_init_template}}]
 pub struct {{rs_ident}} {
@@ -18,9 +9,6 @@ pub struct {{rs_ident}} {
 "#;
 
 const TEMPLATE_MEMBER: &str = r#"pub {{rs_member_ident}}: {{rs_member_type}},"#;
-
-const TEMPLATE_STRUCTEXTENDS: &str = r#"#[doc = "<br>"]
-#[doc = "Extendable by: [`{{vk_structextends_ident}}`]({{vk_structextends_doc}})"]"#;
 
 const TEMPLATE_RAW_STRING: &str = "r#\"```{{}}```\"#";
 
@@ -55,23 +43,21 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
         };
 
         let vk_ident = &registry_type.name;
-        let vk_chapter = ctx.vkspec.type_chapter(vk_ident);
-        let vk_desc = ctx.vkspec.type_desc(vk_ident);
-        let vk_doc = docs::reference_url(vk_ident);
-        let mut vk_structextends_docs = String::new();
+        let mut vk_attr = attributes::Builder::new()
+            .repr("C")
+            .derive("Clone, Copy, Debug")
+            .doc_chapter(ctx.vkspec.type_chapter(vk_ident))
+            .doc_br()
+            .doc_desc(ctx.vkspec.type_desc(vk_ident))
+            .doc_br()
+            .doc_ref(vk_ident)
+            .doc_br();
         if let Some(structextends) = extend_map.get(vk_ident.as_str()) {
             for structextend in structextends {
-                let vk_structextends_ident = structextend;
-                let vk_structextends_doc = &docs::reference_url(vk_structextends_ident);
-                writeln!(
-                    vk_structextends_docs,
-                    "{}",
-                    TEMPLATE_STRUCTEXTENDS
-                        .replace("{{vk_structextends_ident}}", vk_structextends_ident)
-                        .replace("{{vk_structextends_doc}}", vk_structextends_doc)
-                )?;
+                vk_attr = vk_attr.doc_extend(structextend).doc_br();
             }
         }
+        let vk_attr = vk_attr.build();
 
         let rs_ident = translation::vk_simple_type(vk_ident)?;
         let rs_init_template = {
@@ -148,11 +134,8 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
             str,
             "{}",
             TEMPLATE
-                .replace("{{vk_chapter}}", vk_chapter)
-                .replace("{{vk_desc}}", vk_desc)
+                .replace("{{vk_attr}}", &vk_attr)
                 .replace("{{vk_ident}}", vk_ident)
-                .replace("{{vk_doc}}", &vk_doc)
-                .replace("{{vk_structextends_docs}}", &vk_structextends_docs)
                 .replace("{{rs_init_template}}", &rs_init_template)
                 .replace("{{rs_ident}}", &rs_ident)
                 .replace("{{rs_members}}", &rs_members)

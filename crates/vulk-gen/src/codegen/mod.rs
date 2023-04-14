@@ -1,6 +1,7 @@
 use super::*;
 
 mod api_constants;
+mod attributes;
 mod base_types;
 mod bitmasks;
 mod commands;

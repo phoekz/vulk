@@ -1,11 +1,6 @@
 use super::*;
 
-const TEMPLATE: &str = r#"
-#[doc = "Chapter: **{{vk_chapter}}**"]
-#[doc = "<br>"]
-#[doc = "Description: {{vk_desc}}"]
-#[doc = "<br>"]
-#[doc = "Reference: [`{{vk_ident}}`]({{vk_doc}})"]
+const TEMPLATE: &str = r#"{{vk_attr}}
 pub type {{rs_ident}} = unsafe extern "C" fn(
     {{rs_params}}
 ) {{rs_return}};
@@ -18,9 +13,13 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
 
     for command in &ctx.registry.commands {
         let vk_ident = &command.name;
-        let vk_chapter = ctx.vkspec.type_chapter(vk_ident);
-        let vk_desc = ctx.vkspec.type_desc(vk_ident);
-        let vk_doc = docs::reference_url(vk_ident);
+        let vk_attr = attributes::Builder::new()
+            .doc_chapter(ctx.vkspec.type_chapter(vk_ident))
+            .doc_br()
+            .doc_desc(ctx.vkspec.type_desc(vk_ident))
+            .doc_br()
+            .doc_ref(vk_ident)
+            .build();
         let rs_ident = translation::vk_simple_function(vk_ident)?;
         let mut rs_params = String::new();
         for param in &command.params {
@@ -54,10 +53,8 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
             str,
             "{}",
             TEMPLATE
-                .replace("{{vk_chapter}}", vk_chapter)
-                .replace("{{vk_desc}}", vk_desc)
+                .replace("{{vk_attr}}", &vk_attr)
                 .replace("{{vk_ident}}", vk_ident)
-                .replace("{{vk_doc}}", &vk_doc)
                 .replace("{{rs_ident}}", &rs_ident)
                 .replace("{{rs_params}}", &rs_params)
                 .replace("{{rs_return}}", &rs_return)

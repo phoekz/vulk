@@ -1,13 +1,6 @@
 use super::*;
 
-const TEMPLATE: &str = r#"
-#[repr(transparent)]
-#[derive(Clone, Copy, Debug)]
-#[doc = "Chapter: **{{vk_chapter}}**"]
-#[doc = "<br>"]
-#[doc = "Description: {{vk_desc}}"]
-#[doc = "<br>"]
-#[doc = "Reference: [`{{vk_ident}}`]({{vk_doc}})"]
+const TEMPLATE: &str = r#"{{vk_attr}}
 pub struct {{rs_ident}}(u64);
 
 impl {{rs_ident}} {
@@ -27,18 +20,22 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
         };
 
         let vk_ident = &registry_type.name;
-        let vk_chapter = ctx.vkspec.type_chapter(vk_ident);
-        let vk_desc = ctx.vkspec.type_desc(vk_ident);
-        let vk_doc = docs::reference_url(vk_ident);
+        let vk_attr = attributes::Builder::new()
+            .repr("transparent")
+            .derive("Clone, Copy, Debug")
+            .doc_chapter(ctx.vkspec.type_chapter(vk_ident))
+            .doc_br()
+            .doc_desc(ctx.vkspec.type_desc(vk_ident))
+            .doc_br()
+            .doc_ref(vk_ident)
+            .build();
         let rs_ident = translation::vk_simple_type(vk_ident)?;
         writeln!(
             str,
             "{}",
             TEMPLATE
-                .replace("{{vk_chapter}}", vk_chapter)
-                .replace("{{vk_desc}}", vk_desc)
+                .replace("{{vk_attr}}", &vk_attr)
                 .replace("{{vk_ident}}", vk_ident)
-                .replace("{{vk_doc}}", &vk_doc)
                 .replace("{{rs_ident}}", &rs_ident)
         )?;
     }

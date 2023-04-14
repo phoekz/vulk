@@ -2,37 +2,19 @@ use super::*;
 
 const TEMPLATE: &str = r#"
 bitflags! {
-    #[repr(C)]
-    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-    #[doc = "Chapter: **{{vk_flags_chapter}}**"]
-    #[doc = "<br>"]
-    #[doc = "Description: {{vk_flags_desc}}"]
-    #[doc = "<br>"]
-    #[doc = "Reference: [`{{vk_flags_ident}}`]({{vk_flags_doc}})"]
-    #[doc = "<br>"]
-    #[doc = "Reference: [`{{vk_bits_ident}}`]({{vk_bits_doc}})"]
+{{vk_flags_attr}}
     pub struct {{rs_flags_ident}}: {{rs_flags_type}} {
 {{rs_bits_members}}
     }
 }
 
-#[doc = "Chapter: **{{vk_bits_chapter}}**"]
-#[doc = "<br>"]
-#[doc = "Description: {{vk_bits_desc}}"]
-#[doc = "<br>"]
-#[doc = "Reference: [`{{vk_bits_ident}}`]({{vk_bits_doc}})"]
+{{vk_bits_attr}}
 pub type {{rs_bits_ident}} = {{rs_flags_ident}};
 "#;
 
 const TEMPLATE_NO_BITS: &str = r#"
 bitflags! {
-    #[repr(C)]
-    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-    #[doc = "Chapter: **{{vk_flags_chapter}}**"]
-    #[doc = "<br>"]
-    #[doc = "Description: {{vk_flags_desc}}"]
-    #[doc = "<br>"]
-    #[doc = "Reference: [`{{vk_flags_ident}}`]({{vk_flags_doc}})"]
+{{vk_flags_attr}}
     pub struct {{rs_flags_ident}}: {{rs_flags_type}} {
 
     }
@@ -69,7 +51,6 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
         let vk_flags_ident = &registry_type.name;
         let vk_flags_chapter = ctx.vkspec.type_chapter(vk_flags_ident);
         let vk_flags_desc = ctx.vkspec.type_desc(vk_flags_ident);
-        let vk_flags_doc = docs::reference_url(vk_flags_ident);
         let rs_flags_ident = translation::vk_simple_type(vk_flags_ident)?;
         let rs_flags_type = match ty.as_str() {
             "VkFlags" => "u32",
@@ -87,9 +68,13 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
 
         if let Some(bitvalues) = bitvalues {
             let vk_bits_ident = bitvalues;
-            let vk_bits_chapter = ctx.vkspec.type_chapter(vk_bits_ident);
-            let vk_bits_desc = &ctx.vkspec.type_desc(vk_bits_ident);
-            let vk_bits_doc = docs::reference_url(vk_bits_ident);
+            let vk_bits_attr = attributes::Builder::new()
+                .doc_chapter(ctx.vkspec.type_chapter(vk_bits_ident))
+                .doc_br()
+                .doc_desc(ctx.vkspec.type_desc(vk_bits_ident))
+                .doc_br()
+                .doc_ref(vk_bits_ident)
+                .build();
             let rs_bits_ident = translation::vk_simple_type(vk_bits_ident)?;
 
             let bitvalues = bitvalues_map.get(bitvalues).context("Missing bitvalues")?;
@@ -129,32 +114,50 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
             }
             let rs_bits_members = rs_bits_members.trim_end();
 
+            let vk_flags_attr = attributes::Builder::new()
+                .repr("C")
+                .derive("Clone, Copy, PartialEq, Eq, Debug")
+                .doc_chapter(vk_flags_chapter)
+                .doc_br()
+                .doc_desc(vk_flags_desc)
+                .doc_br()
+                .doc_ref(vk_flags_ident)
+                .doc_br()
+                .doc_ref(vk_bits_ident)
+                .indent()
+                .build();
+
             writeln!(
                 str,
                 "{}",
                 TEMPLATE
-                    .replace("{{vk_flags_chapter}}", vk_flags_chapter)
-                    .replace("{{vk_flags_desc}}", vk_flags_desc)
+                    .replace("{{vk_flags_attr}}", &vk_flags_attr)
                     .replace("{{vk_flags_ident}}", vk_flags_ident)
-                    .replace("{{vk_flags_doc}}", &vk_flags_doc)
                     .replace("{{rs_flags_ident}}", &rs_flags_ident)
                     .replace("{{rs_flags_type}}", rs_flags_type)
-                    .replace("{{vk_bits_chapter}}", vk_bits_chapter)
-                    .replace("{{vk_bits_desc}}", vk_bits_desc)
+                    .replace("{{vk_bits_attr}}", &vk_bits_attr)
                     .replace("{{vk_bits_ident}}", vk_bits_ident)
-                    .replace("{{vk_bits_doc}}", &vk_bits_doc)
                     .replace("{{rs_bits_ident}}", &rs_bits_ident)
                     .replace("{{rs_bits_members}}", rs_bits_members)
             )?;
         } else {
+            let vk_flags_attr = attributes::Builder::new()
+                .repr("C")
+                .derive("Clone, Copy, PartialEq, Eq, Debug")
+                .doc_chapter(vk_flags_chapter)
+                .doc_br()
+                .doc_desc(vk_flags_desc)
+                .doc_br()
+                .doc_ref(vk_flags_ident)
+                .indent()
+                .build();
+
             writeln!(
                 str,
                 "{}",
                 TEMPLATE_NO_BITS
-                    .replace("{{vk_flags_chapter}}", vk_flags_chapter)
-                    .replace("{{vk_flags_desc}}", vk_flags_desc)
+                    .replace("{{vk_flags_attr}}", &vk_flags_attr)
                     .replace("{{vk_flags_ident}}", vk_flags_ident)
-                    .replace("{{vk_flags_doc}}", &vk_flags_doc)
                     .replace("{{rs_flags_ident}}", &rs_flags_ident)
                     .replace("{{rs_flags_type}}", rs_flags_type)
             )?;
