@@ -57,6 +57,8 @@
 //! - [`vk::CreateDebugUtilsMessengerEXT`] Create a debug messenger object
 //! - [`vk::DestroyDebugUtilsMessengerEXT`] Destroy a debug messenger object
 
+#![deny(future_incompatible)]
+#![deny(nonstandard_style)]
 #![deny(clippy::pedantic)]
 #![allow(
     clippy::missing_errors_doc,

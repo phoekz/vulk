@@ -1,5 +1,7 @@
 pub const TEMPLATE: &str = r#"//! # `vulk`
 {{toc}}
+#![deny(future_incompatible)]
+#![deny(nonstandard_style)]
 #![deny(clippy::pedantic)]
 #![allow(
     clippy::missing_errors_doc,
