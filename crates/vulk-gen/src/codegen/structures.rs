@@ -30,13 +30,9 @@ let {{rs_init_ident}} = vk::{{rs_ident}} {
 
 const TEMPLATE_INIT_MEMBER: &str = r#"    {{rs_init_member_ident}}: {{rs_init_member_value}},"#;
 
-pub fn generate(
-    registry: &Registry,
-    c_type_map: &CtypeMap,
-    description_map: &DescriptionMap,
-) -> Result<String> {
+pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
     let mut extend_map: HashMap<_, Vec<_>> = HashMap::new();
-    for registry_type in &registry.types {
+    for registry_type in &ctx.registry.types {
         let registry::TypeCategory::Struct { structextends, .. } = &registry_type.category else {
             continue;
         };
@@ -51,13 +47,13 @@ pub fn generate(
     }
 
     let mut str = String::new();
-    for registry_type in &registry.types {
+    for registry_type in &ctx.registry.types {
         let registry::TypeCategory::Struct { members, .. } = &registry_type.category else {
             continue;
         };
 
         let vk_ident = &registry_type.name;
-        let vk_desc = &description_map.get(vk_ident).context("Missing desc")?.desc;
+        let vk_desc = ctx.vkspec.type_desc(vk_ident).context("Missing desc")?;
         let vk_doc = docs::reference_url(vk_ident);
         let mut vk_structextends_docs = String::new();
         if let Some(structextends) = extend_map.get(vk_ident.as_str()) {
@@ -97,7 +93,7 @@ pub fn generate(
                     _ => {
                         let vk_type = &member.ty;
                         let rs_type = translation::vk_complex_type(
-                            c_type_map,
+                            ctx.c_type_map,
                             vk_type,
                             &member.text,
                             &member.en,
@@ -130,7 +126,7 @@ pub fn generate(
             let rs_member_ident = translation::vk_simple_ident(vk_member_ident)?;
             let vk_member_type = &member.ty;
             let rs_member_type = translation::vk_complex_type(
-                c_type_map,
+                ctx.c_type_map,
                 vk_member_type,
                 &member.text,
                 &member.en,

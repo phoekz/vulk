@@ -1,43 +1,34 @@
 use super::*;
 
-pub fn generate(
-    registry: &Registry,
-    _c_type_map: &CtypeMap,
-    description_map: &DescriptionMap,
-) -> Result<String> {
+pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
     let mut str = String::new();
 
-    let mut chapter_order = HashMap::new();
-    for command in &registry.commands {
-        let desc = description_map.get(&command.name).context("Missing desc")?;
-        chapter_order.insert(desc.title.as_str(), desc.title_order);
+    let mut commands = HashSet::new();
+    for command in &ctx.registry.commands {
+        commands.insert(command.name.as_str());
     }
-    let mut chapter_order = chapter_order.into_iter().collect::<Vec<_>>();
-    chapter_order.sort_by_key(|&(_, index)| index);
 
-    let mut grouped_commands: HashMap<&str, Vec<(usize, &str)>> = HashMap::new();
-    for command in &registry.commands {
-        let desc = description_map.get(&command.name).context("Missing desc")?;
-        if let Some(vec) = grouped_commands.get_mut(desc.title.as_str()) {
-            vec.push((desc.line_index, command.name.as_str()));
-        } else {
-            grouped_commands.insert(
-                desc.title.as_str(),
-                vec![(desc.line_index, command.name.as_str())],
-            );
+    for chapter in &ctx.vkspec.chapters {
+        let mut chapter_str = String::new();
+        writeln!(chapter_str, "//! ## {}", chapter.heading)?;
+        let mut command_count = 0;
+        for ty in &chapter.types {
+            if ty.ty != "protos" {
+                continue;
+            }
+
+            let command = ty;
+            if !commands.contains(command.name.as_str()) {
+                continue;
+            }
+
+            let command = translation::vk_simple_function(&command.name)?;
+            writeln!(chapter_str, "//! - [`vk::{command}`] {}", ty.desc)?;
+            command_count += 1;
         }
-    }
-    for vec in grouped_commands.values_mut() {
-        vec.sort_unstable();
-    }
 
-    for (chapter_name, _) in &chapter_order {
-        writeln!(str, "//! ## {chapter_name}")?;
-        let commands = grouped_commands.get(chapter_name).unwrap();
-        for (_, command) in commands {
-            let desc = &description_map.get(*command).context("Missing desc")?;
-            let command = translation::vk_simple_function(command)?;
-            writeln!(str, "//! - [`vk::{command}`] {}", desc.desc)?;
+        if command_count > 0 {
+            write!(str, "{chapter_str}")?;
         }
     }
 

@@ -16,28 +16,36 @@ mod unions;
 use registry::CtypeMap;
 use std::fmt::Write;
 
-pub fn generate(
-    registry: &Registry,
-    description_map: &DescriptionMap,
-    vulk_lib_dir: &Path,
-) -> Result<()> {
+pub struct GeneratorContext<'a> {
+    registry: &'a Registry,
+    c_type_map: &'a CtypeMap,
+    vkspec: &'a docs::Vkspec,
+}
+
+pub fn generate(registry: &Registry, vkspec: &docs::Vkspec, vulk_lib_dir: &Path) -> Result<()> {
     // Generate.
     let c_type_map = registry::c_type_map();
-    let api_constants = api_constants::generate(registry, &c_type_map, description_map)?;
-    let base_types = base_types::generate(registry, &c_type_map, description_map)?;
-    let function_pointers = function_pointers::generate(registry, &c_type_map, description_map)?;
-    let handles = handles::generate(registry, &c_type_map, description_map)?;
-    let enumerations = enumerations::generate(registry, &c_type_map, description_map)?;
-    let bitmasks = bitmasks::generate(registry, &c_type_map, description_map)?;
-    let structures = structures::generate(registry, &c_type_map, description_map)?;
-    let unions = unions::generate(registry, &c_type_map, description_map)?;
-    let command_types = commands::types::generate(registry, &c_type_map, description_map)?;
     let command_groups = commands::analysis::group_by_loader(registry);
-    let command_loaders =
-        commands::loaders::generate(registry, &c_type_map, description_map, &command_groups)?;
-    let command_wrappers =
-        commands::wrappers::generate(registry, &c_type_map, description_map, &command_groups)?;
-    let toc = toc::generate(registry, &c_type_map, description_map)?;
+    let ctx = GeneratorContext {
+        registry,
+        c_type_map: &c_type_map,
+        vkspec,
+    };
+    let api_constants = api_constants::generate(&ctx).context("Generating api_constants")?;
+    let base_types = base_types::generate(&ctx).context("Generating base_types")?;
+    let function_pointers =
+        function_pointers::generate(&ctx).context("Generating function_pointers")?;
+    let handles = handles::generate(&ctx).context("Generating handles")?;
+    let enumerations = enumerations::generate(&ctx).context("Generating enumerations")?;
+    let bitmasks = bitmasks::generate(&ctx).context("Generating bitmasks")?;
+    let structures = structures::generate(&ctx).context("Generating structures")?;
+    let unions = unions::generate(&ctx).context("Generating unions")?;
+    let command_types = commands::types::generate(&ctx).context("Generating commands::types")?;
+    let command_loaders = commands::loaders::generate(&ctx, &command_groups)
+        .context("Generating commands::loaders")?;
+    let command_wrappers = commands::wrappers::generate(&ctx, &command_groups)
+        .context("Generating commands::wrappers")?;
+    let toc = toc::generate(&ctx).context("Generating toc")?;
 
     // Render.
     let lib_rs = outputs::lib::TEMPLATE.replace("{{toc}}", &toc);

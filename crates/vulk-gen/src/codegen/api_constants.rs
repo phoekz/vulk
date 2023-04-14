@@ -7,14 +7,11 @@ const TEMPLATE: &str = r#"
 pub const {{rs_ident}}: {{rs_type}} = {{rs_value}};
 "#;
 
-pub fn generate(
-    registry: &Registry,
-    c_type_map: &CtypeMap,
-    description_map: &DescriptionMap,
-) -> Result<String> {
+pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
     let mut str = String::new();
 
-    let api_constants = registry
+    let api_constants = ctx
+        .registry
         .enums
         .iter()
         .find(|en| en.name == "API Constants")
@@ -25,10 +22,11 @@ pub fn generate(
         }
 
         let c_ident = &member.name;
-        let c_desc = &description_map.get(c_ident).context("Missing desc")?.desc;
+        let c_desc = ctx.vkspec.type_desc(c_ident).context("Missing desc")?;
         let c_doc = docs::reference_url(c_ident);
         let rs_ident = translation::c_define(c_ident)?;
-        let rs_type = translation::c_type(c_type_map, member.ty.as_ref().context("Missing type")?)?;
+        let rs_type =
+            translation::c_type(ctx.c_type_map, member.ty.as_ref().context("Missing type")?)?;
         let rs_value = translation::c_value(member.value.as_ref().context("Missing value")?)?;
         writeln!(
             str,

@@ -11,16 +11,12 @@ pub type {{rs_ident}} = unsafe extern "C" fn(
 
 const TEMPLATE_PARAM: &str = r#"{{rs_param_ident}}: {{rs_param_type}}, //"#;
 
-pub fn generate(
-    registry: &Registry,
-    c_type_map: &CtypeMap,
-    description_map: &DescriptionMap,
-) -> Result<String> {
+pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
     let mut str = String::new();
 
-    for command in &registry.commands {
+    for command in &ctx.registry.commands {
         let vk_ident = &command.name;
-        let vk_desc = &description_map.get(vk_ident).context("Missing desc")?.desc;
+        let vk_desc = ctx.vkspec.type_desc(vk_ident).context("Missing desc")?;
         let vk_doc = docs::reference_url(vk_ident);
         let rs_ident = translation::vk_simple_function(vk_ident)?;
         let mut rs_params = String::new();
@@ -28,8 +24,13 @@ pub fn generate(
             let vk_param_ident = &param.name;
             let rs_param_ident = translation::vk_simple_ident(vk_param_ident)?;
             let vk_param_type = &param.ty;
-            let rs_param_type =
-                translation::vk_complex_type(c_type_map, vk_param_type, &param.text, &None, false)?;
+            let rs_param_type = translation::vk_complex_type(
+                ctx.c_type_map,
+                vk_param_type,
+                &param.text,
+                &None,
+                false,
+            )?;
             writeln!(
                 rs_params,
                 "{}",
@@ -40,7 +41,7 @@ pub fn generate(
         }
         let vk_return_type = &command.return_type;
         let rs_return_type =
-            translation::vk_complex_type(c_type_map, vk_return_type, &None, &None, false)?;
+            translation::vk_complex_type(ctx.c_type_map, vk_return_type, &None, &None, false)?;
         let rs_return = if rs_return_type == "c_void" {
             String::new()
         } else {

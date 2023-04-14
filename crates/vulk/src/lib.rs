@@ -53,7 +53,7 @@
 //! - [`vk::CmdSetDescriptorBufferOffsetsEXT`] Setting descriptor buffer offsets in a command buffer
 //! ## Dispatching Commands
 //! - [`vk::CmdDispatch`] Dispatch compute work items
-//! ## Debug Utilities
+//! ## Debugging
 //! - [`vk::CreateDebugUtilsMessengerEXT`] Create a debug messenger object
 //! - [`vk::DestroyDebugUtilsMessengerEXT`] Destroy a debug messenger object
 

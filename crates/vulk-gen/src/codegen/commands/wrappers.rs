@@ -53,26 +53,18 @@ pub struct Rendered {
     pub device_wrappers: String,
 }
 
-pub fn generate(
-    registry: &Registry,
-    c_type_map: &CtypeMap,
-    description_map: &DescriptionMap,
-    groups: &analysis::CommandGroups,
-) -> Result<Rendered> {
+pub fn generate(ctx: &GeneratorContext<'_>, groups: &analysis::CommandGroups) -> Result<Rendered> {
     let mut handle_map = HashSet::new();
-    for registry_ty in &registry.types {
+    for registry_ty in &ctx.registry.types {
         let registry::TypeCategory::Handle { .. } = &registry_ty.category else {
             continue;
         };
         handle_map.insert(registry_ty.name.as_str());
     }
 
-    let loader_wrappers =
-        generate_wrappers(c_type_map, description_map, &handle_map, &groups.loader)?;
-    let instance_wrappers =
-        generate_wrappers(c_type_map, description_map, &handle_map, &groups.instance)?;
-    let device_wrappers =
-        generate_wrappers(c_type_map, description_map, &handle_map, &groups.device)?;
+    let loader_wrappers = generate_wrappers(ctx, &handle_map, &groups.loader)?;
+    let instance_wrappers = generate_wrappers(ctx, &handle_map, &groups.instance)?;
+    let device_wrappers = generate_wrappers(ctx, &handle_map, &groups.device)?;
 
     Ok(Rendered {
         loader_wrappers,
@@ -82,8 +74,7 @@ pub fn generate(
 }
 
 fn generate_wrappers(
-    c_type_map: &CtypeMap,
-    description_map: &DescriptionMap,
+    ctx: &GeneratorContext<'_>,
     handle_map: &HashSet<&str>,
     commands: &[&registry::Command],
 ) -> Result<String> {
@@ -91,13 +82,13 @@ fn generate_wrappers(
 
     for command in commands {
         let vk_ident = &command.name;
-        let vk_desc = &description_map.get(vk_ident).context("Missing desc")?.desc;
+        let vk_desc = ctx.vkspec.type_desc(vk_ident).context("Missing desc")?;
         let vk_doc = docs::reference_url(vk_ident);
         let rs_ident = translation::vk_simple_function(vk_ident)?;
         let rs_ident = translation::vk_simple_ident(&rs_ident)?;
         let vk_return_type = &command.return_type;
         let rs_return_type =
-            translation::vk_complex_type(c_type_map, vk_return_type, &None, &None, true)?;
+            translation::vk_complex_type(ctx.c_type_map, vk_return_type, &None, &None, true)?;
 
         let mut rs_params = vec![];
         let mut rs_params_types = vec![];
@@ -105,8 +96,13 @@ fn generate_wrappers(
             let vk_param_ident = &param.name;
             let rs_param_ident = translation::vk_simple_ident(vk_param_ident)?;
             let vk_param_type = &param.ty;
-            let rs_param_type =
-                translation::vk_complex_type(c_type_map, vk_param_type, &param.text, &None, true)?;
+            let rs_param_type = translation::vk_complex_type(
+                ctx.c_type_map,
+                vk_param_type,
+                &param.text,
+                &None,
+                true,
+            )?;
             rs_params.push(
                 TEMPLATE_PARAM
                     .replace("{{rs_param_ident}}", &rs_param_ident)
@@ -131,7 +127,7 @@ fn generate_wrappers(
 
         let (rs_params_type_last, _) = rs_params_types.split_last().unwrap();
 
-        match analysis::wrapper_type(c_type_map, handle_map, command)? {
+        match analysis::wrapper_type(ctx.c_type_map, handle_map, command)? {
             analysis::WrapperType::Default => {
                 writeln!(
                     str,
@@ -174,7 +170,7 @@ fn generate_wrappers(
             }
             analysis::WrapperType::HandleResult => {
                 let rs_handle_type = translation::vk_complex_type(
-                    c_type_map,
+                    ctx.c_type_map,
                     rs_params_type_last,
                     &None,
                     &None,

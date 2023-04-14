@@ -36,16 +36,12 @@ bitflags! {
 const TEMPLATE_MEMBER: &str = r#"        #[doc = "Translated from: `{{vk_member_ident}}`"]
         const {{rs_member_ident}} = {{rs_member_value}};"#;
 
-pub fn generate(
-    registry: &Registry,
-    _c_type_map: &CtypeMap,
-    description_map: &DescriptionMap,
-) -> Result<String> {
+pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
     let mut str = String::new();
 
     let bitvalues_map = {
         let mut map = HashMap::new();
-        for registry_enum in &registry.enums {
+        for registry_enum in &ctx.registry.enums {
             let registry::EnumType::Bitmask = registry_enum.ty else {
                 continue;
             };
@@ -54,7 +50,7 @@ pub fn generate(
         map
     };
 
-    for registry_type in &registry.types {
+    for registry_type in &ctx.registry.types {
         let registry::TypeCategory::Bitmask {
             ty,
             requires,
@@ -65,10 +61,10 @@ pub fn generate(
         };
 
         let vk_flags_ident = &registry_type.name;
-        let vk_flags_desc = &description_map
-            .get(vk_flags_ident)
-            .context("Missing desc")?
-            .desc;
+        let vk_flags_desc = ctx
+            .vkspec
+            .type_desc(vk_flags_ident)
+            .context("Missing desc")?;
         let vk_flags_doc = docs::reference_url(vk_flags_ident);
         let rs_flags_ident = translation::vk_simple_type(vk_flags_ident)?;
         let rs_flags_type = match ty.as_str() {
@@ -87,10 +83,10 @@ pub fn generate(
 
         if let Some(bitvalues) = bitvalues {
             let vk_bits_ident = bitvalues;
-            let vk_bits_desc = &description_map
-                .get(vk_bits_ident)
-                .context("Missing desc")?
-                .desc;
+            let vk_bits_desc = &ctx
+                .vkspec
+                .type_desc(vk_bits_ident)
+                .context("Missing desc")?;
             let vk_bits_doc = docs::reference_url(vk_bits_ident);
             let rs_bits_ident = translation::vk_simple_type(vk_bits_ident)?;
 

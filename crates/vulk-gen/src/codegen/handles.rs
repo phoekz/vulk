@@ -16,20 +16,16 @@ impl {{rs_ident}} {
 }
 "#;
 
-pub fn generate(
-    registry: &Registry,
-    _c_type_map: &CtypeMap,
-    description_map: &DescriptionMap,
-) -> Result<String> {
+pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
     let mut str = String::new();
 
-    for registry_type in &registry.types {
+    for registry_type in &ctx.registry.types {
         let registry::TypeCategory::Handle { .. } = &registry_type.category else {
             continue;
         };
 
         let vk_ident = &registry_type.name;
-        let vk_desc = &description_map.get(vk_ident).context("Missing desc")?.desc;
+        let vk_desc = ctx.vkspec.type_desc(vk_ident).context("Missing desc")?;
         let vk_doc = docs::reference_url(vk_ident);
         let rs_ident = translation::vk_simple_type(vk_ident)?;
         writeln!(

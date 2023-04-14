@@ -14,7 +14,6 @@ use std::{
 };
 
 use anyhow::{bail, ensure, Context, Result};
-use docs::DescriptionMap;
 use log::{debug, info, warn};
 use manifest::Manifest;
 use registry::Registry;
@@ -37,12 +36,11 @@ fn main() -> Result<()> {
         .filter_level(log::LevelFilter::Info)
         .try_init()?;
 
-    // Parse descriptions.
-    let descriptions = docs::parse_descriptions(&vulkan_docs_dir())
-        .context("Parsing descriptions from Vulkan-Docs")?;
+    // Parse vkspec.adoc.
+    let doc_vkspec = docs::Vkspec::parse(&vulkan_docs_dir()).context("Parsing vkspec.adoc")?;
     std::fs::write(
-        work_dir_or_create()?.join("descriptions.ron"),
-        ron::ser::to_string_pretty(&descriptions, ron::ser::PrettyConfig::default())?,
+        work_dir_or_create()?.join("docs.ron"),
+        ron::ser::to_string_pretty(&doc_vkspec, ron::ser::PrettyConfig::default())?,
     )?;
 
     // Load vk.xml.
@@ -67,7 +65,9 @@ fn main() -> Result<()> {
     )?;
 
     // Extend enum definitions with features and extensions.
-    let registry = registry.extended(&manifest).context("Extending enum definitions")?;
+    let registry = registry
+        .extended(&manifest)
+        .context("Extending enum definitions")?;
     std::fs::write(
         work_dir_or_create()?.join("extended.ron"),
         ron::ser::to_string_pretty(&registry, ron::ser::PrettyConfig::default())?,
@@ -84,7 +84,7 @@ fn main() -> Result<()> {
     let vulk_lib_dir = vulk_lib_dir();
     ensure!(vulk_lib_dir.exists());
     ensure!(vulk_lib_dir.is_dir());
-    codegen::generate(&registry, &descriptions, &vulk_lib_dir)?;
+    codegen::generate(&registry, &doc_vkspec, &vulk_lib_dir).context("Code generating")?;
 
     // Execution time.
     info!(
