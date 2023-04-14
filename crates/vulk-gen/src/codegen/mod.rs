@@ -8,8 +8,10 @@ mod enumerations;
 mod function_pointers;
 mod handles;
 mod header_file;
+mod lib_file;
 mod loader_file;
 mod structures;
+mod toc;
 mod translation;
 mod unions;
 
@@ -37,8 +39,10 @@ pub fn generate(
         commands::loaders::generate(registry, &translator, description_map, &command_groups)?;
     let command_wrappers =
         commands::wrappers::generate(registry, &translator, description_map, &command_groups)?;
+    let toc = toc::generate(registry, &translator, description_map)?;
 
     // Render.
+    let lib_rs = lib_file::TEMPLATE.replace("{{toc}}", &toc);
     let loader_rs = loader_file::TEMPLATE
         .replace("{{loader::wrappers}}", &command_wrappers.loader_wrappers)
         .replace(
@@ -73,10 +77,12 @@ pub fn generate(
         .replace("{{vk::unions}}", &unions);
 
     // Formatting.
+    let lib_rs = rustfmt(&lib_rs).context("Failed to format 'lib.rs' with rustfmt")?;
     let loader_rs = rustfmt(&loader_rs).context("Failed to format 'loader.rs' with rustfmt")?;
     let vk_rs = rustfmt(&vk_rs).context("Failed to format 'vk.rs' with rustfmt")?;
 
     // Write.
+    std::fs::write(vulk_lib_dir.join("lib.rs"), lib_rs)?;
     std::fs::write(vulk_lib_dir.join("loader.rs"), loader_rs)?;
     std::fs::write(vulk_lib_dir.join("vk.rs"), vk_rs)?;
 

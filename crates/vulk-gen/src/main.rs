@@ -38,7 +38,7 @@ fn main() -> Result<()> {
         .try_init()?;
 
     // Parse descriptions.
-    let descriptions = docs::parse_descriptions(&vulkan_docs_chapters_dir())?;
+    let descriptions = docs::parse_descriptions(&vulkan_docs_dir())?;
     std::fs::write(
         work_dir_or_create()?.join("descriptions.ron"),
         ron::ser::to_string_pretty(&descriptions, ron::ser::PrettyConfig::default())?,
@@ -110,10 +110,6 @@ fn vulkan_docs_dir() -> PathBuf {
 
 fn vk_xml_file() -> PathBuf {
     vulkan_docs_dir().join("xml").join("vk.xml")
-}
-
-fn vulkan_docs_chapters_dir() -> PathBuf {
-    vulkan_docs_dir().join("chapters")
 }
 
 fn manifest_file() -> PathBuf {
