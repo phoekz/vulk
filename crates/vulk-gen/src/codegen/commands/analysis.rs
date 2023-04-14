@@ -81,7 +81,7 @@ pub enum WrapperType {
 }
 
 pub fn wrapper_type(
-    translator: &Translator,
+    c_type_map: &CtypeMap,
     handle_map: &HashSet<&str>,
     command: &registry::Command,
 ) -> Result<WrapperType> {
@@ -89,7 +89,8 @@ pub fn wrapper_type(
         let mut mutable_params = 0;
 
         for param in &command.params {
-            let param_type = translator.vk_complex_type(&param.ty, &param.text, &None, false)?;
+            let param_type =
+                translation::vk_complex_type(c_type_map, &param.ty, &param.text, &None, false)?;
             if param_type.contains("*mut") {
                 mutable_params += 1;
             }
@@ -102,7 +103,8 @@ pub fn wrapper_type(
             .params
             .last()
             .context("Command must have at least 1 parameter")?;
-        let param_type = translator.vk_complex_type(&param.ty, &param.text, &None, false)?;
+        let param_type =
+            translation::vk_complex_type(c_type_map, &param.ty, &param.text, &None, false)?;
         let is_handle = handle_map.contains(param.ty.as_str());
         param_type.contains("*mut") && is_handle
     };

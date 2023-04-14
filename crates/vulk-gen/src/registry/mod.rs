@@ -1,5 +1,6 @@
 use super::*;
 
+pub use c_types::*;
 pub use commands::*;
 pub use enums::*;
 pub use extensions::*;
@@ -7,6 +8,7 @@ pub use features::*;
 pub use requires::*;
 pub use types::*;
 
+mod c_types;
 mod commands;
 mod enums;
 mod extensions;
@@ -86,7 +88,8 @@ impl Registry {
             .into_iter()
             .filter(|cmd| manifest.commands.contains(cmd.name.as_str()))
             .collect::<Vec<_>>();
-        let types = filter_types(self.types, &commands, &manifest.structures)?;
+        let types =
+            filter_types(self.types, &commands, &manifest.structures).context("Filtering types")?;
         let enums = filter_enums(self.enums, &types);
         Ok(Self {
             types,
@@ -193,8 +196,11 @@ fn filter_types<'a>(
     commands: &[Command],
     structures: impl IntoIterator<Item = &'a String>,
 ) -> Result<Vec<Type>> {
-    // Index map.
-    let type_name_index_map = type_name_index_map(&types);
+    // C types.
+    let c_type_map = c_type_map();
+
+    // Type index map.
+    let type_index_map = type_index_map(&types);
 
     // Prepare stack.
     let mut stack = vec![];
@@ -217,8 +223,13 @@ fn filter_types<'a>(
             continue;
         }
 
+        // Ignore C types.
+        if c_type_map.contains_key(curr_type) {
+            continue;
+        }
+
         // Get type.
-        let type_index = *type_name_index_map
+        let type_index = *type_index_map
             .get(curr_type)
             .with_context(|| format!("Missing type={curr_type}"))?;
         let ty = &types[type_index];

@@ -16,7 +16,7 @@ const TEMPLATE_MEMBER: &str =
 
 pub fn generate(
     registry: &Registry,
-    _translator: &Translator,
+    _c_type_map: &CtypeMap,
     description_map: &DescriptionMap,
 ) -> Result<String> {
     let mut str = String::new();
@@ -29,12 +29,12 @@ pub fn generate(
         let vk_ident = &registry_enum.name;
         let vk_desc = &description_map.get(vk_ident).context("Missing desc")?.desc;
         let vk_doc = docs::reference_url(vk_ident);
-        let rs_ident = Translator::vk_simple_type(vk_ident)?;
+        let rs_ident = translation::vk_simple_type(vk_ident)?;
         let mut rs_members = String::new();
         for member in &registry_enum.members {
             let vk_member_ident = &member.name;
             let vk_member_value = member.value.as_ref().context("Missing type")?;
-            let rs_member_ident = Translator::vk_enum_member(vk_ident, vk_member_ident)?;
+            let rs_member_ident = translation::vk_enum_member(vk_ident, vk_member_ident)?;
             let rs_member_value = vk_member_value;
             writeln!(
                 rs_members,

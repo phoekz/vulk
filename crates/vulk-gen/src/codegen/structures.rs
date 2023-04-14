@@ -32,7 +32,7 @@ const TEMPLATE_INIT_MEMBER: &str = r#"    {{rs_init_member_ident}}: {{rs_init_me
 
 pub fn generate(
     registry: &Registry,
-    translator: &Translator,
+    c_type_map: &CtypeMap,
     description_map: &DescriptionMap,
 ) -> Result<String> {
     let mut extend_map: HashMap<_, Vec<_>> = HashMap::new();
@@ -74,20 +74,20 @@ pub fn generate(
             }
         }
 
-        let rs_ident = Translator::vk_simple_type(vk_ident)?;
+        let rs_ident = translation::vk_simple_type(vk_ident)?;
         let rs_init_template = {
-            let rs_init_ident = Translator::vk_simple_ident(&rs_ident)?;
+            let rs_init_ident = translation::vk_simple_ident(&rs_ident)?;
             let mut rs_init_members = String::new();
             for member in members {
                 let vk_init_member_ident = &member.name;
-                let rs_init_member_ident = Translator::vk_simple_ident(vk_init_member_ident)?;
+                let rs_init_member_ident = translation::vk_simple_ident(vk_init_member_ident)?;
                 let rs_init_member_value = match rs_init_member_ident.as_str() {
                     "s_type" => {
                         format!("vk::StructureType::{rs_ident}")
                     }
                     "p_next" => {
                         let vk_text = member.text.as_ref().context("Missing text")?;
-                        let rs_specifier = Translator::c_specifier(vk_text)?;
+                        let rs_specifier = translation::c_specifier(vk_text)?;
                         match rs_specifier.as_str() {
                             "*const" => "null()".to_string(),
                             "*mut" => "null_mut()".to_string(),
@@ -96,8 +96,13 @@ pub fn generate(
                     }
                     _ => {
                         let vk_type = &member.ty;
-                        let rs_type =
-                            translator.vk_complex_type(vk_type, &member.text, &member.en, false)?;
+                        let rs_type = translation::vk_complex_type(
+                            c_type_map,
+                            vk_type,
+                            &member.text,
+                            &member.en,
+                            false,
+                        )?;
                         format!("todo!(\"{rs_type}\")")
                     }
                 };
@@ -122,10 +127,15 @@ pub fn generate(
         let mut rs_members = String::new();
         for member in members {
             let vk_member_ident = &member.name;
-            let rs_member_ident = Translator::vk_simple_ident(vk_member_ident)?;
+            let rs_member_ident = translation::vk_simple_ident(vk_member_ident)?;
             let vk_member_type = &member.ty;
-            let rs_member_type =
-                translator.vk_complex_type(vk_member_type, &member.text, &member.en, false)?;
+            let rs_member_type = translation::vk_complex_type(
+                c_type_map,
+                vk_member_type,
+                &member.text,
+                &member.en,
+                false,
+            )?;
             writeln!(
                 rs_members,
                 "{}",

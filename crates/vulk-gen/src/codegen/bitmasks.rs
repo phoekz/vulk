@@ -38,7 +38,7 @@ const TEMPLATE_MEMBER: &str = r#"        #[doc = "Translated from: `{{vk_member_
 
 pub fn generate(
     registry: &Registry,
-    _translator: &Translator,
+    _c_type_map: &CtypeMap,
     description_map: &DescriptionMap,
 ) -> Result<String> {
     let mut str = String::new();
@@ -70,7 +70,7 @@ pub fn generate(
             .context("Missing desc")?
             .desc;
         let vk_flags_doc = docs::reference_url(vk_flags_ident);
-        let rs_flags_ident = Translator::vk_simple_type(vk_flags_ident)?;
+        let rs_flags_ident = translation::vk_simple_type(vk_flags_ident)?;
         let rs_flags_type = match ty.as_str() {
             "VkFlags" => "u32",
             "VkFlags64" => "u64",
@@ -92,7 +92,7 @@ pub fn generate(
                 .context("Missing desc")?
                 .desc;
             let vk_bits_doc = docs::reference_url(vk_bits_ident);
-            let rs_bits_ident = Translator::vk_simple_type(vk_bits_ident)?;
+            let rs_bits_ident = translation::vk_simple_type(vk_bits_ident)?;
 
             let bitvalues = bitvalues_map.get(bitvalues).context("Missing bitvalues")?;
             let mut rs_bits_members = String::new();
@@ -103,7 +103,7 @@ pub fn generate(
 
                 let vk_member_ident = &member.name;
                 let rs_member_ident =
-                    Translator::vk_bitmask_member(vk_flags_ident, vk_member_ident)?;
+                    translation::vk_bitmask_member(vk_flags_ident, vk_member_ident)?;
 
                 let rs_member_value = if let Some(bitpos) = &member.bitpos {
                     let bitpos: u64 = bitpos.parse()?;

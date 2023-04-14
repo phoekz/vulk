@@ -18,7 +18,7 @@ impl {{rs_ident}} {
 
 pub fn generate(
     registry: &Registry,
-    _translator: &Translator,
+    _c_type_map: &CtypeMap,
     description_map: &DescriptionMap,
 ) -> Result<String> {
     let mut str = String::new();
@@ -31,7 +31,7 @@ pub fn generate(
         let vk_ident = &registry_type.name;
         let vk_desc = &description_map.get(vk_ident).context("Missing desc")?.desc;
         let vk_doc = docs::reference_url(vk_ident);
-        let rs_ident = Translator::vk_simple_type(vk_ident)?;
+        let rs_ident = translation::vk_simple_type(vk_ident)?;
         writeln!(
             str,
             "{}",

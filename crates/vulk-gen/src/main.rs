@@ -38,7 +38,8 @@ fn main() -> Result<()> {
         .try_init()?;
 
     // Parse descriptions.
-    let descriptions = docs::parse_descriptions(&vulkan_docs_dir())?;
+    let descriptions = docs::parse_descriptions(&vulkan_docs_dir())
+        .context("Parsing descriptions from Vulkan-Docs")?;
     std::fs::write(
         work_dir_or_create()?.join("descriptions.ron"),
         ron::ser::to_string_pretty(&descriptions, ron::ser::PrettyConfig::default())?,
@@ -59,21 +60,21 @@ fn main() -> Result<()> {
     let manifest: Manifest = ron::de::from_str(&manifest)?;
 
     // Parse registry.
-    let registry = Registry::parse(&vk_xml)?;
+    let registry = Registry::parse(&vk_xml).context("Parsing Vulkan registry")?;
     std::fs::write(
         work_dir_or_create()?.join("everything.ron"),
         ron::ser::to_string_pretty(&registry, ron::ser::PrettyConfig::default())?,
     )?;
 
     // Extend enum definitions with features and extensions.
-    let registry = registry.extended(&manifest)?;
+    let registry = registry.extended(&manifest).context("Extending enum definitions")?;
     std::fs::write(
         work_dir_or_create()?.join("extended.ron"),
         ron::ser::to_string_pretty(&registry, ron::ser::PrettyConfig::default())?,
     )?;
 
     // Filter registry.
-    let registry = registry.filtered(&manifest)?;
+    let registry = registry.filtered(&manifest).context("Filtering registry")?;
     std::fs::write(
         work_dir_or_create()?.join("filtered.ron"),
         ron::ser::to_string_pretty(&registry, ron::ser::PrettyConfig::default())?,

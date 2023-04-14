@@ -2,7 +2,7 @@ use super::*;
 
 pub fn generate(
     registry: &Registry,
-    _translator: &Translator,
+    _c_type_map: &CtypeMap,
     description_map: &DescriptionMap,
 ) -> Result<String> {
     let mut str = String::new();
@@ -36,7 +36,7 @@ pub fn generate(
         let commands = grouped_commands.get(chapter_name).unwrap();
         for (_, command) in commands {
             let desc = &description_map.get(*command).context("Missing desc")?;
-            let command = Translator::vk_simple_function(command)?;
+            let command = translation::vk_simple_function(command)?;
             writeln!(str, "//! - [`vk::{command}`] {}", desc.desc)?;
         }
     }

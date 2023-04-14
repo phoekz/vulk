@@ -13,8 +13,8 @@ mod toc;
 mod translation;
 mod unions;
 
+use registry::CtypeMap;
 use std::fmt::Write;
-use translation::Translator;
 
 pub fn generate(
     registry: &Registry,
@@ -22,22 +22,22 @@ pub fn generate(
     vulk_lib_dir: &Path,
 ) -> Result<()> {
     // Generate.
-    let translator = translation::Translator::new(registry);
-    let api_constants = api_constants::generate(registry, &translator, description_map)?;
-    let base_types = base_types::generate(registry, &translator, description_map)?;
-    let function_pointers = function_pointers::generate(registry, &translator, description_map)?;
-    let handles = handles::generate(registry, &translator, description_map)?;
-    let enumerations = enumerations::generate(registry, &translator, description_map)?;
-    let bitmasks = bitmasks::generate(registry, &translator, description_map)?;
-    let structures = structures::generate(registry, &translator, description_map)?;
-    let unions = unions::generate(registry, &translator, description_map)?;
-    let command_types = commands::types::generate(registry, &translator, description_map)?;
+    let c_type_map = registry::c_type_map();
+    let api_constants = api_constants::generate(registry, &c_type_map, description_map)?;
+    let base_types = base_types::generate(registry, &c_type_map, description_map)?;
+    let function_pointers = function_pointers::generate(registry, &c_type_map, description_map)?;
+    let handles = handles::generate(registry, &c_type_map, description_map)?;
+    let enumerations = enumerations::generate(registry, &c_type_map, description_map)?;
+    let bitmasks = bitmasks::generate(registry, &c_type_map, description_map)?;
+    let structures = structures::generate(registry, &c_type_map, description_map)?;
+    let unions = unions::generate(registry, &c_type_map, description_map)?;
+    let command_types = commands::types::generate(registry, &c_type_map, description_map)?;
     let command_groups = commands::analysis::group_by_loader(registry);
     let command_loaders =
-        commands::loaders::generate(registry, &translator, description_map, &command_groups)?;
+        commands::loaders::generate(registry, &c_type_map, description_map, &command_groups)?;
     let command_wrappers =
-        commands::wrappers::generate(registry, &translator, description_map, &command_groups)?;
-    let toc = toc::generate(registry, &translator, description_map)?;
+        commands::wrappers::generate(registry, &c_type_map, description_map, &command_groups)?;
+    let toc = toc::generate(registry, &c_type_map, description_map)?;
 
     // Render.
     let lib_rs = outputs::lib::TEMPLATE.replace("{{toc}}", &toc);

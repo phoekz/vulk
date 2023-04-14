@@ -21,7 +21,7 @@ const TEMPLATE_MEMBER: &str = r#"pub {{rs_member_ident}}: {{rs_member_type}},"#;
 
 pub fn generate(
     registry: &Registry,
-    translator: &Translator,
+    c_type_map: &CtypeMap,
     description_map: &DescriptionMap,
 ) -> Result<String> {
     let mut str = String::new();
@@ -34,14 +34,19 @@ pub fn generate(
         let vk_ident = &registry_type.name;
         let vk_desc = &description_map.get(vk_ident).context("Missing desc")?.desc;
         let vk_doc = docs::reference_url(vk_ident);
-        let rs_ident = Translator::vk_simple_type(vk_ident)?;
+        let rs_ident = translation::vk_simple_type(vk_ident)?;
         let mut rs_members = String::new();
         for member in members {
             let vk_member_ident = &member.name;
             let vk_member_type = &member.ty;
-            let rs_member_ident = Translator::vk_simple_ident(vk_member_ident)?;
-            let rs_member_type =
-                translator.vk_complex_type(vk_member_type, &member.text, &member.en, false)?;
+            let rs_member_ident = translation::vk_simple_ident(vk_member_ident)?;
+            let rs_member_type = translation::vk_complex_type(
+                c_type_map,
+                vk_member_type,
+                &member.text,
+                &member.en,
+                false,
+            )?;
             writeln!(
                 rs_members,
                 "{}",

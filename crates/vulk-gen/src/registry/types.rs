@@ -8,9 +8,6 @@ pub struct Type {
 
 #[derive(serde::Serialize, Debug)]
 pub enum TypeCategory {
-    Ctype {
-        ty: String,
-    },
     Basetype {
         ty: Option<String>,
     },
@@ -61,33 +58,6 @@ pub struct TypeMember {
 
 pub(super) fn parse_types<'a>(nodes: impl Iterator<Item = xml::Node<'a>>) -> Result<Vec<Type>> {
     let mut output = vec![];
-
-    // Built-in C types.
-    {
-        macro_rules! add {
-            ($map:ident, $name:literal, $ty:literal) => {
-                output.push(Type {
-                    name: $name.to_owned(),
-                    category: TypeCategory::Ctype { ty: $ty.to_owned() },
-                });
-            };
-        }
-        add!(output, "void", "c_void");
-        add!(output, "char", "c_char");
-        add!(output, "int", "c_int");
-        add!(output, "size_t", "usize");
-
-        add!(output, "float", "f32");
-        add!(output, "double", "f64");
-
-        add!(output, "int32_t", "i32");
-        add!(output, "int64_t", "i64");
-
-        add!(output, "uint8_t", "u8");
-        add!(output, "uint16_t", "u16");
-        add!(output, "uint32_t", "u32");
-        add!(output, "uint64_t", "u64");
-    }
 
     for node in nodes {
         // Ignore "types" without category. These are typically system headers
@@ -251,7 +221,7 @@ pub(super) fn parse_types<'a>(nodes: impl Iterator<Item = xml::Node<'a>>) -> Res
 
 pub type TypeNameIndexMap = HashMap<String, usize>;
 
-pub(super) fn type_name_index_map<'a, I>(types: I) -> TypeNameIndexMap
+pub(super) fn type_index_map<'a, I>(types: I) -> TypeNameIndexMap
 where
     I: IntoIterator<Item = &'a Type>,
 {

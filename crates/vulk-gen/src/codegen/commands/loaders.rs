@@ -14,7 +14,7 @@ pub struct Rendered {
 
 pub fn generate(
     _registry: &Registry,
-    _translator: &Translator,
+    _c_type_map: &CtypeMap,
     _description_map: &DescriptionMap,
     groups: &analysis::CommandGroups,
 ) -> Result<Rendered> {
@@ -39,9 +39,9 @@ fn generate_struct_members(commands: &[&registry::Command]) -> Result<String> {
 
     for command in commands {
         let vk_ident = &command.name;
-        let rs_ident = Translator::vk_simple_function(vk_ident)?;
-        let rs_ident = Translator::vk_simple_ident(&rs_ident)?;
-        let rs_type = Translator::vk_simple_function(vk_ident)?;
+        let rs_ident = translation::vk_simple_function(vk_ident)?;
+        let rs_ident = translation::vk_simple_ident(&rs_ident)?;
+        let rs_type = translation::vk_simple_function(vk_ident)?;
         writeln!(
             str,
             "{}",
@@ -59,8 +59,8 @@ fn generate_loaders(commands: &[&registry::Command]) -> Result<String> {
 
     for command in commands {
         let vk_ident = &command.name;
-        let rs_ident = Translator::vk_simple_function(vk_ident)?;
-        let rs_ident = Translator::vk_simple_ident(&rs_ident)?;
+        let rs_ident = translation::vk_simple_function(vk_ident)?;
+        let rs_ident = translation::vk_simple_ident(&rs_ident)?;
         writeln!(
             str,
             "{}",
