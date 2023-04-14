@@ -1,4 +1,4 @@
-pub(super) const TEMPLATE: &str = r#"
+pub const TEMPLATE: &str = r#"
 //
 // Imports
 //

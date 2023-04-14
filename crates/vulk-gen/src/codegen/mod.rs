@@ -7,9 +7,7 @@ mod commands;
 mod enumerations;
 mod function_pointers;
 mod handles;
-mod header_file;
-mod lib_file;
-mod loader_file;
+mod outputs;
 mod structures;
 mod toc;
 mod translation;
@@ -42,8 +40,8 @@ pub fn generate(
     let toc = toc::generate(registry, &translator, description_map)?;
 
     // Render.
-    let lib_rs = lib_file::TEMPLATE.replace("{{toc}}", &toc);
-    let loader_rs = loader_file::TEMPLATE
+    let lib_rs = outputs::lib::TEMPLATE.replace("{{toc}}", &toc);
+    let loader_rs = outputs::loader::TEMPLATE
         .replace("{{loader::wrappers}}", &command_wrappers.loader_wrappers)
         .replace(
             "{{instance::wrappers}}",
@@ -65,7 +63,7 @@ pub fn generate(
         .replace("{{loader::loaders}}", &command_loaders.loader_loaders)
         .replace("{{instance::loaders}}", &command_loaders.instance_loaders)
         .replace("{{device::loaders}}", &command_loaders.device_loaders);
-    let vk_rs = header_file::TEMPLATE
+    let vk_rs = outputs::header::TEMPLATE
         .replace("{{vk::command_types}}", &command_types)
         .replace("{{vk::api_constants}}", &api_constants)
         .replace("{{vk::base_types}}", &base_types)
