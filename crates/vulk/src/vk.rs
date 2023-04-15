@@ -437,6 +437,22 @@ impl Buffer {
 #[derive(Clone, Copy, Debug)]
 #[doc = "Chapter: **Resource Creation**"]
 #[doc = "<br>"]
+#[doc = "Description: Opaque handle to an image object"]
+#[doc = "<br>"]
+#[doc = "Reference: [`VkImage`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImage.html)"]
+pub struct Image(u64);
+
+impl Image {
+    #[must_use]
+    pub const fn null() -> Self {
+        Self(0)
+    }
+}
+
+#[repr(transparent)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "Chapter: **Resource Creation**"]
+#[doc = "<br>"]
 #[doc = "Description: Opaque handle to an image view object"]
 #[doc = "<br>"]
 #[doc = "Reference: [`VkImageView`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageView.html)"]
@@ -2146,6 +2162,71 @@ bitflags! {
     #[derive(Clone, Copy, PartialEq, Eq, Debug)]
     #[doc = "Chapter: **Synchronization and Cache Control**"]
     #[doc = "<br>"]
+    #[doc = "Description: 64-bit mask of access flags"]
+    #[doc = "<br>"]
+    #[doc = "Reference: [`VkAccessFlags2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkAccessFlags2.html)"]
+    #[doc = "<br>"]
+    #[doc = "Reference: [`VkAccessFlagBits2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkAccessFlagBits2.html)"]
+    pub struct AccessFlags2: u64 {
+        #[doc = "Translated from: `VK_ACCESS_2_NONE`"]
+        const NONE = 0;
+        #[doc = "Translated from: `VK_ACCESS_2_INDIRECT_COMMAND_READ_BIT`"]
+        const INDIRECT_COMMAND_READ = 0b1;
+        #[doc = "Translated from: `VK_ACCESS_2_INDEX_READ_BIT`"]
+        const INDEX_READ = 0b10;
+        #[doc = "Translated from: `VK_ACCESS_2_VERTEX_ATTRIBUTE_READ_BIT`"]
+        const VERTEX_ATTRIBUTE_READ = 0b100;
+        #[doc = "Translated from: `VK_ACCESS_2_UNIFORM_READ_BIT`"]
+        const UNIFORM_READ = 0b1000;
+        #[doc = "Translated from: `VK_ACCESS_2_INPUT_ATTACHMENT_READ_BIT`"]
+        const INPUT_ATTACHMENT_READ = 0b10000;
+        #[doc = "Translated from: `VK_ACCESS_2_SHADER_READ_BIT`"]
+        const SHADER_READ = 0b100000;
+        #[doc = "Translated from: `VK_ACCESS_2_SHADER_WRITE_BIT`"]
+        const SHADER_WRITE = 0b1000000;
+        #[doc = "Translated from: `VK_ACCESS_2_COLOR_ATTACHMENT_READ_BIT`"]
+        const COLOR_ATTACHMENT_READ = 0b10000000;
+        #[doc = "Translated from: `VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT`"]
+        const COLOR_ATTACHMENT_WRITE = 0b100000000;
+        #[doc = "Translated from: `VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_READ_BIT`"]
+        const DEPTH_STENCIL_ATTACHMENT_READ = 0b1000000000;
+        #[doc = "Translated from: `VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT`"]
+        const DEPTH_STENCIL_ATTACHMENT_WRITE = 0b10000000000;
+        #[doc = "Translated from: `VK_ACCESS_2_TRANSFER_READ_BIT`"]
+        const TRANSFER_READ = 0b100000000000;
+        #[doc = "Translated from: `VK_ACCESS_2_TRANSFER_WRITE_BIT`"]
+        const TRANSFER_WRITE = 0b1000000000000;
+        #[doc = "Translated from: `VK_ACCESS_2_HOST_READ_BIT`"]
+        const HOST_READ = 0b10000000000000;
+        #[doc = "Translated from: `VK_ACCESS_2_HOST_WRITE_BIT`"]
+        const HOST_WRITE = 0b100000000000000;
+        #[doc = "Translated from: `VK_ACCESS_2_MEMORY_READ_BIT`"]
+        const MEMORY_READ = 0b1000000000000000;
+        #[doc = "Translated from: `VK_ACCESS_2_MEMORY_WRITE_BIT`"]
+        const MEMORY_WRITE = 0b10000000000000000;
+        #[doc = "Translated from: `VK_ACCESS_2_SHADER_SAMPLED_READ_BIT`"]
+        const SHADER_SAMPLED_READ = 0b100000000000000000000000000000000;
+        #[doc = "Translated from: `VK_ACCESS_2_SHADER_STORAGE_READ_BIT`"]
+        const SHADER_STORAGE_READ = 0b1000000000000000000000000000000000;
+        #[doc = "Translated from: `VK_ACCESS_2_SHADER_STORAGE_WRITE_BIT`"]
+        const SHADER_STORAGE_WRITE = 0b10000000000000000000000000000000000;
+        #[doc = "Translated from: `VK_ACCESS_2_DESCRIPTOR_BUFFER_READ_BIT_EXT`"]
+        const DESCRIPTOR_BUFFER_READ_EXT = 0b100000000000000000000000000000000000000000;
+    }
+}
+
+#[doc = "Chapter: **Synchronization and Cache Control**"]
+#[doc = "<br>"]
+#[doc = "Description: Access flags for VkAccessFlags2"]
+#[doc = "<br>"]
+#[doc = "Reference: [`VkAccessFlagBits2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkAccessFlagBits2.html)"]
+pub type AccessFlagBits2 = AccessFlags2;
+
+bitflags! {
+    #[repr(C)]
+    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
+    #[doc = "Chapter: **Synchronization and Cache Control**"]
+    #[doc = "<br>"]
     #[doc = "Description: Reserved for future use"]
     #[doc = "<br>"]
     #[doc = "Reference: [`VkSemaphoreCreateFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSemaphoreCreateFlags.html)"]
@@ -2176,6 +2257,33 @@ bitflags! {
 #[doc = "<br>"]
 #[doc = "Reference: [`VkSemaphoreWaitFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSemaphoreWaitFlagBits.html)"]
 pub type SemaphoreWaitFlagBits = SemaphoreWaitFlags;
+
+bitflags! {
+    #[repr(C)]
+    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
+    #[doc = "Chapter: **Synchronization and Cache Control**"]
+    #[doc = "<br>"]
+    #[doc = "Description: Bitmask of VkDependencyFlagBits"]
+    #[doc = "<br>"]
+    #[doc = "Reference: [`VkDependencyFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDependencyFlags.html)"]
+    #[doc = "<br>"]
+    #[doc = "Reference: [`VkDependencyFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDependencyFlagBits.html)"]
+    pub struct DependencyFlags: u32 {
+        #[doc = "Translated from: `VK_DEPENDENCY_BY_REGION_BIT`"]
+        const BY_REGION = 0b1;
+        #[doc = "Translated from: `VK_DEPENDENCY_DEVICE_GROUP_BIT`"]
+        const DEVICE_GROUP = 0b100;
+        #[doc = "Translated from: `VK_DEPENDENCY_VIEW_LOCAL_BIT`"]
+        const VIEW_LOCAL = 0b10;
+    }
+}
+
+#[doc = "Chapter: **Synchronization and Cache Control**"]
+#[doc = "<br>"]
+#[doc = "Description: Bitmask specifying how execution and memory dependencies are formed"]
+#[doc = "<br>"]
+#[doc = "Reference: [`VkDependencyFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDependencyFlagBits.html)"]
+pub type DependencyFlagBits = DependencyFlags;
 
 bitflags! {
     #[repr(C)]
@@ -2439,6 +2547,43 @@ bitflags! {
 #[doc = "<br>"]
 #[doc = "Reference: [`VkBufferCreateFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkBufferCreateFlagBits.html)"]
 pub type BufferCreateFlagBits = BufferCreateFlags;
+
+bitflags! {
+    #[repr(C)]
+    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
+    #[doc = "Chapter: **Resource Creation**"]
+    #[doc = "<br>"]
+    #[doc = "Description: Bitmask of VkImageAspectFlagBits"]
+    #[doc = "<br>"]
+    #[doc = "Reference: [`VkImageAspectFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageAspectFlags.html)"]
+    #[doc = "<br>"]
+    #[doc = "Reference: [`VkImageAspectFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageAspectFlagBits.html)"]
+    pub struct ImageAspectFlags: u32 {
+        #[doc = "Translated from: `VK_IMAGE_ASPECT_COLOR_BIT`"]
+        const COLOR = 0b1;
+        #[doc = "Translated from: `VK_IMAGE_ASPECT_DEPTH_BIT`"]
+        const DEPTH = 0b10;
+        #[doc = "Translated from: `VK_IMAGE_ASPECT_STENCIL_BIT`"]
+        const STENCIL = 0b100;
+        #[doc = "Translated from: `VK_IMAGE_ASPECT_METADATA_BIT`"]
+        const METADATA = 0b1000;
+        #[doc = "Translated from: `VK_IMAGE_ASPECT_PLANE_0_BIT`"]
+        const PLANE_0 = 0b10000;
+        #[doc = "Translated from: `VK_IMAGE_ASPECT_PLANE_1_BIT`"]
+        const PLANE_1 = 0b100000;
+        #[doc = "Translated from: `VK_IMAGE_ASPECT_PLANE_2_BIT`"]
+        const PLANE_2 = 0b1000000;
+        #[doc = "Translated from: `VK_IMAGE_ASPECT_NONE`"]
+        const NONE = 0;
+    }
+}
+
+#[doc = "Chapter: **Resource Creation**"]
+#[doc = "<br>"]
+#[doc = "Description: Bitmask specifying which aspects of an image are included in a view"]
+#[doc = "<br>"]
+#[doc = "Reference: [`VkImageAspectFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageAspectFlagBits.html)"]
+pub type ImageAspectFlagBits = ImageAspectFlags;
 
 bitflags! {
     #[repr(C)]
@@ -3266,6 +3411,146 @@ pub struct SemaphoreWaitInfo {
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug)]
+#[doc = "Chapter: **Synchronization and Cache Control**"]
+#[doc = "<br>"]
+#[doc = "Description: Structure specifying dependency information for a synchronization command"]
+#[doc = "<br>"]
+#[doc = "Reference: [`VkDependencyInfo`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDependencyInfo.html)"]
+#[doc = "<br>"]
+#[doc = "Initialization template:"]
+#[doc = r#"```
+let dependency_info = vk::DependencyInfo {
+    s_type: vk::StructureType::DependencyInfo,
+    p_next: null(),
+    dependency_flags: todo!("DependencyFlags"),
+    memory_barrier_count: todo!("u32"),
+    p_memory_barriers: todo!("*const MemoryBarrier2"),
+    buffer_memory_barrier_count: todo!("u32"),
+    p_buffer_memory_barriers: todo!("*const BufferMemoryBarrier2"),
+    image_memory_barrier_count: todo!("u32"),
+    p_image_memory_barriers: todo!("*const ImageMemoryBarrier2"),
+};
+```"#]
+pub struct DependencyInfo {
+    pub s_type: StructureType,
+    pub p_next: *const c_void,
+    pub dependency_flags: DependencyFlags,
+    pub memory_barrier_count: u32,
+    pub p_memory_barriers: *const MemoryBarrier2,
+    pub buffer_memory_barrier_count: u32,
+    pub p_buffer_memory_barriers: *const BufferMemoryBarrier2,
+    pub image_memory_barrier_count: u32,
+    pub p_image_memory_barriers: *const ImageMemoryBarrier2,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "Chapter: **Synchronization and Cache Control**"]
+#[doc = "<br>"]
+#[doc = "Description: Structure specifying a global memory barrier"]
+#[doc = "<br>"]
+#[doc = "Reference: [`VkMemoryBarrier2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkMemoryBarrier2.html)"]
+#[doc = "<br>"]
+#[doc = "Initialization template:"]
+#[doc = r#"```
+let memory_barrier2 = vk::MemoryBarrier2 {
+    s_type: vk::StructureType::MemoryBarrier2,
+    p_next: null(),
+    src_stage_mask: todo!("PipelineStageFlags2"),
+    src_access_mask: todo!("AccessFlags2"),
+    dst_stage_mask: todo!("PipelineStageFlags2"),
+    dst_access_mask: todo!("AccessFlags2"),
+};
+```"#]
+pub struct MemoryBarrier2 {
+    pub s_type: StructureType,
+    pub p_next: *const c_void,
+    pub src_stage_mask: PipelineStageFlags2,
+    pub src_access_mask: AccessFlags2,
+    pub dst_stage_mask: PipelineStageFlags2,
+    pub dst_access_mask: AccessFlags2,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "Chapter: **Synchronization and Cache Control**"]
+#[doc = "<br>"]
+#[doc = "Description: Structure specifying a buffer memory barrier"]
+#[doc = "<br>"]
+#[doc = "Reference: [`VkBufferMemoryBarrier2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkBufferMemoryBarrier2.html)"]
+#[doc = "<br>"]
+#[doc = "Initialization template:"]
+#[doc = r#"```
+let buffer_memory_barrier2 = vk::BufferMemoryBarrier2 {
+    s_type: vk::StructureType::BufferMemoryBarrier2,
+    p_next: null(),
+    src_stage_mask: todo!("PipelineStageFlags2"),
+    src_access_mask: todo!("AccessFlags2"),
+    dst_stage_mask: todo!("PipelineStageFlags2"),
+    dst_access_mask: todo!("AccessFlags2"),
+    src_queue_family_index: todo!("u32"),
+    dst_queue_family_index: todo!("u32"),
+    buffer: todo!("Buffer"),
+    offset: todo!("DeviceSize"),
+    size: todo!("DeviceSize"),
+};
+```"#]
+pub struct BufferMemoryBarrier2 {
+    pub s_type: StructureType,
+    pub p_next: *const c_void,
+    pub src_stage_mask: PipelineStageFlags2,
+    pub src_access_mask: AccessFlags2,
+    pub dst_stage_mask: PipelineStageFlags2,
+    pub dst_access_mask: AccessFlags2,
+    pub src_queue_family_index: u32,
+    pub dst_queue_family_index: u32,
+    pub buffer: Buffer,
+    pub offset: DeviceSize,
+    pub size: DeviceSize,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "Chapter: **Synchronization and Cache Control**"]
+#[doc = "<br>"]
+#[doc = "Description: Structure specifying an image memory barrier"]
+#[doc = "<br>"]
+#[doc = "Reference: [`VkImageMemoryBarrier2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageMemoryBarrier2.html)"]
+#[doc = "<br>"]
+#[doc = "Initialization template:"]
+#[doc = r#"```
+let image_memory_barrier2 = vk::ImageMemoryBarrier2 {
+    s_type: vk::StructureType::ImageMemoryBarrier2,
+    p_next: null(),
+    src_stage_mask: todo!("PipelineStageFlags2"),
+    src_access_mask: todo!("AccessFlags2"),
+    dst_stage_mask: todo!("PipelineStageFlags2"),
+    dst_access_mask: todo!("AccessFlags2"),
+    old_layout: todo!("ImageLayout"),
+    new_layout: todo!("ImageLayout"),
+    src_queue_family_index: todo!("u32"),
+    dst_queue_family_index: todo!("u32"),
+    image: todo!("Image"),
+    subresource_range: todo!("ImageSubresourceRange"),
+};
+```"#]
+pub struct ImageMemoryBarrier2 {
+    pub s_type: StructureType,
+    pub p_next: *const c_void,
+    pub src_stage_mask: PipelineStageFlags2,
+    pub src_access_mask: AccessFlags2,
+    pub dst_stage_mask: PipelineStageFlags2,
+    pub dst_access_mask: AccessFlags2,
+    pub old_layout: ImageLayout,
+    pub new_layout: ImageLayout,
+    pub src_queue_family_index: u32,
+    pub dst_queue_family_index: u32,
+    pub image: Image,
+    pub subresource_range: ImageSubresourceRange,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
 #[doc = "Chapter: **Shaders**"]
 #[doc = "<br>"]
 #[doc = "Description: Structure specifying parameters of a newly created shader"]
@@ -3600,6 +3885,32 @@ pub struct BufferCreateInfo {
     pub sharing_mode: SharingMode,
     pub queue_family_index_count: u32,
     pub p_queue_family_indices: *const u32,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "Chapter: **Resource Creation**"]
+#[doc = "<br>"]
+#[doc = "Description: Structure specifying an image subresource range"]
+#[doc = "<br>"]
+#[doc = "Reference: [`VkImageSubresourceRange`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageSubresourceRange.html)"]
+#[doc = "<br>"]
+#[doc = "Initialization template:"]
+#[doc = r#"```
+let image_subresource_range = vk::ImageSubresourceRange {
+    aspect_mask: todo!("ImageAspectFlags"),
+    base_mip_level: todo!("u32"),
+    level_count: todo!("u32"),
+    base_array_layer: todo!("u32"),
+    layer_count: todo!("u32"),
+};
+```"#]
+pub struct ImageSubresourceRange {
+    pub aspect_mask: ImageAspectFlags,
+    pub base_mip_level: u32,
+    pub level_count: u32,
+    pub base_array_layer: u32,
+    pub layer_count: u32,
 }
 
 #[repr(C)]
@@ -5010,6 +5321,16 @@ pub type WaitSemaphores = unsafe extern "C" fn(
 
 #[doc = "Chapter: **Synchronization and Cache Control**"]
 #[doc = "<br>"]
+#[doc = "Description: Insert a memory dependency"]
+#[doc = "<br>"]
+#[doc = "Reference: [`vkCmdPipelineBarrier2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdPipelineBarrier2.html)"]
+pub type CmdPipelineBarrier2 = unsafe extern "C" fn(
+    command_buffer: CommandBuffer,            //
+    p_dependency_info: *const DependencyInfo, //
+);
+
+#[doc = "Chapter: **Synchronization and Cache Control**"]
+#[doc = "<br>"]
 #[doc = "Description: Wait for a queue to become idle"]
 #[doc = "<br>"]
 #[doc = "Reference: [`vkQueueWaitIdle`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkQueueWaitIdle.html)"]
@@ -5276,6 +5597,17 @@ pub type CmdDispatch = unsafe extern "C" fn(
     group_count_x: u32,            //
     group_count_y: u32,            //
     group_count_z: u32,            //
+);
+
+#[doc = "Chapter: **Dispatching Commands**"]
+#[doc = "<br>"]
+#[doc = "Description: Dispatch compute work items with indirect parameters"]
+#[doc = "<br>"]
+#[doc = "Reference: [`vkCmdDispatchIndirect`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdDispatchIndirect.html)"]
+pub type CmdDispatchIndirect = unsafe extern "C" fn(
+    command_buffer: CommandBuffer, //
+    buffer: Buffer,                //
+    offset: DeviceSize,            //
 );
 
 #[doc = "Chapter: **Debugging**"]

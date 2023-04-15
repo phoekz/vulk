@@ -261,6 +261,7 @@ pub struct DeviceFunctions {
     create_semaphore: vk::CreateSemaphore,
     destroy_semaphore: vk::DestroySemaphore,
     wait_semaphores: vk::WaitSemaphores,
+    cmd_pipeline_barrier2: vk::CmdPipelineBarrier2,
     queue_wait_idle: vk::QueueWaitIdle,
     device_wait_idle: vk::DeviceWaitIdle,
     create_shaders_ext: vk::CreateShadersEXT,
@@ -284,6 +285,7 @@ pub struct DeviceFunctions {
     cmd_bind_descriptor_buffers_ext: vk::CmdBindDescriptorBuffersEXT,
     cmd_set_descriptor_buffer_offsets_ext: vk::CmdSetDescriptorBufferOffsetsEXT,
     cmd_dispatch: vk::CmdDispatch,
+    cmd_dispatch_indirect: vk::CmdDispatchIndirect,
 }
 
 impl DeviceFunctions {
@@ -310,6 +312,7 @@ impl DeviceFunctions {
             create_semaphore: std::mem::transmute(load(b"vkCreateSemaphore\0")?),
             destroy_semaphore: std::mem::transmute(load(b"vkDestroySemaphore\0")?),
             wait_semaphores: std::mem::transmute(load(b"vkWaitSemaphores\0")?),
+            cmd_pipeline_barrier2: std::mem::transmute(load(b"vkCmdPipelineBarrier2\0")?),
             queue_wait_idle: std::mem::transmute(load(b"vkQueueWaitIdle\0")?),
             device_wait_idle: std::mem::transmute(load(b"vkDeviceWaitIdle\0")?),
             create_shaders_ext: std::mem::transmute(load(b"vkCreateShadersEXT\0")?),
@@ -333,6 +336,7 @@ impl DeviceFunctions {
             cmd_bind_descriptor_buffers_ext: std::mem::transmute(load(b"vkCmdBindDescriptorBuffersEXT\0")?),
             cmd_set_descriptor_buffer_offsets_ext: std::mem::transmute(load(b"vkCmdSetDescriptorBufferOffsetsEXT\0")?),
             cmd_dispatch: std::mem::transmute(load(b"vkCmdDispatch\0")?),
+            cmd_dispatch_indirect: std::mem::transmute(load(b"vkCmdDispatchIndirect\0")?),
         })
     }
 
@@ -490,6 +494,16 @@ impl DeviceFunctions {
             vk::Result::Success => Ok(()),
             result => Err(Error::Vulkan(result)),
         }
+    }
+
+    #[inline]
+    #[doc = "Chapter: **Synchronization and Cache Control**"]
+    #[doc = "<br>"]
+    #[doc = "Description: Insert a memory dependency"]
+    #[doc = "<br>"]
+    #[doc = "Reference: [`vkCmdPipelineBarrier2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdPipelineBarrier2.html)"]
+    pub unsafe fn cmd_pipeline_barrier2(&self, command_buffer: vk::CommandBuffer, p_dependency_info: *const vk::DependencyInfo) {
+        (self.cmd_pipeline_barrier2)(command_buffer, p_dependency_info);
     }
 
     #[inline]
@@ -781,5 +795,15 @@ impl DeviceFunctions {
     #[doc = "Reference: [`vkCmdDispatch`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdDispatch.html)"]
     pub unsafe fn cmd_dispatch(&self, command_buffer: vk::CommandBuffer, group_count_x: u32, group_count_y: u32, group_count_z: u32) {
         (self.cmd_dispatch)(command_buffer, group_count_x, group_count_y, group_count_z);
+    }
+
+    #[inline]
+    #[doc = "Chapter: **Dispatching Commands**"]
+    #[doc = "<br>"]
+    #[doc = "Description: Dispatch compute work items with indirect parameters"]
+    #[doc = "<br>"]
+    #[doc = "Reference: [`vkCmdDispatchIndirect`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdDispatchIndirect.html)"]
+    pub unsafe fn cmd_dispatch_indirect(&self, command_buffer: vk::CommandBuffer, buffer: vk::Buffer, offset: vk::DeviceSize) {
+        (self.cmd_dispatch_indirect)(command_buffer, buffer, offset);
     }
 }

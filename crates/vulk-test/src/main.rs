@@ -1,7 +1,12 @@
 #![deny(future_incompatible)]
 #![deny(nonstandard_style)]
 #![deny(clippy::pedantic)]
-#![allow(clippy::cast_possible_truncation, clippy::too_many_lines)]
+#![allow(
+    clippy::cast_possible_truncation,
+    clippy::too_many_lines,
+    clippy::wildcard_imports,
+    clippy::too_many_arguments
+)]
 
 use std::{
     borrow::Cow,
@@ -17,6 +22,9 @@ use vulk::{
     loader::{DeviceFunctions, InstanceFunctions, LoaderFunctions},
     vk,
 };
+
+mod resource;
+mod shader;
 
 fn main() -> Result<()> {
     // Timing.
@@ -50,8 +58,16 @@ unsafe fn vulkan() -> Result<()> {
     let queue = create_queue(device_fn, device, queue_family);
     let commands = &create_commands(device_fn, device, queue_family)?;
     let compute_buffer = &create_compute_buffer(device_fn, physical_device, device)?;
-    let descriptors = &create_descriptors(device_fn, physical_device, device, compute_buffer)?;
-    let compute_shader = create_compute_shader(device_fn, device, compute_buffer, descriptors)?;
+    let indirect_buffer = &create_indirect_buffer(device_fn, physical_device, device)?;
+    let descriptors = &create_descriptors(
+        device_fn,
+        physical_device,
+        device,
+        compute_buffer,
+        indirect_buffer,
+    )?;
+    let (indirect_shader, compute_shader) =
+        create_shaders(device_fn, device, compute_buffer, descriptors)?;
 
     // Execute.
     execute(
@@ -59,19 +75,21 @@ unsafe fn vulkan() -> Result<()> {
         device,
         queue,
         commands,
+        indirect_shader,
         compute_shader,
         compute_buffer,
+        indirect_buffer,
         descriptors,
     )?;
 
     // Destroy.
     device_fn.destroy_shader_ext(device, compute_shader, null());
-    device_fn.destroy_descriptor_set_layout(device, descriptors.descriptor_set_layout, null());
+    device_fn.destroy_shader_ext(device, indirect_shader, null());
+    device_fn.destroy_descriptor_set_layout(device, descriptors.set_layout, null());
     device_fn.destroy_pipeline_layout(device, descriptors.pipeline_layout, null());
-    device_fn.destroy_buffer(device, descriptors.buffer, null());
-    device_fn.free_memory(device, descriptors.device_memory, null());
-    device_fn.destroy_buffer(device, compute_buffer.handle, null());
-    device_fn.free_memory(device, compute_buffer.device_memory, null());
+    compute_buffer.destroy(device_fn, device);
+    indirect_buffer.destroy(device_fn, device);
+    descriptors.buffer.destroy(device_fn, device);
     device_fn.destroy_semaphore(device, commands.semaphore, null());
     device_fn.free_command_buffers(
         device,
@@ -683,131 +701,62 @@ fn memory_type_index(
     panic!("Unable to find suitable memory type for the buffer, memory_type_bits=0b{memory_type_bits:b}");
 }
 
-struct ComputeBuffer {
-    handle: vk::Buffer,
-    byte_size: usize,
-    #[allow(dead_code)]
-    element_size: usize,
-    element_count: usize,
-    #[allow(dead_code)]
-    memory_requirements: vk::MemoryRequirements,
-    device_memory: vk::DeviceMemory,
-    p_data: *mut u8,
-    device_address: vk::DeviceAddress,
-}
+type ComputeBuffer = resource::Buffer<u32>;
 
 unsafe fn create_compute_buffer(
     device_fn: &DeviceFunctions,
     physical_device: &PhysicalDevice,
     device: vk::Device,
 ) -> Result<ComputeBuffer> {
-    // Buffer object.
-    let buffer_element_size = size_of::<u32>();
-    let buffer_element_count = 8;
-    let buffer_byte_size = buffer_element_size * buffer_element_count;
-    let buffer_create_info = vk::BufferCreateInfo {
-        s_type: vk::StructureType::BufferCreateInfo,
-        p_next: null(),
-        flags: vk::BufferCreateFlags::empty(),
-        size: buffer_byte_size as _,
-        usage: vk::BufferUsageFlags::STORAGE_BUFFER
-            | vk::BufferUsageFlags::TRANSFER_SRC
-            | vk::BufferUsageFlags::SHADER_DEVICE_ADDRESS,
-        sharing_mode: vk::SharingMode::Exclusive,
-        queue_family_index_count: 0,
-        p_queue_family_indices: null(),
-    };
-    let buffer = device_fn.create_buffer(device, &buffer_create_info, null())?;
-
-    // Requirements.
-    let device_buffer_memory_requirements = vk::DeviceBufferMemoryRequirements {
-        s_type: vk::StructureType::DeviceBufferMemoryRequirements,
-        p_next: null(),
-        p_create_info: addr_of!(buffer_create_info).cast(),
-    };
-    let mut memory_requirements2 = vk::MemoryRequirements2 {
-        s_type: vk::StructureType::MemoryRequirements2,
-        p_next: null_mut(),
-        memory_requirements: zeroed(),
-    };
-    device_fn.get_device_buffer_memory_requirements(
+    let element_count = 8;
+    let usage = vk::BufferUsageFlags::STORAGE_BUFFER;
+    let flags = vk::MemoryPropertyFlags::HOST_VISIBLE | vk::MemoryPropertyFlags::HOST_COHERENT;
+    let buffer = ComputeBuffer::create(
+        device_fn,
         device,
-        &device_buffer_memory_requirements,
-        &mut memory_requirements2,
-    );
-    let memory_requirements = memory_requirements2.memory_requirements;
-
-    // Allocation.
-    let memory_allocate_flags_info = vk::MemoryAllocateFlagsInfo {
-        s_type: vk::StructureType::MemoryAllocateFlagsInfo,
-        p_next: null(),
-        flags: vk::MemoryAllocateFlags::DEVICE_ADDRESS,
-        device_mask: 0,
-    };
-    let memory_allocate_info = vk::MemoryAllocateInfo {
-        s_type: vk::StructureType::MemoryAllocateInfo,
-        p_next: addr_of!(memory_allocate_flags_info).cast(),
-        allocation_size: buffer_byte_size as _,
-        memory_type_index: memory_type_index(
-            &physical_device.memory_properties,
-            vk::MemoryPropertyFlags::HOST_VISIBLE | vk::MemoryPropertyFlags::HOST_COHERENT,
-            &memory_requirements,
-        ),
-    };
-    let device_memory = device_fn.allocate_memory(device, &memory_allocate_info, null())?;
-
-    // Bind.
-    let bind_buffer_memory_info = vk::BindBufferMemoryInfo {
-        s_type: vk::StructureType::BindBufferMemoryInfo,
-        p_next: null(),
-        buffer,
-        memory: device_memory,
-        memory_offset: 0,
-    };
-    device_fn.bind_buffer_memory2(device, 1, &bind_buffer_memory_info)?;
-
-    // Device address.
-    let buffer_device_address_info = vk::BufferDeviceAddressInfo {
-        s_type: vk::StructureType::BufferDeviceAddressInfo,
-        p_next: null(),
-        buffer,
-    };
-    let device_address = device_fn.get_buffer_device_address(device, &buffer_device_address_info);
-
-    // Map.
-    let memory_map_info_khr = vk::MemoryMapInfoKHR {
-        s_type: vk::StructureType::MemoryMapInfoKHR,
-        p_next: null(),
-        flags: vk::MemoryMapFlags::empty(),
-        memory: device_memory,
-        offset: 0,
-        size: buffer_byte_size as _,
-    };
-    let mut p_data = MaybeUninit::uninit();
-    device_fn.map_memory2_khr(device, &memory_map_info_khr, p_data.as_mut_ptr())?;
-    let p_data = p_data.assume_init().cast::<u8>();
-    std::ptr::write_bytes(p_data, 0, buffer_byte_size);
-
-    Ok(ComputeBuffer {
-        handle: buffer,
-        byte_size: buffer_byte_size,
-        element_size: buffer_element_size,
-        element_count: buffer_element_count,
-        memory_requirements,
-        device_memory,
-        p_data,
-        device_address,
-    })
+        physical_device,
+        element_count,
+        usage,
+        flags,
+    )?;
+    Ok(buffer)
 }
 
+#[repr(C)]
+#[derive(Debug)]
+struct IndirectDispatch {
+    x: u32,
+    y: u32,
+    z: u32,
+}
+
+type IndirectBuffer = resource::Buffer<IndirectDispatch>;
+
+unsafe fn create_indirect_buffer(
+    device_fn: &DeviceFunctions,
+    physical_device: &PhysicalDevice,
+    device: vk::Device,
+) -> Result<IndirectBuffer> {
+    let element_count = 1;
+    let usage = vk::BufferUsageFlags::INDIRECT_BUFFER;
+    let flags = vk::MemoryPropertyFlags::HOST_VISIBLE | vk::MemoryPropertyFlags::HOST_COHERENT;
+    let buffer = IndirectBuffer::create(
+        device_fn,
+        device,
+        physical_device,
+        element_count,
+        usage,
+        flags,
+    )?;
+    Ok(buffer)
+}
+
+type DescriptorBuffer = resource::Buffer<u8>;
+
 struct Descriptors {
-    descriptor_set_layout: vk::DescriptorSetLayout,
+    set_layout: vk::DescriptorSetLayout,
     pipeline_layout: vk::PipelineLayout,
-    buffer: vk::Buffer,
-    device_memory: vk::DeviceMemory,
-    device_address: vk::DeviceAddress,
-    #[allow(dead_code)]
-    p_data: *mut u8,
+    buffer: DescriptorBuffer,
 }
 
 unsafe fn create_descriptors(
@@ -815,15 +764,25 @@ unsafe fn create_descriptors(
     physical_device: &PhysicalDevice,
     device: vk::Device,
     compute_buffer: &ComputeBuffer,
+    indirect_buffer: &IndirectBuffer,
 ) -> Result<Descriptors> {
     // Descriptor set layout.
-    let bindings = [vk::DescriptorSetLayoutBinding {
-        binding: 0,
-        descriptor_type: vk::DescriptorType::StorageBuffer,
-        descriptor_count: 1,
-        stage_flags: vk::ShaderStageFlags::COMPUTE,
-        p_immutable_samplers: null(),
-    }];
+    let bindings = [
+        vk::DescriptorSetLayoutBinding {
+            binding: 0,
+            descriptor_type: vk::DescriptorType::StorageBuffer,
+            descriptor_count: 1,
+            stage_flags: vk::ShaderStageFlags::COMPUTE,
+            p_immutable_samplers: null(),
+        },
+        vk::DescriptorSetLayoutBinding {
+            binding: 1,
+            descriptor_type: vk::DescriptorType::StorageBuffer,
+            descriptor_count: 1,
+            stage_flags: vk::ShaderStageFlags::COMPUTE,
+            p_immutable_samplers: null(),
+        },
+    ];
     let descriptor_set_layout_create_info = vk::DescriptorSetLayoutCreateInfo {
         s_type: vk::StructureType::DescriptorSetLayoutCreateInfo,
         p_next: null(),
@@ -837,122 +796,62 @@ unsafe fn create_descriptors(
         null(),
     )?;
 
-    // Descriptor buffer - size.
-    let mut descriptor_set_layout_size = MaybeUninit::uninit();
+    // Descriptor buffer.
+    let mut buffer_size = MaybeUninit::uninit();
     device_fn.get_descriptor_set_layout_size_ext(
         device,
         descriptor_set_layout,
-        descriptor_set_layout_size.as_mut_ptr(),
+        buffer_size.as_mut_ptr(),
     );
-    let descriptor_set_layout_size = descriptor_set_layout_size.assume_init();
-
-    // Descriptor buffer.
-    let buffer_create_info = vk::BufferCreateInfo {
-        s_type: vk::StructureType::BufferCreateInfo,
-        p_next: null(),
-        flags: vk::BufferCreateFlags::empty(),
-        size: descriptor_set_layout_size,
-        usage: vk::BufferUsageFlags::STORAGE_BUFFER | vk::BufferUsageFlags::SHADER_DEVICE_ADDRESS,
-        sharing_mode: vk::SharingMode::Exclusive,
-        queue_family_index_count: 0,
-        p_queue_family_indices: null(),
-    };
-    let buffer = device_fn.create_buffer(device, &buffer_create_info, null())?;
-
-    // Descriptor buffer - requirements.
-    let device_buffer_memory_requirements = vk::DeviceBufferMemoryRequirements {
-        s_type: vk::StructureType::DeviceBufferMemoryRequirements,
-        p_next: null(),
-        p_create_info: addr_of!(buffer_create_info).cast(),
-    };
-    let mut memory_requirements = vk::MemoryRequirements2 {
-        s_type: vk::StructureType::MemoryRequirements2,
-        p_next: null_mut(),
-        memory_requirements: zeroed(),
-    };
-    device_fn.get_device_buffer_memory_requirements(
+    let buffer_size = buffer_size.assume_init();
+    info!("Descriptor buffer size={buffer_size}");
+    let usage = vk::BufferUsageFlags::STORAGE_BUFFER;
+    let flags = vk::MemoryPropertyFlags::HOST_VISIBLE | vk::MemoryPropertyFlags::HOST_COHERENT;
+    let buffer = DescriptorBuffer::create(
+        device_fn,
         device,
-        &device_buffer_memory_requirements,
-        &mut memory_requirements,
-    );
-    let memory_requirements = memory_requirements.memory_requirements;
-
-    // Descriptor buffer - allocation.
-    let memory_allocate_flags_info = vk::MemoryAllocateFlagsInfo {
-        s_type: vk::StructureType::MemoryAllocateFlagsInfo,
-        p_next: null(),
-        flags: vk::MemoryAllocateFlags::DEVICE_ADDRESS,
-        device_mask: 0,
-    };
-    let memory_allocate_info = vk::MemoryAllocateInfo {
-        s_type: vk::StructureType::MemoryAllocateInfo,
-        p_next: addr_of!(memory_allocate_flags_info).cast(),
-        allocation_size: descriptor_set_layout_size,
-        memory_type_index: memory_type_index(
-            &physical_device.memory_properties,
-            vk::MemoryPropertyFlags::HOST_VISIBLE | vk::MemoryPropertyFlags::HOST_COHERENT,
-            &memory_requirements,
-        ),
-    };
-    let device_memory = device_fn.allocate_memory(device, &memory_allocate_info, null())?;
-
-    // Descriptor buffer - bind.
-    let bind_buffer_memory_info = vk::BindBufferMemoryInfo {
-        s_type: vk::StructureType::BindBufferMemoryInfo,
-        p_next: null(),
-        buffer,
-        memory: device_memory,
-        memory_offset: 0,
-    };
-    device_fn.bind_buffer_memory2(device, 1, &bind_buffer_memory_info)?;
-
-    // Descriptor buffer - device address.
-    let buffer_device_address_info = vk::BufferDeviceAddressInfo {
-        s_type: vk::StructureType::BufferDeviceAddressInfo,
-        p_next: null(),
-        buffer,
-    };
-    let device_address = device_fn.get_buffer_device_address(device, &buffer_device_address_info);
-
-    // Descriptor buffer - map.
-    let memory_map_info_khr = vk::MemoryMapInfoKHR {
-        s_type: vk::StructureType::MemoryMapInfoKHR,
-        p_next: null(),
-        flags: vk::MemoryMapFlags::empty(),
-        memory: device_memory,
-        offset: 0,
-        size: descriptor_set_layout_size,
-    };
-    let mut p_data = MaybeUninit::uninit();
-    device_fn.map_memory2_khr(device, &memory_map_info_khr, p_data.as_mut_ptr())?;
-    let p_data = p_data.assume_init().cast::<u8>();
-    std::ptr::write_bytes(p_data, 0, descriptor_set_layout_size as _);
+        physical_device,
+        buffer_size as _,
+        usage,
+        flags,
+    )?;
 
     // Descriptors.
     let storage_buffer_descriptor_size = physical_device
         .descriptor_buffer_properties_ext
         .storage_buffer_descriptor_size;
-    let descriptor_address_info_ext = vk::DescriptorAddressInfoEXT {
-        s_type: vk::StructureType::DescriptorAddressInfoEXT,
-        p_next: null_mut(),
-        address: compute_buffer.device_address,
-        range: compute_buffer.byte_size as _,
-        format: vk::Format::R32Uint,
-    };
-    let descriptor_get_info_ext = vk::DescriptorGetInfoEXT {
-        s_type: vk::StructureType::DescriptorGetInfoEXT,
-        p_next: null(),
-        ty: vk::DescriptorType::StorageBuffer,
-        data: vk::DescriptorDataEXT {
-            p_storage_buffer: addr_of!(descriptor_address_info_ext).cast(),
-        },
-    };
-    device_fn.get_descriptor_ext(
-        device,
-        &descriptor_get_info_ext,
-        storage_buffer_descriptor_size,
-        p_data.cast(),
-    );
+    for (buffer_index, (device_address, byte_size)) in [
+        (indirect_buffer.device_address, indirect_buffer.byte_size()),
+        (compute_buffer.device_address, compute_buffer.byte_size()),
+    ]
+    .into_iter()
+    .enumerate()
+    {
+        let descriptor_address_info_ext = vk::DescriptorAddressInfoEXT {
+            s_type: vk::StructureType::DescriptorAddressInfoEXT,
+            p_next: null_mut(),
+            address: device_address,
+            range: byte_size as _,
+            format: vk::Format::Undefined,
+        };
+        let descriptor_get_info_ext = vk::DescriptorGetInfoEXT {
+            s_type: vk::StructureType::DescriptorGetInfoEXT,
+            p_next: null(),
+            ty: vk::DescriptorType::StorageBuffer,
+            data: vk::DescriptorDataEXT {
+                p_storage_buffer: addr_of!(descriptor_address_info_ext).cast(),
+            },
+        };
+        device_fn.get_descriptor_ext(
+            device,
+            &descriptor_get_info_ext,
+            storage_buffer_descriptor_size,
+            buffer
+                .ptr
+                .add(buffer_index * storage_buffer_descriptor_size)
+                .cast(),
+        );
+    }
 
     // Pipeline layout.
     let set_layouts = [descriptor_set_layout];
@@ -969,99 +868,137 @@ unsafe fn create_descriptors(
         device_fn.create_pipeline_layout(device, &pipeline_layout_create_info, null())?;
 
     Ok(Descriptors {
-        descriptor_set_layout,
+        set_layout: descriptor_set_layout,
         pipeline_layout,
         buffer,
-        device_memory,
-        device_address,
-        p_data,
     })
 }
 
-unsafe fn create_compute_shader(
+unsafe fn create_shaders(
     device_fn: &DeviceFunctions,
     device: vk::Device,
     compute_buffer: &ComputeBuffer,
     descriptors: &Descriptors,
-) -> Result<vk::ShaderEXT> {
-    use shaderc::{
-        CompileOptions, Compiler, OptimizationLevel, ShaderKind, SourceLanguage, SpirvVersion,
-        TargetEnv,
-    };
+) -> Result<(vk::ShaderEXT, vk::ShaderEXT)> {
+    // Shader compiler
+    let compiler = shader::Compiler::new()?;
+    let indirect_spirv = compiler.compile(
+        r#"
+            #version 460 core
 
-    // Shader compiler.
-    let compiler = Compiler::new().context("Creating shader compiler")?;
-    let mut compiler_options = CompileOptions::new().context("Creating shader compiler options")?;
-    compiler_options.set_target_env(TargetEnv::Vulkan, vk::make_api_version(0, 1, 3, 0));
-    compiler_options.set_optimization_level(OptimizationLevel::Performance);
-    compiler_options.set_target_spirv(SpirvVersion::V1_6);
-    compiler_options.set_source_language(SourceLanguage::GLSL);
-    compiler_options.set_warnings_as_errors();
-    let compute = compiler.compile_into_spirv(
+            layout (local_size_x = 1) in;
+
+            struct IndirectCommand {
+                uint x;
+                uint y;
+                uint z;
+            };
+
+            layout (set = 0, binding = 0) buffer IndirectCommands {
+                IndirectCommand data[];
+            } indirect_commands;
+
+            void main() {
+                IndirectCommand command;
+                command.x = 1;
+                command.y = 1;
+                command.z = 1;
+                indirect_commands.data[0] = command;
+            }
+        "#,
+        shader::ShaderType::Compute,
+    )?;
+    let compute_spirv = compiler.compile(
         r#"
             #version 460 core
 
             layout (local_size_x_id = 0) in;
 
-            layout (set = 0, binding = 0) buffer Values {
+            layout (set = 0, binding = 1) buffer Values {
                 uint data[];
-            } values[];
+            } values;
 
             void main() {
                 uint id = gl_GlobalInvocationID.x;
-                values[0].data[id] = 1 + id;
+                values.data[id] = 1 + id;
             }
         "#,
-        ShaderKind::Compute,
-        "compute.comp",
-        "main",
-        Some(&compiler_options),
+        shader::ShaderType::Compute,
     )?;
-    if compute.get_num_warnings() > 0 {
-        warn!("{}", compute.get_warning_messages());
-    }
 
-    // Shader objects.
-    let set_layouts = [descriptors.descriptor_set_layout];
-    let specialization_map_entry = vk::SpecializationMapEntry {
-        constant_id: 0,
-        offset: 0,
-        size: size_of::<u32>(),
-    };
-    let data = compute_buffer.element_count as u32;
-    let specialization_info = vk::SpecializationInfo {
-        map_entry_count: 1,
-        p_map_entries: addr_of!(specialization_map_entry).cast(),
-        data_size: size_of::<u32>(),
-        p_data: addr_of!(data).cast(),
-    };
-    let shader_create_info_ext = vk::ShaderCreateInfoEXT {
-        s_type: vk::StructureType::ShaderCreateInfoEXT,
-        p_next: null(),
-        flags: vk::ShaderCreateFlagsEXT::LINK_STAGE_EXT,
-        stage: vk::ShaderStageFlagBits::COMPUTE,
-        next_stage: vk::ShaderStageFlags::empty(),
-        code_type: vk::ShaderCodeTypeEXT::SpirvEXT,
-        code_size: compute.as_binary_u8().len(),
-        p_code: compute.as_binary_u8().as_ptr().cast(),
-        p_name: b"main\0".as_ptr().cast(),
-        set_layout_count: set_layouts.len() as _,
-        p_set_layouts: set_layouts.as_ptr(),
-        push_constant_range_count: 0,
-        p_push_constant_ranges: null(),
-        p_specialization_info: addr_of!(specialization_info).cast(),
+    // Indirect shader.
+    let indirect_shader = {
+        let set_layouts = [descriptors.set_layout];
+        let shader_create_info_ext = vk::ShaderCreateInfoEXT {
+            s_type: vk::StructureType::ShaderCreateInfoEXT,
+            p_next: null(),
+            flags: vk::ShaderCreateFlagsEXT::empty(),
+            stage: vk::ShaderStageFlagBits::COMPUTE,
+            next_stage: vk::ShaderStageFlags::empty(),
+            code_type: vk::ShaderCodeTypeEXT::SpirvEXT,
+            code_size: indirect_spirv.len(),
+            p_code: indirect_spirv.as_ptr().cast(),
+            p_name: b"main\0".as_ptr().cast(),
+            set_layout_count: set_layouts.len() as _,
+            p_set_layouts: set_layouts.as_ptr(),
+            push_constant_range_count: 0,
+            p_push_constant_ranges: null(),
+            p_specialization_info: null(),
+        };
+        let mut shader = MaybeUninit::uninit();
+        device_fn.create_shaders_ext(
+            device,
+            1,
+            addr_of!(shader_create_info_ext).cast(),
+            null(),
+            shader.as_mut_ptr(),
+        )?;
+        shader.assume_init()
     };
 
-    // Create.
-    let mut shader_ext = MaybeUninit::uninit();
-    device_fn.create_shaders_ext(
-        device,
-        1,
-        addr_of!(shader_create_info_ext).cast(),
-        null(),
-        shader_ext.as_mut_ptr(),
-    )?;
-    Ok(shader_ext.assume_init())
+    // Compute shader.
+    let compute_shader = {
+        let set_layouts = [descriptors.set_layout];
+        let specialization_map_entry = vk::SpecializationMapEntry {
+            constant_id: 0,
+            offset: 0,
+            size: size_of::<u32>(),
+        };
+        let data = compute_buffer.element_count as u32;
+        let specialization_info = vk::SpecializationInfo {
+            map_entry_count: 1,
+            p_map_entries: addr_of!(specialization_map_entry).cast(),
+            data_size: size_of::<u32>(),
+            p_data: addr_of!(data).cast(),
+        };
+        let shader_create_info_ext = vk::ShaderCreateInfoEXT {
+            s_type: vk::StructureType::ShaderCreateInfoEXT,
+            p_next: null(),
+            flags: vk::ShaderCreateFlagsEXT::empty(),
+            stage: vk::ShaderStageFlagBits::COMPUTE,
+            next_stage: vk::ShaderStageFlags::empty(),
+            code_type: vk::ShaderCodeTypeEXT::SpirvEXT,
+            code_size: compute_spirv.len(),
+            p_code: compute_spirv.as_ptr().cast(),
+            p_name: b"main\0".as_ptr().cast(),
+            set_layout_count: set_layouts.len() as _,
+            p_set_layouts: set_layouts.as_ptr(),
+            push_constant_range_count: 0,
+            p_push_constant_ranges: null(),
+            p_specialization_info: addr_of!(specialization_info).cast(),
+        };
+        let mut shader = MaybeUninit::uninit();
+        device_fn.create_shaders_ext(
+            device,
+            1,
+            addr_of!(shader_create_info_ext).cast(),
+            null(),
+            shader.as_mut_ptr(),
+        )?;
+        shader.assume_init()
+    };
+
+    Ok((indirect_shader, compute_shader))
 }
 
 unsafe fn execute(
@@ -1069,8 +1006,10 @@ unsafe fn execute(
     device: vk::Device,
     queue: vk::Queue,
     commands: &Commands,
+    indirect_shader: vk::ShaderEXT,
     compute_shader: vk::ShaderEXT,
     compute_buffer: &ComputeBuffer,
+    indirect_buffer: &IndirectBuffer,
     descriptors: &Descriptors,
 ) -> Result<()> {
     // Begin command buffer.
@@ -1083,21 +1022,12 @@ unsafe fn execute(
     let command_buffer = commands.command_buffer;
     device_fn.begin_command_buffer(command_buffer, &command_buffer_begin_info)?;
 
-    // Shaders.
-    let stages = [vk::ShaderStageFlagBits::COMPUTE];
-    device_fn.cmd_bind_shaders_ext(
-        command_buffer,
-        stages.len() as _,
-        stages.as_ptr(),
-        addr_of!(compute_shader),
-    );
-
     // Descriptors.
     let descriptor_buffer_binding_info_ext = vk::DescriptorBufferBindingInfoEXT {
         s_type: vk::StructureType::DescriptorBufferBindingInfoEXT,
         p_next: null_mut(),
-        address: descriptors.device_address,
-        usage: vk::BufferUsageFlags::STORAGE_BUFFER,
+        address: descriptors.buffer.device_address,
+        usage: vk::BufferUsageFlags::STORAGE_BUFFER | vk::BufferUsageFlags::INDIRECT_BUFFER,
     };
     let binding_infos = [descriptor_buffer_binding_info_ext];
     device_fn.cmd_bind_descriptor_buffers_ext(
@@ -1117,8 +1047,49 @@ unsafe fn execute(
         offsets.as_ptr(),
     );
 
-    // Dispatch.
+    // Dispatch indirect shader.
+    let stages = [vk::ShaderStageFlagBits::COMPUTE];
+    device_fn.cmd_bind_shaders_ext(
+        command_buffer,
+        stages.len() as _,
+        stages.as_ptr(),
+        addr_of!(indirect_shader),
+    );
     device_fn.cmd_dispatch(command_buffer, 1, 1, 1);
+
+    // Synchronize.
+    {
+        let memory_barrier2 = vk::MemoryBarrier2 {
+            s_type: vk::StructureType::MemoryBarrier2,
+            p_next: null(),
+            src_stage_mask: vk::PipelineStageFlags2::COMPUTE_SHADER,
+            src_access_mask: vk::AccessFlags2::SHADER_WRITE,
+            dst_stage_mask: vk::PipelineStageFlags2::DRAW_INDIRECT,
+            dst_access_mask: vk::AccessFlags2::INDIRECT_COMMAND_READ,
+        };
+        let dependency_info = vk::DependencyInfo {
+            s_type: vk::StructureType::DependencyInfo,
+            p_next: null(),
+            dependency_flags: vk::DependencyFlags::empty(),
+            memory_barrier_count: 1,
+            p_memory_barriers: addr_of!(memory_barrier2).cast(),
+            buffer_memory_barrier_count: 0,
+            p_buffer_memory_barriers: null(),
+            image_memory_barrier_count: 0,
+            p_image_memory_barriers: null(),
+        };
+        device_fn.cmd_pipeline_barrier2(command_buffer, &dependency_info);
+    }
+
+    // Dispatch compute shader.
+    let stages = [vk::ShaderStageFlagBits::COMPUTE];
+    device_fn.cmd_bind_shaders_ext(
+        command_buffer,
+        stages.len() as _,
+        stages.as_ptr(),
+        addr_of!(compute_shader),
+    );
+    device_fn.cmd_dispatch_indirect(command_buffer, indirect_buffer.handle, 0);
 
     // End command buffer.
     device_fn.end_command_buffer(command_buffer)?;
@@ -1166,11 +1137,10 @@ unsafe fn execute(
 
     // Validate.
     #[allow(clippy::cast_ptr_alignment)]
-    let p_data = std::slice::from_raw_parts(
-        compute_buffer.p_data.cast::<u32>(),
-        compute_buffer.element_count,
-    );
-    info!("buffer={:?}", &p_data);
+    let p_data = std::slice::from_raw_parts(indirect_buffer.ptr, indirect_buffer.element_count);
+    info!("indirect_buffer={:?}", &p_data);
+    let p_data = std::slice::from_raw_parts(compute_buffer.ptr, compute_buffer.element_count);
+    info!("compute_buffer={:?}", &p_data);
 
     Ok(())
 }

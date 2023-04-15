@@ -7,6 +7,8 @@
         "vkCmdBindDescriptorBuffersEXT",
         "vkCmdBindShadersEXT",
         "vkCmdDispatch",
+        "vkCmdDispatchIndirect",
+        "vkCmdPipelineBarrier2",
         "vkCmdSetDescriptorBufferOffsetsEXT",
         "vkCreateBuffer",
         "vkCreateCommandPool",

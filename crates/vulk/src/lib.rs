@@ -24,6 +24,7 @@
 //! - [`vk::CreateSemaphore`] Create a new queue semaphore object
 //! - [`vk::DestroySemaphore`] Destroy a semaphore object
 //! - [`vk::WaitSemaphores`] Wait for timeline semaphores on the host
+//! - [`vk::CmdPipelineBarrier2`] Insert a memory dependency
 //! - [`vk::QueueWaitIdle`] Wait for a queue to become idle
 //! - [`vk::DeviceWaitIdle`] Wait for a device to become idle
 //! ## Shaders
@@ -53,6 +54,7 @@
 //! - [`vk::CmdSetDescriptorBufferOffsetsEXT`] Setting descriptor buffer offsets in a command buffer
 //! ## Dispatching Commands
 //! - [`vk::CmdDispatch`] Dispatch compute work items
+//! - [`vk::CmdDispatchIndirect`] Dispatch compute work items with indirect parameters
 //! ## Debugging
 //! - [`vk::CreateDebugUtilsMessengerEXT`] Create a debug messenger object
 //! - [`vk::DestroyDebugUtilsMessengerEXT`] Destroy a debug messenger object
