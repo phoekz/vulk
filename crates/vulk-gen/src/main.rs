@@ -1,3 +1,5 @@
+#![deny(future_incompatible)]
+#![deny(nonstandard_style)]
 #![deny(clippy::pedantic)]
 #![allow(
     clippy::collapsible_match,
