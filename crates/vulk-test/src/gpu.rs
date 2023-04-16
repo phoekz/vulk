@@ -208,19 +208,10 @@ unsafe fn create_debug_utils_messenger(
 }
 
 unsafe fn create_physical_device(instance: &vulk::Instance) -> Result<PhysicalDevice> {
-    // Enumerate physical devices.
-    let physical_devices = {
-        let mut physical_device_count = 0;
-        instance.enumerate_physical_devices(&mut physical_device_count, null_mut())?;
-        let mut physical_devices = Vec::with_capacity(physical_device_count as _);
-        instance.enumerate_physical_devices(
-            &mut physical_device_count,
-            physical_devices.as_mut_ptr(),
-        )?;
-        physical_devices.set_len(physical_device_count as _);
+    // Find physical devices.
+    let physical_devices =
+        vulk::read_to_vec(|count, ptr| instance.enumerate_physical_devices(count, ptr))?;
         info!("Found {} physical devices", physical_devices.len());
-        physical_devices
-    };
 
     // Pick a physical device.
     let physical_device = physical_devices[0];

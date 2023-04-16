@@ -2,23 +2,8 @@
 // Imports
 //
 
-use super::vk;
+use super::{vk, Error};
 use std::ffi::{c_char, c_void};
-use thiserror::Error;
-
-//
-// Error
-//
-
-#[derive(Debug, Error)]
-pub enum Error {
-    #[error("failed to load dynamic library {0}")]
-    LibraryLoad(std::borrow::Cow<'static, str>),
-    #[error("failed to load function {0}")]
-    FunctionLoad(std::borrow::Cow<'static, str>),
-    #[error("vulkan error {0:?}")]
-    Vulkan(vk::Result),
-}
 
 //
 // Init
