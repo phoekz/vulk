@@ -10,7 +10,7 @@ edition = "2021"
 anyhow = "1.0.70"
 bitflags = "2.1.0"
 bytemuck = "1.13.1"
-clap = { version = "4.2.1", features = ["derive"] }
+clap = { version = "4.2.2", features = ["derive"] }
 env_logger = "0.10.0"
 glam = { version = "0.23.0", features = ["bytemuck"] }
 heck = "0.4.1"
@@ -19,7 +19,7 @@ imagelib = { version = "0.24.6", default-features = false, features = [
 ], package = "image" }
 libloading = "0.8.0"
 log = "0.4.17"
-palette = "0.7.0"
+palette = "0.7.1"
 rand = "0.8.5"
 rand_pcg = "0.3.1"
 ron = "0.8.0"
