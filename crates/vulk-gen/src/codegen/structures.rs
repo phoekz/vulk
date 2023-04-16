@@ -1,7 +1,7 @@
 use super::*;
 
 const TEMPLATE: &str = r#"{{vk_attr}}
-#[doc = "Initialization template:"]
+#[doc = "**Initialization template**:"]
 #[doc = {{rs_init_template}}]
 pub struct {{rs_ident}} {
     {{rs_members}}

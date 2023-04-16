@@ -71,20 +71,20 @@ impl Builder {
     #[inline]
     #[must_use]
     pub fn doc_chapter(self, chapter: impl AsRef<str>) -> Self {
-        self.doc_str(format!("Chapter: **{}**", chapter.as_ref()))
+        self.doc_str(format!("**Chapter**: {}", chapter.as_ref()))
     }
 
     #[inline]
     #[must_use]
     pub fn doc_desc(self, desc: impl AsRef<str>) -> Self {
-        self.doc_str(format!("Description: {}", desc.as_ref()))
+        self.doc_str(format!("**Description**: {}", desc.as_ref()))
     }
 
     #[inline]
     #[must_use]
     pub fn doc_ref(self, ident: impl AsRef<str>) -> Self {
         self.doc_str(format!(
-            "Reference: [`{}`]({})",
+            "**Reference**: [`{}`]({})",
             ident.as_ref(),
             docs::reference_url(ident.as_ref())
         ))
@@ -94,7 +94,7 @@ impl Builder {
     #[must_use]
     pub fn doc_extend(self, ident: impl AsRef<str>) -> Self {
         self.doc_str(format!(
-            "Extendable by: [`{}`]({})",
+            "**Extendable by**: [`{}`]({})",
             ident.as_ref(),
             docs::reference_url(ident.as_ref())
         ))
@@ -103,14 +103,14 @@ impl Builder {
     #[inline]
     #[must_use]
     pub fn doc_translated(self, ident: impl AsRef<str>) -> Self {
-        self.doc_str(format!("Translated from: `{}`", ident.as_ref()))
+        self.doc_str(format!("**Translated from**: `{}`", ident.as_ref()))
     }
 
     #[inline]
     #[must_use]
     pub fn doc_provided(self, ident: impl AsRef<str>) -> Self {
         self.doc_str(format!(
-            "Provided by: [`{}`]({})",
+            "**Provided by**: [`{}`]({})",
             ident.as_ref(),
             docs::reference_url(ident.as_ref())
         ))
