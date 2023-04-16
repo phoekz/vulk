@@ -86,7 +86,7 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
                             vk_type,
                             &member.text,
                             &member.en,
-                            false,
+                            true,
                         )?;
                         format!("todo!(\"{rs_type}\")")
                     }
