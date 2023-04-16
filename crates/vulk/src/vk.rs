@@ -226,7 +226,7 @@ pub type PfnDebugUtilsMessengerCallbackEXT = *const c_void;
 //
 
 #[repr(transparent)]
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy)]
 #[doc = "Chapter: **Initialization**"]
 #[doc = "<br>"]
 #[doc = "Description: Opaque handle to an instance object"]
@@ -241,8 +241,20 @@ impl Instance {
     }
 }
 
+impl std::fmt::Display for Instance {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "0x{:016x}", self.0)
+    }
+}
+
+impl std::fmt::Debug for Instance {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("Instance").field(&format_args!("{self}")).finish()
+    }
+}
+
 #[repr(transparent)]
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy)]
 #[doc = "Chapter: **Devices and Queues**"]
 #[doc = "<br>"]
 #[doc = "Description: Opaque handle to a physical device object"]
@@ -257,8 +269,20 @@ impl PhysicalDevice {
     }
 }
 
+impl std::fmt::Display for PhysicalDevice {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "0x{:016x}", self.0)
+    }
+}
+
+impl std::fmt::Debug for PhysicalDevice {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("PhysicalDevice").field(&format_args!("{self}")).finish()
+    }
+}
+
 #[repr(transparent)]
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy)]
 #[doc = "Chapter: **Devices and Queues**"]
 #[doc = "<br>"]
 #[doc = "Description: Opaque handle to a device object"]
@@ -273,8 +297,20 @@ impl Device {
     }
 }
 
+impl std::fmt::Display for Device {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "0x{:016x}", self.0)
+    }
+}
+
+impl std::fmt::Debug for Device {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("Device").field(&format_args!("{self}")).finish()
+    }
+}
+
 #[repr(transparent)]
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy)]
 #[doc = "Chapter: **Devices and Queues**"]
 #[doc = "<br>"]
 #[doc = "Description: Opaque handle to a queue object"]
@@ -289,8 +325,20 @@ impl Queue {
     }
 }
 
+impl std::fmt::Display for Queue {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "0x{:016x}", self.0)
+    }
+}
+
+impl std::fmt::Debug for Queue {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("Queue").field(&format_args!("{self}")).finish()
+    }
+}
+
 #[repr(transparent)]
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy)]
 #[doc = "Chapter: **Command Buffers**"]
 #[doc = "<br>"]
 #[doc = "Description: Opaque handle to a command buffer object"]
@@ -305,8 +353,20 @@ impl CommandBuffer {
     }
 }
 
+impl std::fmt::Display for CommandBuffer {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "0x{:016x}", self.0)
+    }
+}
+
+impl std::fmt::Debug for CommandBuffer {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("CommandBuffer").field(&format_args!("{self}")).finish()
+    }
+}
+
 #[repr(transparent)]
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy)]
 #[doc = "Chapter: **Command Buffers**"]
 #[doc = "<br>"]
 #[doc = "Description: Opaque handle to a command pool object"]
@@ -321,8 +381,20 @@ impl CommandPool {
     }
 }
 
+impl std::fmt::Display for CommandPool {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "0x{:016x}", self.0)
+    }
+}
+
+impl std::fmt::Debug for CommandPool {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("CommandPool").field(&format_args!("{self}")).finish()
+    }
+}
+
 #[repr(transparent)]
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy)]
 #[doc = "Chapter: **Synchronization and Cache Control**"]
 #[doc = "<br>"]
 #[doc = "Description: Opaque handle to a fence object"]
@@ -337,8 +409,20 @@ impl Fence {
     }
 }
 
+impl std::fmt::Display for Fence {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "0x{:016x}", self.0)
+    }
+}
+
+impl std::fmt::Debug for Fence {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("Fence").field(&format_args!("{self}")).finish()
+    }
+}
+
 #[repr(transparent)]
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy)]
 #[doc = "Chapter: **Synchronization and Cache Control**"]
 #[doc = "<br>"]
 #[doc = "Description: Opaque handle to a semaphore object"]
@@ -353,8 +437,20 @@ impl Semaphore {
     }
 }
 
+impl std::fmt::Display for Semaphore {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "0x{:016x}", self.0)
+    }
+}
+
+impl std::fmt::Debug for Semaphore {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("Semaphore").field(&format_args!("{self}")).finish()
+    }
+}
+
 #[repr(transparent)]
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy)]
 #[doc = "Chapter: **Render Pass**"]
 #[doc = "<br>"]
 #[doc = "Description: Opaque handle to a render pass object"]
@@ -369,8 +465,20 @@ impl RenderPass {
     }
 }
 
+impl std::fmt::Display for RenderPass {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "0x{:016x}", self.0)
+    }
+}
+
+impl std::fmt::Debug for RenderPass {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("RenderPass").field(&format_args!("{self}")).finish()
+    }
+}
+
 #[repr(transparent)]
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy)]
 #[doc = "Chapter: **Render Pass**"]
 #[doc = "<br>"]
 #[doc = "Description: Opaque handle to a framebuffer object"]
@@ -385,8 +493,20 @@ impl Framebuffer {
     }
 }
 
+impl std::fmt::Display for Framebuffer {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "0x{:016x}", self.0)
+    }
+}
+
+impl std::fmt::Debug for Framebuffer {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("Framebuffer").field(&format_args!("{self}")).finish()
+    }
+}
+
 #[repr(transparent)]
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy)]
 #[doc = "Chapter: **Shaders**"]
 #[doc = "<br>"]
 #[doc = "Description: Opaque handle to a shader object"]
@@ -401,8 +521,20 @@ impl ShaderEXT {
     }
 }
 
+impl std::fmt::Display for ShaderEXT {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "0x{:016x}", self.0)
+    }
+}
+
+impl std::fmt::Debug for ShaderEXT {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("ShaderEXT").field(&format_args!("{self}")).finish()
+    }
+}
+
 #[repr(transparent)]
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy)]
 #[doc = "Chapter: **Memory Allocation**"]
 #[doc = "<br>"]
 #[doc = "Description: Opaque handle to a device memory object"]
@@ -417,8 +549,20 @@ impl DeviceMemory {
     }
 }
 
+impl std::fmt::Display for DeviceMemory {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "0x{:016x}", self.0)
+    }
+}
+
+impl std::fmt::Debug for DeviceMemory {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("DeviceMemory").field(&format_args!("{self}")).finish()
+    }
+}
+
 #[repr(transparent)]
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy)]
 #[doc = "Chapter: **Resource Creation**"]
 #[doc = "<br>"]
 #[doc = "Description: Opaque handle to a buffer object"]
@@ -433,8 +577,20 @@ impl Buffer {
     }
 }
 
+impl std::fmt::Display for Buffer {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "0x{:016x}", self.0)
+    }
+}
+
+impl std::fmt::Debug for Buffer {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("Buffer").field(&format_args!("{self}")).finish()
+    }
+}
+
 #[repr(transparent)]
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy)]
 #[doc = "Chapter: **Resource Creation**"]
 #[doc = "<br>"]
 #[doc = "Description: Opaque handle to an image object"]
@@ -449,8 +605,20 @@ impl Image {
     }
 }
 
+impl std::fmt::Display for Image {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "0x{:016x}", self.0)
+    }
+}
+
+impl std::fmt::Debug for Image {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("Image").field(&format_args!("{self}")).finish()
+    }
+}
+
 #[repr(transparent)]
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy)]
 #[doc = "Chapter: **Resource Creation**"]
 #[doc = "<br>"]
 #[doc = "Description: Opaque handle to an image view object"]
@@ -465,8 +633,20 @@ impl ImageView {
     }
 }
 
+impl std::fmt::Display for ImageView {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "0x{:016x}", self.0)
+    }
+}
+
+impl std::fmt::Debug for ImageView {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("ImageView").field(&format_args!("{self}")).finish()
+    }
+}
+
 #[repr(transparent)]
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy)]
 #[doc = "Chapter: **Samplers**"]
 #[doc = "<br>"]
 #[doc = "Description: Opaque handle to a sampler object"]
@@ -481,8 +661,20 @@ impl Sampler {
     }
 }
 
+impl std::fmt::Display for Sampler {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "0x{:016x}", self.0)
+    }
+}
+
+impl std::fmt::Debug for Sampler {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("Sampler").field(&format_args!("{self}")).finish()
+    }
+}
+
 #[repr(transparent)]
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy)]
 #[doc = "Chapter: **Resource Descriptors**"]
 #[doc = "<br>"]
 #[doc = "Description: Opaque handle to a descriptor set layout object"]
@@ -497,8 +689,20 @@ impl DescriptorSetLayout {
     }
 }
 
+impl std::fmt::Display for DescriptorSetLayout {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "0x{:016x}", self.0)
+    }
+}
+
+impl std::fmt::Debug for DescriptorSetLayout {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("DescriptorSetLayout").field(&format_args!("{self}")).finish()
+    }
+}
+
 #[repr(transparent)]
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy)]
 #[doc = "Chapter: **Resource Descriptors**"]
 #[doc = "<br>"]
 #[doc = "Description: Opaque handle to a pipeline layout object"]
@@ -513,8 +717,20 @@ impl PipelineLayout {
     }
 }
 
+impl std::fmt::Display for PipelineLayout {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "0x{:016x}", self.0)
+    }
+}
+
+impl std::fmt::Debug for PipelineLayout {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("PipelineLayout").field(&format_args!("{self}")).finish()
+    }
+}
+
 #[repr(transparent)]
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy)]
 #[doc = "Chapter: **Debugging**"]
 #[doc = "<br>"]
 #[doc = "Description: Opaque handle to a debug messenger object"]
@@ -526,6 +742,18 @@ impl DebugUtilsMessengerEXT {
     #[must_use]
     pub const fn null() -> Self {
         Self(0)
+    }
+}
+
+impl std::fmt::Display for DebugUtilsMessengerEXT {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "0x{:016x}", self.0)
+    }
+}
+
+impl std::fmt::Debug for DebugUtilsMessengerEXT {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("DebugUtilsMessengerEXT").field(&format_args!("{self}")).finish()
     }
 }
 

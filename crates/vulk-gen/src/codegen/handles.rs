@@ -9,6 +9,18 @@ impl {{rs_ident}} {
         Self(0)
     }
 }
+
+impl std::fmt::Display for {{rs_ident}} {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "0x{:016x}", self.0)
+    }
+}
+
+impl std::fmt::Debug for {{rs_ident}} {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("{{rs_ident}}").field(&format_args!("{self}")).finish()
+    }
+}
 "#;
 
 pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
@@ -22,7 +34,7 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
         let vk_ident = &registry_type.name;
         let vk_attr = attributes::Builder::new()
             .repr("transparent")
-            .derive("Clone, Copy, Debug")
+            .derive("Clone, Copy")
             .doc_chapter(ctx.vkspec.type_chapter(vk_ident))
             .doc_br()
             .doc_desc(ctx.vkspec.type_desc(vk_ident))
