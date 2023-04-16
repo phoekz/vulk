@@ -22,6 +22,8 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
         let c_attr = attributes::Builder::new()
             .doc_desc(ctx.vkspec.type_desc(c_ident))
             .doc_br()
+            .doc_provided(ctx.provided_by_map.get(c_ident))
+            .doc_br()
             .doc_ref(c_ident)
             .build();
         let rs_ident = translation::c_define(c_ident)?;

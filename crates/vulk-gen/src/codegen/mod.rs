@@ -20,16 +20,19 @@ use std::fmt::Write;
 pub struct GeneratorContext<'a> {
     registry: &'a Registry,
     c_type_map: &'a CtypeMap,
+    provided_by_map: &'a ProvidedByMap,
     vkspec: &'a docs::Vkspec,
 }
 
 pub fn generate(registry: &Registry, vkspec: &docs::Vkspec, vulk_lib_dir: &Path) -> Result<()> {
     // Generate.
     let c_type_map = registry::c_type_map();
+    let provided_by_map = ProvidedByMap::new(registry);
     let command_groups = commands::analysis::group_by_loader(registry);
     let ctx = GeneratorContext {
         registry,
         c_type_map: &c_type_map,
+        provided_by_map: &provided_by_map,
         vkspec,
     };
     let api_constants = api_constants::generate(&ctx).context("Generating api_constants")?;
@@ -119,4 +122,48 @@ fn rustfmt(input: &str) -> Result<String> {
     let output = std::fs::read_to_string(temp_path)?;
 
     Ok(output)
+}
+
+pub struct ProvidedByMap(HashMap<String, String>);
+
+impl ProvidedByMap {
+    pub fn new(registry: &Registry) -> Self {
+        let mut map = HashMap::new();
+        for feature in &registry.features {
+            for require in &feature.requires {
+                for require_entry in &require.entries {
+                    match require_entry {
+                        registry::RequireEntry::Type { name, .. }
+                        | registry::RequireEntry::Enum { name, .. }
+                        | registry::RequireEntry::Command { name } => {
+                            assert!(!map.contains_key(name));
+                            map.insert(name.to_string(), feature.name.clone());
+                        }
+                    }
+                }
+            }
+        }
+        for extension in &registry.extensions {
+            for require in &extension.requires {
+                for require_entry in &require.entries {
+                    match require_entry {
+                        registry::RequireEntry::Type { name, .. }
+                        | registry::RequireEntry::Enum { name, .. }
+                        | registry::RequireEntry::Command { name } => {
+                            if !map.contains_key(name) {
+                                map.insert(name.to_string(), extension.name.clone());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        Self(map)
+    }
+
+    pub fn get(&self, ident: impl AsRef<str>) -> &str {
+        self.0
+            .get(ident.as_ref())
+            .unwrap_or_else(|| panic!("Getting {} from provided by map", ident.as_ref()))
+    }
 }

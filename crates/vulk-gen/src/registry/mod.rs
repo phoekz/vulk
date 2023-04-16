@@ -95,8 +95,8 @@ impl Registry {
             types,
             enums,
             commands,
-            features: vec![],
-            extensions: vec![],
+            features: self.features,
+            extensions: self.extensions,
         })
     }
 

@@ -50,6 +50,8 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
             .doc_br()
             .doc_desc(ctx.vkspec.type_desc(vk_ident))
             .doc_br()
+            .doc_provided(ctx.provided_by_map.get(vk_ident))
+            .doc_br()
             .doc_ref(vk_ident)
             .doc_br();
         if let Some(structextends) = extend_map.get(vk_ident.as_str()) {

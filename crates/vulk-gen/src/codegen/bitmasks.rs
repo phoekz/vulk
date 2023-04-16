@@ -73,6 +73,8 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
                 .doc_br()
                 .doc_desc(ctx.vkspec.type_desc(vk_bits_ident))
                 .doc_br()
+                .doc_provided(ctx.provided_by_map.get(vk_bits_ident))
+                .doc_br()
                 .doc_ref(vk_bits_ident)
                 .build();
             let rs_bits_ident = translation::vk_simple_type(vk_bits_ident)?;
@@ -121,6 +123,8 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
                 .doc_br()
                 .doc_desc(vk_flags_desc)
                 .doc_br()
+                .doc_provided(ctx.provided_by_map.get(vk_flags_ident))
+                .doc_br()
                 .doc_ref(vk_flags_ident)
                 .doc_br()
                 .doc_ref(vk_bits_ident)
@@ -147,6 +151,8 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
                 .doc_chapter(vk_flags_chapter)
                 .doc_br()
                 .doc_desc(vk_flags_desc)
+                .doc_br()
+                .doc_provided(ctx.provided_by_map.get(vk_flags_ident))
                 .doc_br()
                 .doc_ref(vk_flags_ident)
                 .indent()

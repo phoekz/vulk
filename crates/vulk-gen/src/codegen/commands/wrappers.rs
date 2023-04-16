@@ -94,6 +94,8 @@ fn generate_wrappers(
             .doc_br()
             .doc_desc(ctx.vkspec.type_desc(vk_ident))
             .doc_br()
+            .doc_provided(ctx.provided_by_map.get(vk_ident))
+            .doc_br()
             .doc_ref(vk_ident)
             .build();
         let rs_ident = translation::vk_simple_function(vk_ident)?;

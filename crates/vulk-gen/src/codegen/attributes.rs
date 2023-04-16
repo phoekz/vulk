@@ -108,6 +108,16 @@ impl Builder {
 
     #[inline]
     #[must_use]
+    pub fn doc_provided(self, ident: impl AsRef<str>) -> Self {
+        self.doc_str(format!(
+            "Provided by: [`{}`]({})",
+            ident.as_ref(),
+            docs::reference_url(ident.as_ref())
+        ))
+    }
+
+    #[inline]
+    #[must_use]
     pub fn indent(self) -> Self {
         let mut indent = String::new();
         for (line_count, line) in self.0.lines().enumerate() {
