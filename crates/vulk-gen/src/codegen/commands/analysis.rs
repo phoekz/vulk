@@ -100,40 +100,34 @@ pub fn wrapper_type(
         mutable_params
     };
 
-    let output_param = {
-        let param = command
-            .params
-            .last()
-            .context("Command must have at least 1 parameter")?;
-        let param_type =
-            translation::vk_complex_type(c_type_map, &param.ty, &param.text, &None, false)?;
-        let is_c_type = c_type_map.contains_key(param.ty.as_str());
-        let is_handle = handle_map.contains(param.ty.as_str());
-        let is_base_type = base_type_map.contains(param.ty.as_str());
+    let last_param = command
+        .params
+        .last()
+        .context("Command must have at least 1 parameter")?;
+
+    let supported_output_param = {
+        let param_type = translation::vk_complex_type(
+            c_type_map,
+            &last_param.ty,
+            &last_param.text,
+            &None,
+            false,
+        )?;
+        let is_c_type = c_type_map.contains_key(last_param.ty.as_str());
+        let is_handle = handle_map.contains(last_param.ty.as_str());
+        let is_base_type = base_type_map.contains(last_param.ty.as_str());
         param_type.contains("*mut") && (is_c_type || is_handle || is_base_type)
     };
+    let complex_output_param = last_param.len.is_some();
+    let returnable_output_param =
+        mutable_params == 1 && supported_output_param && !complex_output_param;
 
-    let output_param_is_complex = {
-        let param = command
-            .params
-            .last()
-            .context("Command must have at least 1 parameter")?;
-        param.len.is_some()
+    let wrapper_type = match (command.return_type.as_str(), returnable_output_param) {
+        ("VkResult", true) => WrapperType::OutputResult,
+        ("VkResult", false) => WrapperType::UnitResult,
+        ("void", true) => WrapperType::Output,
+        ("void", false) => WrapperType::IdentityVoid,
+        _ => WrapperType::Identity,
     };
-
-    if command.return_type == "VkResult" {
-        if mutable_params == 1 && output_param && !output_param_is_complex {
-            Ok(WrapperType::OutputResult)
-        } else {
-            Ok(WrapperType::UnitResult)
-        }
-    } else if command.return_type == "void" {
-        if mutable_params == 1 && output_param && !output_param_is_complex {
-            Ok(WrapperType::Output)
-        } else {
-            Ok(WrapperType::IdentityVoid)
-        }
-    } else {
-        Ok(WrapperType::Identity)
-    }
+    Ok(wrapper_type)
 }
