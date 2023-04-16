@@ -7,17 +7,17 @@ use super::*;
 
 const TEMPLATE_PARAM: &str = r#"{{rs_param_ident}}: {{rs_param_type}}"#;
 const TEMPLATE_PARAM_IDENT: &str = r#"{{rs_param_ident}}"#;
-const TEMPLATE_DEFAULT: &str = r#"{{vk_attr}}
+const TEMPLATE_IDENTITY: &str = r#"{{vk_attr}}
 pub unsafe fn {{rs_ident}}(&self, {{rs_params}}) -> {{rs_return_type}} {
     (self.fns.{{rs_ident}})({{rs_params_idents}})
 }
 "#;
-const TEMPLATE_VOID: &str = r#"{{vk_attr}}
+const TEMPLATE_IDENTITY_VOID: &str = r#"{{vk_attr}}
 pub unsafe fn {{rs_ident}}(&self, {{rs_params}}) {
     (self.fns.{{rs_ident}})({{rs_params_idents}});
 }
 "#;
-const TEMPLATE_VOID_RESULT: &str = r#"{{vk_attr}}
+const TEMPLATE_UNIT_RESULT: &str = r#"{{vk_attr}}
 pub unsafe fn {{rs_ident}}(&self, {{rs_params}}) -> Result<(), Error> {
     match (self.fns.{{rs_ident}})({{rs_params_idents}}) {
         vk::Result::Success => Ok(()),
@@ -25,13 +25,20 @@ pub unsafe fn {{rs_ident}}(&self, {{rs_params}}) -> Result<(), Error> {
     }
 }
 "#;
-const TEMPLATE_HANDLE_RESULT: &str = r#"{{vk_attr}}
-pub unsafe fn {{rs_ident}}(&self, {{rs_params}}) -> Result<{{rs_handle_type}}, Error> {
-    let mut {{rs_handle_ident}} = std::mem::MaybeUninit::uninit();
-    match (self.fns.{{rs_ident}})({{rs_params_idents}}, {{rs_handle_ident}}.as_mut_ptr()) {
-        vk::Result::Success => Ok({{rs_handle_ident}}.assume_init()),
+const TEMPLATE_OUTPUT_RESULT: &str = r#"{{vk_attr}}
+pub unsafe fn {{rs_ident}}(&self, {{rs_params}}) -> Result<{{rs_output_type}}, Error> {
+    let mut {{rs_output_ident}} = std::mem::MaybeUninit::uninit();
+    match (self.fns.{{rs_ident}})({{rs_params_idents}}, {{rs_output_ident}}.as_mut_ptr()) {
+        vk::Result::Success => Ok({{rs_output_ident}}.assume_init()),
         result => Err(Error::Vulkan(result)),
     }
+}
+"#;
+const TEMPLATE_OUTPUT: &str = r#"{{vk_attr}}
+pub unsafe fn {{rs_ident}}(&self, {{rs_params}}) -> {{rs_output_type}} {
+    let mut {{rs_output_ident}} = std::mem::MaybeUninit::uninit();
+    (self.fns.{{rs_ident}})({{rs_params_idents}}, {{rs_output_ident}}.as_mut_ptr());
+    {{rs_output_ident}}.assume_init()
 }
 "#;
 
@@ -42,17 +49,26 @@ pub struct Rendered {
 }
 
 pub fn generate(ctx: &GeneratorContext<'_>, groups: &analysis::CommandGroups) -> Result<Rendered> {
+    let mut base_type_map = HashSet::new();
     let mut handle_map = HashSet::new();
     for registry_ty in &ctx.registry.types {
-        let registry::TypeCategory::Handle { .. } = &registry_ty.category else {
-            continue;
-        };
-        handle_map.insert(registry_ty.name.as_str());
+        let name = registry_ty.name.as_str();
+        match registry_ty.category {
+            registry::TypeCategory::Basetype { .. } => {
+                base_type_map.insert(name);
+            }
+            registry::TypeCategory::Handle { .. } => {
+                handle_map.insert(name);
+            }
+            _ => {}
+        }
     }
 
-    let init_wrappers = generate_wrappers(ctx, &handle_map, &groups.init, false)?;
-    let instance_wrappers = generate_wrappers(ctx, &handle_map, &groups.instance, true)?;
-    let device_wrappers = generate_wrappers(ctx, &handle_map, &groups.device, true)?;
+    let init_wrappers = generate_wrappers(ctx, &base_type_map, &handle_map, &groups.init, false)?;
+    let instance_wrappers =
+        generate_wrappers(ctx, &base_type_map, &handle_map, &groups.instance, true)?;
+    let device_wrappers =
+        generate_wrappers(ctx, &base_type_map, &handle_map, &groups.device, true)?;
 
     Ok(Rendered {
         init_wrappers,
@@ -63,6 +79,7 @@ pub fn generate(ctx: &GeneratorContext<'_>, groups: &analysis::CommandGroups) ->
 
 fn generate_wrappers(
     ctx: &GeneratorContext<'_>,
+    base_type_map: &HashSet<&str>,
     handle_map: &HashSet<&str>,
     commands: &[&registry::Command],
     can_inline_handles: bool,
@@ -159,13 +176,13 @@ fn generate_wrappers(
                 None
             };
 
-        match analysis::wrapper_type(ctx.c_type_map, handle_map, command)? {
-            analysis::WrapperType::Default => {
+        match analysis::wrapper_type(ctx.c_type_map, base_type_map, handle_map, command)? {
+            analysis::WrapperType::Identity => {
                 let vk_attr = attributes::Builder::new().must_use().raw(vk_attr).build();
                 writeln!(
                     str,
                     "{}",
-                    TEMPLATE_DEFAULT
+                    TEMPLATE_IDENTITY
                         .replace("{{vk_attr}}", &vk_attr)
                         .replace("{{vk_ident}}", vk_ident)
                         .replace("{{rs_ident}}", &rs_ident)
@@ -174,11 +191,11 @@ fn generate_wrappers(
                         .replace("{{rs_return_type}}", &rs_return_type)
                 )?;
             }
-            analysis::WrapperType::Void => {
+            analysis::WrapperType::IdentityVoid => {
                 writeln!(
                     str,
                     "{}",
-                    TEMPLATE_VOID
+                    TEMPLATE_IDENTITY_VOID
                         .replace("{{vk_attr}}", &vk_attr)
                         .replace("{{vk_ident}}", vk_ident)
                         .replace("{{rs_ident}}", &rs_ident)
@@ -186,11 +203,11 @@ fn generate_wrappers(
                         .replace("{{rs_params_idents}}", &rs_params_idents)
                 )?;
             }
-            analysis::WrapperType::VoidResult => {
+            analysis::WrapperType::UnitResult => {
                 writeln!(
                     str,
                     "{}",
-                    TEMPLATE_VOID_RESULT
+                    TEMPLATE_UNIT_RESULT
                         .replace("{{vk_attr}}", &vk_attr)
                         .replace("{{vk_ident}}", vk_ident)
                         .replace("{{rs_ident}}", &rs_ident)
@@ -198,26 +215,49 @@ fn generate_wrappers(
                         .replace("{{rs_params_idents}}", &rs_params_idents)
                 )?;
             }
-            analysis::WrapperType::HandleResult => {
-                let rs_handle_type = translation::vk_complex_type(
+            analysis::WrapperType::OutputResult => {
+                let rs_output_type = translation::vk_complex_type(
                     ctx.c_type_map,
                     rs_params_type_last.unwrap(),
                     &None,
                     &None,
                     true,
                 )?;
-                let rs_handle_ident = rs_params_idents_last;
+                let rs_output_ident = rs_params_idents_last;
                 writeln!(
                     str,
                     "{}",
-                    TEMPLATE_HANDLE_RESULT
+                    TEMPLATE_OUTPUT_RESULT
                         .replace("{{vk_attr}}", &vk_attr)
                         .replace("{{vk_ident}}", vk_ident)
                         .replace("{{rs_ident}}", &rs_ident)
                         .replace("{{rs_params}}", &rs_params_lhs.unwrap())
                         .replace("{{rs_params_idents}}", &rs_params_idents_lhs)
-                        .replace("{{rs_handle_type}}", &rs_handle_type)
-                        .replace("{{rs_handle_ident}}", rs_handle_ident)
+                        .replace("{{rs_output_type}}", &rs_output_type)
+                        .replace("{{rs_output_ident}}", rs_output_ident)
+                )?;
+            }
+            analysis::WrapperType::Output => {
+                let vk_attr = attributes::Builder::new().must_use().raw(vk_attr).build();
+                let rs_output_type = translation::vk_complex_type(
+                    ctx.c_type_map,
+                    rs_params_type_last.unwrap(),
+                    &None,
+                    &None,
+                    true,
+                )?;
+                let rs_output_ident = rs_params_idents_last;
+                writeln!(
+                    str,
+                    "{}",
+                    TEMPLATE_OUTPUT
+                        .replace("{{vk_attr}}", &vk_attr)
+                        .replace("{{vk_ident}}", vk_ident)
+                        .replace("{{rs_ident}}", &rs_ident)
+                        .replace("{{rs_params}}", &rs_params_lhs.unwrap())
+                        .replace("{{rs_params_idents}}", &rs_params_idents_lhs)
+                        .replace("{{rs_output_type}}", &rs_output_type)
+                        .replace("{{rs_output_ident}}", rs_output_ident)
                 )?;
             }
         }

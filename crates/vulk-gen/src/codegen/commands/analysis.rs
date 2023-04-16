@@ -74,14 +74,16 @@ pub fn group_by_loader(registry: &Registry) -> CommandGroups<'_> {
 }
 
 pub enum WrapperType {
-    Default,
-    Void,
-    VoidResult,
-    HandleResult,
+    Identity,
+    IdentityVoid,
+    UnitResult,
+    OutputResult,
+    Output,
 }
 
 pub fn wrapper_type(
     c_type_map: &CtypeMap,
+    base_type_map: &HashSet<&str>,
     handle_map: &HashSet<&str>,
     command: &registry::Command,
 ) -> Result<WrapperType> {
@@ -105,8 +107,10 @@ pub fn wrapper_type(
             .context("Command must have at least 1 parameter")?;
         let param_type =
             translation::vk_complex_type(c_type_map, &param.ty, &param.text, &None, false)?;
+        let is_c_type = c_type_map.contains_key(param.ty.as_str());
         let is_handle = handle_map.contains(param.ty.as_str());
-        param_type.contains("*mut") && is_handle
+        let is_base_type = base_type_map.contains(param.ty.as_str());
+        param_type.contains("*mut") && !is_c_type && (is_handle || is_base_type)
     };
 
     let output_param_is_complex = {
@@ -119,13 +123,17 @@ pub fn wrapper_type(
 
     if command.return_type == "VkResult" {
         if mutable_params == 1 && output_param && !output_param_is_complex {
-            Ok(WrapperType::HandleResult)
+            Ok(WrapperType::OutputResult)
         } else {
-            Ok(WrapperType::VoidResult)
+            Ok(WrapperType::UnitResult)
         }
     } else if command.return_type == "void" {
-        Ok(WrapperType::Void)
+        if mutable_params == 1 && output_param && !output_param_is_complex {
+            Ok(WrapperType::Output)
+        } else {
+            Ok(WrapperType::IdentityVoid)
+        }
     } else {
-        Ok(WrapperType::Default)
+        Ok(WrapperType::Identity)
     }
 }

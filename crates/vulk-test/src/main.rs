@@ -269,6 +269,9 @@ unsafe fn create_physical_device(instance: &vulk::Instance) -> Result<PhysicalDe
     physical_devices.set_len(physical_device_count as _);
     info!("Found {} physical devices", physical_devices.len());
 
+    // Pick a physical device.
+    let physical_device = physical_devices[0];
+
     // Device properties.
     let mut physical_device_descriptor_buffer_properties_ext =
         vk::PhysicalDeviceDescriptorBufferPropertiesEXT {
@@ -315,7 +318,6 @@ unsafe fn create_physical_device(instance: &vulk::Instance) -> Result<PhysicalDe
         properties: zeroed(),
     };
 
-    let physical_device = physical_devices[0];
     instance.get_physical_device_properties2(physical_device, &mut physical_device_properties2);
 
     // Queue family properties.
@@ -582,7 +584,7 @@ unsafe fn create_device(
     Ok(device)
 }
 
-unsafe fn create_queue(device: &vulk::Device, queue_family: &QueueFamily) -> vulk::vk::Queue {
+unsafe fn create_queue(device: &vulk::Device, queue_family: &QueueFamily) -> vk::Queue {
     let device_queue_info2 = vk::DeviceQueueInfo2 {
         s_type: vk::StructureType::DeviceQueueInfo2,
         p_next: null(),
@@ -590,9 +592,7 @@ unsafe fn create_queue(device: &vulk::Device, queue_family: &QueueFamily) -> vul
         queue_family_index: queue_family.index,
         queue_index: 0,
     };
-    let mut queue = MaybeUninit::uninit();
-    device.get_device_queue2(&device_queue_info2, queue.as_mut_ptr());
-    queue.assume_init()
+    device.get_device_queue2(&device_queue_info2)
 }
 
 struct Commands {
@@ -744,9 +744,7 @@ unsafe fn create_descriptors(
         device.create_descriptor_set_layout(&descriptor_set_layout_create_info)?;
 
     // Descriptor buffer.
-    let mut buffer_size = MaybeUninit::uninit();
-    device.get_descriptor_set_layout_size_ext(descriptor_set_layout, buffer_size.as_mut_ptr());
-    let buffer_size = buffer_size.assume_init();
+    let buffer_size = device.get_descriptor_set_layout_size_ext(descriptor_set_layout);
     info!("Descriptor buffer size={buffer_size}");
     let usage = vk::BufferUsageFlags::STORAGE_BUFFER;
     let flags = vk::MemoryPropertyFlags::HOST_VISIBLE | vk::MemoryPropertyFlags::HOST_COHERENT;

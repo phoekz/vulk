@@ -390,14 +390,17 @@ impl Device {
         (self.fns.destroy_device)(self.handle, std::ptr::null());
     }
 
+    #[must_use]
     #[inline]
     #[doc = "Chapter: **Devices and Queues**"]
     #[doc = "<br>"]
     #[doc = "Description: Get a queue handle from a device"]
     #[doc = "<br>"]
     #[doc = "Reference: [`vkGetDeviceQueue2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetDeviceQueue2.html)"]
-    pub unsafe fn get_device_queue2(&self, p_queue_info: *const vk::DeviceQueueInfo2, p_queue: *mut vk::Queue) {
-        (self.fns.get_device_queue2)(self.handle, p_queue_info, p_queue);
+    pub unsafe fn get_device_queue2(&self, p_queue_info: *const vk::DeviceQueueInfo2) -> vk::Queue {
+        let mut p_queue = std::mem::MaybeUninit::uninit();
+        (self.fns.get_device_queue2)(self.handle, p_queue_info, p_queue.as_mut_ptr());
+        p_queue.assume_init()
     }
 
     #[inline]
@@ -761,14 +764,17 @@ impl Device {
         (self.fns.get_buffer_device_address)(self.handle, p_info)
     }
 
+    #[must_use]
     #[inline]
     #[doc = "Chapter: **Resource Descriptors**"]
     #[doc = "<br>"]
     #[doc = "Description: Get the size of a descriptor set layout in memory"]
     #[doc = "<br>"]
     #[doc = "Reference: [`vkGetDescriptorSetLayoutSizeEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetDescriptorSetLayoutSizeEXT.html)"]
-    pub unsafe fn get_descriptor_set_layout_size_ext(&self, layout: vk::DescriptorSetLayout, p_layout_size_in_bytes: *mut vk::DeviceSize) {
-        (self.fns.get_descriptor_set_layout_size_ext)(self.handle, layout, p_layout_size_in_bytes);
+    pub unsafe fn get_descriptor_set_layout_size_ext(&self, layout: vk::DescriptorSetLayout) -> vk::DeviceSize {
+        let mut p_layout_size_in_bytes = std::mem::MaybeUninit::uninit();
+        (self.fns.get_descriptor_set_layout_size_ext)(self.handle, layout, p_layout_size_in_bytes.as_mut_ptr());
+        p_layout_size_in_bytes.assume_init()
     }
 
     #[inline]
