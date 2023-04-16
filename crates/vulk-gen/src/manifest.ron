@@ -49,6 +49,13 @@
         "vkResetCommandPool",
         "vkUnmapMemory2KHR",
         "vkWaitSemaphores",
+        "vkCreateQueryPool",
+        "vkResetQueryPool",
+        "vkDestroyQueryPool",
+        "vkCmdWriteTimestamp2",
+        "vkGetQueryPoolResults",
+        "vkCmdBeginQuery",
+        "vkCmdEndQuery",
     ],
     structures: [
         "VkMemoryAllocateFlagsInfo",

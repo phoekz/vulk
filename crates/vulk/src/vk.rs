@@ -837,6 +837,36 @@ impl std::fmt::Debug for PipelineLayout {
 
 #[repr(transparent)]
 #[derive(Clone, Copy)]
+#[doc = "**Chapter**: Queries"]
+#[doc = "<br>"]
+#[doc = "**Description**: Opaque handle to a query pool object"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkQueryPool`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkQueryPool.html)"]
+pub struct QueryPool(u64);
+
+impl QueryPool {
+    #[must_use]
+    pub const fn null() -> Self {
+        Self(0)
+    }
+}
+
+impl std::fmt::Display for QueryPool {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "0x{:016x}", self.0)
+    }
+}
+
+impl std::fmt::Debug for QueryPool {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("QueryPool").field(&format_args!("{self}")).finish()
+    }
+}
+
+#[repr(transparent)]
+#[derive(Clone, Copy)]
 #[doc = "**Chapter**: Debugging"]
 #[doc = "<br>"]
 #[doc = "**Description**: Opaque handle to a debug messenger object"]
@@ -1695,6 +1725,24 @@ pub enum DescriptorType {
     InputAttachment = 10,
     #[doc = "**Translated from**: `VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK`"]
     InlineUniformBlock = 1000138000,
+}
+
+#[repr(i32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[doc = "**Chapter**: Queries"]
+#[doc = "<br>"]
+#[doc = "**Description**: Specify the type of queries managed by a query pool"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkQueryType`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkQueryType.html)"]
+pub enum QueryType {
+    #[doc = "**Translated from**: `VK_QUERY_TYPE_OCCLUSION`"]
+    Occlusion = 0,
+    #[doc = "**Translated from**: `VK_QUERY_TYPE_PIPELINE_STATISTICS`"]
+    PipelineStatistics = 1,
+    #[doc = "**Translated from**: `VK_QUERY_TYPE_TIMESTAMP`"]
+    Timestamp = 2,
 }
 
 #[repr(i32)]
@@ -3099,6 +3147,21 @@ bitflags! {
     #[derive(Clone, Copy, PartialEq, Eq, Debug)]
     #[doc = "**Chapter**: Queries"]
     #[doc = "<br>"]
+    #[doc = "**Description**: Reserved for future use"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`VkQueryPoolCreateFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkQueryPoolCreateFlags.html)"]
+    pub struct QueryPoolCreateFlags: u32 {
+
+    }
+}
+
+bitflags! {
+    #[repr(C)]
+    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
+    #[doc = "**Chapter**: Queries"]
+    #[doc = "<br>"]
     #[doc = "**Description**: Bitmask of VkQueryControlFlagBits"]
     #[doc = "<br>"]
     #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
@@ -3120,6 +3183,39 @@ bitflags! {
 #[doc = "<br>"]
 #[doc = "**Reference**: [`VkQueryControlFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkQueryControlFlagBits.html)"]
 pub type QueryControlFlagBits = QueryControlFlags;
+
+bitflags! {
+    #[repr(C)]
+    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
+    #[doc = "**Chapter**: Queries"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Bitmask of VkQueryResultFlagBits"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`VkQueryResultFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkQueryResultFlags.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`VkQueryResultFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkQueryResultFlagBits.html)"]
+    pub struct QueryResultFlags: u32 {
+        #[doc = "Translated from: `VK_QUERY_RESULT_64_BIT`"]
+        const NUM_64 = 0b1;
+        #[doc = "Translated from: `VK_QUERY_RESULT_WAIT_BIT`"]
+        const WAIT = 0b10;
+        #[doc = "Translated from: `VK_QUERY_RESULT_WITH_AVAILABILITY_BIT`"]
+        const WITH_AVAILABILITY = 0b100;
+        #[doc = "Translated from: `VK_QUERY_RESULT_PARTIAL_BIT`"]
+        const PARTIAL = 0b1000;
+    }
+}
+
+#[doc = "**Chapter**: Queries"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask specifying how and when query results are returned"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkQueryResultFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkQueryResultFlagBits.html)"]
+pub type QueryResultFlagBits = QueryResultFlags;
 
 bitflags! {
     #[repr(C)]
@@ -4817,6 +4913,36 @@ pub struct DescriptorBufferBindingInfoEXT {
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Queries"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure specifying parameters of a newly created query pool"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkQueryPoolCreateInfo`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkQueryPoolCreateInfo.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```
+let query_pool_create_info = vk::QueryPoolCreateInfo {
+    s_type: vk::StructureType::QueryPoolCreateInfo,
+    p_next: null(),
+    flags: todo!("vk::QueryPoolCreateFlags"),
+    query_type: todo!("vk::QueryType"),
+    query_count: todo!("u32"),
+    pipeline_statistics: todo!("vk::QueryPipelineStatisticFlags"),
+};
+```"#]
+pub struct QueryPoolCreateInfo {
+    pub s_type: StructureType,
+    pub p_next: *const c_void,
+    pub flags: QueryPoolCreateFlags,
+    pub query_type: QueryType,
+    pub query_count: u32,
+    pub pipeline_statistics: QueryPipelineStatisticFlags,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
 #[doc = "**Chapter**: Sparse Resources"]
 #[doc = "<br>"]
 #[doc = "**Description**: Structure specifying physical device sparse memory properties"]
@@ -6291,6 +6417,106 @@ pub type CmdSetDescriptorBufferOffsetsEXT = unsafe extern "C" fn(
     set_count: u32,                         //
     p_buffer_indices: *const u32,           //
     p_offsets: *const DeviceSize,           //
+);
+
+#[doc = "**Chapter**: Queries"]
+#[doc = "<br>"]
+#[doc = "**Description**: Create a new query pool object"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkCreateQueryPool`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateQueryPool.html)"]
+pub type CreateQueryPool = unsafe extern "C" fn(
+    device: Device,                            //
+    p_create_info: *const QueryPoolCreateInfo, //
+    p_allocator: *const AllocationCallbacks,   //
+    p_query_pool: *mut QueryPool,              //
+) -> Result;
+
+#[doc = "**Chapter**: Queries"]
+#[doc = "<br>"]
+#[doc = "**Description**: Destroy a query pool object"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkDestroyQueryPool`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroyQueryPool.html)"]
+pub type DestroyQueryPool = unsafe extern "C" fn(
+    device: Device,                          //
+    query_pool: QueryPool,                   //
+    p_allocator: *const AllocationCallbacks, //
+);
+
+#[doc = "**Chapter**: Queries"]
+#[doc = "<br>"]
+#[doc = "**Description**: Reset queries in a query pool"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_2.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkResetQueryPool`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkResetQueryPool.html)"]
+pub type ResetQueryPool = unsafe extern "C" fn(
+    device: Device,        //
+    query_pool: QueryPool, //
+    first_query: u32,      //
+    query_count: u32,      //
+);
+
+#[doc = "**Chapter**: Queries"]
+#[doc = "<br>"]
+#[doc = "**Description**: Begin a query"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkCmdBeginQuery`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdBeginQuery.html)"]
+pub type CmdBeginQuery = unsafe extern "C" fn(
+    command_buffer: CommandBuffer, //
+    query_pool: QueryPool,         //
+    query: u32,                    //
+    flags: QueryControlFlags,      //
+);
+
+#[doc = "**Chapter**: Queries"]
+#[doc = "<br>"]
+#[doc = "**Description**: Ends a query"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkCmdEndQuery`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdEndQuery.html)"]
+pub type CmdEndQuery = unsafe extern "C" fn(
+    command_buffer: CommandBuffer, //
+    query_pool: QueryPool,         //
+    query: u32,                    //
+);
+
+#[doc = "**Chapter**: Queries"]
+#[doc = "<br>"]
+#[doc = "**Description**: Copy results of queries in a query pool to a host memory region"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkGetQueryPoolResults`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetQueryPoolResults.html)"]
+pub type GetQueryPoolResults = unsafe extern "C" fn(
+    device: Device,          //
+    query_pool: QueryPool,   //
+    first_query: u32,        //
+    query_count: u32,        //
+    data_size: usize,        //
+    p_data: *mut c_void,     //
+    stride: DeviceSize,      //
+    flags: QueryResultFlags, //
+) -> Result;
+
+#[doc = "**Chapter**: Queries"]
+#[doc = "<br>"]
+#[doc = "**Description**: Write a device timestamp into a query object"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkCmdWriteTimestamp2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdWriteTimestamp2.html)"]
+pub type CmdWriteTimestamp2 = unsafe extern "C" fn(
+    command_buffer: CommandBuffer, //
+    stage: PipelineStageFlags2,    //
+    query_pool: QueryPool,         //
+    query: u32,                    //
 );
 
 #[doc = "**Chapter**: Dispatching Commands"]

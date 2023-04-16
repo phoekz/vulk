@@ -52,6 +52,14 @@
 //! - [`vk::GetDescriptorEXT`] To get a descriptor to place in a buffer
 //! - [`vk::CmdBindDescriptorBuffersEXT`] Binding descriptor buffers to a command buffer
 //! - [`vk::CmdSetDescriptorBufferOffsetsEXT`] Setting descriptor buffer offsets in a command buffer
+//! ## Queries
+//! - [`vk::CreateQueryPool`] Create a new query pool object
+//! - [`vk::DestroyQueryPool`] Destroy a query pool object
+//! - [`vk::ResetQueryPool`] Reset queries in a query pool
+//! - [`vk::CmdBeginQuery`] Begin a query
+//! - [`vk::CmdEndQuery`] Ends a query
+//! - [`vk::GetQueryPoolResults`] Copy results of queries in a query pool to a host memory region
+//! - [`vk::CmdWriteTimestamp2`] Write a device timestamp into a query object
 //! ## Dispatching Commands
 //! - [`vk::CmdDispatch`] Dispatch compute work items
 //! - [`vk::CmdDispatchIndirect`] Dispatch compute work items with indirect parameters

@@ -328,6 +328,13 @@ pub struct DeviceFunctions {
     pub get_descriptor_ext: vk::GetDescriptorEXT,
     pub cmd_bind_descriptor_buffers_ext: vk::CmdBindDescriptorBuffersEXT,
     pub cmd_set_descriptor_buffer_offsets_ext: vk::CmdSetDescriptorBufferOffsetsEXT,
+    pub create_query_pool: vk::CreateQueryPool,
+    pub destroy_query_pool: vk::DestroyQueryPool,
+    pub reset_query_pool: vk::ResetQueryPool,
+    pub cmd_begin_query: vk::CmdBeginQuery,
+    pub cmd_end_query: vk::CmdEndQuery,
+    pub get_query_pool_results: vk::GetQueryPoolResults,
+    pub cmd_write_timestamp2: vk::CmdWriteTimestamp2,
     pub cmd_dispatch: vk::CmdDispatch,
     pub cmd_dispatch_indirect: vk::CmdDispatchIndirect,
 }
@@ -385,6 +392,13 @@ impl Device {
                 get_descriptor_ext: std::mem::transmute(load(b"vkGetDescriptorEXT\0")?),
                 cmd_bind_descriptor_buffers_ext: std::mem::transmute(load(b"vkCmdBindDescriptorBuffersEXT\0")?),
                 cmd_set_descriptor_buffer_offsets_ext: std::mem::transmute(load(b"vkCmdSetDescriptorBufferOffsetsEXT\0")?),
+                create_query_pool: std::mem::transmute(load(b"vkCreateQueryPool\0")?),
+                destroy_query_pool: std::mem::transmute(load(b"vkDestroyQueryPool\0")?),
+                reset_query_pool: std::mem::transmute(load(b"vkResetQueryPool\0")?),
+                cmd_begin_query: std::mem::transmute(load(b"vkCmdBeginQuery\0")?),
+                cmd_end_query: std::mem::transmute(load(b"vkCmdEndQuery\0")?),
+                get_query_pool_results: std::mem::transmute(load(b"vkGetQueryPoolResults\0")?),
+                cmd_write_timestamp2: std::mem::transmute(load(b"vkCmdWriteTimestamp2\0")?),
                 cmd_dispatch: std::mem::transmute(load(b"vkCmdDispatch\0")?),
                 cmd_dispatch_indirect: std::mem::transmute(load(b"vkCmdDispatchIndirect\0")?),
             },
@@ -909,6 +923,106 @@ impl Device {
         p_offsets: *const vk::DeviceSize,
     ) {
         (self.fns.cmd_set_descriptor_buffer_offsets_ext)(command_buffer, pipeline_bind_point, layout, first_set, set_count, p_buffer_indices, p_offsets);
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Queries"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Create a new query pool object"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkCreateQueryPool`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateQueryPool.html)"]
+    pub unsafe fn create_query_pool(&self, p_create_info: *const vk::QueryPoolCreateInfo) -> Result<vk::QueryPool, Error> {
+        let mut p_query_pool = std::mem::MaybeUninit::uninit();
+        match (self.fns.create_query_pool)(self.handle, p_create_info, std::ptr::null(), p_query_pool.as_mut_ptr()) {
+            vk::Result::Success => Ok(p_query_pool.assume_init()),
+            result => Err(Error::Vulkan(result)),
+        }
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Queries"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Destroy a query pool object"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkDestroyQueryPool`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroyQueryPool.html)"]
+    pub unsafe fn destroy_query_pool(&self, query_pool: vk::QueryPool) {
+        (self.fns.destroy_query_pool)(self.handle, query_pool, std::ptr::null());
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Queries"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Reset queries in a query pool"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_VERSION_1_2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_2.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkResetQueryPool`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkResetQueryPool.html)"]
+    pub unsafe fn reset_query_pool(&self, query_pool: vk::QueryPool, first_query: u32, query_count: u32) {
+        (self.fns.reset_query_pool)(self.handle, query_pool, first_query, query_count);
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Queries"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Begin a query"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkCmdBeginQuery`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdBeginQuery.html)"]
+    pub unsafe fn cmd_begin_query(&self, command_buffer: vk::CommandBuffer, query_pool: vk::QueryPool, query: u32, flags: vk::QueryControlFlags) {
+        (self.fns.cmd_begin_query)(command_buffer, query_pool, query, flags);
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Queries"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Ends a query"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkCmdEndQuery`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdEndQuery.html)"]
+    pub unsafe fn cmd_end_query(&self, command_buffer: vk::CommandBuffer, query_pool: vk::QueryPool, query: u32) {
+        (self.fns.cmd_end_query)(command_buffer, query_pool, query);
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Queries"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Copy results of queries in a query pool to a host memory region"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkGetQueryPoolResults`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetQueryPoolResults.html)"]
+    pub unsafe fn get_query_pool_results(
+        &self,
+        query_pool: vk::QueryPool,
+        first_query: u32,
+        query_count: u32,
+        data_size: usize,
+        p_data: *mut c_void,
+        stride: vk::DeviceSize,
+        flags: vk::QueryResultFlags,
+    ) -> Result<(), Error> {
+        match (self.fns.get_query_pool_results)(self.handle, query_pool, first_query, query_count, data_size, p_data, stride, flags) {
+            vk::Result::Success => Ok(()),
+            result => Err(Error::Vulkan(result)),
+        }
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Queries"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Write a device timestamp into a query object"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkCmdWriteTimestamp2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdWriteTimestamp2.html)"]
+    pub unsafe fn cmd_write_timestamp2(&self, command_buffer: vk::CommandBuffer, stage: vk::PipelineStageFlags2, query_pool: vk::QueryPool, query: u32) {
+        (self.fns.cmd_write_timestamp2)(command_buffer, stage, query_pool, query);
     }
 
     #[inline]

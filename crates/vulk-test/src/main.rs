@@ -3,9 +3,11 @@
 #![deny(clippy::pedantic)]
 #![allow(
     clippy::cast_possible_truncation,
+    clippy::cast_precision_loss,
+    clippy::similar_names,
+    clippy::too_many_arguments,
     clippy::too_many_lines,
-    clippy::wildcard_imports,
-    clippy::too_many_arguments
+    clippy::wildcard_imports
 )]
 
 use std::{
@@ -54,6 +56,8 @@ unsafe fn vulkan() -> Result<()> {
     let indirect_buffer = &create_indirect_buffer(&gpu)?;
     let descriptors = &create_descriptors(&gpu, compute_buffer, indirect_buffer)?;
     let (indirect_shader, compute_shader) = create_shaders(&gpu, compute_buffer, descriptors)?;
+    let timestamps_queries = &create_timestamps_queries(&gpu)?;
+    let pipeline_queries = &create_pipeline_queries(&gpu)?;
 
     // Execute.
     execute(
@@ -64,11 +68,15 @@ unsafe fn vulkan() -> Result<()> {
         compute_buffer,
         indirect_buffer,
         descriptors,
+        timestamps_queries,
+        pipeline_queries,
     )?;
 
     // Destroy.
     {
         let Gpu { device, .. } = &gpu;
+        device.destroy_query_pool(timestamps_queries.query_pool);
+        device.destroy_query_pool(pipeline_queries.query_pool);
         device.destroy_shader_ext(compute_shader);
         device.destroy_shader_ext(indirect_shader);
         device.destroy_descriptor_set_layout(descriptors.set_layout);
@@ -87,6 +95,52 @@ unsafe fn vulkan() -> Result<()> {
     gpu.destroy();
 
     Ok(())
+}
+
+struct TimestampQueries {
+    query_pool: vk::QueryPool,
+    query_pool_create_info: vk::QueryPoolCreateInfo,
+}
+
+unsafe fn create_timestamps_queries(Gpu { device, .. }: &Gpu) -> Result<TimestampQueries> {
+    let query_count = 2;
+    let query_pool_create_info = vk::QueryPoolCreateInfo {
+        s_type: vk::StructureType::QueryPoolCreateInfo,
+        p_next: null(),
+        flags: vk::QueryPoolCreateFlags::empty(),
+        query_type: vk::QueryType::Timestamp,
+        query_count,
+        pipeline_statistics: vk::QueryPipelineStatisticFlags::empty(),
+    };
+    let query_pool = device.create_query_pool(&query_pool_create_info)?;
+    device.reset_query_pool(query_pool, 0, query_count);
+    Ok(TimestampQueries {
+        query_pool,
+        query_pool_create_info,
+    })
+}
+
+struct PipelineQueries {
+    query_pool: vk::QueryPool,
+    query_pool_create_info: vk::QueryPoolCreateInfo,
+}
+
+unsafe fn create_pipeline_queries(Gpu { device, .. }: &Gpu) -> Result<PipelineQueries> {
+    let query_count = 1;
+    let query_pool_create_info = vk::QueryPoolCreateInfo {
+        s_type: vk::StructureType::QueryPoolCreateInfo,
+        p_next: null(),
+        flags: vk::QueryPoolCreateFlags::empty(),
+        query_type: vk::QueryType::PipelineStatistics,
+        query_count,
+        pipeline_statistics: vk::QueryPipelineStatisticFlags::COMPUTE_SHADER_INVOCATIONS,
+    };
+    let query_pool = device.create_query_pool(&query_pool_create_info)?;
+    device.reset_query_pool(query_pool, 0, query_count);
+    Ok(PipelineQueries {
+        query_pool,
+        query_pool_create_info,
+    })
 }
 
 struct Commands {
@@ -413,13 +467,20 @@ unsafe fn create_shaders(
 }
 
 unsafe fn execute(
-    Gpu { device, queue, .. }: &Gpu,
+    Gpu {
+        device,
+        queue,
+        physical_device,
+        ..
+    }: &Gpu,
     commands: &Commands,
     indirect_shader: vk::ShaderEXT,
     compute_shader: vk::ShaderEXT,
     compute_buffer: &ComputeBuffer,
     indirect_buffer: &IndirectBuffer,
     descriptors: &Descriptors,
+    timestamps_queries: &TimestampQueries,
+    pipeline_queries: &PipelineQueries,
 ) -> Result<()> {
     // Begin command buffer.
     let command_buffer = commands.command_buffer;
@@ -432,6 +493,20 @@ unsafe fn execute(
             p_inheritance_info: null(),
         }),
     )?;
+
+    // Begin queries.
+    device.cmd_write_timestamp2(
+        command_buffer,
+        vk::PipelineStageFlags2::TOP_OF_PIPE,
+        timestamps_queries.query_pool,
+        0,
+    );
+    device.cmd_begin_query(
+        command_buffer,
+        pipeline_queries.query_pool,
+        0,
+        vk::QueryControlFlags::empty(),
+    );
 
     // Descriptors.
     {
@@ -508,6 +583,15 @@ unsafe fn execute(
         device.cmd_dispatch_indirect(command_buffer, indirect_buffer.handle, 0);
     }
 
+    // End queries.
+    device.cmd_end_query(command_buffer, pipeline_queries.query_pool, 0);
+    device.cmd_write_timestamp2(
+        command_buffer,
+        vk::PipelineStageFlags2::BOTTOM_OF_PIPE,
+        timestamps_queries.query_pool,
+        1,
+    );
+
     // End command buffer.
     device.end_command_buffer(command_buffer)?;
 
@@ -557,11 +641,50 @@ unsafe fn execute(
     }
 
     // Validate.
-    #[allow(clippy::cast_ptr_alignment)]
-    let p_data = std::slice::from_raw_parts(indirect_buffer.ptr, indirect_buffer.element_count);
-    info!("indirect_buffer={:?}", &p_data);
-    let p_data = std::slice::from_raw_parts(compute_buffer.ptr, compute_buffer.element_count);
-    info!("compute_buffer={:?}", &p_data);
+    {
+        #[allow(clippy::cast_ptr_alignment)]
+        let p_data = std::slice::from_raw_parts(indirect_buffer.ptr, indirect_buffer.element_count);
+        info!("Indirect buffer contents: {:?}", &p_data);
+        let p_data = std::slice::from_raw_parts(compute_buffer.ptr, compute_buffer.element_count);
+        info!("Compute buffer contents:{:?}", &p_data);
+    }
+
+    // Read timestamp.
+    {
+        let query_count = timestamps_queries.query_pool_create_info.query_count;
+        let mut timestamps = vec![0_u64; query_count as _];
+        device.get_query_pool_results(
+            timestamps_queries.query_pool,
+            0,
+            query_count,
+            size_of::<u64>() * query_count as usize,
+            timestamps.as_mut_ptr().cast(),
+            size_of::<u64>() as _,
+            vk::QueryResultFlags::NUM_64 | vk::QueryResultFlags::WAIT,
+        )?;
+        let elapsed = timestamps[1]
+            .checked_sub(timestamps[0])
+            .expect("Later timestamp is larger than earlier timestamp");
+        let elapsed_ns = elapsed as f32 * physical_device.properties.limits.timestamp_period;
+        let elapsed_ms = elapsed_ns / 1e6;
+        info!("Compute shader execution took {elapsed_ms} ms");
+    }
+
+    // Read pipeline statistics.
+    {
+        let query_count = pipeline_queries.query_pool_create_info.query_count;
+        let mut statistics = vec![0_u64; query_count as _];
+        device.get_query_pool_results(
+            pipeline_queries.query_pool,
+            0,
+            query_count,
+            size_of::<u64>() * query_count as usize,
+            statistics.as_mut_ptr().cast(),
+            size_of::<u64>() as _,
+            vk::QueryResultFlags::NUM_64 | vk::QueryResultFlags::WAIT,
+        )?;
+        info!("Compute shader invoked was {} times", statistics[0]);
+    }
 
     Ok(())
 }
