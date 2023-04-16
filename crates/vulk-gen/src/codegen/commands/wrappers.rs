@@ -119,9 +119,9 @@ fn generate_wrappers(
             }
         };
 
-        let (rs_params, rs_params_types, rs_params_idents) = {
+        let (rs_params, vk_params_types, rs_params_idents) = {
             let mut rs_params = vec![];
-            let mut rs_params_types = vec![];
+            let mut vk_params_types = vec![];
             let mut rs_params_idents = vec![];
             for param in &command.params {
                 let vk_param_ident = &param.name;
@@ -135,7 +135,7 @@ fn generate_wrappers(
                     true,
                 )?;
 
-                rs_params_types.push(param.ty.clone());
+                vk_params_types.push((param.ty.clone(), param.text.clone()));
 
                 // Special: hide allocation callbacks from parameter list,
                 // always call the function with std::ptr::null().
@@ -153,11 +153,11 @@ fn generate_wrappers(
             }
             if inline_handles {
                 rs_params.remove(0);
-                rs_params_types.remove(0);
+                vk_params_types.remove(0);
                 rs_params_idents.remove(0);
                 rs_params_idents.insert(0, "self.handle".to_string());
             }
-            (rs_params, rs_params_types, rs_params_idents)
+            (rs_params, vk_params_types, rs_params_idents)
         };
 
         let rs_params_lhs = if let Some((_, rs_params_lhs)) = rs_params.split_last() {
@@ -169,9 +169,9 @@ fn generate_wrappers(
         let (rs_params_idents_last, rs_params_idents_lhs) = rs_params_idents.split_last().unwrap();
         let rs_params_idents_lhs = rs_params_idents_lhs.join(",");
         let rs_params_idents = rs_params_idents.join(",");
-        let rs_params_type_last =
-            if let Some((rs_params_type_last, _)) = rs_params_types.split_last() {
-                Some(rs_params_type_last)
+        let vk_params_type_last =
+            if let Some((vk_params_type_last, _)) = vk_params_types.split_last() {
+                Some(vk_params_type_last)
             } else {
                 None
             };
@@ -216,13 +216,10 @@ fn generate_wrappers(
                 )?;
             }
             analysis::WrapperType::OutputResult => {
-                let rs_output_type = translation::vk_complex_type(
-                    ctx.c_type_map,
-                    rs_params_type_last.unwrap(),
-                    &None,
-                    &None,
-                    true,
-                )?;
+                let (vk_type, vk_text) = vk_params_type_last.unwrap();
+                let vk_text = vk_text_dereference_mut_ptr(vk_text)?;
+                let rs_output_type =
+                    translation::vk_complex_type(ctx.c_type_map, vk_type, &vk_text, &None, true)?;
                 let rs_output_ident = rs_params_idents_last;
                 writeln!(
                     str,
@@ -239,13 +236,10 @@ fn generate_wrappers(
             }
             analysis::WrapperType::Output => {
                 let vk_attr = attributes::Builder::new().must_use().raw(vk_attr).build();
-                let rs_output_type = translation::vk_complex_type(
-                    ctx.c_type_map,
-                    rs_params_type_last.unwrap(),
-                    &None,
-                    &None,
-                    true,
-                )?;
+                let (vk_type, vk_text) = vk_params_type_last.unwrap();
+                let vk_text = vk_text_dereference_mut_ptr(vk_text)?;
+                let rs_output_type =
+                    translation::vk_complex_type(ctx.c_type_map, vk_type, &vk_text, &None, true)?;
                 let rs_output_ident = rs_params_idents_last;
                 writeln!(
                     str,
@@ -264,4 +258,20 @@ fn generate_wrappers(
     }
 
     Ok(str)
+}
+
+fn vk_text_dereference_mut_ptr(vk_text: &Option<String>) -> Result<Option<String>> {
+    let vk_text = if let Some(vk_text) = vk_text {
+        ensure!(vk_text.chars().all(|c| c == '*'));
+        ensure!((1..=2).contains(&vk_text.len()));
+        let vk_text = vk_text.strip_prefix('*').unwrap();
+        if vk_text.is_empty() {
+            None
+        } else {
+            Some(vk_text.to_string())
+        }
+    } else {
+        None
+    };
+    Ok(vk_text)
 }

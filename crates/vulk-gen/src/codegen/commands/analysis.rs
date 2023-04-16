@@ -110,7 +110,7 @@ pub fn wrapper_type(
         let is_c_type = c_type_map.contains_key(param.ty.as_str());
         let is_handle = handle_map.contains(param.ty.as_str());
         let is_base_type = base_type_map.contains(param.ty.as_str());
-        param_type.contains("*mut") && !is_c_type && (is_handle || is_base_type)
+        param_type.contains("*mut") && (is_c_type || is_handle || is_base_type)
     };
 
     let output_param_is_complex = {

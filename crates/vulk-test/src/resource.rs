@@ -107,11 +107,10 @@ impl<T> Buffer<T> {
             offset: 0,
             size: size as _,
         };
-        let mut ptr = MaybeUninit::uninit();
-        device_fn
-            .map_memory2_khr(&memory_map_info_khr, ptr.as_mut_ptr())
-            .context("Mapping device memory")?;
-        let ptr = ptr.assume_init().cast::<T>();
+        let ptr = device_fn
+            .map_memory2_khr(&memory_map_info_khr)
+            .context("Mapping device memory")?
+            .cast();
 
         Ok(Buffer {
             handle: buffer,

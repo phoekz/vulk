@@ -638,9 +638,10 @@ impl Device {
     #[doc = "Description: Map a memory object into application address space"]
     #[doc = "<br>"]
     #[doc = "Reference: [`vkMapMemory2KHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkMapMemory2KHR.html)"]
-    pub unsafe fn map_memory2_khr(&self, p_memory_map_info: *const vk::MemoryMapInfoKHR, pp_data: *mut *mut c_void) -> Result<(), Error> {
-        match (self.fns.map_memory2_khr)(self.handle, p_memory_map_info, pp_data) {
-            vk::Result::Success => Ok(()),
+    pub unsafe fn map_memory2_khr(&self, p_memory_map_info: *const vk::MemoryMapInfoKHR) -> Result<*mut c_void, Error> {
+        let mut pp_data = std::mem::MaybeUninit::uninit();
+        match (self.fns.map_memory2_khr)(self.handle, p_memory_map_info, pp_data.as_mut_ptr()) {
+            vk::Result::Success => Ok(pp_data.assume_init()),
             result => Err(Error::Vulkan(result)),
         }
     }
