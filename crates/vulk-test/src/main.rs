@@ -18,7 +18,7 @@ use std::{
     time::Instant,
 };
 
-use anyhow::{Context, Result};
+use anyhow::{ensure, Context, Result};
 use gpu::Gpu;
 use log::{info, log, warn};
 use vulk::vk;
@@ -50,7 +50,7 @@ fn main() -> Result<()> {
 
 unsafe fn vulkan() -> Result<()> {
     // Create.
-    let gpu = Gpu::create()?;
+    let gpu = Gpu::create().context("Creating Gpu")?;
     let commands = &create_commands(&gpu)?;
     let compute_buffer = &create_compute_buffer(&gpu)?;
     let indirect_buffer = &create_indirect_buffer(&gpu)?;
@@ -662,12 +662,16 @@ unsafe fn execute(
             size_of::<u64>() as _,
             vk::QueryResultFlags::NUM_64 | vk::QueryResultFlags::WAIT,
         )?;
+
         let elapsed = timestamps[1]
             .checked_sub(timestamps[0])
             .expect("Later timestamp is larger than earlier timestamp");
         let elapsed_ns = elapsed as f32 * physical_device.properties.limits.timestamp_period;
         let elapsed_ms = elapsed_ns / 1e6;
-        info!("Compute shader execution took {elapsed_ms} ms");
+        info!(
+            "Compute shader execution took {elapsed_ms} ms ({:?})",
+            timestamps
+        );
     }
 
     // Read pipeline statistics.

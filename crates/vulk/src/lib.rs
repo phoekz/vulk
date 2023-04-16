@@ -27,6 +27,7 @@
 //! - [`vk::CmdPipelineBarrier2`] Insert a memory dependency
 //! - [`vk::QueueWaitIdle`] Wait for a queue to become idle
 //! - [`vk::DeviceWaitIdle`] Wait for a device to become idle
+//! - [`vk::GetCalibratedTimestampsEXT`] Query calibrated timestamps
 //! ## Shaders
 //! - [`vk::CreateShadersEXT`] Create one or more new shaders
 //! - [`vk::CmdBindShadersEXT`] Bind shader objects to a command buffer
@@ -63,6 +64,8 @@
 //! ## Dispatching Commands
 //! - [`vk::CmdDispatch`] Dispatch compute work items
 //! - [`vk::CmdDispatchIndirect`] Dispatch compute work items with indirect parameters
+//! ## Additional Capabilities
+//! - [`vk::GetPhysicalDeviceCalibrateableTimeDomainsEXT`] Query calibrateable time domains
 //! ## Debugging
 //! - [`vk::CreateDebugUtilsMessengerEXT`] Create a debug messenger object
 //! - [`vk::DestroyDebugUtilsMessengerEXT`] Destroy a debug messenger object

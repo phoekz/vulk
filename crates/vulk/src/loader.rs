@@ -101,6 +101,7 @@ pub struct InstanceFunctions {
     pub get_physical_device_queue_family_properties2: vk::GetPhysicalDeviceQueueFamilyProperties2,
     pub create_device: vk::CreateDevice,
     pub get_physical_device_memory_properties2: vk::GetPhysicalDeviceMemoryProperties2,
+    pub get_physical_device_calibrateable_time_domains_ext: vk::GetPhysicalDeviceCalibrateableTimeDomainsEXT,
     pub create_debug_utils_messenger_ext: vk::CreateDebugUtilsMessengerEXT,
     pub destroy_debug_utils_messenger_ext: vk::DestroyDebugUtilsMessengerEXT,
 }
@@ -129,6 +130,7 @@ impl Instance {
                 get_physical_device_queue_family_properties2: std::mem::transmute(load(b"vkGetPhysicalDeviceQueueFamilyProperties2\0")?),
                 create_device: std::mem::transmute(load(b"vkCreateDevice\0")?),
                 get_physical_device_memory_properties2: std::mem::transmute(load(b"vkGetPhysicalDeviceMemoryProperties2\0")?),
+                get_physical_device_calibrateable_time_domains_ext: std::mem::transmute(load(b"vkGetPhysicalDeviceCalibrateableTimeDomainsEXT\0")?),
                 create_debug_utils_messenger_ext: std::mem::transmute(load(b"vkCreateDebugUtilsMessengerEXT\0")?),
                 destroy_debug_utils_messenger_ext: std::mem::transmute(load(b"vkDestroyDebugUtilsMessengerEXT\0")?),
             },
@@ -244,6 +246,26 @@ impl Instance {
     }
 
     #[inline]
+    #[doc = "**Chapter**: Additional Capabilities"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Query calibrateable time domains"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_EXT_calibrated_timestamps`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_calibrated_timestamps.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkGetPhysicalDeviceCalibrateableTimeDomainsEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceCalibrateableTimeDomainsEXT.html)"]
+    pub unsafe fn get_physical_device_calibrateable_time_domains_ext(
+        &self,
+        physical_device: vk::PhysicalDevice,
+        p_time_domain_count: *mut u32,
+        p_time_domains: *mut vk::TimeDomainEXT,
+    ) -> Result<(), Error> {
+        match (self.fns.get_physical_device_calibrateable_time_domains_ext)(physical_device, p_time_domain_count, p_time_domains) {
+            vk::Result::Success => Ok(()),
+            result => Err(Error::Vulkan(result)),
+        }
+    }
+
+    #[inline]
     #[doc = "**Chapter**: Debugging"]
     #[doc = "<br>"]
     #[doc = "**Description**: Create a debug messenger object"]
@@ -293,6 +315,7 @@ pub struct DeviceFunctions {
     pub cmd_pipeline_barrier2: vk::CmdPipelineBarrier2,
     pub queue_wait_idle: vk::QueueWaitIdle,
     pub device_wait_idle: vk::DeviceWaitIdle,
+    pub get_calibrated_timestamps_ext: vk::GetCalibratedTimestampsEXT,
     pub create_shaders_ext: vk::CreateShadersEXT,
     pub cmd_bind_shaders_ext: vk::CmdBindShadersEXT,
     pub destroy_shader_ext: vk::DestroyShaderEXT,
@@ -357,6 +380,7 @@ impl Device {
                 cmd_pipeline_barrier2: std::mem::transmute(load(b"vkCmdPipelineBarrier2\0")?),
                 queue_wait_idle: std::mem::transmute(load(b"vkQueueWaitIdle\0")?),
                 device_wait_idle: std::mem::transmute(load(b"vkDeviceWaitIdle\0")?),
+                get_calibrated_timestamps_ext: std::mem::transmute(load(b"vkGetCalibratedTimestampsEXT\0")?),
                 create_shaders_ext: std::mem::transmute(load(b"vkCreateShadersEXT\0")?),
                 cmd_bind_shaders_ext: std::mem::transmute(load(b"vkCmdBindShadersEXT\0")?),
                 destroy_shader_ext: std::mem::transmute(load(b"vkDestroyShaderEXT\0")?),
@@ -623,6 +647,27 @@ impl Device {
     #[doc = "**Reference**: [`vkDeviceWaitIdle`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDeviceWaitIdle.html)"]
     pub unsafe fn device_wait_idle(&self) -> Result<(), Error> {
         match (self.fns.device_wait_idle)(self.handle) {
+            vk::Result::Success => Ok(()),
+            result => Err(Error::Vulkan(result)),
+        }
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Synchronization and Cache Control"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Query calibrated timestamps"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_EXT_calibrated_timestamps`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_calibrated_timestamps.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkGetCalibratedTimestampsEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetCalibratedTimestampsEXT.html)"]
+    pub unsafe fn get_calibrated_timestamps_ext(
+        &self,
+        timestamp_count: u32,
+        p_timestamp_infos: *const vk::CalibratedTimestampInfoEXT,
+        p_timestamps: *mut u64,
+        p_max_deviation: *mut u64,
+    ) -> Result<(), Error> {
+        match (self.fns.get_calibrated_timestamps_ext)(self.handle, timestamp_count, p_timestamp_infos, p_timestamps, p_max_deviation) {
             vk::Result::Success => Ok(()),
             result => Err(Error::Vulkan(result)),
         }

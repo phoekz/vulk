@@ -1413,6 +1413,8 @@ pub enum StructureType {
     DebugUtilsMessengerCallbackDataEXT = 1000128003,
     #[doc = "**Translated from**: `VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT`"]
     DebugUtilsMessengerCreateInfoEXT = 1000128004,
+    #[doc = "**Translated from**: `VK_STRUCTURE_TYPE_CALIBRATED_TIMESTAMP_INFO_EXT`"]
+    CalibratedTimestampInfoEXT = 1000184000,
     #[doc = "**Translated from**: `VK_STRUCTURE_TYPE_VALIDATION_FEATURES_EXT`"]
     ValidationFeaturesEXT = 1000247000,
     #[doc = "**Translated from**: `VK_STRUCTURE_TYPE_MEMORY_MAP_INFO_KHR`"]
@@ -1559,6 +1561,26 @@ pub enum SemaphoreType {
     Binary = 0,
     #[doc = "**Translated from**: `VK_SEMAPHORE_TYPE_TIMELINE`"]
     Timeline = 1,
+}
+
+#[repr(i32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[doc = "**Chapter**: Synchronization and Cache Control"]
+#[doc = "<br>"]
+#[doc = "**Description**: Supported time domains"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_EXT_calibrated_timestamps`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_calibrated_timestamps.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkTimeDomainEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkTimeDomainEXT.html)"]
+pub enum TimeDomainEXT {
+    #[doc = "**Translated from**: `VK_TIME_DOMAIN_DEVICE_EXT`"]
+    DeviceEXT = 0,
+    #[doc = "**Translated from**: `VK_TIME_DOMAIN_CLOCK_MONOTONIC_EXT`"]
+    ClockMonotonicEXT = 1,
+    #[doc = "**Translated from**: `VK_TIME_DOMAIN_CLOCK_MONOTONIC_RAW_EXT`"]
+    ClockMonotonicRawEXT = 2,
+    #[doc = "**Translated from**: `VK_TIME_DOMAIN_QUERY_PERFORMANCE_COUNTER_EXT`"]
+    QueryPerformanceCounterEXT = 3,
 }
 
 #[repr(i32)]
@@ -4181,6 +4203,30 @@ pub struct ImageMemoryBarrier2 {
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Synchronization and Cache Control"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure specifying the input parameters of a calibrated timestamp query"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_EXT_calibrated_timestamps`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_calibrated_timestamps.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkCalibratedTimestampInfoEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkCalibratedTimestampInfoEXT.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```
+let calibrated_timestamp_info_ext = vk::CalibratedTimestampInfoEXT {
+    s_type: vk::StructureType::CalibratedTimestampInfoEXT,
+    p_next: null(),
+    time_domain: todo!("vk::TimeDomainEXT"),
+};
+```"#]
+pub struct CalibratedTimestampInfoEXT {
+    pub s_type: StructureType,
+    pub p_next: *const c_void,
+    pub time_domain: TimeDomainEXT,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
 #[doc = "**Chapter**: Shaders"]
 #[doc = "<br>"]
 #[doc = "**Description**: Structure specifying parameters of a newly created shader"]
@@ -6137,6 +6183,21 @@ pub type DeviceWaitIdle = unsafe extern "C" fn(
     device: Device, //
 ) -> Result;
 
+#[doc = "**Chapter**: Synchronization and Cache Control"]
+#[doc = "<br>"]
+#[doc = "**Description**: Query calibrated timestamps"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_EXT_calibrated_timestamps`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_calibrated_timestamps.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkGetCalibratedTimestampsEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetCalibratedTimestampsEXT.html)"]
+pub type GetCalibratedTimestampsEXT = unsafe extern "C" fn(
+    device: Device,                                       //
+    timestamp_count: u32,                                 //
+    p_timestamp_infos: *const CalibratedTimestampInfoEXT, //
+    p_timestamps: *mut u64,                               //
+    p_max_deviation: *mut u64,                            //
+) -> Result;
+
 #[doc = "**Chapter**: Shaders"]
 #[doc = "<br>"]
 #[doc = "**Description**: Create one or more new shaders"]
@@ -6545,6 +6606,19 @@ pub type CmdDispatchIndirect = unsafe extern "C" fn(
     buffer: Buffer,                //
     offset: DeviceSize,            //
 );
+
+#[doc = "**Chapter**: Additional Capabilities"]
+#[doc = "<br>"]
+#[doc = "**Description**: Query calibrateable time domains"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_EXT_calibrated_timestamps`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_calibrated_timestamps.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkGetPhysicalDeviceCalibrateableTimeDomainsEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceCalibrateableTimeDomainsEXT.html)"]
+pub type GetPhysicalDeviceCalibrateableTimeDomainsEXT = unsafe extern "C" fn(
+    physical_device: PhysicalDevice,    //
+    p_time_domain_count: *mut u32,      //
+    p_time_domains: *mut TimeDomainEXT, //
+) -> Result;
 
 #[doc = "**Chapter**: Debugging"]
 #[doc = "<br>"]
