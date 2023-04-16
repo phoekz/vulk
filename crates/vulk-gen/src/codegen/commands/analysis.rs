@@ -1,7 +1,7 @@
 use super::*;
 
 pub struct CommandGroups<'a> {
-    pub loader: Vec<&'a registry::Command>,
+    pub init: Vec<&'a registry::Command>,
     pub instance: Vec<&'a registry::Command>,
     pub device: Vec<&'a registry::Command>,
 }
@@ -18,7 +18,7 @@ pub fn group_by_loader(registry: &Registry) -> CommandGroups<'_> {
     }
 
     // Group commands.
-    let mut loader = vec![];
+    let mut init = vec![];
     let mut instance = vec![];
     let mut device = vec![];
     for command in &registry.commands {
@@ -33,7 +33,7 @@ pub fn group_by_loader(registry: &Registry) -> CommandGroups<'_> {
             // suggests.
             let mut curr = match command.name.as_str() {
                 "vkGetInstanceProcAddr" => {
-                    loader.push(command);
+                    init.push(command);
                     continue;
                 }
                 "vkGetDeviceProcAddr" => {
@@ -62,12 +62,12 @@ pub fn group_by_loader(registry: &Registry) -> CommandGroups<'_> {
         } else {
             // Assumption: commands with an unrecognizable first param type
             // are assumed to be loadable by the loader-group.
-            loader.push(command);
+            init.push(command);
         }
     }
 
     CommandGroups {
-        loader,
+        init,
         instance,
         device,
     }

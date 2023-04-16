@@ -18,10 +18,7 @@ use std::{
 
 use anyhow::{Context, Result};
 use log::{info, log, warn};
-use vulk::{
-    loader::{DeviceFunctions, InstanceFunctions, LoaderFunctions},
-    vk,
-};
+use vulk::vk;
 
 mod resource;
 mod shader;
@@ -49,29 +46,22 @@ fn main() -> Result<()> {
 
 unsafe fn vulkan() -> Result<()> {
     // Create.
-    let loader_fn = &LoaderFunctions::load()?;
-    let (ref instance_fn, instance) = create_instance(loader_fn)?;
-    let debug_utils_messenger = create_debug_utils_messenger(instance_fn, instance)?;
-    let physical_device = &create_physical_device(instance_fn, instance)?;
+    let init = &vulk::Init::load()?;
+    let instance = &create_instance(init)?;
+    let debug_utils_messenger = create_debug_utils_messenger(instance)?;
+    let physical_device = &create_physical_device(instance)?;
     let queue_family = &create_queue_family(physical_device)?;
-    let (ref device_fn, device) = create_device(instance_fn, physical_device, queue_family)?;
-    let queue = create_queue(device_fn, device, queue_family);
-    let commands = &create_commands(device_fn, device, queue_family)?;
-    let compute_buffer = &create_compute_buffer(device_fn, physical_device, device)?;
-    let indirect_buffer = &create_indirect_buffer(device_fn, physical_device, device)?;
-    let descriptors = &create_descriptors(
-        device_fn,
-        physical_device,
-        device,
-        compute_buffer,
-        indirect_buffer,
-    )?;
-    let (indirect_shader, compute_shader) =
-        create_shaders(device_fn, device, compute_buffer, descriptors)?;
+    let device = &create_device(instance, physical_device, queue_family)?;
+    let queue = create_queue(device, queue_family);
+    let commands = &create_commands(device, queue_family)?;
+    let compute_buffer = &create_compute_buffer(device, physical_device)?;
+    let indirect_buffer = &create_indirect_buffer(device, physical_device)?;
+    let descriptors =
+        &create_descriptors(device, physical_device, compute_buffer, indirect_buffer)?;
+    let (indirect_shader, compute_shader) = create_shaders(device, compute_buffer, descriptors)?;
 
     // Execute.
     execute(
-        device_fn,
         device,
         queue,
         commands,
@@ -83,23 +73,23 @@ unsafe fn vulkan() -> Result<()> {
     )?;
 
     // Destroy.
-    device_fn.destroy_shader_ext(compute_shader, null());
-    device_fn.destroy_shader_ext(indirect_shader, null());
-    device_fn.destroy_descriptor_set_layout(descriptors.set_layout, null());
-    device_fn.destroy_pipeline_layout(descriptors.pipeline_layout, null());
-    compute_buffer.destroy(device_fn, device);
-    indirect_buffer.destroy(device_fn, device);
-    descriptors.buffer.destroy(device_fn, device);
-    device_fn.destroy_semaphore(commands.semaphore, null());
-    device_fn.free_command_buffers(
+    device.destroy_shader_ext(compute_shader);
+    device.destroy_shader_ext(indirect_shader);
+    device.destroy_descriptor_set_layout(descriptors.set_layout);
+    device.destroy_pipeline_layout(descriptors.pipeline_layout);
+    compute_buffer.destroy(device);
+    indirect_buffer.destroy(device);
+    descriptors.buffer.destroy(device);
+    device.destroy_semaphore(commands.semaphore);
+    device.free_command_buffers(
         commands.command_pool,
         1,
         addr_of!(commands.command_buffer).cast(),
     );
-    device_fn.destroy_command_pool(commands.command_pool, null());
-    device_fn.destroy_device(null());
-    instance_fn.destroy_debug_utils_messenger_ext(debug_utils_messenger, null());
-    instance_fn.destroy_instance(null());
+    device.destroy_command_pool(commands.command_pool);
+    device.destroy_device();
+    instance.destroy_debug_utils_messenger_ext(debug_utils_messenger);
+    instance.destroy_instance();
 
     Ok(())
 }
@@ -183,9 +173,7 @@ unsafe extern "C" fn debug_utils_messenger_callback(
     vk::FALSE
 }
 
-unsafe fn create_instance(
-    loader_fn: &LoaderFunctions,
-) -> Result<(InstanceFunctions, vk::Instance)> {
+unsafe fn create_instance(init: &vulk::Init) -> Result<vulk::Instance> {
     // Instance-specific debug messenger.
     let debug_utils_messenger_create_info_ext = vk::DebugUtilsMessengerCreateInfoEXT {
         s_type: vk::StructureType::DebugUtilsMessengerCreateInfoEXT,
@@ -239,15 +227,14 @@ unsafe fn create_instance(
     };
 
     // Create.
-    let instance = loader_fn.create_instance(&instance_create_info, null())?;
-    let instance_fn = InstanceFunctions::load(loader_fn, instance)?;
+    let instance = init.create_instance(&instance_create_info)?;
+    let instance = vulk::Instance::load(init, instance)?;
 
-    Ok((instance_fn, instance))
+    Ok(instance)
 }
 
 unsafe fn create_debug_utils_messenger(
-    instance_fn: &InstanceFunctions,
-    instance: vk::Instance,
+    instance: &vulk::Instance,
 ) -> Result<vk::DebugUtilsMessengerEXT> {
     let debug_utils_messenger_create_info_ext = vk::DebugUtilsMessengerCreateInfoEXT {
         s_type: vk::StructureType::DebugUtilsMessengerCreateInfoEXT,
@@ -258,8 +245,8 @@ unsafe fn create_debug_utils_messenger(
         pfn_user_callback: debug_utils_messenger_callback as _,
         p_user_data: null_mut(),
     };
-    instance_fn
-        .create_debug_utils_messenger_ext(&debug_utils_messenger_create_info_ext, null())
+    instance
+        .create_debug_utils_messenger_ext(&debug_utils_messenger_create_info_ext)
         .map_err(Into::into)
 }
 
@@ -272,15 +259,12 @@ struct PhysicalDevice {
     descriptor_buffer_properties_ext: vk::PhysicalDeviceDescriptorBufferPropertiesEXT,
 }
 
-unsafe fn create_physical_device(
-    instance_fn: &InstanceFunctions,
-    instance: vk::Instance,
-) -> Result<PhysicalDevice> {
+unsafe fn create_physical_device(instance: &vulk::Instance) -> Result<PhysicalDevice> {
     // Enumerate physical devices.
     let mut physical_device_count = 0;
-    instance_fn.enumerate_physical_devices(&mut physical_device_count, null_mut())?;
+    instance.enumerate_physical_devices(&mut physical_device_count, null_mut())?;
     let mut physical_devices = Vec::with_capacity(physical_device_count as _);
-    instance_fn
+    instance
         .enumerate_physical_devices(&mut physical_device_count, physical_devices.as_mut_ptr())?;
     physical_devices.set_len(physical_device_count as _);
     info!("Found {} physical devices", physical_devices.len());
@@ -332,11 +316,11 @@ unsafe fn create_physical_device(
     };
 
     let physical_device = physical_devices[0];
-    instance_fn.get_physical_device_properties2(physical_device, &mut physical_device_properties2);
+    instance.get_physical_device_properties2(physical_device, &mut physical_device_properties2);
 
     // Queue family properties.
     let mut queue_family_property_count = 0;
-    instance_fn.get_physical_device_queue_family_properties2(
+    instance.get_physical_device_queue_family_properties2(
         physical_device,
         &mut queue_family_property_count,
         null_mut(),
@@ -349,7 +333,7 @@ unsafe fn create_physical_device(
         };
         queue_family_property_count as _
     ];
-    instance_fn.get_physical_device_queue_family_properties2(
+    instance.get_physical_device_queue_family_properties2(
         physical_device,
         &mut queue_family_property_count,
         queue_family_properties.as_mut_ptr(),
@@ -361,7 +345,7 @@ unsafe fn create_physical_device(
         p_next: null_mut(),
         memory_properties: zeroed(),
     };
-    instance_fn.get_physical_device_memory_properties2(
+    instance.get_physical_device_memory_properties2(
         physical_device,
         &mut physical_device_memory_properties2,
     );
@@ -408,10 +392,10 @@ unsafe fn create_queue_family(physical_device: &PhysicalDevice) -> Result<QueueF
 }
 
 unsafe fn create_device(
-    instance_fn: &InstanceFunctions,
+    instance: &vulk::Instance,
     physical_device: &PhysicalDevice,
     queue_family: &QueueFamily,
-) -> Result<(DeviceFunctions, vk::Device)> {
+) -> Result<vulk::Device> {
     // Queue create info.
     let device_queue_create_info = vk::DeviceQueueCreateInfo {
         s_type: vk::StructureType::DeviceQueueCreateInfo,
@@ -592,17 +576,13 @@ unsafe fn create_device(
     };
 
     // Create.
-    let device = instance_fn.create_device(physical_device.handle, &device_create_info, null())?;
-    let device_fn = DeviceFunctions::load(instance_fn, device)?;
+    let device = instance.create_device(physical_device.handle, &device_create_info)?;
+    let device = vulk::Device::load(instance, device)?;
 
-    Ok((device_fn, device))
+    Ok(device)
 }
 
-unsafe fn create_queue(
-    device_fn: &DeviceFunctions,
-    device: vk::Device,
-    queue_family: &QueueFamily,
-) -> vulk::vk::Queue {
+unsafe fn create_queue(device: &vulk::Device, queue_family: &QueueFamily) -> vulk::vk::Queue {
     let device_queue_info2 = vk::DeviceQueueInfo2 {
         s_type: vk::StructureType::DeviceQueueInfo2,
         p_next: null(),
@@ -611,7 +591,7 @@ unsafe fn create_queue(
         queue_index: 0,
     };
     let mut queue = MaybeUninit::uninit();
-    device_fn.get_device_queue2(&device_queue_info2, queue.as_mut_ptr());
+    device.get_device_queue2(&device_queue_info2, queue.as_mut_ptr());
     queue.assume_init()
 }
 
@@ -621,11 +601,7 @@ struct Commands {
     semaphore: vk::Semaphore,
 }
 
-unsafe fn create_commands(
-    device_fn: &DeviceFunctions,
-    device: vk::Device,
-    queue_family: &QueueFamily,
-) -> Result<Commands> {
+unsafe fn create_commands(device: &vulk::Device, queue_family: &QueueFamily) -> Result<Commands> {
     // Command pool.
     let command_pool = {
         let command_pool_create_info = vk::CommandPoolCreateInfo {
@@ -634,8 +610,8 @@ unsafe fn create_commands(
             flags: vk::CommandPoolCreateFlags::empty(),
             queue_family_index: queue_family.index,
         };
-        let command_pool = device_fn.create_command_pool(&command_pool_create_info, null())?;
-        device_fn.reset_command_pool(command_pool, vk::CommandPoolResetFlags::empty())?;
+        let command_pool = device.create_command_pool(&command_pool_create_info)?;
+        device.reset_command_pool(command_pool, vk::CommandPoolResetFlags::empty())?;
         command_pool
     };
 
@@ -649,7 +625,7 @@ unsafe fn create_commands(
             command_buffer_count: 1,
         };
         let mut command_buffer = MaybeUninit::uninit();
-        device_fn
+        device
             .allocate_command_buffers(&command_buffer_allocate_info, command_buffer.as_mut_ptr())?;
         command_buffer.assume_init()
     };
@@ -666,7 +642,7 @@ unsafe fn create_commands(
         p_next: addr_of!(semaphore_type_create_info).cast(),
         flags: vk::SemaphoreCreateFlags::empty(),
     };
-    let semaphore = device_fn.create_semaphore(addr_of!(semaphore_create_info).cast(), null())?;
+    let semaphore = device.create_semaphore(addr_of!(semaphore_create_info).cast())?;
 
     Ok(Commands {
         command_pool,
@@ -695,21 +671,13 @@ fn memory_type_index(
 type ComputeBuffer = resource::Buffer<u32>;
 
 unsafe fn create_compute_buffer(
-    device_fn: &DeviceFunctions,
+    device: &vulk::Device,
     physical_device: &PhysicalDevice,
-    device: vk::Device,
 ) -> Result<ComputeBuffer> {
     let element_count = 8;
     let usage = vk::BufferUsageFlags::STORAGE_BUFFER;
     let flags = vk::MemoryPropertyFlags::HOST_VISIBLE | vk::MemoryPropertyFlags::HOST_COHERENT;
-    let buffer = ComputeBuffer::create(
-        device_fn,
-        device,
-        physical_device,
-        element_count,
-        usage,
-        flags,
-    )?;
+    let buffer = ComputeBuffer::create(device, physical_device, element_count, usage, flags)?;
     Ok(buffer)
 }
 
@@ -724,21 +692,13 @@ struct IndirectDispatch {
 type IndirectBuffer = resource::Buffer<IndirectDispatch>;
 
 unsafe fn create_indirect_buffer(
-    device_fn: &DeviceFunctions,
+    device: &vulk::Device,
     physical_device: &PhysicalDevice,
-    device: vk::Device,
 ) -> Result<IndirectBuffer> {
     let element_count = 1;
     let usage = vk::BufferUsageFlags::INDIRECT_BUFFER;
     let flags = vk::MemoryPropertyFlags::HOST_VISIBLE | vk::MemoryPropertyFlags::HOST_COHERENT;
-    let buffer = IndirectBuffer::create(
-        device_fn,
-        device,
-        physical_device,
-        element_count,
-        usage,
-        flags,
-    )?;
+    let buffer = IndirectBuffer::create(device, physical_device, element_count, usage, flags)?;
     Ok(buffer)
 }
 
@@ -751,9 +711,8 @@ struct Descriptors {
 }
 
 unsafe fn create_descriptors(
-    device_fn: &DeviceFunctions,
+    device: &vulk::Device,
     physical_device: &PhysicalDevice,
-    device: vk::Device,
     compute_buffer: &ComputeBuffer,
     indirect_buffer: &IndirectBuffer,
 ) -> Result<Descriptors> {
@@ -782,23 +741,16 @@ unsafe fn create_descriptors(
         p_bindings: bindings.as_ptr(),
     };
     let descriptor_set_layout =
-        device_fn.create_descriptor_set_layout(&descriptor_set_layout_create_info, null())?;
+        device.create_descriptor_set_layout(&descriptor_set_layout_create_info)?;
 
     // Descriptor buffer.
     let mut buffer_size = MaybeUninit::uninit();
-    device_fn.get_descriptor_set_layout_size_ext(descriptor_set_layout, buffer_size.as_mut_ptr());
+    device.get_descriptor_set_layout_size_ext(descriptor_set_layout, buffer_size.as_mut_ptr());
     let buffer_size = buffer_size.assume_init();
     info!("Descriptor buffer size={buffer_size}");
     let usage = vk::BufferUsageFlags::STORAGE_BUFFER;
     let flags = vk::MemoryPropertyFlags::HOST_VISIBLE | vk::MemoryPropertyFlags::HOST_COHERENT;
-    let buffer = DescriptorBuffer::create(
-        device_fn,
-        device,
-        physical_device,
-        buffer_size as _,
-        usage,
-        flags,
-    )?;
+    let buffer = DescriptorBuffer::create(device, physical_device, buffer_size as _, usage, flags)?;
 
     // Descriptors.
     let storage_buffer_descriptor_size = physical_device
@@ -826,7 +778,7 @@ unsafe fn create_descriptors(
                 p_storage_buffer: addr_of!(descriptor_address_info_ext).cast(),
             },
         };
-        device_fn.get_descriptor_ext(
+        device.get_descriptor_ext(
             &descriptor_get_info_ext,
             storage_buffer_descriptor_size,
             buffer
@@ -847,7 +799,7 @@ unsafe fn create_descriptors(
         push_constant_range_count: 0,
         p_push_constant_ranges: null(),
     };
-    let pipeline_layout = device_fn.create_pipeline_layout(&pipeline_layout_create_info, null())?;
+    let pipeline_layout = device.create_pipeline_layout(&pipeline_layout_create_info)?;
 
     Ok(Descriptors {
         set_layout: descriptor_set_layout,
@@ -857,8 +809,7 @@ unsafe fn create_descriptors(
 }
 
 unsafe fn create_shaders(
-    device_fn: &DeviceFunctions,
-    device: vk::Device,
+    device: &vulk::Device,
     compute_buffer: &ComputeBuffer,
     descriptors: &Descriptors,
 ) -> Result<(vk::ShaderEXT, vk::ShaderEXT)> {
@@ -928,10 +879,9 @@ unsafe fn create_shaders(
             p_specialization_info: null(),
         };
         let mut shader = MaybeUninit::uninit();
-        device_fn.create_shaders_ext(
+        device.create_shaders_ext(
             1,
             addr_of!(shader_create_info_ext).cast(),
-            null(),
             shader.as_mut_ptr(),
         )?;
         shader.assume_init()
@@ -969,10 +919,9 @@ unsafe fn create_shaders(
             p_specialization_info: addr_of!(specialization_info).cast(),
         };
         let mut shader = MaybeUninit::uninit();
-        device_fn.create_shaders_ext(
+        device.create_shaders_ext(
             1,
             addr_of!(shader_create_info_ext).cast(),
-            null(),
             shader.as_mut_ptr(),
         )?;
         shader.assume_init()
@@ -982,8 +931,7 @@ unsafe fn create_shaders(
 }
 
 unsafe fn execute(
-    device_fn: &DeviceFunctions,
-    device: vk::Device,
+    device: &vulk::Device,
     queue: vk::Queue,
     commands: &Commands,
     indirect_shader: vk::ShaderEXT,
@@ -1000,7 +948,7 @@ unsafe fn execute(
         p_inheritance_info: null(),
     };
     let command_buffer = commands.command_buffer;
-    device_fn.begin_command_buffer(command_buffer, &command_buffer_begin_info)?;
+    device.begin_command_buffer(command_buffer, &command_buffer_begin_info)?;
 
     // Descriptors.
     let descriptor_buffer_binding_info_ext = vk::DescriptorBufferBindingInfoEXT {
@@ -1010,14 +958,14 @@ unsafe fn execute(
         usage: vk::BufferUsageFlags::STORAGE_BUFFER | vk::BufferUsageFlags::INDIRECT_BUFFER,
     };
     let binding_infos = [descriptor_buffer_binding_info_ext];
-    device_fn.cmd_bind_descriptor_buffers_ext(
+    device.cmd_bind_descriptor_buffers_ext(
         command_buffer,
         binding_infos.len() as _,
         binding_infos.as_ptr(),
     );
     let buffer_indices = [0];
     let offsets = [0];
-    device_fn.cmd_set_descriptor_buffer_offsets_ext(
+    device.cmd_set_descriptor_buffer_offsets_ext(
         command_buffer,
         vk::PipelineBindPoint::Compute,
         descriptors.pipeline_layout,
@@ -1029,13 +977,13 @@ unsafe fn execute(
 
     // Dispatch indirect shader.
     let stages = [vk::ShaderStageFlagBits::COMPUTE];
-    device_fn.cmd_bind_shaders_ext(
+    device.cmd_bind_shaders_ext(
         command_buffer,
         stages.len() as _,
         stages.as_ptr(),
         addr_of!(indirect_shader),
     );
-    device_fn.cmd_dispatch(command_buffer, 1, 1, 1);
+    device.cmd_dispatch(command_buffer, 1, 1, 1);
 
     // Synchronize.
     {
@@ -1058,21 +1006,21 @@ unsafe fn execute(
             image_memory_barrier_count: 0,
             p_image_memory_barriers: null(),
         };
-        device_fn.cmd_pipeline_barrier2(command_buffer, &dependency_info);
+        device.cmd_pipeline_barrier2(command_buffer, &dependency_info);
     }
 
     // Dispatch compute shader.
     let stages = [vk::ShaderStageFlagBits::COMPUTE];
-    device_fn.cmd_bind_shaders_ext(
+    device.cmd_bind_shaders_ext(
         command_buffer,
         stages.len() as _,
         stages.as_ptr(),
         addr_of!(compute_shader),
     );
-    device_fn.cmd_dispatch_indirect(command_buffer, indirect_buffer.handle, 0);
+    device.cmd_dispatch_indirect(command_buffer, indirect_buffer.handle, 0);
 
     // End command buffer.
-    device_fn.end_command_buffer(command_buffer)?;
+    device.end_command_buffer(command_buffer)?;
 
     // Queue submit.
     let command_buffer_submit_info = vk::CommandBufferSubmitInfo {
@@ -1100,7 +1048,7 @@ unsafe fn execute(
         signal_semaphore_info_count: 1,
         p_signal_semaphore_infos: addr_of!(semaphore_submit_info).cast(),
     };
-    device_fn.queue_submit2(queue, 1, &submit_info2, vk::Fence::null())?;
+    device.queue_submit2(queue, 1, &submit_info2, vk::Fence::null())?;
 
     // Wait.
     let semaphores = [commands.semaphore];
@@ -1113,7 +1061,7 @@ unsafe fn execute(
         p_semaphores: semaphores.as_ptr(),
         p_values: values.as_ptr(),
     };
-    device_fn.wait_semaphores(&semaphore_wait_info, u64::MAX)?;
+    device.wait_semaphores(&semaphore_wait_info, u64::MAX)?;
 
     // Validate.
     #[allow(clippy::cast_ptr_alignment)]

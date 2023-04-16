@@ -51,15 +51,15 @@ pub fn generate(registry: &Registry, vkspec: &docs::Vkspec, vulk_lib_dir: &Path)
     // Render.
     let lib_rs = outputs::lib::TEMPLATE.replace("{{toc}}", &toc);
     let loader_rs = outputs::loader::TEMPLATE
-        .replace("{{loader::wrappers}}", &command_wrappers.loader_wrappers)
+        .replace("{{init::wrappers}}", &command_wrappers.init_wrappers)
         .replace(
             "{{instance::wrappers}}",
             &command_wrappers.instance_wrappers,
         )
         .replace("{{device::wrappers}}", &command_wrappers.device_wrappers)
         .replace(
-            "{{loader::struct_members}}",
-            &command_loaders.loader_struct_members,
+            "{{init::struct_members}}",
+            &command_loaders.init_struct_members,
         )
         .replace(
             "{{instance::struct_members}}",
@@ -69,7 +69,7 @@ pub fn generate(registry: &Registry, vkspec: &docs::Vkspec, vulk_lib_dir: &Path)
             "{{device::struct_members}}",
             &command_loaders.device_struct_members,
         )
-        .replace("{{loader::loaders}}", &command_loaders.loader_loaders)
+        .replace("{{init::loaders}}", &command_loaders.init_loaders)
         .replace("{{instance::loaders}}", &command_loaders.instance_loaders)
         .replace("{{device::loaders}}", &command_loaders.device_loaders);
     let vk_rs = outputs::header::TEMPLATE

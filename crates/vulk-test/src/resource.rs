@@ -12,8 +12,7 @@ pub struct Buffer<T> {
 
 impl<T> Buffer<T> {
     pub(crate) unsafe fn create(
-        device_fn: &DeviceFunctions,
-        device: vk::Device,
+        device_fn: &vulk::loader::Device,
         physical_device: &PhysicalDevice,
         element_count: usize,
         usage: vk::BufferUsageFlags,
@@ -37,7 +36,7 @@ impl<T> Buffer<T> {
             p_queue_family_indices: null(),
         };
         let buffer = device_fn
-            .create_buffer(&buffer_create_info, null())
+            .create_buffer(&buffer_create_info)
             .context("Creating buffer object")?;
 
         // Requirements.
@@ -76,7 +75,7 @@ impl<T> Buffer<T> {
             ),
         };
         let device_memory = device_fn
-            .allocate_memory(&memory_allocate_info, null())
+            .allocate_memory(&memory_allocate_info)
             .context("Allocating device memory for buffer")?;
 
         // Bind.
@@ -124,9 +123,9 @@ impl<T> Buffer<T> {
         })
     }
 
-    pub(crate) unsafe fn destroy(&self, device_fn: &DeviceFunctions, device: vk::Device) {
-        device_fn.destroy_buffer(self.handle, null());
-        device_fn.free_memory(self.device_memory, null());
+    pub(crate) unsafe fn destroy(&self, device_fn: &vulk::loader::Device) {
+        device_fn.destroy_buffer(self.handle);
+        device_fn.free_memory(self.device_memory);
     }
 
     pub(crate) fn byte_size(&self) -> usize {

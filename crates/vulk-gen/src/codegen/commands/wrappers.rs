@@ -9,17 +9,17 @@ const TEMPLATE_PARAM: &str = r#"{{rs_param_ident}}: {{rs_param_type}}"#;
 const TEMPLATE_PARAM_IDENT: &str = r#"{{rs_param_ident}}"#;
 const TEMPLATE_DEFAULT: &str = r#"{{vk_attr}}
 pub unsafe fn {{rs_ident}}(&self, {{rs_params}}) -> {{rs_return_type}} {
-    (self.{{rs_ident}})({{rs_param_idents}})
+    (self.fns.{{rs_ident}})({{rs_params_idents}})
 }
 "#;
 const TEMPLATE_VOID: &str = r#"{{vk_attr}}
 pub unsafe fn {{rs_ident}}(&self, {{rs_params}}) {
-    (self.{{rs_ident}})({{rs_param_idents}});
+    (self.fns.{{rs_ident}})({{rs_params_idents}});
 }
 "#;
 const TEMPLATE_VOID_RESULT: &str = r#"{{vk_attr}}
 pub unsafe fn {{rs_ident}}(&self, {{rs_params}}) -> Result<(), Error> {
-    match (self.{{rs_ident}})({{rs_param_idents}}) {
+    match (self.fns.{{rs_ident}})({{rs_params_idents}}) {
         vk::Result::Success => Ok(()),
         result => Err(Error::Vulkan(result)),
     }
@@ -28,7 +28,7 @@ pub unsafe fn {{rs_ident}}(&self, {{rs_params}}) -> Result<(), Error> {
 const TEMPLATE_HANDLE_RESULT: &str = r#"{{vk_attr}}
 pub unsafe fn {{rs_ident}}(&self, {{rs_params}}) -> Result<{{rs_handle_type}}, Error> {
     let mut {{rs_handle_ident}} = std::mem::MaybeUninit::uninit();
-    match (self.{{rs_ident}})({{rs_param_idents}}, {{rs_handle_ident}}.as_mut_ptr()) {
+    match (self.fns.{{rs_ident}})({{rs_params_idents}}, {{rs_handle_ident}}.as_mut_ptr()) {
         vk::Result::Success => Ok({{rs_handle_ident}}.assume_init()),
         result => Err(Error::Vulkan(result)),
     }
@@ -36,7 +36,7 @@ pub unsafe fn {{rs_ident}}(&self, {{rs_params}}) -> Result<{{rs_handle_type}}, E
 "#;
 
 pub struct Rendered {
-    pub loader_wrappers: String,
+    pub init_wrappers: String,
     pub instance_wrappers: String,
     pub device_wrappers: String,
 }
@@ -50,12 +50,12 @@ pub fn generate(ctx: &GeneratorContext<'_>, groups: &analysis::CommandGroups) ->
         handle_map.insert(registry_ty.name.as_str());
     }
 
-    let loader_wrappers = generate_wrappers(ctx, &handle_map, &groups.loader, false)?;
+    let init_wrappers = generate_wrappers(ctx, &handle_map, &groups.init, false)?;
     let instance_wrappers = generate_wrappers(ctx, &handle_map, &groups.instance, true)?;
     let device_wrappers = generate_wrappers(ctx, &handle_map, &groups.device, true)?;
 
     Ok(Rendered {
-        loader_wrappers,
+        init_wrappers,
         instance_wrappers,
         device_wrappers,
     })
@@ -102,52 +102,56 @@ fn generate_wrappers(
             }
         };
 
-        let mut rs_params = vec![];
-        let mut rs_params_types = vec![];
-        for param in &command.params {
-            let vk_param_ident = &param.name;
-            let rs_param_ident = translation::vk_simple_ident(vk_param_ident)?;
-            let vk_param_type = &param.ty;
-            let rs_param_type = translation::vk_complex_type(
-                ctx.c_type_map,
-                vk_param_type,
-                &param.text,
-                &None,
-                true,
-            )?;
-            rs_params.push(
-                TEMPLATE_PARAM
-                    .replace("{{rs_param_ident}}", &rs_param_ident)
-                    .replace("{{rs_param_type}}", &rs_param_type),
-            );
-            rs_params_types.push(param.ty.clone());
-        }
-        if inline_handles {
-            rs_params.remove(0);
-            rs_params_types.remove(0);
-        }
+        let (rs_params, rs_params_types, rs_params_idents) = {
+            let mut rs_params = vec![];
+            let mut rs_params_types = vec![];
+            let mut rs_params_idents = vec![];
+            for param in &command.params {
+                let vk_param_ident = &param.name;
+                let rs_param_ident = translation::vk_simple_ident(vk_param_ident)?;
+                let vk_param_type = &param.ty;
+                let rs_param_type = translation::vk_complex_type(
+                    ctx.c_type_map,
+                    vk_param_type,
+                    &param.text,
+                    &None,
+                    true,
+                )?;
+
+                rs_params_types.push(param.ty.clone());
+
+                // Special: hide allocation callbacks from parameter list,
+                // always call the function with std::ptr::null().
+                if param.ty == "VkAllocationCallbacks" {
+                    rs_params_idents.push("std::ptr::null()".to_string());
+                } else {
+                    rs_params.push(
+                        TEMPLATE_PARAM
+                            .replace("{{rs_param_ident}}", &rs_param_ident)
+                            .replace("{{rs_param_type}}", &rs_param_type),
+                    );
+                    rs_params_idents
+                        .push(TEMPLATE_PARAM_IDENT.replace("{{rs_param_ident}}", &rs_param_ident));
+                }
+            }
+            if inline_handles {
+                rs_params.remove(0);
+                rs_params_types.remove(0);
+                rs_params_idents.remove(0);
+                rs_params_idents.insert(0, "self.handle".to_string());
+            }
+            (rs_params, rs_params_types, rs_params_idents)
+        };
+
         let rs_params_lhs = if let Some((_, rs_params_lhs)) = rs_params.split_last() {
             Some(rs_params_lhs.join(","))
         } else {
             None
         };
         let rs_params = rs_params.join(",");
-
-        let mut rs_param_idents = vec![];
-        for param in &command.params {
-            let vk_param_ident = &param.name;
-            let rs_param_ident = translation::vk_simple_ident(vk_param_ident)?;
-            rs_param_idents
-                .push(TEMPLATE_PARAM_IDENT.replace("{{rs_param_ident}}", &rs_param_ident));
-        }
-        if inline_handles {
-            rs_param_idents.remove(0);
-            rs_param_idents.insert(0, "self.handle".to_string());
-        }
-        let (rs_param_idents_last, rs_param_idents_lhs) = rs_param_idents.split_last().unwrap();
-        let rs_param_idents_lhs = rs_param_idents_lhs.join(",");
-        let rs_param_idents = rs_param_idents.join(",");
-
+        let (rs_params_idents_last, rs_params_idents_lhs) = rs_params_idents.split_last().unwrap();
+        let rs_params_idents_lhs = rs_params_idents_lhs.join(",");
+        let rs_params_idents = rs_params_idents.join(",");
         let rs_params_type_last =
             if let Some((rs_params_type_last, _)) = rs_params_types.split_last() {
                 Some(rs_params_type_last)
@@ -166,7 +170,7 @@ fn generate_wrappers(
                         .replace("{{vk_ident}}", vk_ident)
                         .replace("{{rs_ident}}", &rs_ident)
                         .replace("{{rs_params}}", &rs_params)
-                        .replace("{{rs_param_idents}}", &rs_param_idents)
+                        .replace("{{rs_params_idents}}", &rs_params_idents)
                         .replace("{{rs_return_type}}", &rs_return_type)
                 )?;
             }
@@ -179,7 +183,7 @@ fn generate_wrappers(
                         .replace("{{vk_ident}}", vk_ident)
                         .replace("{{rs_ident}}", &rs_ident)
                         .replace("{{rs_params}}", &rs_params)
-                        .replace("{{rs_param_idents}}", &rs_param_idents)
+                        .replace("{{rs_params_idents}}", &rs_params_idents)
                 )?;
             }
             analysis::WrapperType::VoidResult => {
@@ -191,7 +195,7 @@ fn generate_wrappers(
                         .replace("{{vk_ident}}", vk_ident)
                         .replace("{{rs_ident}}", &rs_ident)
                         .replace("{{rs_params}}", &rs_params)
-                        .replace("{{rs_param_idents}}", &rs_param_idents)
+                        .replace("{{rs_params_idents}}", &rs_params_idents)
                 )?;
             }
             analysis::WrapperType::HandleResult => {
@@ -202,7 +206,7 @@ fn generate_wrappers(
                     &None,
                     true,
                 )?;
-                let rs_handle_ident = rs_param_idents_last;
+                let rs_handle_ident = rs_params_idents_last;
                 writeln!(
                     str,
                     "{}",
@@ -211,7 +215,7 @@ fn generate_wrappers(
                         .replace("{{vk_ident}}", vk_ident)
                         .replace("{{rs_ident}}", &rs_ident)
                         .replace("{{rs_params}}", &rs_params_lhs.unwrap())
-                        .replace("{{rs_param_idents}}", &rs_param_idents_lhs)
+                        .replace("{{rs_params_idents}}", &rs_params_idents_lhs)
                         .replace("{{rs_handle_type}}", &rs_handle_type)
                         .replace("{{rs_handle_ident}}", rs_handle_ident)
                 )?;

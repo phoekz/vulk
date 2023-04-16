@@ -71,5 +71,17 @@
     clippy::unreadable_literal
 )]
 
+//
+// Modules
+//
+
 pub mod loader;
 pub mod vk;
+
+//
+// Re-exports
+//
+
+pub use loader::Init;
+pub use loader::Instance;
+pub use loader::Device;

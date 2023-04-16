@@ -1,29 +1,29 @@
 use super::*;
 
-const TEMPLATE_STRUCT_MEMBER: &str = r#"{{rs_ident}}: vk::{{rs_type}},"#;
+const TEMPLATE_STRUCT_MEMBER: &str = r#"pub {{rs_ident}}: vk::{{rs_type}},"#;
 const TEMPLATE_LOADER: &str = r#"{{rs_ident}}: std::mem::transmute(load(b"{{vk_ident}}\0")?),"#;
 
 pub struct Rendered {
-    pub loader_struct_members: String,
+    pub init_struct_members: String,
     pub instance_struct_members: String,
     pub device_struct_members: String,
-    pub loader_loaders: String,
+    pub init_loaders: String,
     pub instance_loaders: String,
     pub device_loaders: String,
 }
 
 pub fn generate(_ctx: &GeneratorContext<'_>, groups: &analysis::CommandGroups) -> Result<Rendered> {
-    let loader_struct_members = generate_struct_members(&groups.loader)?;
+    let init_struct_members = generate_struct_members(&groups.init)?;
     let instance_struct_members = generate_struct_members(&groups.instance)?;
     let device_struct_members = generate_struct_members(&groups.device)?;
-    let loader_loaders = generate_loaders(&groups.loader)?;
+    let init_loaders = generate_loaders(&groups.init)?;
     let instance_loaders = generate_loaders(&groups.instance)?;
     let device_loaders = generate_loaders(&groups.device)?;
     Ok(Rendered {
-        loader_struct_members,
+        init_struct_members,
         instance_struct_members,
         device_struct_members,
-        loader_loaders,
+        init_loaders,
         instance_loaders,
         device_loaders,
     })
