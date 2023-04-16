@@ -69,6 +69,7 @@ impl LoaderFunctions {
 
 pub struct InstanceFunctions {
     {{instance::struct_members}}
+    handle: vk::Instance,
 }
 
 impl InstanceFunctions {
@@ -83,6 +84,7 @@ impl InstanceFunctions {
 
         Ok(Self {
             {{instance::loaders}}
+            handle: instance,
         })
     }
 
@@ -95,6 +97,7 @@ impl InstanceFunctions {
 
 pub struct DeviceFunctions {
     {{device::struct_members}}
+    handle: vk::Device,
 }
 
 impl DeviceFunctions {
@@ -109,6 +112,7 @@ impl DeviceFunctions {
 
         Ok(Self {
             {{device::loaders}}
+            handle: device,
         })
     }
 

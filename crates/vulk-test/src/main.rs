@@ -83,24 +83,23 @@ unsafe fn vulkan() -> Result<()> {
     )?;
 
     // Destroy.
-    device_fn.destroy_shader_ext(device, compute_shader, null());
-    device_fn.destroy_shader_ext(device, indirect_shader, null());
-    device_fn.destroy_descriptor_set_layout(device, descriptors.set_layout, null());
-    device_fn.destroy_pipeline_layout(device, descriptors.pipeline_layout, null());
+    device_fn.destroy_shader_ext(compute_shader, null());
+    device_fn.destroy_shader_ext(indirect_shader, null());
+    device_fn.destroy_descriptor_set_layout(descriptors.set_layout, null());
+    device_fn.destroy_pipeline_layout(descriptors.pipeline_layout, null());
     compute_buffer.destroy(device_fn, device);
     indirect_buffer.destroy(device_fn, device);
     descriptors.buffer.destroy(device_fn, device);
-    device_fn.destroy_semaphore(device, commands.semaphore, null());
+    device_fn.destroy_semaphore(commands.semaphore, null());
     device_fn.free_command_buffers(
-        device,
         commands.command_pool,
         1,
         addr_of!(commands.command_buffer).cast(),
     );
-    device_fn.destroy_command_pool(device, commands.command_pool, null());
-    device_fn.destroy_device(device, null());
-    instance_fn.destroy_debug_utils_messenger_ext(instance, debug_utils_messenger, null());
-    instance_fn.destroy_instance(instance, null());
+    device_fn.destroy_command_pool(commands.command_pool, null());
+    device_fn.destroy_device(null());
+    instance_fn.destroy_debug_utils_messenger_ext(debug_utils_messenger, null());
+    instance_fn.destroy_instance(null());
 
     Ok(())
 }
@@ -260,7 +259,7 @@ unsafe fn create_debug_utils_messenger(
         p_user_data: null_mut(),
     };
     instance_fn
-        .create_debug_utils_messenger_ext(instance, &debug_utils_messenger_create_info_ext, null())
+        .create_debug_utils_messenger_ext(&debug_utils_messenger_create_info_ext, null())
         .map_err(Into::into)
 }
 
@@ -279,13 +278,10 @@ unsafe fn create_physical_device(
 ) -> Result<PhysicalDevice> {
     // Enumerate physical devices.
     let mut physical_device_count = 0;
-    instance_fn.enumerate_physical_devices(instance, &mut physical_device_count, null_mut())?;
+    instance_fn.enumerate_physical_devices(&mut physical_device_count, null_mut())?;
     let mut physical_devices = Vec::with_capacity(physical_device_count as _);
-    instance_fn.enumerate_physical_devices(
-        instance,
-        &mut physical_device_count,
-        physical_devices.as_mut_ptr(),
-    )?;
+    instance_fn
+        .enumerate_physical_devices(&mut physical_device_count, physical_devices.as_mut_ptr())?;
     physical_devices.set_len(physical_device_count as _);
     info!("Found {} physical devices", physical_devices.len());
 
@@ -615,7 +611,7 @@ unsafe fn create_queue(
         queue_index: 0,
     };
     let mut queue = MaybeUninit::uninit();
-    device_fn.get_device_queue2(device, &device_queue_info2, queue.as_mut_ptr());
+    device_fn.get_device_queue2(&device_queue_info2, queue.as_mut_ptr());
     queue.assume_init()
 }
 
@@ -638,9 +634,8 @@ unsafe fn create_commands(
             flags: vk::CommandPoolCreateFlags::empty(),
             queue_family_index: queue_family.index,
         };
-        let command_pool =
-            device_fn.create_command_pool(device, &command_pool_create_info, null())?;
-        device_fn.reset_command_pool(device, command_pool, vk::CommandPoolResetFlags::empty())?;
+        let command_pool = device_fn.create_command_pool(&command_pool_create_info, null())?;
+        device_fn.reset_command_pool(command_pool, vk::CommandPoolResetFlags::empty())?;
         command_pool
     };
 
@@ -654,11 +649,8 @@ unsafe fn create_commands(
             command_buffer_count: 1,
         };
         let mut command_buffer = MaybeUninit::uninit();
-        device_fn.allocate_command_buffers(
-            device,
-            &command_buffer_allocate_info,
-            command_buffer.as_mut_ptr(),
-        )?;
+        device_fn
+            .allocate_command_buffers(&command_buffer_allocate_info, command_buffer.as_mut_ptr())?;
         command_buffer.assume_init()
     };
 
@@ -674,8 +666,7 @@ unsafe fn create_commands(
         p_next: addr_of!(semaphore_type_create_info).cast(),
         flags: vk::SemaphoreCreateFlags::empty(),
     };
-    let semaphore =
-        device_fn.create_semaphore(device, addr_of!(semaphore_create_info).cast(), null())?;
+    let semaphore = device_fn.create_semaphore(addr_of!(semaphore_create_info).cast(), null())?;
 
     Ok(Commands {
         command_pool,
@@ -790,19 +781,12 @@ unsafe fn create_descriptors(
         binding_count: bindings.len() as _,
         p_bindings: bindings.as_ptr(),
     };
-    let descriptor_set_layout = device_fn.create_descriptor_set_layout(
-        device,
-        &descriptor_set_layout_create_info,
-        null(),
-    )?;
+    let descriptor_set_layout =
+        device_fn.create_descriptor_set_layout(&descriptor_set_layout_create_info, null())?;
 
     // Descriptor buffer.
     let mut buffer_size = MaybeUninit::uninit();
-    device_fn.get_descriptor_set_layout_size_ext(
-        device,
-        descriptor_set_layout,
-        buffer_size.as_mut_ptr(),
-    );
+    device_fn.get_descriptor_set_layout_size_ext(descriptor_set_layout, buffer_size.as_mut_ptr());
     let buffer_size = buffer_size.assume_init();
     info!("Descriptor buffer size={buffer_size}");
     let usage = vk::BufferUsageFlags::STORAGE_BUFFER;
@@ -843,7 +827,6 @@ unsafe fn create_descriptors(
             },
         };
         device_fn.get_descriptor_ext(
-            device,
             &descriptor_get_info_ext,
             storage_buffer_descriptor_size,
             buffer
@@ -864,8 +847,7 @@ unsafe fn create_descriptors(
         push_constant_range_count: 0,
         p_push_constant_ranges: null(),
     };
-    let pipeline_layout =
-        device_fn.create_pipeline_layout(device, &pipeline_layout_create_info, null())?;
+    let pipeline_layout = device_fn.create_pipeline_layout(&pipeline_layout_create_info, null())?;
 
     Ok(Descriptors {
         set_layout: descriptor_set_layout,
@@ -947,7 +929,6 @@ unsafe fn create_shaders(
         };
         let mut shader = MaybeUninit::uninit();
         device_fn.create_shaders_ext(
-            device,
             1,
             addr_of!(shader_create_info_ext).cast(),
             null(),
@@ -989,7 +970,6 @@ unsafe fn create_shaders(
         };
         let mut shader = MaybeUninit::uninit();
         device_fn.create_shaders_ext(
-            device,
             1,
             addr_of!(shader_create_info_ext).cast(),
             null(),
@@ -1133,7 +1113,7 @@ unsafe fn execute(
         p_semaphores: semaphores.as_ptr(),
         p_values: values.as_ptr(),
     };
-    device_fn.wait_semaphores(device, &semaphore_wait_info, u64::MAX)?;
+    device_fn.wait_semaphores(&semaphore_wait_info, u64::MAX)?;
 
     // Validate.
     #[allow(clippy::cast_ptr_alignment)]

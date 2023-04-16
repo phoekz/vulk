@@ -1,5 +1,10 @@
 use super::*;
 
+// Wrapper requirements
+// - Must be `pub` to be accessible outside the library.
+// - Must be `unsafe` because all Vulkan functions are unsafe.
+// - Must include `&self` as the first parameter because the function pointers are stored in loaders.
+
 const TEMPLATE_PARAM: &str = r#"{{rs_param_ident}}: {{rs_param_type}}"#;
 const TEMPLATE_PARAM_IDENT: &str = r#"{{rs_param_ident}}"#;
 const TEMPLATE_DEFAULT: &str = r#"{{vk_attr}}
@@ -45,9 +50,9 @@ pub fn generate(ctx: &GeneratorContext<'_>, groups: &analysis::CommandGroups) ->
         handle_map.insert(registry_ty.name.as_str());
     }
 
-    let loader_wrappers = generate_wrappers(ctx, &handle_map, &groups.loader)?;
-    let instance_wrappers = generate_wrappers(ctx, &handle_map, &groups.instance)?;
-    let device_wrappers = generate_wrappers(ctx, &handle_map, &groups.device)?;
+    let loader_wrappers = generate_wrappers(ctx, &handle_map, &groups.loader, false)?;
+    let instance_wrappers = generate_wrappers(ctx, &handle_map, &groups.instance, true)?;
+    let device_wrappers = generate_wrappers(ctx, &handle_map, &groups.device, true)?;
 
     Ok(Rendered {
         loader_wrappers,
@@ -60,6 +65,7 @@ fn generate_wrappers(
     ctx: &GeneratorContext<'_>,
     handle_map: &HashSet<&str>,
     commands: &[&registry::Command],
+    can_inline_handles: bool,
 ) -> Result<String> {
     let mut str = String::new();
 
@@ -78,6 +84,23 @@ fn generate_wrappers(
         let vk_return_type = &command.return_type;
         let rs_return_type =
             translation::vk_complex_type(ctx.c_type_map, vk_return_type, &None, &None, true)?;
+
+        let inline_handles = {
+            let first_type = &command.params[0].ty;
+            let function = &command.name;
+            let first_type_is_special = first_type == "VkInstance" || first_type == "VkDevice";
+            let function_is_special =
+                function == "vkGetInstanceProcAddr" || function == "vkGetDeviceProcAddr";
+            if can_inline_handles {
+                if function_is_special {
+                    false
+                } else {
+                    first_type_is_special
+                }
+            } else {
+                false
+            }
+        };
 
         let mut rs_params = vec![];
         let mut rs_params_types = vec![];
@@ -99,8 +122,15 @@ fn generate_wrappers(
             );
             rs_params_types.push(param.ty.clone());
         }
-        let (_, rs_params_lhs) = rs_params.split_last().unwrap();
-        let rs_params_lhs = rs_params_lhs.join(",");
+        if inline_handles {
+            rs_params.remove(0);
+            rs_params_types.remove(0);
+        }
+        let rs_params_lhs = if let Some((_, rs_params_lhs)) = rs_params.split_last() {
+            Some(rs_params_lhs.join(","))
+        } else {
+            None
+        };
         let rs_params = rs_params.join(",");
 
         let mut rs_param_idents = vec![];
@@ -110,11 +140,20 @@ fn generate_wrappers(
             rs_param_idents
                 .push(TEMPLATE_PARAM_IDENT.replace("{{rs_param_ident}}", &rs_param_ident));
         }
+        if inline_handles {
+            rs_param_idents.remove(0);
+            rs_param_idents.insert(0, "self.handle".to_string());
+        }
         let (rs_param_idents_last, rs_param_idents_lhs) = rs_param_idents.split_last().unwrap();
         let rs_param_idents_lhs = rs_param_idents_lhs.join(",");
         let rs_param_idents = rs_param_idents.join(",");
 
-        let (rs_params_type_last, _) = rs_params_types.split_last().unwrap();
+        let rs_params_type_last =
+            if let Some((rs_params_type_last, _)) = rs_params_types.split_last() {
+                Some(rs_params_type_last)
+            } else {
+                None
+            };
 
         match analysis::wrapper_type(ctx.c_type_map, handle_map, command)? {
             analysis::WrapperType::Default => {
@@ -158,7 +197,7 @@ fn generate_wrappers(
             analysis::WrapperType::HandleResult => {
                 let rs_handle_type = translation::vk_complex_type(
                     ctx.c_type_map,
-                    rs_params_type_last,
+                    rs_params_type_last.unwrap(),
                     &None,
                     &None,
                     true,
@@ -171,7 +210,7 @@ fn generate_wrappers(
                         .replace("{{vk_attr}}", &vk_attr)
                         .replace("{{vk_ident}}", vk_ident)
                         .replace("{{rs_ident}}", &rs_ident)
-                        .replace("{{rs_params}}", &rs_params_lhs)
+                        .replace("{{rs_params}}", &rs_params_lhs.unwrap())
                         .replace("{{rs_param_idents}}", &rs_param_idents_lhs)
                         .replace("{{rs_handle_type}}", &rs_handle_type)
                         .replace("{{rs_handle_ident}}", rs_handle_ident)

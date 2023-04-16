@@ -37,7 +37,7 @@ impl<T> Buffer<T> {
             p_queue_family_indices: null(),
         };
         let buffer = device_fn
-            .create_buffer(device, &buffer_create_info, null())
+            .create_buffer(&buffer_create_info, null())
             .context("Creating buffer object")?;
 
         // Requirements.
@@ -52,7 +52,6 @@ impl<T> Buffer<T> {
             memory_requirements: zeroed(),
         };
         device_fn.get_device_buffer_memory_requirements(
-            device,
             &device_buffer_memory_requirements,
             &mut memory_requirements2,
         );
@@ -77,7 +76,7 @@ impl<T> Buffer<T> {
             ),
         };
         let device_memory = device_fn
-            .allocate_memory(device, &memory_allocate_info, null())
+            .allocate_memory(&memory_allocate_info, null())
             .context("Allocating device memory for buffer")?;
 
         // Bind.
@@ -89,7 +88,7 @@ impl<T> Buffer<T> {
             memory_offset: 0,
         };
         device_fn
-            .bind_buffer_memory2(device, 1, &bind_buffer_memory_info)
+            .bind_buffer_memory2(1, &bind_buffer_memory_info)
             .context("Binding device memory to buffer")?;
 
         // Device address.
@@ -98,8 +97,7 @@ impl<T> Buffer<T> {
             p_next: null(),
             buffer,
         };
-        let device_address =
-            device_fn.get_buffer_device_address(device, &buffer_device_address_info);
+        let device_address = device_fn.get_buffer_device_address(&buffer_device_address_info);
 
         // Memory map.
         let memory_map_info_khr = vk::MemoryMapInfoKHR {
@@ -112,7 +110,7 @@ impl<T> Buffer<T> {
         };
         let mut ptr = MaybeUninit::uninit();
         device_fn
-            .map_memory2_khr(device, &memory_map_info_khr, ptr.as_mut_ptr())
+            .map_memory2_khr(&memory_map_info_khr, ptr.as_mut_ptr())
             .context("Mapping device memory")?;
         let ptr = ptr.assume_init().cast::<T>();
 
@@ -127,8 +125,8 @@ impl<T> Buffer<T> {
     }
 
     pub(crate) unsafe fn destroy(&self, device_fn: &DeviceFunctions, device: vk::Device) {
-        device_fn.destroy_buffer(device, self.handle, null());
-        device_fn.free_memory(device, self.device_memory, null());
+        device_fn.destroy_buffer(self.handle, null());
+        device_fn.free_memory(self.device_memory, null());
     }
 
     pub(crate) fn byte_size(&self) -> usize {
