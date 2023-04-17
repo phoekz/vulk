@@ -72,6 +72,20 @@
 //! - [`vk::CmdWriteTimestamp2`] Write a device timestamp into a query object
 //! ## Copy Commands
 //! - [`vk::CmdCopyImageToBuffer2`] Copy image data into a buffer
+//! ## Drawing Commands
+//! - [`vk::CmdSetPrimitiveTopology`] Set primitive topology state dynamically for a command buffer
+//! - [`vk::CmdBindIndexBuffer`] Bind an index buffer to a command buffer
+//! - [`vk::CmdDraw`] Draw primitives
+//! - [`vk::CmdDrawIndexed`] Draw primitives with indexed vertices
+//! ## Fixed-Function Vertex Processing
+//! - [`vk::CmdSetVertexInputEXT`] Set the vertex input state dynamically for a command buffer
+//! - [`vk::CmdBindVertexBuffers2`] Bind vertex buffers to a command buffer and dynamically set strides
+//! ## Fixed-Function Vertex Post-Processing
+//! - [`vk::CmdSetViewportWithCount`] Set the viewport count and viewports dynamically for a command buffer
+//! - [`vk::CmdSetScissorWithCount`] Set the scissor count and scissor rectangular bounds dynamically for a command buffer
+//! ## Rasterization
+//! - [`vk::CmdSetFrontFace`] Set front face orientation dynamically for a command buffer
+//! - [`vk::CmdSetCullMode`] Set cull mode dynamically for a command buffer
 //! ## Dispatching Commands
 //! - [`vk::CmdDispatch`] Dispatch compute work items
 //! - [`vk::CmdDispatchIndirect`] Dispatch compute work items with indirect parameters

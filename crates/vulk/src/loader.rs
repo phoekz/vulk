@@ -352,6 +352,16 @@ pub struct DeviceFunctions {
     pub get_query_pool_results: vk::GetQueryPoolResults,
     pub cmd_write_timestamp2: vk::CmdWriteTimestamp2,
     pub cmd_copy_image_to_buffer2: vk::CmdCopyImageToBuffer2,
+    pub cmd_set_primitive_topology: vk::CmdSetPrimitiveTopology,
+    pub cmd_bind_index_buffer: vk::CmdBindIndexBuffer,
+    pub cmd_draw: vk::CmdDraw,
+    pub cmd_draw_indexed: vk::CmdDrawIndexed,
+    pub cmd_set_vertex_input_ext: vk::CmdSetVertexInputEXT,
+    pub cmd_bind_vertex_buffers2: vk::CmdBindVertexBuffers2,
+    pub cmd_set_viewport_with_count: vk::CmdSetViewportWithCount,
+    pub cmd_set_scissor_with_count: vk::CmdSetScissorWithCount,
+    pub cmd_set_front_face: vk::CmdSetFrontFace,
+    pub cmd_set_cull_mode: vk::CmdSetCullMode,
     pub cmd_dispatch: vk::CmdDispatch,
     pub cmd_dispatch_indirect: vk::CmdDispatchIndirect,
 }
@@ -426,6 +436,16 @@ impl Device {
                 get_query_pool_results: std::mem::transmute(load(b"vkGetQueryPoolResults\0")?),
                 cmd_write_timestamp2: std::mem::transmute(load(b"vkCmdWriteTimestamp2\0")?),
                 cmd_copy_image_to_buffer2: std::mem::transmute(load(b"vkCmdCopyImageToBuffer2\0")?),
+                cmd_set_primitive_topology: std::mem::transmute(load(b"vkCmdSetPrimitiveTopology\0")?),
+                cmd_bind_index_buffer: std::mem::transmute(load(b"vkCmdBindIndexBuffer\0")?),
+                cmd_draw: std::mem::transmute(load(b"vkCmdDraw\0")?),
+                cmd_draw_indexed: std::mem::transmute(load(b"vkCmdDrawIndexed\0")?),
+                cmd_set_vertex_input_ext: std::mem::transmute(load(b"vkCmdSetVertexInputEXT\0")?),
+                cmd_bind_vertex_buffers2: std::mem::transmute(load(b"vkCmdBindVertexBuffers2\0")?),
+                cmd_set_viewport_with_count: std::mem::transmute(load(b"vkCmdSetViewportWithCount\0")?),
+                cmd_set_scissor_with_count: std::mem::transmute(load(b"vkCmdSetScissorWithCount\0")?),
+                cmd_set_front_face: std::mem::transmute(load(b"vkCmdSetFrontFace\0")?),
+                cmd_set_cull_mode: std::mem::transmute(load(b"vkCmdSetCullMode\0")?),
                 cmd_dispatch: std::mem::transmute(load(b"vkCmdDispatch\0")?),
                 cmd_dispatch_indirect: std::mem::transmute(load(b"vkCmdDispatchIndirect\0")?),
             },
@@ -1190,6 +1210,148 @@ impl Device {
     #[doc = "**Reference**: [`vkCmdCopyImageToBuffer2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdCopyImageToBuffer2.html)"]
     pub unsafe fn cmd_copy_image_to_buffer2(&self, command_buffer: vk::CommandBuffer, p_copy_image_to_buffer_info: *const vk::CopyImageToBufferInfo2) {
         (self.fns.cmd_copy_image_to_buffer2)(command_buffer, p_copy_image_to_buffer_info);
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Drawing Commands"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Set primitive topology state dynamically for a command buffer"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkCmdSetPrimitiveTopology`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetPrimitiveTopology.html)"]
+    pub unsafe fn cmd_set_primitive_topology(&self, command_buffer: vk::CommandBuffer, primitive_topology: vk::PrimitiveTopology) {
+        (self.fns.cmd_set_primitive_topology)(command_buffer, primitive_topology);
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Drawing Commands"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Bind an index buffer to a command buffer"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkCmdBindIndexBuffer`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdBindIndexBuffer.html)"]
+    pub unsafe fn cmd_bind_index_buffer(&self, command_buffer: vk::CommandBuffer, buffer: vk::Buffer, offset: vk::DeviceSize, index_type: vk::IndexType) {
+        (self.fns.cmd_bind_index_buffer)(command_buffer, buffer, offset, index_type);
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Drawing Commands"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Draw primitives"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkCmdDraw`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdDraw.html)"]
+    pub unsafe fn cmd_draw(&self, command_buffer: vk::CommandBuffer, vertex_count: u32, instance_count: u32, first_vertex: u32, first_instance: u32) {
+        (self.fns.cmd_draw)(command_buffer, vertex_count, instance_count, first_vertex, first_instance);
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Drawing Commands"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Draw primitives with indexed vertices"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkCmdDrawIndexed`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdDrawIndexed.html)"]
+    pub unsafe fn cmd_draw_indexed(&self, command_buffer: vk::CommandBuffer, index_count: u32, instance_count: u32, first_index: u32, vertex_offset: i32, first_instance: u32) {
+        (self.fns.cmd_draw_indexed)(command_buffer, index_count, instance_count, first_index, vertex_offset, first_instance);
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Fixed-Function Vertex Processing"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Set the vertex input state dynamically for a command buffer"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_EXT_vertex_input_dynamic_state`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_vertex_input_dynamic_state.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkCmdSetVertexInputEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetVertexInputEXT.html)"]
+    pub unsafe fn cmd_set_vertex_input_ext(
+        &self,
+        command_buffer: vk::CommandBuffer,
+        vertex_binding_description_count: u32,
+        p_vertex_binding_descriptions: *const vk::VertexInputBindingDescription2EXT,
+        vertex_attribute_description_count: u32,
+        p_vertex_attribute_descriptions: *const vk::VertexInputAttributeDescription2EXT,
+    ) {
+        (self.fns.cmd_set_vertex_input_ext)(
+            command_buffer,
+            vertex_binding_description_count,
+            p_vertex_binding_descriptions,
+            vertex_attribute_description_count,
+            p_vertex_attribute_descriptions,
+        );
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Fixed-Function Vertex Processing"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Bind vertex buffers to a command buffer and dynamically set strides"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkCmdBindVertexBuffers2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdBindVertexBuffers2.html)"]
+    pub unsafe fn cmd_bind_vertex_buffers2(
+        &self,
+        command_buffer: vk::CommandBuffer,
+        first_binding: u32,
+        binding_count: u32,
+        p_buffers: *const vk::Buffer,
+        p_offsets: *const vk::DeviceSize,
+        p_sizes: *const vk::DeviceSize,
+        p_strides: *const vk::DeviceSize,
+    ) {
+        (self.fns.cmd_bind_vertex_buffers2)(command_buffer, first_binding, binding_count, p_buffers, p_offsets, p_sizes, p_strides);
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Fixed-Function Vertex Post-Processing"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Set the viewport count and viewports dynamically for a command buffer"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkCmdSetViewportWithCount`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetViewportWithCount.html)"]
+    pub unsafe fn cmd_set_viewport_with_count(&self, command_buffer: vk::CommandBuffer, viewport_count: u32, p_viewports: *const vk::Viewport) {
+        (self.fns.cmd_set_viewport_with_count)(command_buffer, viewport_count, p_viewports);
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Fixed-Function Vertex Post-Processing"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Set the scissor count and scissor rectangular bounds dynamically for a command buffer"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkCmdSetScissorWithCount`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetScissorWithCount.html)"]
+    pub unsafe fn cmd_set_scissor_with_count(&self, command_buffer: vk::CommandBuffer, scissor_count: u32, p_scissors: *const vk::Rect2D) {
+        (self.fns.cmd_set_scissor_with_count)(command_buffer, scissor_count, p_scissors);
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Rasterization"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Set front face orientation dynamically for a command buffer"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkCmdSetFrontFace`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetFrontFace.html)"]
+    pub unsafe fn cmd_set_front_face(&self, command_buffer: vk::CommandBuffer, front_face: vk::FrontFace) {
+        (self.fns.cmd_set_front_face)(command_buffer, front_face);
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Rasterization"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Set cull mode dynamically for a command buffer"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkCmdSetCullMode`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetCullMode.html)"]
+    pub unsafe fn cmd_set_cull_mode(&self, command_buffer: vk::CommandBuffer, cull_mode: vk::CullModeFlags) {
+        (self.fns.cmd_set_cull_mode)(command_buffer, cull_mode);
     }
 
     #[inline]

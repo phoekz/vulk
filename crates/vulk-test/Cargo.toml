@@ -9,6 +9,7 @@ vulk = { path = "../vulk" }
 
 anyhow.workspace = true
 env_logger.workspace = true
+glam.workspace = true
 imagelib.workspace = true
 log.workspace = true
 ron.workspace = true

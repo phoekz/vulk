@@ -60,6 +60,7 @@ fn main() -> Result<()> {
         let gpu = Gpu::create().context("Creating Gpu")?;
         run_demo::<demos::ComputeDemo>(&gpu)?;
         run_demo::<demos::ClearDemo>(&gpu)?;
+        run_demo::<demos::TriangleDemo>(&gpu)?;
         gpu.destroy();
     };
 

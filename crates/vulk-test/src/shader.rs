@@ -7,6 +7,8 @@ pub(crate) struct Compiler<'a> {
 
 #[derive(Clone, Copy)]
 pub(crate) enum ShaderType {
+    Vertex,
+    Fragment,
     Compute,
 }
 
@@ -33,6 +35,8 @@ impl Compiler<'_> {
         shader_type: ShaderType,
     ) -> Result<Vec<u8>> {
         let shader_kind = match shader_type {
+            ShaderType::Vertex => shaderc::ShaderKind::Vertex,
+            ShaderType::Fragment => shaderc::ShaderKind::Fragment,
             ShaderType::Compute => shaderc::ShaderKind::Compute,
         };
         let shader = self.compiler.compile_into_spirv(
