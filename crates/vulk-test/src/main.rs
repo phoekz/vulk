@@ -25,6 +25,7 @@ use std::{
     borrow::Cow,
     ffi::CStr,
     mem::{size_of, zeroed, MaybeUninit},
+    path::PathBuf,
     ptr::{addr_of, addr_of_mut, null, null_mut},
     time::Instant,
 };
@@ -58,6 +59,7 @@ fn main() -> Result<()> {
     unsafe {
         let gpu = Gpu::create().context("Creating Gpu")?;
         run_demo::<demos::ComputeDemo>(&gpu)?;
+        run_demo::<demos::ClearDemo>(&gpu)?;
         gpu.destroy();
     };
 
@@ -68,7 +70,7 @@ fn main() -> Result<()> {
 // Demo
 //
 
-pub trait DemoCallbacks {
+trait DemoCallbacks {
     const NAME: &'static str;
     unsafe fn create(gpu: &Gpu) -> Result<Self>
     where
@@ -77,7 +79,7 @@ pub trait DemoCallbacks {
     unsafe fn destroy(gpu: &Gpu, state: Self) -> Result<()>;
 }
 
-pub unsafe fn run_demo<Demo>(gpu: &Gpu) -> Result<()>
+unsafe fn run_demo<Demo>(gpu: &Gpu) -> Result<()>
 where
     Demo: DemoCallbacks,
 {
@@ -89,4 +91,16 @@ where
     Demo::destroy(gpu, state).with_context(|| format!("Destroying demo::{name}"))?;
     info!("demo::{name} took {} seconds", time.elapsed().as_secs_f64());
     Ok(())
+}
+
+//
+// Utilities
+//
+
+fn work_dir_or_create() -> Result<PathBuf> {
+    let work_dir = PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("work");
+    if !work_dir.exists() {
+        std::fs::create_dir_all(&work_dir)?;
+    }
+    Ok(work_dir)
 }

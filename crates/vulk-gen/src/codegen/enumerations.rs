@@ -13,7 +13,7 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
 
     for registry_enum in &ctx.registry.enums {
         let registry::EnumType::Enum = registry_enum.ty else {
-                continue;
+            continue;
         };
 
         let vk_ident = &registry_enum.name;

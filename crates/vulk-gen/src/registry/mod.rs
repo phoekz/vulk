@@ -239,6 +239,9 @@ fn filter_types<'a>(
     // Type index map.
     let type_index_map = type_index_map(&types);
 
+    // Flag bits map.
+    let flag_bits_map = flag_bits_map(&types);
+
     // Prepare stack.
     let mut stack = vec![];
     for command in commands {
@@ -304,6 +307,11 @@ fn filter_types<'a>(
             TypeCategory::Union { members, .. } => {
                 for member in members {
                     stack.push(member.ty.as_str());
+                }
+            }
+            TypeCategory::Enum {} => {
+                if let Some(&flags) = flag_bits_map.get(curr_type) {
+                    stack.push(flags);
                 }
             }
             _ => {}

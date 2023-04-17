@@ -1585,6 +1585,42 @@ pub enum TimeDomainEXT {
 
 #[repr(i32)]
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[doc = "**Chapter**: Render Pass"]
+#[doc = "<br>"]
+#[doc = "**Description**: Specify how contents of an attachment are treated at the beginning of a subpass"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkAttachmentLoadOp`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkAttachmentLoadOp.html)"]
+pub enum AttachmentLoadOp {
+    #[doc = "**Translated from**: `VK_ATTACHMENT_LOAD_OP_LOAD`"]
+    Load = 0,
+    #[doc = "**Translated from**: `VK_ATTACHMENT_LOAD_OP_CLEAR`"]
+    Clear = 1,
+    #[doc = "**Translated from**: `VK_ATTACHMENT_LOAD_OP_DONT_CARE`"]
+    DontCare = 2,
+}
+
+#[repr(i32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[doc = "**Chapter**: Render Pass"]
+#[doc = "<br>"]
+#[doc = "**Description**: Specify how contents of an attachment are treated at the end of a subpass"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkAttachmentStoreOp`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkAttachmentStoreOp.html)"]
+pub enum AttachmentStoreOp {
+    #[doc = "**Translated from**: `VK_ATTACHMENT_STORE_OP_STORE`"]
+    Store = 0,
+    #[doc = "**Translated from**: `VK_ATTACHMENT_STORE_OP_DONT_CARE`"]
+    DontCare = 1,
+    #[doc = "**Translated from**: `VK_ATTACHMENT_STORE_OP_NONE`"]
+    None = 1000301000,
+}
+
+#[repr(i32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Shaders"]
 #[doc = "<br>"]
 #[doc = "**Description**: Indicate a shader code type"]
@@ -1655,6 +1691,40 @@ pub enum InternalAllocationType {
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Resource Creation"]
 #[doc = "<br>"]
+#[doc = "**Description**: Specifies the type of an image object"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkImageType`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageType.html)"]
+pub enum ImageType {
+    #[doc = "**Translated from**: `VK_IMAGE_TYPE_1D`"]
+    Type1d = 0,
+    #[doc = "**Translated from**: `VK_IMAGE_TYPE_2D`"]
+    Type2d = 1,
+    #[doc = "**Translated from**: `VK_IMAGE_TYPE_3D`"]
+    Type3d = 2,
+}
+
+#[repr(i32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[doc = "**Chapter**: Resource Creation"]
+#[doc = "<br>"]
+#[doc = "**Description**: Specifies the tiling arrangement of data in an image"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkImageTiling`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageTiling.html)"]
+pub enum ImageTiling {
+    #[doc = "**Translated from**: `VK_IMAGE_TILING_OPTIMAL`"]
+    Optimal = 0,
+    #[doc = "**Translated from**: `VK_IMAGE_TILING_LINEAR`"]
+    Linear = 1,
+}
+
+#[repr(i32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[doc = "**Chapter**: Resource Creation"]
+#[doc = "<br>"]
 #[doc = "**Description**: Layout of image and image subresources"]
 #[doc = "<br>"]
 #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
@@ -1695,6 +1765,58 @@ pub enum ImageLayout {
     ReadOnlyOptimal = 1000314000,
     #[doc = "**Translated from**: `VK_IMAGE_LAYOUT_ATTACHMENT_OPTIMAL`"]
     AttachmentOptimal = 1000314001,
+}
+
+#[repr(i32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[doc = "**Chapter**: Resource Creation"]
+#[doc = "<br>"]
+#[doc = "**Description**: Image view types"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkImageViewType`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageViewType.html)"]
+pub enum ImageViewType {
+    #[doc = "**Translated from**: `VK_IMAGE_VIEW_TYPE_1D`"]
+    Type1d = 0,
+    #[doc = "**Translated from**: `VK_IMAGE_VIEW_TYPE_2D`"]
+    Type2d = 1,
+    #[doc = "**Translated from**: `VK_IMAGE_VIEW_TYPE_3D`"]
+    Type3d = 2,
+    #[doc = "**Translated from**: `VK_IMAGE_VIEW_TYPE_CUBE`"]
+    TypeCube = 3,
+    #[doc = "**Translated from**: `VK_IMAGE_VIEW_TYPE_1D_ARRAY`"]
+    Type1dArray = 4,
+    #[doc = "**Translated from**: `VK_IMAGE_VIEW_TYPE_2D_ARRAY`"]
+    Type2dArray = 5,
+    #[doc = "**Translated from**: `VK_IMAGE_VIEW_TYPE_CUBE_ARRAY`"]
+    TypeCubeArray = 6,
+}
+
+#[repr(i32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[doc = "**Chapter**: Resource Creation"]
+#[doc = "<br>"]
+#[doc = "**Description**: Specify how a component is swizzled"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkComponentSwizzle`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkComponentSwizzle.html)"]
+pub enum ComponentSwizzle {
+    #[doc = "**Translated from**: `VK_COMPONENT_SWIZZLE_IDENTITY`"]
+    Identity = 0,
+    #[doc = "**Translated from**: `VK_COMPONENT_SWIZZLE_ZERO`"]
+    Zero = 1,
+    #[doc = "**Translated from**: `VK_COMPONENT_SWIZZLE_ONE`"]
+    One = 2,
+    #[doc = "**Translated from**: `VK_COMPONENT_SWIZZLE_R`"]
+    R = 3,
+    #[doc = "**Translated from**: `VK_COMPONENT_SWIZZLE_G`"]
+    G = 4,
+    #[doc = "**Translated from**: `VK_COMPONENT_SWIZZLE_B`"]
+    B = 5,
+    #[doc = "**Translated from**: `VK_COMPONENT_SWIZZLE_A`"]
+    A = 6,
 }
 
 #[repr(i32)]
@@ -2774,6 +2896,72 @@ pub type DependencyFlagBits = DependencyFlags;
 bitflags! {
     #[repr(C)]
     #[derive(Clone, Copy, PartialEq, Eq, Debug)]
+    #[doc = "**Chapter**: Render Pass"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Bitmask of VkRenderingFlagBits"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`VkRenderingFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkRenderingFlags.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`VkRenderingFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkRenderingFlagBits.html)"]
+    pub struct RenderingFlags: u32 {
+        #[doc = "Translated from: `VK_RENDERING_CONTENTS_SECONDARY_COMMAND_BUFFERS_BIT`"]
+        const CONTENTS_SECONDARY_COMMAND_BUFFERS = 0b1;
+        #[doc = "Translated from: `VK_RENDERING_SUSPENDING_BIT`"]
+        const SUSPENDING = 0b10;
+        #[doc = "Translated from: `VK_RENDERING_RESUMING_BIT`"]
+        const RESUMING = 0b100;
+    }
+}
+
+#[doc = "**Chapter**: Render Pass"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask specifying additional properties of a dynamic render pass instance"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkRenderingFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkRenderingFlagBits.html)"]
+pub type RenderingFlagBits = RenderingFlags;
+
+bitflags! {
+    #[repr(C)]
+    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
+    #[doc = "**Chapter**: Render Pass"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Bitmask of VkResolveModeFlagBits"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_VERSION_1_2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_2.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`VkResolveModeFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkResolveModeFlags.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`VkResolveModeFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkResolveModeFlagBits.html)"]
+    pub struct ResolveModeFlags: u32 {
+        #[doc = "Translated from: `VK_RESOLVE_MODE_NONE`"]
+        const NONE = 0;
+        #[doc = "Translated from: `VK_RESOLVE_MODE_SAMPLE_ZERO_BIT`"]
+        const SAMPLE_ZERO = 0b1;
+        #[doc = "Translated from: `VK_RESOLVE_MODE_AVERAGE_BIT`"]
+        const AVERAGE = 0b10;
+        #[doc = "Translated from: `VK_RESOLVE_MODE_MIN_BIT`"]
+        const MIN = 0b100;
+        #[doc = "Translated from: `VK_RESOLVE_MODE_MAX_BIT`"]
+        const MAX = 0b1000;
+    }
+}
+
+#[doc = "**Chapter**: Render Pass"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask indicating supported depth and stencil resolve modes"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_2.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkResolveModeFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkResolveModeFlagBits.html)"]
+pub type ResolveModeFlagBits = ResolveModeFlags;
+
+bitflags! {
+    #[repr(C)]
+    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
     #[doc = "**Chapter**: Shaders"]
     #[doc = "<br>"]
     #[doc = "**Description**: Bitmask of VkShaderCreateFlagBitsEXT"]
@@ -3065,6 +3253,125 @@ bitflags! {
 #[doc = "<br>"]
 #[doc = "**Reference**: [`VkBufferCreateFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkBufferCreateFlagBits.html)"]
 pub type BufferCreateFlagBits = BufferCreateFlags;
+
+bitflags! {
+    #[repr(C)]
+    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
+    #[doc = "**Chapter**: Resource Creation"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Bitmask of VkImageUsageFlagBits"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`VkImageUsageFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageUsageFlags.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`VkImageUsageFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageUsageFlagBits.html)"]
+    pub struct ImageUsageFlags: u32 {
+        #[doc = "Translated from: `VK_IMAGE_USAGE_TRANSFER_SRC_BIT`"]
+        const TRANSFER_SRC = 0b1;
+        #[doc = "Translated from: `VK_IMAGE_USAGE_TRANSFER_DST_BIT`"]
+        const TRANSFER_DST = 0b10;
+        #[doc = "Translated from: `VK_IMAGE_USAGE_SAMPLED_BIT`"]
+        const SAMPLED = 0b100;
+        #[doc = "Translated from: `VK_IMAGE_USAGE_STORAGE_BIT`"]
+        const STORAGE = 0b1000;
+        #[doc = "Translated from: `VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT`"]
+        const COLOR_ATTACHMENT = 0b10000;
+        #[doc = "Translated from: `VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT`"]
+        const DEPTH_STENCIL_ATTACHMENT = 0b100000;
+        #[doc = "Translated from: `VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT`"]
+        const TRANSIENT_ATTACHMENT = 0b1000000;
+        #[doc = "Translated from: `VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT`"]
+        const INPUT_ATTACHMENT = 0b10000000;
+    }
+}
+
+#[doc = "**Chapter**: Resource Creation"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask specifying intended usage of an image"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkImageUsageFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageUsageFlagBits.html)"]
+pub type ImageUsageFlagBits = ImageUsageFlags;
+
+bitflags! {
+    #[repr(C)]
+    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
+    #[doc = "**Chapter**: Resource Creation"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Bitmask of VkImageCreateFlagBits"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`VkImageCreateFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageCreateFlags.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`VkImageCreateFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageCreateFlagBits.html)"]
+    pub struct ImageCreateFlags: u32 {
+        #[doc = "Translated from: `VK_IMAGE_CREATE_SPARSE_BINDING_BIT`"]
+        const SPARSE_BINDING = 0b1;
+        #[doc = "Translated from: `VK_IMAGE_CREATE_SPARSE_RESIDENCY_BIT`"]
+        const SPARSE_RESIDENCY = 0b10;
+        #[doc = "Translated from: `VK_IMAGE_CREATE_SPARSE_ALIASED_BIT`"]
+        const SPARSE_ALIASED = 0b100;
+        #[doc = "Translated from: `VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT`"]
+        const MUTABLE_FORMAT = 0b1000;
+        #[doc = "Translated from: `VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT`"]
+        const CUBE_COMPATIBLE = 0b10000;
+        #[doc = "Translated from: `VK_IMAGE_CREATE_ALIAS_BIT`"]
+        const ALIAS = 0b10000000000;
+        #[doc = "Translated from: `VK_IMAGE_CREATE_SPLIT_INSTANCE_BIND_REGIONS_BIT`"]
+        const SPLIT_INSTANCE_BIND_REGIONS = 0b1000000;
+        #[doc = "Translated from: `VK_IMAGE_CREATE_2D_ARRAY_COMPATIBLE_BIT`"]
+        const NUM_2D_ARRAY_COMPATIBLE = 0b100000;
+        #[doc = "Translated from: `VK_IMAGE_CREATE_BLOCK_TEXEL_VIEW_COMPATIBLE_BIT`"]
+        const BLOCK_TEXEL_VIEW_COMPATIBLE = 0b10000000;
+        #[doc = "Translated from: `VK_IMAGE_CREATE_EXTENDED_USAGE_BIT`"]
+        const EXTENDED_USAGE = 0b100000000;
+        #[doc = "Translated from: `VK_IMAGE_CREATE_PROTECTED_BIT`"]
+        const PROTECTED = 0b100000000000;
+        #[doc = "Translated from: `VK_IMAGE_CREATE_DISJOINT_BIT`"]
+        const DISJOINT = 0b1000000000;
+        #[doc = "Translated from: `VK_IMAGE_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_EXT`"]
+        const DESCRIPTOR_BUFFER_CAPTURE_REPLAY_EXT = 0b10000000000000000;
+    }
+}
+
+#[doc = "**Chapter**: Resource Creation"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask specifying additional parameters of an image"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkImageCreateFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageCreateFlagBits.html)"]
+pub type ImageCreateFlagBits = ImageCreateFlags;
+
+bitflags! {
+    #[repr(C)]
+    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
+    #[doc = "**Chapter**: Resource Creation"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Reserved for future use"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`VkImageViewCreateFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageViewCreateFlags.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`VkImageViewCreateFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageViewCreateFlagBits.html)"]
+    pub struct ImageViewCreateFlags: u32 {
+        #[doc = "Translated from: `VK_IMAGE_VIEW_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_EXT`"]
+        const DESCRIPTOR_BUFFER_CAPTURE_REPLAY_EXT = 0b100;
+    }
+}
+
+#[doc = "**Chapter**: Resource Creation"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask specifying additional parameters of an image view"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkImageViewCreateFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageViewCreateFlagBits.html)"]
+pub type ImageViewCreateFlagBits = ImageViewCreateFlags;
 
 bitflags! {
     #[repr(C)]
@@ -3427,6 +3734,74 @@ bitflags! {
 #[derive(Clone, Copy, Debug)]
 #[doc = "**Chapter**: Fundamentals"]
 #[doc = "<br>"]
+#[doc = "**Description**: Structure specifying a two-dimensional offset"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkOffset2D`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkOffset2D.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```
+let offset_2d = vk::Offset2D {
+    x: todo!("i32"),
+    y: todo!("i32"),
+};
+```"#]
+pub struct Offset2D {
+    pub x: i32,
+    pub y: i32,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Fundamentals"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure specifying a three-dimensional offset"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkOffset3D`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkOffset3D.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```
+let offset_3d = vk::Offset3D {
+    x: todo!("i32"),
+    y: todo!("i32"),
+    z: todo!("i32"),
+};
+```"#]
+pub struct Offset3D {
+    pub x: i32,
+    pub y: i32,
+    pub z: i32,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Fundamentals"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure specifying a two-dimensional extent"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkExtent2D`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkExtent2D.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```
+let extent_2d = vk::Extent2D {
+    width: todo!("u32"),
+    height: todo!("u32"),
+};
+```"#]
+pub struct Extent2D {
+    pub width: u32,
+    pub height: u32,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Fundamentals"]
+#[doc = "<br>"]
 #[doc = "**Description**: Structure specifying a three-dimensional extent"]
 #[doc = "<br>"]
 #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
@@ -3445,6 +3820,28 @@ pub struct Extent3D {
     pub width: u32,
     pub height: u32,
     pub depth: u32,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Fundamentals"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure specifying a two-dimensional subregion"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkRect2D`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkRect2D.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```
+let rect_2d = vk::Rect2D {
+    offset: todo!("vk::Offset2D"),
+    extent: todo!("vk::Extent2D"),
+};
+```"#]
+pub struct Rect2D {
+    pub offset: Offset2D,
+    pub extent: Extent2D,
 }
 
 #[repr(C)]
@@ -4227,6 +4624,82 @@ pub struct CalibratedTimestampInfoEXT {
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Render Pass"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure specifying render pass instance begin info"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkRenderingInfo`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkRenderingInfo.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```
+let rendering_info = vk::RenderingInfo {
+    s_type: vk::StructureType::RenderingInfo,
+    p_next: null(),
+    flags: todo!("vk::RenderingFlags"),
+    render_area: todo!("vk::Rect2D"),
+    layer_count: todo!("u32"),
+    view_mask: todo!("u32"),
+    color_attachment_count: todo!("u32"),
+    p_color_attachments: todo!("*const vk::RenderingAttachmentInfo"),
+    p_depth_attachment: todo!("*const vk::RenderingAttachmentInfo"),
+    p_stencil_attachment: todo!("*const vk::RenderingAttachmentInfo"),
+};
+```"#]
+pub struct RenderingInfo {
+    pub s_type: StructureType,
+    pub p_next: *const c_void,
+    pub flags: RenderingFlags,
+    pub render_area: Rect2D,
+    pub layer_count: u32,
+    pub view_mask: u32,
+    pub color_attachment_count: u32,
+    pub p_color_attachments: *const RenderingAttachmentInfo,
+    pub p_depth_attachment: *const RenderingAttachmentInfo,
+    pub p_stencil_attachment: *const RenderingAttachmentInfo,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Render Pass"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure specifying attachment information"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkRenderingAttachmentInfo`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkRenderingAttachmentInfo.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```
+let rendering_attachment_info = vk::RenderingAttachmentInfo {
+    s_type: vk::StructureType::RenderingAttachmentInfo,
+    p_next: null(),
+    image_view: todo!("vk::ImageView"),
+    image_layout: todo!("vk::ImageLayout"),
+    resolve_mode: todo!("vk::ResolveModeFlagBits"),
+    resolve_image_view: todo!("vk::ImageView"),
+    resolve_image_layout: todo!("vk::ImageLayout"),
+    load_op: todo!("vk::AttachmentLoadOp"),
+    store_op: todo!("vk::AttachmentStoreOp"),
+    clear_value: todo!("vk::ClearValue"),
+};
+```"#]
+pub struct RenderingAttachmentInfo {
+    pub s_type: StructureType,
+    pub p_next: *const c_void,
+    pub image_view: ImageView,
+    pub image_layout: ImageLayout,
+    pub resolve_mode: ResolveModeFlagBits,
+    pub resolve_image_view: ImageView,
+    pub resolve_image_layout: ImageLayout,
+    pub load_op: AttachmentLoadOp,
+    pub store_op: AttachmentStoreOp,
+    pub clear_value: ClearValue,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
 #[doc = "**Chapter**: Shaders"]
 #[doc = "<br>"]
 #[doc = "**Description**: Structure specifying parameters of a newly created shader"]
@@ -4593,6 +5066,88 @@ pub struct BufferCreateInfo {
 #[derive(Clone, Copy, Debug)]
 #[doc = "**Chapter**: Resource Creation"]
 #[doc = "<br>"]
+#[doc = "**Description**: Structure specifying the parameters of a newly created image object"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkImageCreateInfo`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageCreateInfo.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```
+let image_create_info = vk::ImageCreateInfo {
+    s_type: vk::StructureType::ImageCreateInfo,
+    p_next: null(),
+    flags: todo!("vk::ImageCreateFlags"),
+    image_type: todo!("vk::ImageType"),
+    format: todo!("vk::Format"),
+    extent: todo!("vk::Extent3D"),
+    mip_levels: todo!("u32"),
+    array_layers: todo!("u32"),
+    samples: todo!("vk::SampleCountFlagBits"),
+    tiling: todo!("vk::ImageTiling"),
+    usage: todo!("vk::ImageUsageFlags"),
+    sharing_mode: todo!("vk::SharingMode"),
+    queue_family_index_count: todo!("u32"),
+    p_queue_family_indices: todo!("*const u32"),
+    initial_layout: todo!("vk::ImageLayout"),
+};
+```"#]
+pub struct ImageCreateInfo {
+    pub s_type: StructureType,
+    pub p_next: *const c_void,
+    pub flags: ImageCreateFlags,
+    pub image_type: ImageType,
+    pub format: Format,
+    pub extent: Extent3D,
+    pub mip_levels: u32,
+    pub array_layers: u32,
+    pub samples: SampleCountFlagBits,
+    pub tiling: ImageTiling,
+    pub usage: ImageUsageFlags,
+    pub sharing_mode: SharingMode,
+    pub queue_family_index_count: u32,
+    pub p_queue_family_indices: *const u32,
+    pub initial_layout: ImageLayout,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Resource Creation"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure specifying parameters of a newly created image view"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkImageViewCreateInfo`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageViewCreateInfo.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```
+let image_view_create_info = vk::ImageViewCreateInfo {
+    s_type: vk::StructureType::ImageViewCreateInfo,
+    p_next: null(),
+    flags: todo!("vk::ImageViewCreateFlags"),
+    image: todo!("vk::Image"),
+    view_type: todo!("vk::ImageViewType"),
+    format: todo!("vk::Format"),
+    components: todo!("vk::ComponentMapping"),
+    subresource_range: todo!("vk::ImageSubresourceRange"),
+};
+```"#]
+pub struct ImageViewCreateInfo {
+    pub s_type: StructureType,
+    pub p_next: *const c_void,
+    pub flags: ImageViewCreateFlags,
+    pub image: Image,
+    pub view_type: ImageViewType,
+    pub format: Format,
+    pub components: ComponentMapping,
+    pub subresource_range: ImageSubresourceRange,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Resource Creation"]
+#[doc = "<br>"]
 #[doc = "**Description**: Structure specifying an image subresource range"]
 #[doc = "<br>"]
 #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
@@ -4615,6 +5170,32 @@ pub struct ImageSubresourceRange {
     pub level_count: u32,
     pub base_array_layer: u32,
     pub layer_count: u32,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Resource Creation"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure specifying a color component mapping"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkComponentMapping`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkComponentMapping.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```
+let component_mapping = vk::ComponentMapping {
+    r: todo!("vk::ComponentSwizzle"),
+    g: todo!("vk::ComponentSwizzle"),
+    b: todo!("vk::ComponentSwizzle"),
+    a: todo!("vk::ComponentSwizzle"),
+};
+```"#]
+pub struct ComponentMapping {
+    pub r: ComponentSwizzle,
+    pub g: ComponentSwizzle,
+    pub b: ComponentSwizzle,
+    pub a: ComponentSwizzle,
 }
 
 #[repr(C)]
@@ -4669,6 +5250,32 @@ pub struct DeviceBufferMemoryRequirements {
 #[derive(Clone, Copy, Debug)]
 #[doc = "**Chapter**: Resource Creation"]
 #[doc = "<br>"]
+#[doc = "**Description**: (None)"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkDeviceImageMemoryRequirements`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDeviceImageMemoryRequirements.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```
+let device_image_memory_requirements = vk::DeviceImageMemoryRequirements {
+    s_type: vk::StructureType::DeviceImageMemoryRequirements,
+    p_next: null(),
+    p_create_info: todo!("*const vk::ImageCreateInfo"),
+    plane_aspect: todo!("vk::ImageAspectFlagBits"),
+};
+```"#]
+pub struct DeviceImageMemoryRequirements {
+    pub s_type: StructureType,
+    pub p_next: *const c_void,
+    pub p_create_info: *const ImageCreateInfo,
+    pub plane_aspect: ImageAspectFlagBits,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Resource Creation"]
+#[doc = "<br>"]
 #[doc = "**Description**: Structure specifying memory requirements"]
 #[doc = "<br>"]
 #[doc = "**Provided by**: [`VK_VERSION_1_1`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_1.html)"]
@@ -4713,6 +5320,34 @@ pub struct BindBufferMemoryInfo {
     pub s_type: StructureType,
     pub p_next: *const c_void,
     pub buffer: Buffer,
+    pub memory: DeviceMemory,
+    pub memory_offset: DeviceSize,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Resource Creation"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure specifying how to bind an image to memory"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_1`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_1.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkBindImageMemoryInfo`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkBindImageMemoryInfo.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```
+let bind_image_memory_info = vk::BindImageMemoryInfo {
+    s_type: vk::StructureType::BindImageMemoryInfo,
+    p_next: null(),
+    image: todo!("vk::Image"),
+    memory: todo!("vk::DeviceMemory"),
+    memory_offset: todo!("vk::DeviceSize"),
+};
+```"#]
+pub struct BindImageMemoryInfo {
+    pub s_type: StructureType,
+    pub p_next: *const c_void,
+    pub image: Image,
     pub memory: DeviceMemory,
     pub memory_offset: DeviceSize,
 }
@@ -4985,6 +5620,120 @@ pub struct QueryPoolCreateInfo {
     pub query_type: QueryType,
     pub query_count: u32,
     pub pipeline_statistics: QueryPipelineStatisticFlags,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Clear Commands"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure specifying a clear depth stencil value"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkClearDepthStencilValue`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkClearDepthStencilValue.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```
+let clear_depth_stencil_value = vk::ClearDepthStencilValue {
+    depth: todo!("f32"),
+    stencil: todo!("u32"),
+};
+```"#]
+pub struct ClearDepthStencilValue {
+    pub depth: f32,
+    pub stencil: u32,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Copy Commands"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure specifying an image subresource layers"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkImageSubresourceLayers`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageSubresourceLayers.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```
+let image_subresource_layers = vk::ImageSubresourceLayers {
+    aspect_mask: todo!("vk::ImageAspectFlags"),
+    mip_level: todo!("u32"),
+    base_array_layer: todo!("u32"),
+    layer_count: todo!("u32"),
+};
+```"#]
+pub struct ImageSubresourceLayers {
+    pub aspect_mask: ImageAspectFlags,
+    pub mip_level: u32,
+    pub base_array_layer: u32,
+    pub layer_count: u32,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Copy Commands"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure specifying parameters of an image to buffer copy command"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkCopyImageToBufferInfo2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkCopyImageToBufferInfo2.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```
+let copy_image_to_buffer_info2 = vk::CopyImageToBufferInfo2 {
+    s_type: vk::StructureType::CopyImageToBufferInfo2,
+    p_next: null(),
+    src_image: todo!("vk::Image"),
+    src_image_layout: todo!("vk::ImageLayout"),
+    dst_buffer: todo!("vk::Buffer"),
+    region_count: todo!("u32"),
+    p_regions: todo!("*const vk::BufferImageCopy2"),
+};
+```"#]
+pub struct CopyImageToBufferInfo2 {
+    pub s_type: StructureType,
+    pub p_next: *const c_void,
+    pub src_image: Image,
+    pub src_image_layout: ImageLayout,
+    pub dst_buffer: Buffer,
+    pub region_count: u32,
+    pub p_regions: *const BufferImageCopy2,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Copy Commands"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure specifying a buffer image copy operation"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkBufferImageCopy2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkBufferImageCopy2.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```
+let buffer_image_copy2 = vk::BufferImageCopy2 {
+    s_type: vk::StructureType::BufferImageCopy2,
+    p_next: null(),
+    buffer_offset: todo!("vk::DeviceSize"),
+    buffer_row_length: todo!("u32"),
+    buffer_image_height: todo!("u32"),
+    image_subresource: todo!("vk::ImageSubresourceLayers"),
+    image_offset: todo!("vk::Offset3D"),
+    image_extent: todo!("vk::Extent3D"),
+};
+```"#]
+pub struct BufferImageCopy2 {
+    pub s_type: StructureType,
+    pub p_next: *const c_void,
+    pub buffer_offset: DeviceSize,
+    pub buffer_row_length: u32,
+    pub buffer_image_height: u32,
+    pub image_subresource: ImageSubresourceLayers,
+    pub image_offset: Offset3D,
+    pub image_extent: Extent3D,
 }
 
 #[repr(C)]
@@ -5875,6 +6624,47 @@ impl std::fmt::Debug for DescriptorDataEXT {
     }
 }
 
+#[repr(C)]
+#[derive(Clone, Copy)]
+#[doc = "**Chapter**: Clear Commands"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure specifying a clear color value"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkClearColorValue`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkClearColorValue.html)"]
+pub union ClearColorValue {
+    pub float32: [f32; 4],
+    pub int32: [i32; 4],
+    pub uint32: [u32; 4],
+}
+
+impl std::fmt::Debug for ClearColorValue {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("ClearColorValue").finish()
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy)]
+#[doc = "**Chapter**: Clear Commands"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure specifying a clear value"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkClearValue`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkClearValue.html)"]
+pub union ClearValue {
+    pub color: ClearColorValue,
+    pub depth_stencil: ClearDepthStencilValue,
+}
+
+impl std::fmt::Debug for ClearValue {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("ClearValue").finish()
+    }
+}
+
 //
 // Command types
 //
@@ -6198,6 +6988,29 @@ pub type GetCalibratedTimestampsEXT = unsafe extern "C" fn(
     p_max_deviation: *mut u64,                            //
 ) -> Result;
 
+#[doc = "**Chapter**: Render Pass"]
+#[doc = "<br>"]
+#[doc = "**Description**: Begin a dynamic render pass instance"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkCmdBeginRendering`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdBeginRendering.html)"]
+pub type CmdBeginRendering = unsafe extern "C" fn(
+    command_buffer: CommandBuffer,          //
+    p_rendering_info: *const RenderingInfo, //
+);
+
+#[doc = "**Chapter**: Render Pass"]
+#[doc = "<br>"]
+#[doc = "**Description**: End a dynamic render pass instance"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkCmdEndRendering`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdEndRendering.html)"]
+pub type CmdEndRendering = unsafe extern "C" fn(
+    command_buffer: CommandBuffer, //
+);
+
 #[doc = "**Chapter**: Shaders"]
 #[doc = "<br>"]
 #[doc = "**Description**: Create one or more new shaders"]
@@ -6333,6 +7146,60 @@ pub type DestroyBuffer = unsafe extern "C" fn(
 
 #[doc = "**Chapter**: Resource Creation"]
 #[doc = "<br>"]
+#[doc = "**Description**: Create a new image object"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkCreateImage`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateImage.html)"]
+pub type CreateImage = unsafe extern "C" fn(
+    device: Device,                          //
+    p_create_info: *const ImageCreateInfo,   //
+    p_allocator: *const AllocationCallbacks, //
+    p_image: *mut Image,                     //
+) -> Result;
+
+#[doc = "**Chapter**: Resource Creation"]
+#[doc = "<br>"]
+#[doc = "**Description**: Destroy an image object"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkDestroyImage`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroyImage.html)"]
+pub type DestroyImage = unsafe extern "C" fn(
+    device: Device,                          //
+    image: Image,                            //
+    p_allocator: *const AllocationCallbacks, //
+);
+
+#[doc = "**Chapter**: Resource Creation"]
+#[doc = "<br>"]
+#[doc = "**Description**: Create an image view from an existing image"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkCreateImageView`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateImageView.html)"]
+pub type CreateImageView = unsafe extern "C" fn(
+    device: Device,                            //
+    p_create_info: *const ImageViewCreateInfo, //
+    p_allocator: *const AllocationCallbacks,   //
+    p_view: *mut ImageView,                    //
+) -> Result;
+
+#[doc = "**Chapter**: Resource Creation"]
+#[doc = "<br>"]
+#[doc = "**Description**: Destroy an image view object"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkDestroyImageView`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroyImageView.html)"]
+pub type DestroyImageView = unsafe extern "C" fn(
+    device: Device,                          //
+    image_view: ImageView,                   //
+    p_allocator: *const AllocationCallbacks, //
+);
+
+#[doc = "**Chapter**: Resource Creation"]
+#[doc = "<br>"]
 #[doc = "**Description**: Returns the memory requirements for specified Vulkan object"]
 #[doc = "<br>"]
 #[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
@@ -6341,6 +7208,19 @@ pub type DestroyBuffer = unsafe extern "C" fn(
 pub type GetDeviceBufferMemoryRequirements = unsafe extern "C" fn(
     device: Device,                                  //
     p_info: *const DeviceBufferMemoryRequirements,   //
+    p_memory_requirements: *mut MemoryRequirements2, //
+);
+
+#[doc = "**Chapter**: Resource Creation"]
+#[doc = "<br>"]
+#[doc = "**Description**: Returns the memory requirements for specified Vulkan object"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkGetDeviceImageMemoryRequirements`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetDeviceImageMemoryRequirements.html)"]
+pub type GetDeviceImageMemoryRequirements = unsafe extern "C" fn(
+    device: Device,                                  //
+    p_info: *const DeviceImageMemoryRequirements,    //
     p_memory_requirements: *mut MemoryRequirements2, //
 );
 
@@ -6355,6 +7235,19 @@ pub type BindBufferMemory2 = unsafe extern "C" fn(
     device: Device,                            //
     bind_info_count: u32,                      //
     p_bind_infos: *const BindBufferMemoryInfo, //
+) -> Result;
+
+#[doc = "**Chapter**: Resource Creation"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bind device memory to image objects"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_1`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_1.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkBindImageMemory2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkBindImageMemory2.html)"]
+pub type BindImageMemory2 = unsafe extern "C" fn(
+    device: Device,                           //
+    bind_info_count: u32,                     //
+    p_bind_infos: *const BindImageMemoryInfo, //
 ) -> Result;
 
 #[doc = "**Chapter**: Resource Descriptors"]
@@ -6578,6 +7471,18 @@ pub type CmdWriteTimestamp2 = unsafe extern "C" fn(
     stage: PipelineStageFlags2,    //
     query_pool: QueryPool,         //
     query: u32,                    //
+);
+
+#[doc = "**Chapter**: Copy Commands"]
+#[doc = "<br>"]
+#[doc = "**Description**: Copy image data into a buffer"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkCmdCopyImageToBuffer2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdCopyImageToBuffer2.html)"]
+pub type CmdCopyImageToBuffer2 = unsafe extern "C" fn(
+    command_buffer: CommandBuffer,                              //
+    p_copy_image_to_buffer_info: *const CopyImageToBufferInfo2, //
 );
 
 #[doc = "**Chapter**: Dispatching Commands"]

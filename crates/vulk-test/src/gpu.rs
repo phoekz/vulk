@@ -172,6 +172,12 @@ unsafe extern "C" fn debug_utils_messenger_callback(
         // called on that buffer.
         return vk::FALSE;
     }
+    if message_id_name == "UNASSIGNED-BestPractices-vkBindImageMemory-requirements-not-retrieved" {
+        // vkBindImageMemory2() pBindInfos[0]: Binding memory to VkImage
+        // 0xdcc8fd0000000012[] but vkGetImageMemoryRequirements() has not been
+        // called on that image.
+        return vk::FALSE;
+    }
     if message_id_name == "UNASSIGNED-BestPractices-vkAllocateMemory-small-allocation" {
         // vkAllocateMemory(): Allocating a VkDeviceMemory of size 256. This is
         // a very small allocation (current threshold is 262144 bytes). You
@@ -409,7 +415,7 @@ unsafe fn create_device(
         synchronization2: vk::TRUE,
         texture_compression_astc_hdr: vk::FALSE,
         shader_zero_initialize_workgroup_memory: vk::FALSE,
-        dynamic_rendering: vk::FALSE,
+        dynamic_rendering: vk::TRUE,
         shader_integer_dot_product: vk::FALSE,
         maintenance4: vk::FALSE,
     };

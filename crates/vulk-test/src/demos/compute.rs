@@ -40,18 +40,7 @@ impl DemoCallbacks for Demo {
     }
 
     unsafe fn execute(gpu: &Gpu, state: &Self) -> Result<()> {
-        execute(
-            gpu,
-            &state.commands,
-            state.indirect_shader,
-            state.compute_shader,
-            &state.compute_buffer,
-            &state.indirect_buffer,
-            &state.descriptors,
-            &state.timestamp_queries,
-            &state.pipeline_queries,
-        )?;
-        Ok(())
+        dispatch(gpu, state)
     }
 
     unsafe fn destroy(gpu: &Gpu, state: Self) -> Result<()> {
@@ -72,9 +61,9 @@ impl DemoCallbacks for Demo {
         device.destroy_shader_ext(indirect_shader);
         device.destroy_descriptor_set_layout(descriptors.set_layout);
         device.destroy_pipeline_layout(descriptors.pipeline_layout);
-        compute_buffer.destroy(device);
-        indirect_buffer.destroy(device);
-        descriptors.buffer.destroy(device);
+        compute_buffer.destroy(gpu);
+        indirect_buffer.destroy(gpu);
+        descriptors.buffer.destroy(gpu);
         command::destroy(gpu, &commands);
         Ok(())
     }
@@ -149,7 +138,7 @@ unsafe fn create_compute_buffer(gpu: &Gpu) -> Result<ComputeBuffer> {
 }
 
 #[repr(C)]
-#[derive(Debug)]
+#[derive(Debug, serde::Serialize)]
 struct IndirectDispatch {
     x: u32,
     y: u32,
@@ -408,26 +397,28 @@ unsafe fn create_shaders(
 // Execute
 //
 
-unsafe fn execute(
+unsafe fn dispatch(
     Gpu {
         device,
         queue,
         physical_device,
         ..
     }: &Gpu,
-    commands: &command::Commands,
-    indirect_shader: vk::ShaderEXT,
-    compute_shader: vk::ShaderEXT,
-    compute_buffer: &ComputeBuffer,
-    indirect_buffer: &IndirectBuffer,
-    descriptors: &Descriptors,
-    timestamp_queries: &TimestampQueries,
-    pipeline_queries: &PipelineQueries,
+    Demo {
+        commands,
+        indirect_shader,
+        compute_shader,
+        compute_buffer,
+        indirect_buffer,
+        descriptors,
+        timestamp_queries,
+        pipeline_queries,
+    }: &Demo,
 ) -> Result<()> {
     // Begin command buffer.
-    let command_buffer = commands.command_buffer;
+    let cmd = commands.command_buffer;
     device.begin_command_buffer(
-        command_buffer,
+        cmd,
         &(vk::CommandBufferBeginInfo {
             s_type: vk::StructureType::CommandBufferBeginInfo,
             p_next: null(),
@@ -438,13 +429,13 @@ unsafe fn execute(
 
     // Begin queries.
     device.cmd_write_timestamp2(
-        command_buffer,
+        cmd,
         vk::PipelineStageFlags2::TOP_OF_PIPE,
         timestamp_queries.query_pool,
         0,
     );
     device.cmd_begin_query(
-        command_buffer,
+        cmd,
         pipeline_queries.query_pool,
         0,
         vk::QueryControlFlags::empty(),
@@ -460,14 +451,14 @@ unsafe fn execute(
         };
         let binding_infos = [descriptor_buffer_binding_info_ext];
         device.cmd_bind_descriptor_buffers_ext(
-            command_buffer,
+            cmd,
             binding_infos.len() as _,
             binding_infos.as_ptr(),
         );
         let buffer_indices = [0];
         let offsets = [0];
         device.cmd_set_descriptor_buffer_offsets_ext(
-            command_buffer,
+            cmd,
             vk::PipelineBindPoint::Compute,
             descriptors.pipeline_layout,
             0,
@@ -481,12 +472,12 @@ unsafe fn execute(
     {
         let stages = [vk::ShaderStageFlagBits::COMPUTE];
         device.cmd_bind_shaders_ext(
-            command_buffer,
+            cmd,
             stages.len() as _,
             stages.as_ptr(),
-            addr_of!(indirect_shader),
+            addr_of!(*indirect_shader),
         );
-        device.cmd_dispatch(command_buffer, 1, 1, 1);
+        device.cmd_dispatch(cmd, 1, 1, 1);
     }
 
     // Synchronize.
@@ -510,32 +501,32 @@ unsafe fn execute(
             image_memory_barrier_count: 0,
             p_image_memory_barriers: null(),
         };
-        device.cmd_pipeline_barrier2(command_buffer, &dependency_info);
+        device.cmd_pipeline_barrier2(cmd, &dependency_info);
     }
 
     // Dispatch compute shader.
     {
         let stages = [vk::ShaderStageFlagBits::COMPUTE];
         device.cmd_bind_shaders_ext(
-            command_buffer,
+            cmd,
             stages.len() as _,
             stages.as_ptr(),
-            addr_of!(compute_shader),
+            addr_of!(*compute_shader),
         );
-        device.cmd_dispatch_indirect(command_buffer, indirect_buffer.handle, 0);
+        device.cmd_dispatch_indirect(cmd, indirect_buffer.buffer, 0);
     }
 
     // End queries.
-    device.cmd_end_query(command_buffer, pipeline_queries.query_pool, 0);
+    device.cmd_end_query(cmd, pipeline_queries.query_pool, 0);
     device.cmd_write_timestamp2(
-        command_buffer,
+        cmd,
         vk::PipelineStageFlags2::BOTTOM_OF_PIPE,
         timestamp_queries.query_pool,
         1,
     );
 
     // End command buffer.
-    device.end_command_buffer(command_buffer)?;
+    device.end_command_buffer(cmd)?;
 
     // Queue submit.
     device.queue_submit2(
@@ -551,7 +542,7 @@ unsafe fn execute(
             p_command_buffer_infos: &(vk::CommandBufferSubmitInfo {
                 s_type: vk::StructureType::CommandBufferSubmitInfo,
                 p_next: null(),
-                command_buffer,
+                command_buffer: cmd,
                 device_mask: 0,
             }),
             signal_semaphore_info_count: 1,
@@ -582,13 +573,20 @@ unsafe fn execute(
         device.wait_semaphores(&semaphore_wait_info, u64::MAX)?;
     }
 
-    // Validate.
+    // Read pipeline statistics.
     {
-        #[allow(clippy::cast_ptr_alignment)]
-        let p_data = std::slice::from_raw_parts(indirect_buffer.ptr, indirect_buffer.element_count);
-        info!("Indirect buffer contents: {:?}", &p_data);
-        let p_data = std::slice::from_raw_parts(compute_buffer.ptr, compute_buffer.element_count);
-        info!("Compute buffer contents:{:?}", &p_data);
+        let query_count = pipeline_queries.query_pool_create_info.query_count;
+        let mut statistics = vec![0_u64; query_count as _];
+        device.get_query_pool_results(
+            pipeline_queries.query_pool,
+            0,
+            query_count,
+            size_of::<u64>() * query_count as usize,
+            statistics.as_mut_ptr().cast(),
+            size_of::<u64>() as _,
+            vk::QueryResultFlags::NUM_64 | vk::QueryResultFlags::WAIT,
+        )?;
+        info!("Compute shader was invoked {} times", statistics[0]);
     }
 
     // Read timestamp.
@@ -610,26 +608,28 @@ unsafe fn execute(
             .expect("Later timestamp is larger than earlier timestamp");
         let elapsed_ns = elapsed as f32 * physical_device.properties.limits.timestamp_period;
         let elapsed_ms = elapsed_ns / 1e6;
-        info!(
-            "Compute shader execution took {elapsed_ms} ms ({:?})",
-            timestamps
-        );
+        info!("Compute shader took {elapsed_ms} ms, raw={:?}", timestamps);
     }
 
-    // Read pipeline statistics.
+    // Write output.
     {
-        let query_count = pipeline_queries.query_pool_create_info.query_count;
-        let mut statistics = vec![0_u64; query_count as _];
-        device.get_query_pool_results(
-            pipeline_queries.query_pool,
-            0,
-            query_count,
-            size_of::<u64>() * query_count as usize,
-            statistics.as_mut_ptr().cast(),
-            size_of::<u64>() as _,
-            vk::QueryResultFlags::NUM_64 | vk::QueryResultFlags::WAIT,
+        #[derive(serde::Serialize)]
+        struct Output<'a> {
+            indirect: &'a [IndirectDispatch],
+            compute: &'a [u32],
+        }
+        #[allow(clippy::cast_ptr_alignment)]
+        let indirect =
+            std::slice::from_raw_parts(indirect_buffer.ptr, indirect_buffer.element_count);
+        let compute = std::slice::from_raw_parts(compute_buffer.ptr, compute_buffer.element_count);
+
+        let output = ron::ser::to_string_pretty(
+            &Output { indirect, compute },
+            ron::ser::PrettyConfig::default(),
         )?;
-        info!("Compute shader invoked was {} times", statistics[0]);
+        let output_path = work_dir_or_create()?.join("compute.ron");
+        std::fs::write(&output_path, output)?;
+        info!("Wrote output to {}", output_path.display());
     }
 
     Ok(())

@@ -219,20 +219,41 @@ pub(super) fn parse_types<'a>(nodes: impl Iterator<Item = xml::Node<'a>>) -> Res
     Ok(output)
 }
 
-pub type TypeNameIndexMap = HashMap<String, usize>;
+pub type TypeNameIndexMap<'a> = HashMap<&'a str, usize>;
 
-pub(super) fn type_index_map<'a, I>(types: I) -> TypeNameIndexMap
+pub(super) fn type_index_map<'a, I>(types: I) -> TypeNameIndexMap<'a>
 where
     I: IntoIterator<Item = &'a Type>,
 {
     let mut map = TypeNameIndexMap::new();
     for (index, ty) in types.into_iter().enumerate() {
         assert!(
-            !map.contains_key(&ty.name),
+            !map.contains_key(ty.name.as_str()),
             "map already contains {}",
             ty.name
         );
-        map.insert(ty.name.clone(), index);
+        map.insert(ty.name.as_str(), index);
+    }
+    map
+}
+
+pub type FlagBitsMap<'a> = HashMap<&'a str, &'a str>;
+
+pub(super) fn flag_bits_map<'a, I>(types: I) -> FlagBitsMap<'a>
+where
+    I: IntoIterator<Item = &'a Type>,
+{
+    let mut map = FlagBitsMap::new();
+    for ty in types {
+        let types::TypeCategory::Bitmask { requires, .. } = &ty.category else {
+                continue;
+            };
+
+        let Some(requires) = requires else {
+                continue;
+            };
+
+        map.insert(requires.as_str(), ty.name.as_str());
     }
     map
 }

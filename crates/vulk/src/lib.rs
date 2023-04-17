@@ -28,6 +28,9 @@
 //! - [`vk::QueueWaitIdle`] Wait for a queue to become idle
 //! - [`vk::DeviceWaitIdle`] Wait for a device to become idle
 //! - [`vk::GetCalibratedTimestampsEXT`] Query calibrated timestamps
+//! ## Render Pass
+//! - [`vk::CmdBeginRendering`] Begin a dynamic render pass instance
+//! - [`vk::CmdEndRendering`] End a dynamic render pass instance
 //! ## Shaders
 //! - [`vk::CreateShadersEXT`] Create one or more new shaders
 //! - [`vk::CmdBindShadersEXT`] Bind shader objects to a command buffer
@@ -41,8 +44,14 @@
 //! ## Resource Creation
 //! - [`vk::CreateBuffer`] Create a new buffer object
 //! - [`vk::DestroyBuffer`] Destroy a buffer object
+//! - [`vk::CreateImage`] Create a new image object
+//! - [`vk::DestroyImage`] Destroy an image object
+//! - [`vk::CreateImageView`] Create an image view from an existing image
+//! - [`vk::DestroyImageView`] Destroy an image view object
 //! - [`vk::GetDeviceBufferMemoryRequirements`] Returns the memory requirements for specified Vulkan object
+//! - [`vk::GetDeviceImageMemoryRequirements`] Returns the memory requirements for specified Vulkan object
 //! - [`vk::BindBufferMemory2`] Bind device memory to buffer objects
+//! - [`vk::BindImageMemory2`] Bind device memory to image objects
 //! ## Resource Descriptors
 //! - [`vk::CreateDescriptorSetLayout`] Create a new descriptor set layout
 //! - [`vk::DestroyDescriptorSetLayout`] Destroy a descriptor set layout object
@@ -61,6 +70,8 @@
 //! - [`vk::CmdEndQuery`] Ends a query
 //! - [`vk::GetQueryPoolResults`] Copy results of queries in a query pool to a host memory region
 //! - [`vk::CmdWriteTimestamp2`] Write a device timestamp into a query object
+//! ## Copy Commands
+//! - [`vk::CmdCopyImageToBuffer2`] Copy image data into a buffer
 //! ## Dispatching Commands
 //! - [`vk::CmdDispatch`] Dispatch compute work items
 //! - [`vk::CmdDispatchIndirect`] Dispatch compute work items with indirect parameters

@@ -316,6 +316,8 @@ pub struct DeviceFunctions {
     pub queue_wait_idle: vk::QueueWaitIdle,
     pub device_wait_idle: vk::DeviceWaitIdle,
     pub get_calibrated_timestamps_ext: vk::GetCalibratedTimestampsEXT,
+    pub cmd_begin_rendering: vk::CmdBeginRendering,
+    pub cmd_end_rendering: vk::CmdEndRendering,
     pub create_shaders_ext: vk::CreateShadersEXT,
     pub cmd_bind_shaders_ext: vk::CmdBindShadersEXT,
     pub destroy_shader_ext: vk::DestroyShaderEXT,
@@ -325,8 +327,14 @@ pub struct DeviceFunctions {
     pub unmap_memory2_khr: vk::UnmapMemory2KHR,
     pub create_buffer: vk::CreateBuffer,
     pub destroy_buffer: vk::DestroyBuffer,
+    pub create_image: vk::CreateImage,
+    pub destroy_image: vk::DestroyImage,
+    pub create_image_view: vk::CreateImageView,
+    pub destroy_image_view: vk::DestroyImageView,
     pub get_device_buffer_memory_requirements: vk::GetDeviceBufferMemoryRequirements,
+    pub get_device_image_memory_requirements: vk::GetDeviceImageMemoryRequirements,
     pub bind_buffer_memory2: vk::BindBufferMemory2,
+    pub bind_image_memory2: vk::BindImageMemory2,
     pub create_descriptor_set_layout: vk::CreateDescriptorSetLayout,
     pub destroy_descriptor_set_layout: vk::DestroyDescriptorSetLayout,
     pub create_pipeline_layout: vk::CreatePipelineLayout,
@@ -343,6 +351,7 @@ pub struct DeviceFunctions {
     pub cmd_end_query: vk::CmdEndQuery,
     pub get_query_pool_results: vk::GetQueryPoolResults,
     pub cmd_write_timestamp2: vk::CmdWriteTimestamp2,
+    pub cmd_copy_image_to_buffer2: vk::CmdCopyImageToBuffer2,
     pub cmd_dispatch: vk::CmdDispatch,
     pub cmd_dispatch_indirect: vk::CmdDispatchIndirect,
 }
@@ -381,6 +390,8 @@ impl Device {
                 queue_wait_idle: std::mem::transmute(load(b"vkQueueWaitIdle\0")?),
                 device_wait_idle: std::mem::transmute(load(b"vkDeviceWaitIdle\0")?),
                 get_calibrated_timestamps_ext: std::mem::transmute(load(b"vkGetCalibratedTimestampsEXT\0")?),
+                cmd_begin_rendering: std::mem::transmute(load(b"vkCmdBeginRendering\0")?),
+                cmd_end_rendering: std::mem::transmute(load(b"vkCmdEndRendering\0")?),
                 create_shaders_ext: std::mem::transmute(load(b"vkCreateShadersEXT\0")?),
                 cmd_bind_shaders_ext: std::mem::transmute(load(b"vkCmdBindShadersEXT\0")?),
                 destroy_shader_ext: std::mem::transmute(load(b"vkDestroyShaderEXT\0")?),
@@ -390,8 +401,14 @@ impl Device {
                 unmap_memory2_khr: std::mem::transmute(load(b"vkUnmapMemory2KHR\0")?),
                 create_buffer: std::mem::transmute(load(b"vkCreateBuffer\0")?),
                 destroy_buffer: std::mem::transmute(load(b"vkDestroyBuffer\0")?),
+                create_image: std::mem::transmute(load(b"vkCreateImage\0")?),
+                destroy_image: std::mem::transmute(load(b"vkDestroyImage\0")?),
+                create_image_view: std::mem::transmute(load(b"vkCreateImageView\0")?),
+                destroy_image_view: std::mem::transmute(load(b"vkDestroyImageView\0")?),
                 get_device_buffer_memory_requirements: std::mem::transmute(load(b"vkGetDeviceBufferMemoryRequirements\0")?),
+                get_device_image_memory_requirements: std::mem::transmute(load(b"vkGetDeviceImageMemoryRequirements\0")?),
                 bind_buffer_memory2: std::mem::transmute(load(b"vkBindBufferMemory2\0")?),
+                bind_image_memory2: std::mem::transmute(load(b"vkBindImageMemory2\0")?),
                 create_descriptor_set_layout: std::mem::transmute(load(b"vkCreateDescriptorSetLayout\0")?),
                 destroy_descriptor_set_layout: std::mem::transmute(load(b"vkDestroyDescriptorSetLayout\0")?),
                 create_pipeline_layout: std::mem::transmute(load(b"vkCreatePipelineLayout\0")?),
@@ -408,6 +425,7 @@ impl Device {
                 cmd_end_query: std::mem::transmute(load(b"vkCmdEndQuery\0")?),
                 get_query_pool_results: std::mem::transmute(load(b"vkGetQueryPoolResults\0")?),
                 cmd_write_timestamp2: std::mem::transmute(load(b"vkCmdWriteTimestamp2\0")?),
+                cmd_copy_image_to_buffer2: std::mem::transmute(load(b"vkCmdCopyImageToBuffer2\0")?),
                 cmd_dispatch: std::mem::transmute(load(b"vkCmdDispatch\0")?),
                 cmd_dispatch_indirect: std::mem::transmute(load(b"vkCmdDispatchIndirect\0")?),
             },
@@ -674,6 +692,30 @@ impl Device {
     }
 
     #[inline]
+    #[doc = "**Chapter**: Render Pass"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Begin a dynamic render pass instance"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkCmdBeginRendering`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdBeginRendering.html)"]
+    pub unsafe fn cmd_begin_rendering(&self, command_buffer: vk::CommandBuffer, p_rendering_info: *const vk::RenderingInfo) {
+        (self.fns.cmd_begin_rendering)(command_buffer, p_rendering_info);
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Render Pass"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: End a dynamic render pass instance"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkCmdEndRendering`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdEndRendering.html)"]
+    pub unsafe fn cmd_end_rendering(&self, command_buffer: vk::CommandBuffer) {
+        (self.fns.cmd_end_rendering)(command_buffer);
+    }
+
+    #[inline]
     #[doc = "**Chapter**: Shaders"]
     #[doc = "<br>"]
     #[doc = "**Description**: Create one or more new shaders"]
@@ -802,6 +844,62 @@ impl Device {
     #[inline]
     #[doc = "**Chapter**: Resource Creation"]
     #[doc = "<br>"]
+    #[doc = "**Description**: Create a new image object"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkCreateImage`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateImage.html)"]
+    pub unsafe fn create_image(&self, p_create_info: *const vk::ImageCreateInfo) -> Result<vk::Image, Error> {
+        let mut p_image = std::mem::MaybeUninit::uninit();
+        match (self.fns.create_image)(self.handle, p_create_info, std::ptr::null(), p_image.as_mut_ptr()) {
+            vk::Result::Success => Ok(p_image.assume_init()),
+            result => Err(Error::Vulkan(result)),
+        }
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Resource Creation"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Destroy an image object"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkDestroyImage`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroyImage.html)"]
+    pub unsafe fn destroy_image(&self, image: vk::Image) {
+        (self.fns.destroy_image)(self.handle, image, std::ptr::null());
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Resource Creation"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Create an image view from an existing image"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkCreateImageView`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateImageView.html)"]
+    pub unsafe fn create_image_view(&self, p_create_info: *const vk::ImageViewCreateInfo) -> Result<vk::ImageView, Error> {
+        let mut p_view = std::mem::MaybeUninit::uninit();
+        match (self.fns.create_image_view)(self.handle, p_create_info, std::ptr::null(), p_view.as_mut_ptr()) {
+            vk::Result::Success => Ok(p_view.assume_init()),
+            result => Err(Error::Vulkan(result)),
+        }
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Resource Creation"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Destroy an image view object"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkDestroyImageView`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroyImageView.html)"]
+    pub unsafe fn destroy_image_view(&self, image_view: vk::ImageView) {
+        (self.fns.destroy_image_view)(self.handle, image_view, std::ptr::null());
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Resource Creation"]
+    #[doc = "<br>"]
     #[doc = "**Description**: Returns the memory requirements for specified Vulkan object"]
     #[doc = "<br>"]
     #[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
@@ -814,6 +912,18 @@ impl Device {
     #[inline]
     #[doc = "**Chapter**: Resource Creation"]
     #[doc = "<br>"]
+    #[doc = "**Description**: Returns the memory requirements for specified Vulkan object"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkGetDeviceImageMemoryRequirements`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetDeviceImageMemoryRequirements.html)"]
+    pub unsafe fn get_device_image_memory_requirements(&self, p_info: *const vk::DeviceImageMemoryRequirements, p_memory_requirements: *mut vk::MemoryRequirements2) {
+        (self.fns.get_device_image_memory_requirements)(self.handle, p_info, p_memory_requirements);
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Resource Creation"]
+    #[doc = "<br>"]
     #[doc = "**Description**: Bind device memory to buffer objects"]
     #[doc = "<br>"]
     #[doc = "**Provided by**: [`VK_VERSION_1_1`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_1.html)"]
@@ -821,6 +931,21 @@ impl Device {
     #[doc = "**Reference**: [`vkBindBufferMemory2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkBindBufferMemory2.html)"]
     pub unsafe fn bind_buffer_memory2(&self, bind_info_count: u32, p_bind_infos: *const vk::BindBufferMemoryInfo) -> Result<(), Error> {
         match (self.fns.bind_buffer_memory2)(self.handle, bind_info_count, p_bind_infos) {
+            vk::Result::Success => Ok(()),
+            result => Err(Error::Vulkan(result)),
+        }
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Resource Creation"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Bind device memory to image objects"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_VERSION_1_1`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_1.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkBindImageMemory2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkBindImageMemory2.html)"]
+    pub unsafe fn bind_image_memory2(&self, bind_info_count: u32, p_bind_infos: *const vk::BindImageMemoryInfo) -> Result<(), Error> {
+        match (self.fns.bind_image_memory2)(self.handle, bind_info_count, p_bind_infos) {
             vk::Result::Success => Ok(()),
             result => Err(Error::Vulkan(result)),
         }
@@ -1053,6 +1178,18 @@ impl Device {
     #[doc = "**Reference**: [`vkCmdWriteTimestamp2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdWriteTimestamp2.html)"]
     pub unsafe fn cmd_write_timestamp2(&self, command_buffer: vk::CommandBuffer, stage: vk::PipelineStageFlags2, query_pool: vk::QueryPool, query: u32) {
         (self.fns.cmd_write_timestamp2)(command_buffer, stage, query_pool, query);
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Copy Commands"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Copy image data into a buffer"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkCmdCopyImageToBuffer2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdCopyImageToBuffer2.html)"]
+    pub unsafe fn cmd_copy_image_to_buffer2(&self, command_buffer: vk::CommandBuffer, p_copy_image_to_buffer_info: *const vk::CopyImageToBufferInfo2) {
+        (self.fns.cmd_copy_image_to_buffer2)(command_buffer, p_copy_image_to_buffer_info);
     }
 
     #[inline]
