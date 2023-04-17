@@ -221,23 +221,21 @@ unsafe fn create_descriptors(
     .into_iter()
     .enumerate()
     {
-        let descriptor_address_info_ext = vk::DescriptorAddressInfoEXT {
-            s_type: vk::StructureType::DescriptorAddressInfoEXT,
-            p_next: null_mut(),
-            address: device_address,
-            range: byte_size as _,
-            format: vk::Format::Undefined,
-        };
-        let descriptor_get_info_ext = vk::DescriptorGetInfoEXT {
-            s_type: vk::StructureType::DescriptorGetInfoEXT,
-            p_next: null(),
-            ty: vk::DescriptorType::StorageBuffer,
-            data: vk::DescriptorDataEXT {
-                p_storage_buffer: addr_of!(descriptor_address_info_ext).cast(),
-            },
-        };
         device.get_descriptor_ext(
-            &descriptor_get_info_ext,
+            &(vk::DescriptorGetInfoEXT {
+                s_type: vk::StructureType::DescriptorGetInfoEXT,
+                p_next: null(),
+                ty: vk::DescriptorType::StorageBuffer,
+                data: vk::DescriptorDataEXT {
+                    p_storage_buffer: &(vk::DescriptorAddressInfoEXT {
+                        s_type: vk::StructureType::DescriptorAddressInfoEXT,
+                        p_next: null_mut(),
+                        address: device_address,
+                        range: byte_size as _,
+                        format: vk::Format::Undefined,
+                    }),
+                },
+            }),
             storage_buffer_descriptor_size,
             buffer
                 .ptr
@@ -278,6 +276,8 @@ unsafe fn create_shaders(
 ) -> Result<(vk::ShaderEXT, vk::ShaderEXT)> {
     // Shader compiler
     let compiler = shader::Compiler::new()?;
+
+    // Shaders.
     let indirect_spirv = compiler.compile(
         r#"
             #version 460 core
@@ -444,13 +444,12 @@ unsafe fn dispatch(
 
     // Descriptors.
     {
-        let descriptor_buffer_binding_info_ext = vk::DescriptorBufferBindingInfoEXT {
+        let binding_infos = [vk::DescriptorBufferBindingInfoEXT {
             s_type: vk::StructureType::DescriptorBufferBindingInfoEXT,
             p_next: null_mut(),
             address: descriptors.buffer.device_address,
             usage: vk::BufferUsageFlags::STORAGE_BUFFER | vk::BufferUsageFlags::INDIRECT_BUFFER,
-        };
-        let binding_infos = [descriptor_buffer_binding_info_ext];
+        }];
         device.cmd_bind_descriptor_buffers_ext(
             cmd,
             binding_infos.len() as _,
@@ -483,26 +482,27 @@ unsafe fn dispatch(
 
     // Synchronize.
     {
-        let memory_barrier2 = vk::MemoryBarrier2 {
-            s_type: vk::StructureType::MemoryBarrier2,
-            p_next: null(),
-            src_stage_mask: vk::PipelineStageFlags2::COMPUTE_SHADER,
-            src_access_mask: vk::AccessFlags2::SHADER_WRITE,
-            dst_stage_mask: vk::PipelineStageFlags2::DRAW_INDIRECT,
-            dst_access_mask: vk::AccessFlags2::INDIRECT_COMMAND_READ,
-        };
-        let dependency_info = vk::DependencyInfo {
-            s_type: vk::StructureType::DependencyInfo,
-            p_next: null(),
-            dependency_flags: vk::DependencyFlags::empty(),
-            memory_barrier_count: 1,
-            p_memory_barriers: addr_of!(memory_barrier2).cast(),
-            buffer_memory_barrier_count: 0,
-            p_buffer_memory_barriers: null(),
-            image_memory_barrier_count: 0,
-            p_image_memory_barriers: null(),
-        };
-        device.cmd_pipeline_barrier2(cmd, &dependency_info);
+        device.cmd_pipeline_barrier2(
+            cmd,
+            &(vk::DependencyInfo {
+                s_type: vk::StructureType::DependencyInfo,
+                p_next: null(),
+                dependency_flags: vk::DependencyFlags::empty(),
+                memory_barrier_count: 1,
+                p_memory_barriers: &(vk::MemoryBarrier2 {
+                    s_type: vk::StructureType::MemoryBarrier2,
+                    p_next: null(),
+                    src_stage_mask: vk::PipelineStageFlags2::COMPUTE_SHADER,
+                    src_access_mask: vk::AccessFlags2::SHADER_WRITE,
+                    dst_stage_mask: vk::PipelineStageFlags2::DRAW_INDIRECT,
+                    dst_access_mask: vk::AccessFlags2::INDIRECT_COMMAND_READ,
+                }),
+                buffer_memory_barrier_count: 0,
+                p_buffer_memory_barriers: null(),
+                image_memory_barrier_count: 0,
+                p_image_memory_barriers: null(),
+            }),
+        );
     }
 
     // Dispatch compute shader.
@@ -563,15 +563,17 @@ unsafe fn dispatch(
     {
         let semaphores = [commands.semaphore];
         let values = [1];
-        let semaphore_wait_info = vk::SemaphoreWaitInfo {
-            s_type: vk::StructureType::SemaphoreWaitInfo,
-            p_next: null(),
-            flags: vk::SemaphoreWaitFlags::ANY,
-            semaphore_count: semaphores.len() as _,
-            p_semaphores: semaphores.as_ptr(),
-            p_values: values.as_ptr(),
-        };
-        device.wait_semaphores(&semaphore_wait_info, u64::MAX)?;
+        device.wait_semaphores(
+            &(vk::SemaphoreWaitInfo {
+                s_type: vk::StructureType::SemaphoreWaitInfo,
+                p_next: null(),
+                flags: vk::SemaphoreWaitFlags::ANY,
+                semaphore_count: semaphores.len() as _,
+                p_semaphores: semaphores.as_ptr(),
+                p_values: values.as_ptr(),
+            }),
+            u64::MAX,
+        )?;
     }
 
     // Read pipeline statistics.

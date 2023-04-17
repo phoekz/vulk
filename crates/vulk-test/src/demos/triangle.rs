@@ -76,6 +76,7 @@ struct Geometry {
 }
 
 unsafe fn create_geometry(gpu: &Gpu) -> Result<Geometry> {
+    #[allow(dead_code)]
     struct Vertex {
         position: Vec2,
         color: Vec3,

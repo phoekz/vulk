@@ -18,7 +18,7 @@ impl DemoCallbacks for Demo {
     where
         Self: Sized,
     {
-        let commands: command::Commands = command::create(gpu)?;
+        let commands = command::create(gpu)?;
         let timestamp_queries = create_timestamp_queries(gpu)?;
         let format = vk::Format::R8g8b8a8Unorm;
         let width = 256;
@@ -210,35 +210,36 @@ unsafe fn draw(
     );
 
     // Begin rendering.
-    let rendering_attachment_info = vk::RenderingAttachmentInfo {
-        s_type: vk::StructureType::RenderingAttachmentInfo,
-        p_next: null(),
-        image_view: render_targets.color_image.image_view,
-        image_layout: vk::ImageLayout::AttachmentOptimal,
-        resolve_mode: vk::ResolveModeFlagBits::NONE,
-        resolve_image_view: vk::ImageView::null(),
-        resolve_image_layout: vk::ImageLayout::Undefined,
-        load_op: vk::AttachmentLoadOp::Clear,
-        store_op: vk::AttachmentStoreOp::Store,
-        clear_value: vk::ClearValue {
-            color: vk::ClearColorValue {
-                float32: [1.0, 0.5, 0.0, 1.0],
-            },
-        },
-    };
-    let rendering_info = vk::RenderingInfo {
-        s_type: vk::StructureType::RenderingInfo,
-        p_next: null(),
-        flags: vk::RenderingFlags::empty(),
-        render_area: render_targets.color_image.rect_2d(),
-        layer_count: 1,
-        view_mask: 0,
-        color_attachment_count: 1,
-        p_color_attachments: &rendering_attachment_info,
-        p_depth_attachment: null(),
-        p_stencil_attachment: null(),
-    };
-    device.cmd_begin_rendering(cmd, &rendering_info);
+    device.cmd_begin_rendering(
+        cmd,
+        &(vk::RenderingInfo {
+            s_type: vk::StructureType::RenderingInfo,
+            p_next: null(),
+            flags: vk::RenderingFlags::empty(),
+            render_area: render_targets.color_image.rect_2d(),
+            layer_count: 1,
+            view_mask: 0,
+            color_attachment_count: 1,
+            p_color_attachments: &(vk::RenderingAttachmentInfo {
+                s_type: vk::StructureType::RenderingAttachmentInfo,
+                p_next: null(),
+                image_view: render_targets.color_image.image_view,
+                image_layout: vk::ImageLayout::AttachmentOptimal,
+                resolve_mode: vk::ResolveModeFlagBits::NONE,
+                resolve_image_view: vk::ImageView::null(),
+                resolve_image_layout: vk::ImageLayout::Undefined,
+                load_op: vk::AttachmentLoadOp::Clear,
+                store_op: vk::AttachmentStoreOp::Store,
+                clear_value: vk::ClearValue {
+                    color: vk::ClearColorValue {
+                        float32: [1.0, 0.5, 0.0, 1.0],
+                    },
+                },
+            }),
+            p_depth_attachment: null(),
+            p_stencil_attachment: null(),
+        }),
+    );
 
     // End rendering.
     device.cmd_end_rendering(cmd);
@@ -273,26 +274,27 @@ unsafe fn draw(
     );
 
     // Copy to output.
-    let buffer_image_copy2 = vk::BufferImageCopy2 {
-        s_type: vk::StructureType::BufferImageCopy2,
-        p_next: null(),
-        buffer_offset: 0,
-        buffer_row_length: render_targets.color_image.width(),
-        buffer_image_height: render_targets.color_image.height(),
-        image_subresource: render_targets.color_image.subresource_layers(),
-        image_offset: vk::Offset3D { x: 0, y: 0, z: 0 },
-        image_extent: render_targets.color_image.extent_3d(),
-    };
-    let copy_image_to_buffer_info2 = vk::CopyImageToBufferInfo2 {
-        s_type: vk::StructureType::CopyImageToBufferInfo2,
-        p_next: null(),
-        src_image: render_targets.color_image.image,
-        src_image_layout: vk::ImageLayout::TransferSrcOptimal,
-        dst_buffer: output.buffer.buffer,
-        region_count: 1,
-        p_regions: &buffer_image_copy2,
-    };
-    device.cmd_copy_image_to_buffer2(cmd, &copy_image_to_buffer_info2);
+    device.cmd_copy_image_to_buffer2(
+        cmd,
+        &(vk::CopyImageToBufferInfo2 {
+            s_type: vk::StructureType::CopyImageToBufferInfo2,
+            p_next: null(),
+            src_image: render_targets.color_image.image,
+            src_image_layout: vk::ImageLayout::TransferSrcOptimal,
+            dst_buffer: output.buffer.buffer,
+            region_count: 1,
+            p_regions: &(vk::BufferImageCopy2 {
+                s_type: vk::StructureType::BufferImageCopy2,
+                p_next: null(),
+                buffer_offset: 0,
+                buffer_row_length: render_targets.color_image.width(),
+                buffer_image_height: render_targets.color_image.height(),
+                image_subresource: render_targets.color_image.subresource_layers(),
+                image_offset: vk::Offset3D { x: 0, y: 0, z: 0 },
+                image_extent: render_targets.color_image.extent_3d(),
+            }),
+        }),
+    );
 
     // End queries.
     device.cmd_write_timestamp2(
@@ -339,15 +341,17 @@ unsafe fn draw(
     {
         let semaphores = [commands.semaphore];
         let values = [1];
-        let semaphore_wait_info = vk::SemaphoreWaitInfo {
-            s_type: vk::StructureType::SemaphoreWaitInfo,
-            p_next: null(),
-            flags: vk::SemaphoreWaitFlags::ANY,
-            semaphore_count: semaphores.len() as _,
-            p_semaphores: semaphores.as_ptr(),
-            p_values: values.as_ptr(),
-        };
-        device.wait_semaphores(&semaphore_wait_info, u64::MAX)?;
+        device.wait_semaphores(
+            &(vk::SemaphoreWaitInfo {
+                s_type: vk::StructureType::SemaphoreWaitInfo,
+                p_next: null(),
+                flags: vk::SemaphoreWaitFlags::ANY,
+                semaphore_count: semaphores.len() as _,
+                p_semaphores: semaphores.as_ptr(),
+                p_values: values.as_ptr(),
+            }),
+            u64::MAX,
+        )?;
     }
 
     // Read timestamp.
