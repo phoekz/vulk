@@ -20,10 +20,11 @@ impl DemoCallbacks for Demo {
     {
         let commands: command::Commands = command::create(gpu)?;
         let timestamp_queries = create_timestamp_queries(gpu)?;
+        let format = vk::Format::R8g8b8a8Unorm;
         let width = 256;
         let height = 256;
-        let render_targets = create_render_targets(gpu, width, height)?;
-        let output = create_output(gpu, width, height)?;
+        let render_targets = create_render_targets(gpu, format, width, height)?;
+        let output = create_output(gpu, format, width, height)?;
         Ok(Self {
             commands,
             timestamp_queries,
@@ -33,7 +34,7 @@ impl DemoCallbacks for Demo {
     }
 
     unsafe fn execute(gpu: &Gpu, state: &Self) -> Result<()> {
-        draw(gpu, state)
+        draw(gpu, state, Self::NAME)
     }
 
     unsafe fn destroy(gpu: &Gpu, state: Self) -> Result<()> {
@@ -93,10 +94,15 @@ struct RenderTargets {
     color_image: resource::Image2d,
 }
 
-unsafe fn create_render_targets(gpu: &Gpu, width: u32, height: u32) -> Result<RenderTargets> {
+unsafe fn create_render_targets(
+    gpu: &Gpu,
+    format: vk::Format,
+    width: u32,
+    height: u32,
+) -> Result<RenderTargets> {
     let color_image = resource::Image2d::create(
         gpu,
-        vk::Format::R8g8b8a8Unorm,
+        format,
         width,
         height,
         vk::SampleCountFlagBits::NUM_1,
@@ -120,8 +126,8 @@ struct Output {
     buffer: OutputBuffer,
 }
 
-unsafe fn create_output(gpu: &Gpu, width: u32, height: u32) -> Result<Output> {
-    let element_count = width * height;
+unsafe fn create_output(gpu: &Gpu, format: vk::Format, width: u32, height: u32) -> Result<Output> {
+    let element_count = format.block_size() * width * height;
     let buffer = OutputBuffer::create(
         gpu,
         element_count as _,
@@ -152,6 +158,7 @@ unsafe fn draw(
         output,
         timestamp_queries,
     }: &Demo,
+    demo_name: &str,
 ) -> Result<()> {
     // Begin command buffer.
     let cmd = commands.command_buffer;
@@ -370,7 +377,7 @@ unsafe fn draw(
         use imagelib::{ImageFormat, RgbaImage};
         let width = render_targets.color_image.width();
         let height = render_targets.color_image.height();
-        let pixels_byte_size = 4 * width * height;
+        let pixels_byte_size = render_targets.color_image.byte_size();
         let mut pixels = vec![0_u8; pixels_byte_size as _];
         std::ptr::copy_nonoverlapping(
             output.buffer.ptr.cast::<u8>(),
@@ -379,7 +386,7 @@ unsafe fn draw(
         );
         let image = RgbaImage::from_raw(width, height, pixels)
             .context("Creating image from output buffer")?;
-        let image_path = work_dir_or_create()?.join("clear.png");
+        let image_path = work_dir_or_create()?.join(format!("{demo_name}.png"));
         image.save_with_format(&image_path, ImageFormat::Png)?;
         info!("Wrote image to {}", image_path.display());
     }

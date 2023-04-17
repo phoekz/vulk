@@ -90,6 +90,7 @@
     clippy::missing_safety_doc,
     clippy::module_name_repetitions,
     clippy::too_many_arguments,
+    clippy::too_many_lines,
     clippy::unreadable_literal
 )]
 

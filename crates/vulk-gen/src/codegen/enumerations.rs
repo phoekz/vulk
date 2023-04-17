@@ -8,8 +8,38 @@ pub enum {{rs_ident}} {
 
 const TEMPLATE_MEMBER: &str = r#"{{vk_member_attr}}{{rs_member_ident}} = {{rs_member_value}},"#;
 
+const TEMPLATE_FORMAT_ASPECT_MASK: &str = r#"
+impl Format {
+    #[must_use]
+    pub fn aspect_mask(self) -> ImageAspectFlags {
+        #[allow(clippy::match_same_arms)]
+        match self {
+            {{aspect_mask_matches}}
+        }
+    }
+
+    #[must_use]
+    pub fn block_size(self) -> u32 {
+        #[allow(clippy::match_same_arms)]
+        match self {
+            {{block_size_matches}}
+        }
+    }
+}
+"#;
+
+const TEMPLATE_FORMAT_MATCH: &str = r#"Format::{{match_lhs}} => {{match_rhs}},"#;
+
 pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
     let mut str = String::new();
+
+    let format_map = {
+        let mut map = HashMap::new();
+        for format in &ctx.registry.formats {
+            map.insert(format.name.as_str(), format);
+        }
+        map
+    };
 
     for registry_enum in &ctx.registry.enums {
         let registry::EnumType::Enum = registry_enum.ty else {
@@ -63,6 +93,97 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
                 .replace("{{rs_ident}}", &rs_ident)
                 .replace("{{rs_members}}", &rs_members)
         )?;
+
+        // Special: VkFormat implementations.
+        if vk_ident == "VkFormat" {
+            let mut aspect_mask_matches = String::new();
+            let mut block_size_matches = String::new();
+            for (vk_member_ident, rs_member_ident) in vk_member_idents.iter().zip(&rs_member_idents)
+            {
+                let aspect_flags = if let Some(&format) = format_map.get(vk_member_ident.as_str()) {
+                    let color_aspect = format.components.iter().any(|c| {
+                        matches!(
+                            c,
+                            registry::Component::R
+                                | registry::Component::G
+                                | registry::Component::B
+                                | registry::Component::A
+                        )
+                    });
+                    let depth_aspect = format
+                        .components
+                        .iter()
+                        .any(|c| matches!(c, registry::Component::D));
+                    let stencil_aspect = format
+                        .components
+                        .iter()
+                        .any(|c| matches!(c, registry::Component::S));
+                    let plane_0_aspect = format
+                        .planes
+                        .iter()
+                        .any(|c| matches!(c, registry::Plane::P0));
+                    let plane_1_aspect = format
+                        .planes
+                        .iter()
+                        .any(|c| matches!(c, registry::Plane::P1));
+                    let plane_2_aspect = format
+                        .planes
+                        .iter()
+                        .any(|c| matches!(c, registry::Plane::P2));
+
+                    let mut flags = String::new();
+                    macro_rules! push {
+                        ($flags:expr, $cond:expr, $aspect:literal) => {
+                            if $cond {
+                                if !$flags.is_empty() {
+                                    flags.push('|');
+                                }
+                                flags.push_str("ImageAspectFlags::");
+                                flags.push_str($aspect);
+                            }
+                        };
+                    }
+                    push!(flags, color_aspect, "COLOR");
+                    push!(flags, depth_aspect, "DEPTH");
+                    push!(flags, stencil_aspect, "STENCIL");
+                    push!(flags, plane_0_aspect, "PLANE_0");
+                    push!(flags, plane_1_aspect, "PLANE_1");
+                    push!(flags, plane_2_aspect, "PLANE_2");
+                    flags
+                } else {
+                    "ImageAspectFlags::empty()".to_string()
+                };
+
+                let block_size = if let Some(&format) = format_map.get(vk_member_ident.as_str()) {
+                    format.block_size.to_string()
+                } else {
+                    "0".to_string()
+                };
+
+                writeln!(
+                    aspect_mask_matches,
+                    "{}",
+                    TEMPLATE_FORMAT_MATCH
+                        .replace("{{match_lhs}}", rs_member_ident)
+                        .replace("{{match_rhs}}", &aspect_flags)
+                )?;
+                writeln!(
+                    block_size_matches,
+                    "{}",
+                    TEMPLATE_FORMAT_MATCH
+                        .replace("{{match_lhs}}", rs_member_ident)
+                        .replace("{{match_rhs}}", &block_size)
+                )?;
+            }
+
+            writeln!(
+                str,
+                "{}",
+                TEMPLATE_FORMAT_ASPECT_MASK
+                    .replace("{{aspect_mask_matches}}", &aspect_mask_matches)
+                    .replace("{{block_size_matches}}", &block_size_matches)
+            )?;
+        }
     }
 
     Ok(str)

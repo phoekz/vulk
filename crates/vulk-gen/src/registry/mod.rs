@@ -5,6 +5,7 @@ pub use commands::*;
 pub use enums::*;
 pub use extensions::*;
 pub use features::*;
+pub use formats::*;
 pub use requires::*;
 pub use types::*;
 
@@ -13,6 +14,7 @@ mod commands;
 mod enums;
 mod extensions;
 mod features;
+mod formats;
 mod requires;
 mod types;
 mod xml;
@@ -24,6 +26,7 @@ pub struct Registry {
     pub commands: Vec<Command>,
     pub features: Vec<Feature>,
     pub extensions: Vec<Extension>,
+    pub formats: Vec<Format>,
 }
 
 impl Registry {
@@ -37,12 +40,14 @@ impl Registry {
         let features = parse_features(xml_registry.children("feature"))?;
         let extensions =
             parse_extensions(xml_registry.children_under_parent("extensions", "extension"))?;
+        let formats = parse_formats(xml_registry.children_under_parent("formats", "format"))?;
         Ok(Self {
             types,
             enums,
             commands,
             features,
             extensions,
+            formats,
         })
     }
 
@@ -97,6 +102,7 @@ impl Registry {
             commands,
             features: self.features,
             extensions: self.extensions,
+            formats: self.formats,
         })
     }
 
@@ -134,6 +140,7 @@ impl Registry {
             commands,
             features: self.features,
             extensions: self.extensions,
+            formats: self.formats,
         })
     }
 }

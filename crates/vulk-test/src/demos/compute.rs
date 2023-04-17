@@ -40,7 +40,7 @@ impl DemoCallbacks for Demo {
     }
 
     unsafe fn execute(gpu: &Gpu, state: &Self) -> Result<()> {
-        dispatch(gpu, state)
+        dispatch(gpu, state, Self::NAME)
     }
 
     unsafe fn destroy(gpu: &Gpu, state: Self) -> Result<()> {
@@ -414,6 +414,7 @@ unsafe fn dispatch(
         timestamp_queries,
         pipeline_queries,
     }: &Demo,
+    demo_name: &str,
 ) -> Result<()> {
     // Begin command buffer.
     let cmd = commands.command_buffer;
@@ -627,7 +628,7 @@ unsafe fn dispatch(
             &Output { indirect, compute },
             ron::ser::PrettyConfig::default(),
         )?;
-        let output_path = work_dir_or_create()?.join("compute.ron");
+        let output_path = work_dir_or_create()?.join(format!("{demo_name}.ron"));
         std::fs::write(&output_path, output)?;
         info!("Wrote output to {}", output_path.display());
     }

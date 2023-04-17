@@ -274,7 +274,7 @@ impl Image2d {
                 a: vk::ComponentSwizzle::A,
             },
             subresource_range: vk::ImageSubresourceRange {
-                aspect_mask: vk::ImageAspectFlags::COLOR,
+                aspect_mask: format.aspect_mask(),
                 base_mip_level: 0,
                 level_count: 1,
                 base_array_layer: 0,
@@ -305,12 +305,20 @@ impl Image2d {
         device.free_memory(self.device_memory);
     }
 
+    pub unsafe fn format(&self) -> vk::Format {
+        self.image_create_info.format
+    }
+
     pub unsafe fn width(&self) -> u32 {
         self.image_create_info.extent.width
     }
 
     pub unsafe fn height(&self) -> u32 {
         self.image_create_info.extent.height
+    }
+
+    pub unsafe fn byte_size(&self) -> u32 {
+        self.format().block_size() * self.width() * self.height()
     }
 
     pub unsafe fn extent_2d(&self) -> vk::Extent2D {
