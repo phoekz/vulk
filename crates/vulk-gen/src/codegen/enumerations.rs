@@ -29,24 +29,31 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
             .doc_ref(vk_ident)
             .build();
         let rs_ident = translation::vk_simple_type(vk_ident)?;
+
+        let vk_member_idents = registry_enum
+            .members
+            .iter()
+            .map(|member| member.name.clone())
+            .collect::<Vec<_>>();
+        let rs_member_idents = translation::vk_enum(vk_ident, &vk_member_idents)?;
         let mut rs_members = String::new();
-        for member in &registry_enum.members {
+        for (member, rs_member_ident) in registry_enum.members.iter().zip(&rs_member_idents) {
             let vk_member_ident = &member.name;
             let vk_member_attr = attributes::Builder::new()
                 .doc_translated(vk_member_ident)
                 .build();
             let vk_member_value = member.value.as_ref().context("Missing type")?;
-            let rs_member_ident = translation::vk_enum_member(vk_ident, vk_member_ident)?;
             let rs_member_value = vk_member_value;
             writeln!(
                 rs_members,
                 "{}",
                 TEMPLATE_MEMBER
                     .replace("{{vk_member_attr}}", &vk_member_attr)
-                    .replace("{{rs_member_ident}}", &rs_member_ident)
+                    .replace("{{rs_member_ident}}", rs_member_ident)
                     .replace("{{rs_member_value}}", rs_member_value)
             )?;
         }
+
         writeln!(
             str,
             "{}",

@@ -124,39 +124,6 @@ pub fn vk_simple_ident(vk: &str) -> Result<String> {
     Ok(rs)
 }
 
-pub fn vk_enum_member(vk_name: &str, vk_member: &str) -> Result<String> {
-    const ENUM_PREFIX: &str = "Vk";
-    const ENUM_MEMBER_PREFIX: &str = "VK_";
-    ensure!(
-        vk_name.starts_with(ENUM_PREFIX),
-        "Vk enums must begin with {ENUM_PREFIX}, got {vk_name}"
-    );
-    ensure!(
-        vk_member.starts_with(ENUM_MEMBER_PREFIX),
-        "Vk enum members must begin with {ENUM_MEMBER_PREFIX}, got {vk_member}"
-    );
-
-    let rs_name = format!("{}", heck::AsShoutySnakeCase(vk_name));
-    let rs_name = rs_name.trim_end_matches("KHR").trim_end_matches("EXT");
-    let rs_name = rs_name.trim_start_matches('_').trim_end_matches('_');
-    let rs_member = vk_member
-        .trim_start_matches(rs_name)
-        .trim_start_matches("VK");
-    let rs_member = rs_member.trim_start_matches('_').trim_end_matches('_');
-    let mut rs_member = format!("{}", heck::AsPascalCase(rs_member));
-
-    if rs_member.ends_with("Khr") {
-        rs_member = rs_member.replace("Khr", "");
-        rs_member.push_str("KHR");
-    }
-    if rs_member.ends_with("Ext") {
-        rs_member = rs_member.replace("Ext", "");
-        rs_member.push_str("EXT");
-    }
-
-    Ok(rs_member)
-}
-
 pub fn vk_bitmask_member(vk_name: &str, vk_member: &str) -> Result<String> {
     const BITMASK_PREFIX: &str = "Vk";
     const BITMASK_SUFFIX: &str = "Flags";
@@ -212,6 +179,83 @@ pub fn vk_simple_function(vk: &str) -> Result<String> {
     Ok(rs)
 }
 
+pub fn vk_enum(vk_name: &str, vk_members: &[String]) -> Result<Vec<String>> {
+    // Prepare name.
+    let name = format!("{}", heck::AsShoutySnakeCase(vk_name));
+    let name_parts = name.split('_').map(ToString::to_string).collect::<Vec<_>>();
+    ensure!(
+        name_parts.iter().all(|part| !part
+            .chars()
+            .next()
+            .expect("Part must be non-empty")
+            .is_ascii_digit()),
+        "Enum name parts can not start with a digit. {vk_name:?} {vk_members:?}"
+    );
+
+    // Prepare members.
+    let members_parts = vk_members
+        .iter()
+        .map(|vk_member| vk_member.split('_').collect::<Vec<_>>())
+        .collect::<Vec<_>>();
+
+    // Count the minimum number of shared parts in members.
+    let shared_parts = members_parts
+        .iter()
+        .map(|member_parts| {
+            name_parts
+                .iter()
+                .zip(member_parts)
+                .take_while(|(a, b)| a == b)
+                .count()
+        })
+        .min()
+        .unwrap();
+
+    // Strip shared parts from members.
+    let mut members_parts = members_parts
+        .into_iter()
+        .map(|member_parts| {
+            let (_, rhs_parts) = member_parts.split_at(shared_parts);
+            rhs_parts
+                .iter()
+                .map(ToString::to_string)
+                .collect::<Vec<_>>()
+        })
+        .collect::<Vec<_>>();
+
+    // Special: if resulting enum member starts with a digit, append the last part from the enum name.
+    let any_member_starts_with_digit = members_parts.iter().any(|member_parts| {
+        member_parts
+            .first()
+            .unwrap()
+            .chars()
+            .next()
+            .unwrap()
+            .is_ascii_digit()
+    });
+    if any_member_starts_with_digit {
+        for member_parts in &mut members_parts {
+            member_parts.insert(0, name_parts.last().unwrap().clone());
+        }
+    }
+
+    // Finalize.
+    let members = members_parts
+        .into_iter()
+        .map(|member_parts| {
+            member_parts
+                .into_iter()
+                .map(|part| match part.as_str() {
+                    "KHR" | "EXT" => part, // Special: retain capitalization on certain suffixes.
+                    part => format!("{}", heck::AsPascalCase(&part)),
+                })
+                .collect::<String>()
+        })
+        .collect::<Vec<_>>();
+
+    Ok(members)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -231,17 +275,24 @@ mod tests {
     }
 
     #[test]
-    fn test_vk_enum_member() {
-        #[rustfmt::skip]
-        let cases = [
-            ("VkImageLayout", "VK_IMAGE_LAYOUT_UNDEFINED", "Undefined"),
-            ("VkResult", "VK_SUCCESS", "Success"),
-            ("VkStructureType", "VK_STRUCTURE_TYPE_MEMORY_MAP_INFO_KHR", "MemoryMapInfoKHR"),
-            ("VkQueueGlobalPriorityKHR", "VK_QUEUE_GLOBAL_PRIORITY_LOW_KHR", "LowKHR"),
-            ("VkValidationFeatureEnableEXT", "VK_VALIDATION_FEATURE_ENABLE_GPU_ASSISTED_EXT", "GpuAssistedEXT"),
+    fn test_vk_enum() {
+        let name = "VkImageViewType";
+        let members = [
+            ("VK_IMAGE_VIEW_TYPE_1D", "Type1d"),
+            ("VK_IMAGE_VIEW_TYPE_2D", "Type2d"),
+            ("VK_IMAGE_VIEW_TYPE_3D", "Type3d"),
+            ("VK_IMAGE_VIEW_TYPE_CUBE", "TypeCube"),
+            ("VK_IMAGE_VIEW_TYPE_1D_ARRAY", "Type1dArray"),
+            ("VK_IMAGE_VIEW_TYPE_2D_ARRAY", "Type2dArray"),
+            ("VK_IMAGE_VIEW_TYPE_CUBE_ARRAY", "TypeCubeArray"),
         ];
-        for (input_name, input_member, expect) in cases {
-            assert_eq!(vk_enum_member(input_name, input_member).unwrap(), expect);
+        let (member_idents, member_expect): (Vec<String>, Vec<String>) = members
+            .iter()
+            .map(|&(a, b)| (a.to_string(), b.to_string()))
+            .unzip();
+        let output_idents = vk_enum(name, &member_idents).unwrap();
+        for (input, output) in member_expect.into_iter().zip(output_idents) {
+            assert_eq!(input, output);
         }
     }
 
