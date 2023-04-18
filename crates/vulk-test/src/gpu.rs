@@ -385,10 +385,19 @@ unsafe fn create_device(
     queue_family: &QueueFamily,
 ) -> Result<vulk::Device> {
     // Features.
+    let mut physical_device_mesh_shader_features_ext = vk::PhysicalDeviceMeshShaderFeaturesEXT {
+        s_type: vk::StructureType::PhysicalDeviceMeshShaderFeaturesEXT,
+        p_next: null_mut(),
+        task_shader: vk::TRUE,
+        mesh_shader: vk::TRUE,
+        multiview_mesh_shader: vk::FALSE,
+        primitive_fragment_shading_rate_mesh_shader: vk::FALSE,
+        mesh_shader_queries: vk::TRUE,
+    };
     let mut physical_device_shader_object_features_ext =
         vk::PhysicalDeviceShaderObjectFeaturesEXT {
             s_type: vk::StructureType::PhysicalDeviceShaderObjectFeaturesEXT,
-            p_next: null_mut(),
+            p_next: addr_of_mut!(physical_device_mesh_shader_features_ext).cast(),
             shader_object: vk::TRUE,
         };
     let mut physical_device_descriptor_buffer_features_ext =
@@ -537,7 +546,8 @@ unsafe fn create_device(
         b"VK_KHR_map_memory2\0".as_ptr().cast(),
         b"VK_EXT_descriptor_buffer\0".as_ptr().cast(),
         b"VK_EXT_shader_object\0".as_ptr().cast(),
-        b"VK_EXT_calibrated_timestamps".as_ptr().cast(),
+        b"VK_EXT_calibrated_timestamps\0".as_ptr().cast(),
+        b"VK_EXT_mesh_shader\0".as_ptr().cast(),
     ];
 
     // Create.

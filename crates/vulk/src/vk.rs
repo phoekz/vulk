@@ -1447,6 +1447,10 @@ pub enum StructureType {
     DescriptorBufferBindingPushDescriptorBufferHandleEXT = 1000316012,
     #[doc = "**Translated from**: `VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CAPTURE_DESCRIPTOR_DATA_INFO_EXT`"]
     AccelerationStructureCaptureDescriptorDataInfoEXT = 1000316009,
+    #[doc = "**Translated from**: `VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_FEATURES_EXT`"]
+    PhysicalDeviceMeshShaderFeaturesEXT = 1000328000,
+    #[doc = "**Translated from**: `VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_PROPERTIES_EXT`"]
+    PhysicalDeviceMeshShaderPropertiesEXT = 1000328001,
     #[doc = "**Translated from**: `VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_OBJECT_FEATURES_EXT`"]
     PhysicalDeviceShaderObjectFeaturesEXT = 1000482000,
     #[doc = "**Translated from**: `VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_OBJECT_PROPERTIES_EXT`"]
@@ -1837,6 +1841,34 @@ pub enum SharingMode {
 
 #[repr(i32)]
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[doc = "**Chapter**: Samplers"]
+#[doc = "<br>"]
+#[doc = "**Description**: Comparison operator for depth"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkCompareOp`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkCompareOp.html)"]
+pub enum CompareOp {
+    #[doc = "**Translated from**: `VK_COMPARE_OP_NEVER`"]
+    Never = 0,
+    #[doc = "**Translated from**: `VK_COMPARE_OP_LESS`"]
+    Less = 1,
+    #[doc = "**Translated from**: `VK_COMPARE_OP_EQUAL`"]
+    Equal = 2,
+    #[doc = "**Translated from**: `VK_COMPARE_OP_LESS_OR_EQUAL`"]
+    LessOrEqual = 3,
+    #[doc = "**Translated from**: `VK_COMPARE_OP_GREATER`"]
+    Greater = 4,
+    #[doc = "**Translated from**: `VK_COMPARE_OP_NOT_EQUAL`"]
+    NotEqual = 5,
+    #[doc = "**Translated from**: `VK_COMPARE_OP_GREATER_OR_EQUAL`"]
+    GreaterOrEqual = 6,
+    #[doc = "**Translated from**: `VK_COMPARE_OP_ALWAYS`"]
+    Always = 7,
+}
+
+#[repr(i32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Resource Descriptors"]
 #[doc = "<br>"]
 #[doc = "**Description**: Specifies the type of a descriptor in a descriptor set"]
@@ -1887,72 +1919,8 @@ pub enum QueryType {
     PipelineStatistics = 1,
     #[doc = "**Translated from**: `VK_QUERY_TYPE_TIMESTAMP`"]
     Timestamp = 2,
-}
-
-#[repr(i32)]
-#[derive(Clone, Copy, PartialEq, Eq, Debug)]
-#[doc = "**Chapter**: Drawing Commands"]
-#[doc = "<br>"]
-#[doc = "**Description**: Supported primitive topologies"]
-#[doc = "<br>"]
-#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
-#[doc = "<br>"]
-#[doc = "**Reference**: [`VkPrimitiveTopology`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPrimitiveTopology.html)"]
-pub enum PrimitiveTopology {
-    #[doc = "**Translated from**: `VK_PRIMITIVE_TOPOLOGY_POINT_LIST`"]
-    PointList = 0,
-    #[doc = "**Translated from**: `VK_PRIMITIVE_TOPOLOGY_LINE_LIST`"]
-    LineList = 1,
-    #[doc = "**Translated from**: `VK_PRIMITIVE_TOPOLOGY_LINE_STRIP`"]
-    LineStrip = 2,
-    #[doc = "**Translated from**: `VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST`"]
-    TriangleList = 3,
-    #[doc = "**Translated from**: `VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP`"]
-    TriangleStrip = 4,
-    #[doc = "**Translated from**: `VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN`"]
-    TriangleFan = 5,
-    #[doc = "**Translated from**: `VK_PRIMITIVE_TOPOLOGY_LINE_LIST_WITH_ADJACENCY`"]
-    LineListWithAdjacency = 6,
-    #[doc = "**Translated from**: `VK_PRIMITIVE_TOPOLOGY_LINE_STRIP_WITH_ADJACENCY`"]
-    LineStripWithAdjacency = 7,
-    #[doc = "**Translated from**: `VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST_WITH_ADJACENCY`"]
-    TriangleListWithAdjacency = 8,
-    #[doc = "**Translated from**: `VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP_WITH_ADJACENCY`"]
-    TriangleStripWithAdjacency = 9,
-    #[doc = "**Translated from**: `VK_PRIMITIVE_TOPOLOGY_PATCH_LIST`"]
-    PatchList = 10,
-}
-
-#[repr(i32)]
-#[derive(Clone, Copy, PartialEq, Eq, Debug)]
-#[doc = "**Chapter**: Drawing Commands"]
-#[doc = "<br>"]
-#[doc = "**Description**: Type of index buffer indices"]
-#[doc = "<br>"]
-#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
-#[doc = "<br>"]
-#[doc = "**Reference**: [`VkIndexType`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkIndexType.html)"]
-pub enum IndexType {
-    #[doc = "**Translated from**: `VK_INDEX_TYPE_UINT16`"]
-    Uint16 = 0,
-    #[doc = "**Translated from**: `VK_INDEX_TYPE_UINT32`"]
-    Uint32 = 1,
-}
-
-#[repr(i32)]
-#[derive(Clone, Copy, PartialEq, Eq, Debug)]
-#[doc = "**Chapter**: Fixed-Function Vertex Processing"]
-#[doc = "<br>"]
-#[doc = "**Description**: Specify rate at which vertex attributes are pulled from buffers"]
-#[doc = "<br>"]
-#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
-#[doc = "<br>"]
-#[doc = "**Reference**: [`VkVertexInputRate`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVertexInputRate.html)"]
-pub enum VertexInputRate {
-    #[doc = "**Translated from**: `VK_VERTEX_INPUT_RATE_VERTEX`"]
-    Vertex = 0,
-    #[doc = "**Translated from**: `VK_VERTEX_INPUT_RATE_INSTANCE`"]
-    Instance = 1,
+    #[doc = "**Translated from**: `VK_QUERY_TYPE_MESH_PRIMITIVES_GENERATED_EXT`"]
+    MeshPrimitivesGeneratedEXT = 1000328000,
 }
 
 #[repr(i32)]
@@ -3603,6 +3571,10 @@ bitflags! {
         const ALL_GRAPHICS = 0x1f;
         #[doc = "Translated from: `VK_SHADER_STAGE_ALL`"]
         const ALL = 0x7fffffff;
+        #[doc = "Translated from: `VK_SHADER_STAGE_TASK_BIT_EXT`"]
+        const TASK_EXT = 0b1000000;
+        #[doc = "Translated from: `VK_SHADER_STAGE_MESH_BIT_EXT`"]
+        const MESH_EXT = 0b10000000;
     }
 }
 
@@ -4157,6 +4129,10 @@ bitflags! {
         const TESSELLATION_EVALUATION_SHADER_INVOCATIONS = 0b1000000000;
         #[doc = "Translated from: `VK_QUERY_PIPELINE_STATISTIC_COMPUTE_SHADER_INVOCATIONS_BIT`"]
         const COMPUTE_SHADER_INVOCATIONS = 0b10000000000;
+        #[doc = "Translated from: `VK_QUERY_PIPELINE_STATISTIC_TASK_SHADER_INVOCATIONS_BIT_EXT`"]
+        const TASK_SHADER_INVOCATIONS_EXT = 0b100000000000;
+        #[doc = "Translated from: `VK_QUERY_PIPELINE_STATISTIC_MESH_SHADER_INVOCATIONS_BIT_EXT`"]
+        const MESH_SHADER_INVOCATIONS_EXT = 0b1000000000000;
     }
 }
 
@@ -4680,6 +4656,8 @@ pub struct QueueFamilyProperties2 {
 #[doc = "**Extendable by**: [`VkPhysicalDeviceVulkan12Features`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceVulkan12Features.html)"]
 #[doc = "<br>"]
 #[doc = "**Extendable by**: [`VkPhysicalDeviceVulkan13Features`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceVulkan13Features.html)"]
+#[doc = "<br>"]
+#[doc = "**Extendable by**: [`VkPhysicalDeviceMeshShaderFeaturesEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceMeshShaderFeaturesEXT.html)"]
 #[doc = "<br>"]
 #[doc = "**Extendable by**: [`VkPhysicalDeviceDescriptorBufferFeaturesEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceDescriptorBufferFeaturesEXT.html)"]
 #[doc = "<br>"]
@@ -6347,66 +6325,6 @@ pub struct BufferImageCopy2 {
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug)]
-#[doc = "**Chapter**: Fixed-Function Vertex Processing"]
-#[doc = "<br>"]
-#[doc = "**Description**: Structure specifying the extended vertex input binding description"]
-#[doc = "<br>"]
-#[doc = "**Provided by**: [`VK_EXT_vertex_input_dynamic_state`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_vertex_input_dynamic_state.html)"]
-#[doc = "<br>"]
-#[doc = "**Reference**: [`VkVertexInputBindingDescription2EXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVertexInputBindingDescription2EXT.html)"]
-#[doc = "<br>"]
-#[doc = "**Initialization template**:"]
-#[doc = r#"```
-let vertex_input_binding_description2_ext = vk::VertexInputBindingDescription2EXT {
-    s_type: vk::StructureType::VertexInputBindingDescription2EXT,
-    p_next: null_mut(),
-    binding: todo!("u32"),
-    stride: todo!("u32"),
-    input_rate: todo!("vk::VertexInputRate"),
-    divisor: todo!("u32"),
-};
-```"#]
-pub struct VertexInputBindingDescription2EXT {
-    pub s_type: StructureType,
-    pub p_next: *mut c_void,
-    pub binding: u32,
-    pub stride: u32,
-    pub input_rate: VertexInputRate,
-    pub divisor: u32,
-}
-
-#[repr(C)]
-#[derive(Clone, Copy, Debug)]
-#[doc = "**Chapter**: Fixed-Function Vertex Processing"]
-#[doc = "<br>"]
-#[doc = "**Description**: Structure specifying the extended vertex input attribute description"]
-#[doc = "<br>"]
-#[doc = "**Provided by**: [`VK_EXT_vertex_input_dynamic_state`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_vertex_input_dynamic_state.html)"]
-#[doc = "<br>"]
-#[doc = "**Reference**: [`VkVertexInputAttributeDescription2EXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkVertexInputAttributeDescription2EXT.html)"]
-#[doc = "<br>"]
-#[doc = "**Initialization template**:"]
-#[doc = r#"```
-let vertex_input_attribute_description2_ext = vk::VertexInputAttributeDescription2EXT {
-    s_type: vk::StructureType::VertexInputAttributeDescription2EXT,
-    p_next: null_mut(),
-    location: todo!("u32"),
-    binding: todo!("u32"),
-    format: todo!("vk::Format"),
-    offset: todo!("u32"),
-};
-```"#]
-pub struct VertexInputAttributeDescription2EXT {
-    pub s_type: StructureType,
-    pub p_next: *mut c_void,
-    pub location: u32,
-    pub binding: u32,
-    pub format: Format,
-    pub offset: u32,
-}
-
-#[repr(C)]
-#[derive(Clone, Copy, Debug)]
 #[doc = "**Chapter**: Fixed-Function Vertex Post-Processing"]
 #[doc = "<br>"]
 #[doc = "**Description**: Structure specifying a viewport"]
@@ -6476,6 +6394,8 @@ pub struct PhysicalDeviceSparseProperties {
 #[doc = "**Extendable by**: [`VkPhysicalDeviceVulkan12Features`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceVulkan12Features.html)"]
 #[doc = "<br>"]
 #[doc = "**Extendable by**: [`VkPhysicalDeviceVulkan13Features`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceVulkan13Features.html)"]
+#[doc = "<br>"]
+#[doc = "**Extendable by**: [`VkPhysicalDeviceMeshShaderFeaturesEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceMeshShaderFeaturesEXT.html)"]
 #[doc = "<br>"]
 #[doc = "**Extendable by**: [`VkPhysicalDeviceDescriptorBufferFeaturesEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceDescriptorBufferFeaturesEXT.html)"]
 #[doc = "<br>"]
@@ -6789,6 +6709,38 @@ pub struct PhysicalDeviceVulkan13Features {
     pub dynamic_rendering: Bool32,
     pub shader_integer_dot_product: Bool32,
     pub maintenance4: Bool32,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Features"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure describing mesh shading features that can be supported by an implementation"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_EXT_mesh_shader`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_mesh_shader.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkPhysicalDeviceMeshShaderFeaturesEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceMeshShaderFeaturesEXT.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```
+let physical_device_mesh_shader_features_ext = vk::PhysicalDeviceMeshShaderFeaturesEXT {
+    s_type: vk::StructureType::PhysicalDeviceMeshShaderFeaturesEXT,
+    p_next: null_mut(),
+    task_shader: todo!("vk::Bool32"),
+    mesh_shader: todo!("vk::Bool32"),
+    multiview_mesh_shader: todo!("vk::Bool32"),
+    primitive_fragment_shading_rate_mesh_shader: todo!("vk::Bool32"),
+    mesh_shader_queries: todo!("vk::Bool32"),
+};
+```"#]
+pub struct PhysicalDeviceMeshShaderFeaturesEXT {
+    pub s_type: StructureType,
+    pub p_next: *mut c_void,
+    pub task_shader: Bool32,
+    pub mesh_shader: Bool32,
+    pub multiview_mesh_shader: Bool32,
+    pub primitive_fragment_shading_rate_mesh_shader: Bool32,
+    pub mesh_shader_queries: Bool32,
 }
 
 #[repr(C)]
@@ -8186,91 +8138,16 @@ pub type CmdCopyImageToBuffer2 = unsafe extern "C" fn(
 
 #[doc = "**Chapter**: Drawing Commands"]
 #[doc = "<br>"]
-#[doc = "**Description**: Set primitive topology state dynamically for a command buffer"]
+#[doc = "**Description**: Draw mesh task work items"]
 #[doc = "<br>"]
-#[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
+#[doc = "**Provided by**: [`VK_EXT_mesh_shader`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_mesh_shader.html)"]
 #[doc = "<br>"]
-#[doc = "**Reference**: [`vkCmdSetPrimitiveTopology`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetPrimitiveTopology.html)"]
-pub type CmdSetPrimitiveTopology = unsafe extern "C" fn(
-    command_buffer: CommandBuffer,         //
-    primitive_topology: PrimitiveTopology, //
-);
-
-#[doc = "**Chapter**: Drawing Commands"]
-#[doc = "<br>"]
-#[doc = "**Description**: Bind an index buffer to a command buffer"]
-#[doc = "<br>"]
-#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
-#[doc = "<br>"]
-#[doc = "**Reference**: [`vkCmdBindIndexBuffer`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdBindIndexBuffer.html)"]
-pub type CmdBindIndexBuffer = unsafe extern "C" fn(
+#[doc = "**Reference**: [`vkCmdDrawMeshTasksEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdDrawMeshTasksEXT.html)"]
+pub type CmdDrawMeshTasksEXT = unsafe extern "C" fn(
     command_buffer: CommandBuffer, //
-    buffer: Buffer,                //
-    offset: DeviceSize,            //
-    index_type: IndexType,         //
-);
-
-#[doc = "**Chapter**: Drawing Commands"]
-#[doc = "<br>"]
-#[doc = "**Description**: Draw primitives"]
-#[doc = "<br>"]
-#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
-#[doc = "<br>"]
-#[doc = "**Reference**: [`vkCmdDraw`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdDraw.html)"]
-pub type CmdDraw = unsafe extern "C" fn(
-    command_buffer: CommandBuffer, //
-    vertex_count: u32,             //
-    instance_count: u32,           //
-    first_vertex: u32,             //
-    first_instance: u32,           //
-);
-
-#[doc = "**Chapter**: Drawing Commands"]
-#[doc = "<br>"]
-#[doc = "**Description**: Draw primitives with indexed vertices"]
-#[doc = "<br>"]
-#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
-#[doc = "<br>"]
-#[doc = "**Reference**: [`vkCmdDrawIndexed`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdDrawIndexed.html)"]
-pub type CmdDrawIndexed = unsafe extern "C" fn(
-    command_buffer: CommandBuffer, //
-    index_count: u32,              //
-    instance_count: u32,           //
-    first_index: u32,              //
-    vertex_offset: i32,            //
-    first_instance: u32,           //
-);
-
-#[doc = "**Chapter**: Fixed-Function Vertex Processing"]
-#[doc = "<br>"]
-#[doc = "**Description**: Set the vertex input state dynamically for a command buffer"]
-#[doc = "<br>"]
-#[doc = "**Provided by**: [`VK_EXT_vertex_input_dynamic_state`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_vertex_input_dynamic_state.html)"]
-#[doc = "<br>"]
-#[doc = "**Reference**: [`vkCmdSetVertexInputEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetVertexInputEXT.html)"]
-pub type CmdSetVertexInputEXT = unsafe extern "C" fn(
-    command_buffer: CommandBuffer,                                               //
-    vertex_binding_description_count: u32,                                       //
-    p_vertex_binding_descriptions: *const VertexInputBindingDescription2EXT,     //
-    vertex_attribute_description_count: u32,                                     //
-    p_vertex_attribute_descriptions: *const VertexInputAttributeDescription2EXT, //
-);
-
-#[doc = "**Chapter**: Fixed-Function Vertex Processing"]
-#[doc = "<br>"]
-#[doc = "**Description**: Bind vertex buffers to a command buffer and dynamically set strides"]
-#[doc = "<br>"]
-#[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
-#[doc = "<br>"]
-#[doc = "**Reference**: [`vkCmdBindVertexBuffers2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdBindVertexBuffers2.html)"]
-pub type CmdBindVertexBuffers2 = unsafe extern "C" fn(
-    command_buffer: CommandBuffer, //
-    first_binding: u32,            //
-    binding_count: u32,            //
-    p_buffers: *const Buffer,      //
-    p_offsets: *const DeviceSize,  //
-    p_sizes: *const DeviceSize,    //
-    p_strides: *const DeviceSize,  //
+    group_count_x: u32,            //
+    group_count_y: u32,            //
+    group_count_z: u32,            //
 );
 
 #[doc = "**Chapter**: Fixed-Function Vertex Post-Processing"]
@@ -8321,6 +8198,42 @@ pub type CmdSetFrontFace = unsafe extern "C" fn(
 pub type CmdSetCullMode = unsafe extern "C" fn(
     command_buffer: CommandBuffer, //
     cull_mode: CullModeFlags,      //
+);
+
+#[doc = "**Chapter**: Fragment Operations"]
+#[doc = "<br>"]
+#[doc = "**Description**: Set depth test enable dynamically for a command buffer"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkCmdSetDepthTestEnable`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetDepthTestEnable.html)"]
+pub type CmdSetDepthTestEnable = unsafe extern "C" fn(
+    command_buffer: CommandBuffer, //
+    depth_test_enable: Bool32,     //
+);
+
+#[doc = "**Chapter**: Fragment Operations"]
+#[doc = "<br>"]
+#[doc = "**Description**: Set depth comparison operator dynamically for a command buffer"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkCmdSetDepthCompareOp`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetDepthCompareOp.html)"]
+pub type CmdSetDepthCompareOp = unsafe extern "C" fn(
+    command_buffer: CommandBuffer, //
+    depth_compare_op: CompareOp,   //
+);
+
+#[doc = "**Chapter**: Fragment Operations"]
+#[doc = "<br>"]
+#[doc = "**Description**: Set depth write enable dynamically for a command buffer"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkCmdSetDepthWriteEnable`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetDepthWriteEnable.html)"]
+pub type CmdSetDepthWriteEnable = unsafe extern "C" fn(
+    command_buffer: CommandBuffer, //
+    depth_write_enable: Bool32,    //
 );
 
 #[doc = "**Chapter**: Dispatching Commands"]

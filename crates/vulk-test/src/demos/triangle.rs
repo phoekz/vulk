@@ -6,9 +6,8 @@ use super::*;
 
 pub struct Demo {
     commands: command::Commands,
-    geometry: Geometry,
+    queries: query::Queries,
     shaders: Shaders,
-    timestamp_queries: TimestampQueries,
     render_targets: RenderTargets,
     output: Output,
 }
@@ -20,10 +19,9 @@ impl DemoCallbacks for Demo {
     where
         Self: Sized,
     {
-        let commands = command::create(gpu)?;
-        let geometry = create_geometry(gpu)?;
+        let commands = command::Commands::create(gpu)?;
+        let queries = query::Queries::create(gpu)?;
         let shaders = create_shaders(gpu)?;
-        let timestamp_queries = create_timestamp_queries(gpu)?;
         let format = vk::Format::R8g8b8a8Unorm;
         let width = 256;
         let height = 256;
@@ -31,9 +29,8 @@ impl DemoCallbacks for Demo {
         let output = create_output(gpu, format, width, height)?;
         Ok(Self {
             commands,
-            geometry,
+            queries,
             shaders,
-            timestamp_queries,
             render_targets,
             output,
         })
@@ -46,89 +43,18 @@ impl DemoCallbacks for Demo {
     unsafe fn destroy(gpu: &Gpu, state: Self) -> Result<()> {
         let Self {
             commands,
-            geometry,
+            queries,
             shaders,
             render_targets,
             output,
-            timestamp_queries,
         } = state;
         destroy_output(gpu, &output);
         destroy_render_targets(gpu, &render_targets);
-        destroy_timestamp_queries(gpu, &timestamp_queries);
         destroy_shaders(gpu, &shaders);
-        destroy_geometry(gpu, &geometry);
-        command::destroy(gpu, &commands);
+        queries.destroy(gpu);
+        commands.destroy(gpu);
         Ok(())
     }
-}
-
-//
-// Geometry
-//
-
-struct Geometry {
-    buffer: resource::Buffer<u8>,
-    vertex_stride: u32,
-    index_count: u32,
-    instance_count: u32,
-    index_offset: u64,
-    index_type: vk::IndexType,
-}
-
-unsafe fn create_geometry(gpu: &Gpu) -> Result<Geometry> {
-    #[allow(dead_code)]
-    struct Vertex {
-        position: Vec2,
-        color: Vec3,
-    }
-
-    let vertex_count = 3;
-    let index_count = 3;
-    let instance_count = 1;
-    let vertex_stride = size_of::<Vertex>();
-    let vertex_buffer_size = vertex_count * vertex_stride;
-    let index_buffer_size = index_count * size_of::<u32>();
-    let element_count = vertex_buffer_size + index_buffer_size;
-    let usage = vk::BufferUsageFlags::VERTEX_BUFFER | vk::BufferUsageFlags::INDEX_BUFFER;
-    let flags = vk::MemoryPropertyFlags::HOST_VISIBLE | vk::MemoryPropertyFlags::HOST_COHERENT;
-    let buffer = resource::Buffer::create(gpu, element_count, usage, flags)?;
-    let vertices: [Vertex; 3] = [
-        Vertex {
-            position: Vec2::new(-0.5, -0.5),
-            color: Vec3::new(1.0, 0.0, 0.0),
-        },
-        Vertex {
-            position: Vec2::new(0.0, 0.5),
-            color: Vec3::new(0.0, 1.0, 0.0),
-        },
-        Vertex {
-            position: Vec2::new(0.5, -0.5),
-            color: Vec3::new(0.0, 0.0, 1.0),
-        },
-    ];
-    let indices: [u32; 3] = [0, 1, 2];
-    std::ptr::copy_nonoverlapping(
-        vertices.as_ptr().cast::<u8>(),
-        buffer.ptr,
-        vertex_buffer_size,
-    );
-    std::ptr::copy_nonoverlapping(
-        indices.as_ptr().cast::<u8>(),
-        buffer.ptr.add(vertex_buffer_size),
-        index_buffer_size,
-    );
-    Ok(Geometry {
-        buffer,
-        vertex_stride: vertex_stride as _,
-        index_count: index_count as _,
-        instance_count,
-        index_offset: vertex_buffer_size as _,
-        index_type: vk::IndexType::Uint32,
-    })
-}
-
-unsafe fn destroy_geometry(gpu: &Gpu, geometry: &Geometry) {
-    geometry.buffer.destroy(gpu);
 }
 
 //
@@ -136,39 +62,100 @@ unsafe fn destroy_geometry(gpu: &Gpu, geometry: &Geometry) {
 //
 
 struct Shaders {
-    vertex: vk::ShaderEXT,
+    task: vk::ShaderEXT,
+    mesh: vk::ShaderEXT,
     fragment: vk::ShaderEXT,
 }
 
 unsafe fn create_shaders(Gpu { device, .. }: &Gpu) -> Result<Shaders> {
     // Shader compiler
-    let compiler = shader::Compiler::new()?;
+    let mut compiler = shader::Compiler::new()?;
+
+    // Includes.
+    compiler.include(
+        "common.glsl",
+        r#"
+            #extension GL_EXT_mesh_shader : require
+
+            struct MeshTask {
+                float scale;
+            };
+
+            struct MeshVertex {
+                vec3 color;
+            };
+
+            struct MeshPrimitive {
+                float alpha;
+            };
+        "#,
+    );
 
     // Shaders.
-    let vertex_spirv = compiler.compile(
+    let task_spirv = compiler.compile(
         r#"
             #version 460 core
+            #include "common.glsl"
 
-            layout(location = 0) in vec2 input_position;
-            layout(location = 1) in vec3 input_color;
-            layout(location = 0) out vec3 output_color;
+            taskPayloadSharedEXT MeshTask mesh_task;
 
             void main() {
-                gl_Position = vec4(input_position, 0.0, 1.0);
-                output_color = input_color;
+                mesh_task.scale = 1.5;
+                EmitMeshTasksEXT(1, 1, 1);
             }
         "#,
-        shader::ShaderType::Vertex,
+        shader::ShaderType::Task,
+    )?;
+    let mesh_spirv = compiler.compile(
+        r#"
+            #version 460 core
+            #include "common.glsl"
+
+            taskPayloadSharedEXT MeshTask mesh_task;
+
+            layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
+            layout(triangles, max_vertices = 3, max_primitives = 1) out;
+            layout(location = 0) out MeshVertex mesh_vertices[];
+            layout(location = 1) perprimitiveEXT flat out MeshPrimitive mesh_primitives[];
+
+            void main() {
+                const vec2 positions[3] = {
+                    vec2(-0.5, -0.5),
+                    vec2(0.0, 0.5),
+                    vec2(0.5, -0.5),
+                };
+                const vec3 colors[3] = {
+                    vec3(1.0, 0.0, 0.0),
+                    vec3(0.0, 1.0, 0.0),
+                    vec3(0.0, 0.0, 1.0),
+                };
+                const uvec3 triangles[1] = {
+                    uvec3(0, 1, 2),
+                };
+                SetMeshOutputsEXT(3, 1);
+                gl_MeshVerticesEXT[0].gl_Position = vec4(mesh_task.scale * positions[0], 0.0, 1.0);
+                gl_MeshVerticesEXT[1].gl_Position = vec4(mesh_task.scale * positions[1], 0.0, 1.0);
+                gl_MeshVerticesEXT[2].gl_Position = vec4(mesh_task.scale * positions[2], 0.0, 1.0);
+                mesh_vertices[0].color = colors[0];
+                mesh_vertices[1].color = colors[1];
+                mesh_vertices[2].color = colors[2];
+                gl_PrimitiveTriangleIndicesEXT[0] = triangles[0];
+                mesh_primitives[0].alpha = 1.0;
+            }
+        "#,
+        shader::ShaderType::Mesh,
     )?;
     let fragment_spirv = compiler.compile(
         r#"
             #version 460 core
+            #include "common.glsl"
 
-            layout(location = 0) in vec3 input_color;
-            layout(location = 0) out vec4 output_color;
+            layout(location = 0) in MeshVertex mesh_vertex;
+            layout(location = 1) perprimitiveEXT flat in MeshPrimitive mesh_primitive;
+            layout(location = 0) out vec4 fragment_color;
 
             void main() {
-                output_color = vec4(input_color, 1.0);
+                fragment_color = vec4(mesh_vertex.color, mesh_primitive.alpha);
             }
         "#,
         shader::ShaderType::Fragment,
@@ -180,11 +167,27 @@ unsafe fn create_shaders(Gpu { device, .. }: &Gpu) -> Result<Shaders> {
             s_type: vk::StructureType::ShaderCreateInfoEXT,
             p_next: null(),
             flags: vk::ShaderCreateFlagsEXT::LINK_STAGE_EXT,
-            stage: vk::ShaderStageFlagBits::VERTEX,
+            stage: vk::ShaderStageFlagBits::TASK_EXT,
+            next_stage: vk::ShaderStageFlags::MESH_EXT,
+            code_type: vk::ShaderCodeTypeEXT::SpirvEXT,
+            code_size: task_spirv.len(),
+            p_code: task_spirv.as_ptr().cast(),
+            p_name: b"main\0".as_ptr().cast(),
+            set_layout_count: 0,
+            p_set_layouts: null(),
+            push_constant_range_count: 0,
+            p_push_constant_ranges: null(),
+            p_specialization_info: null(),
+        },
+        vk::ShaderCreateInfoEXT {
+            s_type: vk::StructureType::ShaderCreateInfoEXT,
+            p_next: null(),
+            flags: vk::ShaderCreateFlagsEXT::LINK_STAGE_EXT,
+            stage: vk::ShaderStageFlagBits::MESH_EXT,
             next_stage: vk::ShaderStageFlags::FRAGMENT,
             code_type: vk::ShaderCodeTypeEXT::SpirvEXT,
-            code_size: vertex_spirv.len(),
-            p_code: vertex_spirv.as_ptr().cast(),
+            code_size: mesh_spirv.len(),
+            p_code: mesh_spirv.as_ptr().cast(),
             p_name: b"main\0".as_ptr().cast(),
             set_layout_count: 0,
             p_set_layouts: null(),
@@ -209,7 +212,7 @@ unsafe fn create_shaders(Gpu { device, .. }: &Gpu) -> Result<Shaders> {
             p_specialization_info: null(),
         },
     ];
-    let mut shaders: [vk::ShaderEXT; 2] = zeroed();
+    let mut shaders: [vk::ShaderEXT; 3] = zeroed();
     device.create_shaders_ext(
         shader_create_infos.len() as _,
         shader_create_infos.as_ptr(),
@@ -217,48 +220,16 @@ unsafe fn create_shaders(Gpu { device, .. }: &Gpu) -> Result<Shaders> {
     )?;
 
     Ok(Shaders {
-        vertex: shaders[0],
-        fragment: shaders[1],
+        task: shaders[0],
+        mesh: shaders[1],
+        fragment: shaders[2],
     })
 }
 
 unsafe fn destroy_shaders(Gpu { device, .. }: &Gpu, shaders: &Shaders) {
-    device.destroy_shader_ext(shaders.vertex);
+    device.destroy_shader_ext(shaders.task);
+    device.destroy_shader_ext(shaders.mesh);
     device.destroy_shader_ext(shaders.fragment);
-}
-
-//
-// Timestamp queries
-//
-
-struct TimestampQueries {
-    query_pool: vk::QueryPool,
-    query_pool_create_info: vk::QueryPoolCreateInfo,
-}
-
-unsafe fn create_timestamp_queries(Gpu { device, .. }: &Gpu) -> Result<TimestampQueries> {
-    let query_count = 2;
-    let query_pool_create_info = vk::QueryPoolCreateInfo {
-        s_type: vk::StructureType::QueryPoolCreateInfo,
-        p_next: null(),
-        flags: vk::QueryPoolCreateFlags::empty(),
-        query_type: vk::QueryType::Timestamp,
-        query_count,
-        pipeline_statistics: vk::QueryPipelineStatisticFlags::empty(),
-    };
-    let query_pool = device.create_query_pool(&query_pool_create_info)?;
-    device.reset_query_pool(query_pool, 0, query_count);
-    Ok(TimestampQueries {
-        query_pool,
-        query_pool_create_info,
-    })
-}
-
-unsafe fn destroy_timestamp_queries(
-    Gpu { device, .. }: &Gpu,
-    timestamp_queries: &TimestampQueries,
-) {
-    device.destroy_query_pool(timestamp_queries.query_pool);
 }
 
 //
@@ -321,19 +292,13 @@ unsafe fn destroy_output(gpu: &Gpu, output: &Output) {
 //
 
 unsafe fn draw(
-    Gpu {
-        device,
-        queue,
-        physical_device,
-        ..
-    }: &Gpu,
+    gpu @ Gpu { device, queue, .. }: &Gpu,
     Demo {
         commands,
+        queries,
+        shaders,
         render_targets,
         output,
-        timestamp_queries,
-        geometry,
-        shaders,
     }: &Demo,
     demo_name: &str,
 ) -> Result<()> {
@@ -350,12 +315,7 @@ unsafe fn draw(
     )?;
 
     // Begin queries.
-    device.cmd_write_timestamp2(
-        cmd,
-        vk::PipelineStageFlags2::TOP_OF_PIPE,
-        timestamp_queries.query_pool,
-        0,
-    );
+    queries.begin(gpu, cmd);
 
     // Transition render target.
     device.cmd_pipeline_barrier2(
@@ -418,76 +378,13 @@ unsafe fn draw(
         }),
     );
 
-    // Bind shaders.
-    {
-        let stages = [
-            vk::ShaderStageFlagBits::VERTEX,
-            vk::ShaderStageFlagBits::FRAGMENT,
-        ];
-        let shaders = [shaders.vertex, shaders.fragment];
-        device.cmd_bind_shaders_ext(cmd, 2, stages.as_ptr(), shaders.as_ptr());
-    }
-
-    // Bind geometry.
-    {
-        device.cmd_set_vertex_input_ext(
-            cmd,
-            1,
-            &(vk::VertexInputBindingDescription2EXT {
-                s_type: vk::StructureType::VertexInputBindingDescription2EXT,
-                p_next: null_mut(),
-                binding: 0,
-                stride: geometry.vertex_stride,
-                input_rate: vk::VertexInputRate::Vertex,
-                divisor: 1,
-            }),
-            2,
-            [
-                vk::VertexInputAttributeDescription2EXT {
-                    s_type: vk::StructureType::VertexInputAttributeDescription2EXT,
-                    p_next: null_mut(),
-                    location: 0,
-                    binding: 0,
-                    format: vk::Format::R32g32Sfloat,
-                    offset: 0,
-                },
-                vk::VertexInputAttributeDescription2EXT {
-                    s_type: vk::StructureType::VertexInputAttributeDescription2EXT,
-                    p_next: null_mut(),
-                    location: 1,
-                    binding: 0,
-                    format: vk::Format::R32g32b32Sfloat,
-                    offset: 8,
-                },
-            ]
-            .as_ptr(),
-        );
-
-        let buffers = [geometry.buffer.buffer];
-        let offsets = [0];
-        device.cmd_bind_vertex_buffers2(
-            cmd,
-            0,
-            1,
-            buffers.as_ptr(),
-            offsets.as_ptr(),
-            null(),
-            null(),
-        );
-        device.cmd_bind_index_buffer(
-            cmd,
-            geometry.buffer.buffer,
-            geometry.index_offset,
-            geometry.index_type,
-        );
-    }
-
     // Set rasterizer state.
     {
         let width = render_targets.color.width() as f32;
         let height = render_targets.color.height() as f32;
 
-        device.cmd_set_primitive_topology(cmd, vk::PrimitiveTopology::TriangleList);
+        device.cmd_set_cull_mode(cmd, vk::CullModeFlags::BACK);
+        device.cmd_set_front_face(cmd, vk::FrontFace::Clockwise);
         device.cmd_set_viewport_with_count(
             cmd,
             1,
@@ -500,13 +397,21 @@ unsafe fn draw(
                 max_depth: 1.0,
             },
         );
-        device.cmd_set_scissor_with_count(cmd, 1, &render_targets.color.rect_2d());
-        device.cmd_set_front_face(cmd, vk::FrontFace::Clockwise);
-        device.cmd_set_cull_mode(cmd, vk::CullModeFlags::BACK);
+    }
+
+    // Bind shaders.
+    {
+        let stages = [
+            vk::ShaderStageFlagBits::TASK_EXT,
+            vk::ShaderStageFlagBits::MESH_EXT,
+            vk::ShaderStageFlagBits::FRAGMENT,
+        ];
+        let shaders = [shaders.task, shaders.mesh, shaders.fragment];
+        device.cmd_bind_shaders_ext(cmd, stages.len() as _, stages.as_ptr(), shaders.as_ptr());
     }
 
     // Draw.
-    device.cmd_draw_indexed(cmd, geometry.index_count, geometry.instance_count, 0, 0, 0);
+    device.cmd_draw_mesh_tasks_ext(cmd, 1, 1, 1);
 
     // End rendering.
     device.cmd_end_rendering(cmd);
@@ -564,12 +469,7 @@ unsafe fn draw(
     );
 
     // End queries.
-    device.cmd_write_timestamp2(
-        cmd,
-        vk::PipelineStageFlags2::BOTTOM_OF_PIPE,
-        timestamp_queries.query_pool,
-        1,
-    );
+    queries.end(gpu, cmd);
 
     // End command buffer.
     device.end_command_buffer(cmd)?;
@@ -621,26 +521,10 @@ unsafe fn draw(
         )?;
     }
 
-    // Read timestamp.
+    // Query results.
     {
-        let query_count = timestamp_queries.query_pool_create_info.query_count;
-        let mut timestamps = vec![0_u64; query_count as _];
-        device.get_query_pool_results(
-            timestamp_queries.query_pool,
-            0,
-            query_count,
-            size_of::<u64>() * query_count as usize,
-            timestamps.as_mut_ptr().cast(),
-            size_of::<u64>() as _,
-            vk::QueryResultFlags::NUM_64 | vk::QueryResultFlags::WAIT,
-        )?;
-
-        let elapsed = timestamps[1]
-            .checked_sub(timestamps[0])
-            .expect("Later timestamp is larger than earlier timestamp");
-        let elapsed_ns = elapsed as f32 * physical_device.properties.limits.timestamp_period;
-        let elapsed_ms = elapsed_ns / 1e6;
-        info!("Rendering took {elapsed_ms} ms, raw={:?}", timestamps);
+        info!("Rendering took {:?}", queries.elapsed(gpu)?);
+        info!("Rendering statistics: {:?}", queries.statistics(gpu)?);
     }
 
     // Write image.

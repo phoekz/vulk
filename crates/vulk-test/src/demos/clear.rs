@@ -6,7 +6,7 @@ use super::*;
 
 pub struct Demo {
     commands: command::Commands,
-    timestamp_queries: TimestampQueries,
+    queries: query::Queries,
     render_targets: RenderTargets,
     output: Output,
 }
@@ -18,8 +18,8 @@ impl DemoCallbacks for Demo {
     where
         Self: Sized,
     {
-        let commands = command::create(gpu)?;
-        let timestamp_queries = create_timestamp_queries(gpu)?;
+        let commands = command::Commands::create(gpu)?;
+        let queries = query::Queries::create(gpu)?;
         let format = vk::Format::R8g8b8a8Unorm;
         let width = 256;
         let height = 256;
@@ -27,7 +27,7 @@ impl DemoCallbacks for Demo {
         let output = create_output(gpu, format, width, height)?;
         Ok(Self {
             commands,
-            timestamp_queries,
+            queries,
             render_targets,
             output,
         })
@@ -40,50 +40,16 @@ impl DemoCallbacks for Demo {
     unsafe fn destroy(gpu: &Gpu, state: Self) -> Result<()> {
         let Self {
             commands,
+            queries,
             render_targets,
             output,
-            timestamp_queries,
         } = state;
         destroy_output(gpu, &output);
         destroy_render_targets(gpu, &render_targets);
-        destroy_timestamp_queries(gpu, &timestamp_queries);
-        command::destroy(gpu, &commands);
+        queries.destroy(gpu);
+        commands.destroy(gpu);
         Ok(())
     }
-}
-
-//
-// Timestamp queries
-//
-
-struct TimestampQueries {
-    query_pool: vk::QueryPool,
-    query_pool_create_info: vk::QueryPoolCreateInfo,
-}
-
-unsafe fn create_timestamp_queries(Gpu { device, .. }: &Gpu) -> Result<TimestampQueries> {
-    let query_count = 2;
-    let query_pool_create_info = vk::QueryPoolCreateInfo {
-        s_type: vk::StructureType::QueryPoolCreateInfo,
-        p_next: null(),
-        flags: vk::QueryPoolCreateFlags::empty(),
-        query_type: vk::QueryType::Timestamp,
-        query_count,
-        pipeline_statistics: vk::QueryPipelineStatisticFlags::empty(),
-    };
-    let query_pool = device.create_query_pool(&query_pool_create_info)?;
-    device.reset_query_pool(query_pool, 0, query_count);
-    Ok(TimestampQueries {
-        query_pool,
-        query_pool_create_info,
-    })
-}
-
-unsafe fn destroy_timestamp_queries(
-    Gpu { device, .. }: &Gpu,
-    timestamp_queries: &TimestampQueries,
-) {
-    device.destroy_query_pool(timestamp_queries.query_pool);
 }
 
 //
@@ -146,7 +112,7 @@ unsafe fn destroy_output(gpu: &Gpu, output: &Output) {
 //
 
 unsafe fn draw(
-    Gpu {
+    gpu @ Gpu {
         device,
         queue,
         physical_device,
@@ -154,9 +120,9 @@ unsafe fn draw(
     }: &Gpu,
     Demo {
         commands,
+        queries,
         render_targets,
         output,
-        timestamp_queries,
     }: &Demo,
     demo_name: &str,
 ) -> Result<()> {
@@ -173,12 +139,7 @@ unsafe fn draw(
     )?;
 
     // Begin queries.
-    device.cmd_write_timestamp2(
-        cmd,
-        vk::PipelineStageFlags2::TOP_OF_PIPE,
-        timestamp_queries.query_pool,
-        0,
-    );
+    queries.begin(gpu, cmd);
 
     // Transition render target.
     device.cmd_pipeline_barrier2(
@@ -297,12 +258,7 @@ unsafe fn draw(
     );
 
     // End queries.
-    device.cmd_write_timestamp2(
-        cmd,
-        vk::PipelineStageFlags2::BOTTOM_OF_PIPE,
-        timestamp_queries.query_pool,
-        1,
-    );
+    queries.end(gpu, cmd);
 
     // End command buffer.
     device.end_command_buffer(cmd)?;
@@ -354,26 +310,10 @@ unsafe fn draw(
         )?;
     }
 
-    // Read timestamp.
+    // Query results.
     {
-        let query_count = timestamp_queries.query_pool_create_info.query_count;
-        let mut timestamps = vec![0_u64; query_count as _];
-        device.get_query_pool_results(
-            timestamp_queries.query_pool,
-            0,
-            query_count,
-            size_of::<u64>() * query_count as usize,
-            timestamps.as_mut_ptr().cast(),
-            size_of::<u64>() as _,
-            vk::QueryResultFlags::NUM_64 | vk::QueryResultFlags::WAIT,
-        )?;
-
-        let elapsed = timestamps[1]
-            .checked_sub(timestamps[0])
-            .expect("Later timestamp is larger than earlier timestamp");
-        let elapsed_ns = elapsed as f32 * physical_device.properties.limits.timestamp_period;
-        let elapsed_ms = elapsed_ns / 1e6;
-        info!("Clear took {elapsed_ms} ms, raw={:?}", timestamps);
+        info!("Rendering took {:?}", queries.elapsed(gpu)?);
+        info!("Rendering statistics: {:?}", queries.statistics(gpu)?);
     }
 
     // Write image.

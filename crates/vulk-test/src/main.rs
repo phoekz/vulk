@@ -8,6 +8,7 @@
 #![allow(
     clippy::cast_possible_truncation,
     clippy::cast_precision_loss,
+    clippy::cast_sign_loss,
     clippy::missing_errors_doc,
     clippy::missing_safety_doc,
     clippy::module_name_repetitions,
@@ -23,11 +24,12 @@
 
 use std::{
     borrow::Cow,
+    collections::HashMap,
     ffi::CStr,
     mem::{size_of, zeroed, MaybeUninit},
     path::PathBuf,
     ptr::{addr_of, addr_of_mut, null, null_mut},
-    time::Instant,
+    time::{Duration, Instant},
 };
 
 use anyhow::{ensure, Context, Result};
@@ -42,6 +44,7 @@ use vulk::vk;
 mod command;
 mod demos;
 mod gpu;
+mod query;
 mod resource;
 mod shader;
 
