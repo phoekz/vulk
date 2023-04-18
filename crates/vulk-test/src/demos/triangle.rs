@@ -266,7 +266,7 @@ unsafe fn destroy_timestamp_queries(
 //
 
 struct RenderTargets {
-    color_image: resource::Image2d,
+    color: resource::Image2d,
 }
 
 unsafe fn create_render_targets(
@@ -275,7 +275,7 @@ unsafe fn create_render_targets(
     width: u32,
     height: u32,
 ) -> Result<RenderTargets> {
-    let color_image = resource::Image2d::create(
+    let color = resource::Image2d::create(
         gpu,
         format,
         width,
@@ -284,11 +284,11 @@ unsafe fn create_render_targets(
         vk::ImageUsageFlags::COLOR_ATTACHMENT | vk::ImageUsageFlags::TRANSFER_SRC,
         vk::MemoryPropertyFlags::DEVICE_LOCAL,
     )?;
-    Ok(RenderTargets { color_image })
+    Ok(RenderTargets { color })
 }
 
 unsafe fn destroy_render_targets(gpu: &Gpu, rt: &RenderTargets) {
-    rt.color_image.destroy(gpu);
+    rt.color.destroy(gpu);
 }
 
 //
@@ -380,8 +380,8 @@ unsafe fn draw(
                 new_layout: vk::ImageLayout::AttachmentOptimal,
                 src_queue_family_index: 0,
                 dst_queue_family_index: 0,
-                image: render_targets.color_image.image,
-                subresource_range: render_targets.color_image.subresource_range(),
+                image: render_targets.color.image,
+                subresource_range: render_targets.color.subresource_range(),
             },
         },
     );
@@ -393,14 +393,14 @@ unsafe fn draw(
             s_type: vk::StructureType::RenderingInfo,
             p_next: null(),
             flags: vk::RenderingFlags::empty(),
-            render_area: render_targets.color_image.rect_2d(),
+            render_area: render_targets.color.rect_2d(),
             layer_count: 1,
             view_mask: 0,
             color_attachment_count: 1,
             p_color_attachments: &(vk::RenderingAttachmentInfo {
                 s_type: vk::StructureType::RenderingAttachmentInfo,
                 p_next: null(),
-                image_view: render_targets.color_image.image_view,
+                image_view: render_targets.color.image_view,
                 image_layout: vk::ImageLayout::AttachmentOptimal,
                 resolve_mode: vk::ResolveModeFlagBits::NONE,
                 resolve_image_view: vk::ImageView::null(),
@@ -484,8 +484,8 @@ unsafe fn draw(
 
     // Set rasterizer state.
     {
-        let width = render_targets.color_image.width() as f32;
-        let height = render_targets.color_image.height() as f32;
+        let width = render_targets.color.width() as f32;
+        let height = render_targets.color.height() as f32;
 
         device.cmd_set_primitive_topology(cmd, vk::PrimitiveTopology::TriangleList);
         device.cmd_set_viewport_with_count(
@@ -500,7 +500,7 @@ unsafe fn draw(
                 max_depth: 1.0,
             },
         );
-        device.cmd_set_scissor_with_count(cmd, 1, &render_targets.color_image.rect_2d());
+        device.cmd_set_scissor_with_count(cmd, 1, &render_targets.color.rect_2d());
         device.cmd_set_front_face(cmd, vk::FrontFace::Clockwise);
         device.cmd_set_cull_mode(cmd, vk::CullModeFlags::BACK);
     }
@@ -534,8 +534,8 @@ unsafe fn draw(
                 new_layout: vk::ImageLayout::TransferSrcOptimal,
                 src_queue_family_index: 0,
                 dst_queue_family_index: 0,
-                image: render_targets.color_image.image,
-                subresource_range: render_targets.color_image.subresource_range(),
+                image: render_targets.color.image,
+                subresource_range: render_targets.color.subresource_range(),
             },
         },
     );
@@ -546,7 +546,7 @@ unsafe fn draw(
         &(vk::CopyImageToBufferInfo2 {
             s_type: vk::StructureType::CopyImageToBufferInfo2,
             p_next: null(),
-            src_image: render_targets.color_image.image,
+            src_image: render_targets.color.image,
             src_image_layout: vk::ImageLayout::TransferSrcOptimal,
             dst_buffer: output.buffer.buffer,
             region_count: 1,
@@ -554,11 +554,11 @@ unsafe fn draw(
                 s_type: vk::StructureType::BufferImageCopy2,
                 p_next: null(),
                 buffer_offset: 0,
-                buffer_row_length: render_targets.color_image.width(),
-                buffer_image_height: render_targets.color_image.height(),
-                image_subresource: render_targets.color_image.subresource_layers(),
+                buffer_row_length: render_targets.color.width(),
+                buffer_image_height: render_targets.color.height(),
+                image_subresource: render_targets.color.subresource_layers(),
                 image_offset: vk::Offset3D { x: 0, y: 0, z: 0 },
-                image_extent: render_targets.color_image.extent_3d(),
+                image_extent: render_targets.color.extent_3d(),
             }),
         }),
     );
@@ -646,9 +646,9 @@ unsafe fn draw(
     // Write image.
     {
         use imagelib::{ImageFormat, RgbaImage};
-        let width = render_targets.color_image.width();
-        let height = render_targets.color_image.height();
-        let pixels_byte_size = render_targets.color_image.byte_size();
+        let width = render_targets.color.width();
+        let height = render_targets.color.height();
+        let pixels_byte_size = render_targets.color.byte_size();
         let mut pixels = vec![0_u8; pixels_byte_size as _];
         std::ptr::copy_nonoverlapping(
             output.buffer.ptr.cast::<u8>(),
