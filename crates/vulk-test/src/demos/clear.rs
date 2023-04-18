@@ -112,12 +112,7 @@ unsafe fn destroy_output(gpu: &Gpu, output: &Output) {
 //
 
 unsafe fn draw(
-    gpu @ Gpu {
-        device,
-        queue,
-        physical_device,
-        ..
-    }: &Gpu,
+    gpu @ Gpu { device, queue, .. }: &Gpu,
     Demo {
         commands,
         queries,

@@ -10,8 +10,8 @@ pub struct Demo {
     compute_buffer: ComputeBuffer,
     indirect_buffer: IndirectBuffer,
     descriptors: Descriptors,
-    indirect_shader: vk::ShaderEXT,
-    compute_shader: vk::ShaderEXT,
+    indirect_shader: shader::Shader,
+    compute_shader: shader::Shader,
 }
 
 impl DemoCallbacks for Demo {
@@ -51,8 +51,8 @@ impl DemoCallbacks for Demo {
             indirect_shader,
             compute_shader,
         } = state;
-        device.destroy_shader_ext(compute_shader);
-        device.destroy_shader_ext(indirect_shader);
+        compute_shader.destroy(gpu);
+        indirect_shader.destroy(gpu);
         device.destroy_descriptor_set_layout(descriptors.set_layout);
         device.destroy_pipeline_layout(descriptors.pipeline_layout);
         compute_buffer.destroy(gpu);
@@ -211,15 +211,16 @@ unsafe fn create_descriptors(
 //
 
 unsafe fn create_shaders(
-    Gpu { device, .. }: &Gpu,
+    gpu: &Gpu,
     compute_buffer: &ComputeBuffer,
     descriptors: &Descriptors,
-) -> Result<(vk::ShaderEXT, vk::ShaderEXT)> {
+) -> Result<(shader::Shader, shader::Shader)> {
     // Shader compiler
     let compiler = shader::Compiler::new()?;
 
     // Shaders.
     let indirect_spirv = compiler.compile(
+        shader::ShaderType::Compute,
         r#"
             #version 460 core
 
@@ -243,9 +244,9 @@ unsafe fn create_shaders(
                 indirect_commands.data[0] = command;
             }
         "#,
-        shader::ShaderType::Compute,
     )?;
     let compute_spirv = compiler.compile(
+        shader::ShaderType::Compute,
         r#"
             #version 460 core
 
@@ -260,76 +261,30 @@ unsafe fn create_shaders(
                 values.data[id] = 1 + id;
             }
         "#,
-        shader::ShaderType::Compute,
     )?;
 
-    // Indirect shader.
-    let indirect_shader = {
-        let set_layouts = [descriptors.set_layout];
-        let shader_create_info_ext = vk::ShaderCreateInfoEXT {
-            s_type: vk::StructureType::ShaderCreateInfoEXT,
-            p_next: null(),
-            flags: vk::ShaderCreateFlagsEXT::empty(),
-            stage: vk::ShaderStageFlagBits::COMPUTE,
-            next_stage: vk::ShaderStageFlags::empty(),
-            code_type: vk::ShaderCodeTypeEXT::SpirvEXT,
-            code_size: indirect_spirv.len(),
-            p_code: indirect_spirv.as_ptr().cast(),
-            p_name: b"main\0".as_ptr().cast(),
-            set_layout_count: set_layouts.len() as _,
-            p_set_layouts: set_layouts.as_ptr(),
-            push_constant_range_count: 0,
-            p_push_constant_ranges: null(),
-            p_specialization_info: null(),
-        };
-        let mut shader = MaybeUninit::uninit();
-        device.create_shaders_ext(
-            1,
-            addr_of!(shader_create_info_ext).cast(),
-            shader.as_mut_ptr(),
-        )?;
-        shader.assume_init()
+    // Create shaders.
+    let indirect_shader =
+        shader::Shader::create(gpu, &[indirect_spirv], &[descriptors.set_layout], &[], None)?;
+    let specialization_map_entry = vk::SpecializationMapEntry {
+        constant_id: 0,
+        offset: 0,
+        size: size_of::<u32>(),
     };
-
-    // Compute shader.
-    let compute_shader = {
-        let set_layouts = [descriptors.set_layout];
-        let specialization_map_entry = vk::SpecializationMapEntry {
-            constant_id: 0,
-            offset: 0,
-            size: size_of::<u32>(),
-        };
-        let data = compute_buffer.element_count as u32;
-        let specialization_info = vk::SpecializationInfo {
-            map_entry_count: 1,
-            p_map_entries: addr_of!(specialization_map_entry).cast(),
-            data_size: size_of::<u32>(),
-            p_data: addr_of!(data).cast(),
-        };
-        let shader_create_info_ext = vk::ShaderCreateInfoEXT {
-            s_type: vk::StructureType::ShaderCreateInfoEXT,
-            p_next: null(),
-            flags: vk::ShaderCreateFlagsEXT::empty(),
-            stage: vk::ShaderStageFlagBits::COMPUTE,
-            next_stage: vk::ShaderStageFlags::empty(),
-            code_type: vk::ShaderCodeTypeEXT::SpirvEXT,
-            code_size: compute_spirv.len(),
-            p_code: compute_spirv.as_ptr().cast(),
-            p_name: b"main\0".as_ptr().cast(),
-            set_layout_count: set_layouts.len() as _,
-            p_set_layouts: set_layouts.as_ptr(),
-            push_constant_range_count: 0,
-            p_push_constant_ranges: null(),
-            p_specialization_info: &specialization_info,
-        };
-        let mut shader = MaybeUninit::uninit();
-        device.create_shaders_ext(
-            1,
-            addr_of!(shader_create_info_ext).cast(),
-            shader.as_mut_ptr(),
-        )?;
-        shader.assume_init()
+    let data = compute_buffer.element_count as u32;
+    let specialization_info = vk::SpecializationInfo {
+        map_entry_count: 1,
+        p_map_entries: addr_of!(specialization_map_entry).cast(),
+        data_size: size_of::<u32>(),
+        p_data: addr_of!(data).cast(),
     };
+    let compute_shader = shader::Shader::create(
+        gpu,
+        &[compute_spirv],
+        &[descriptors.set_layout],
+        &[],
+        Some(&specialization_info),
+    )?;
 
     Ok((indirect_shader, compute_shader))
 }
@@ -339,12 +294,7 @@ unsafe fn create_shaders(
 //
 
 unsafe fn dispatch(
-    gpu @ Gpu {
-        device,
-        queue,
-        physical_device,
-        ..
-    }: &Gpu,
+    gpu @ Gpu { device, queue, .. }: &Gpu,
     Demo {
         commands,
         queries,
@@ -399,13 +349,7 @@ unsafe fn dispatch(
 
     // Dispatch indirect shader.
     {
-        let stages = [vk::ShaderStageFlagBits::COMPUTE];
-        device.cmd_bind_shaders_ext(
-            cmd,
-            stages.len() as _,
-            stages.as_ptr(),
-            addr_of!(*indirect_shader),
-        );
+        indirect_shader.bind(gpu, cmd);
         device.cmd_dispatch(cmd, 1, 1, 1);
     }
 
@@ -436,13 +380,7 @@ unsafe fn dispatch(
 
     // Dispatch compute shader.
     {
-        let stages = [vk::ShaderStageFlagBits::COMPUTE];
-        device.cmd_bind_shaders_ext(
-            cmd,
-            stages.len() as _,
-            stages.as_ptr(),
-            addr_of!(*compute_shader),
-        );
+        compute_shader.bind(gpu, cmd);
         device.cmd_dispatch_indirect(cmd, indirect_buffer.buffer, 0);
     }
 

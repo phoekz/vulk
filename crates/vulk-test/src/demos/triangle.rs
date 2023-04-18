@@ -7,7 +7,7 @@ use super::*;
 pub struct Demo {
     commands: command::Commands,
     queries: query::Queries,
-    shaders: Shaders,
+    shader: shader::Shader,
     render_targets: RenderTargets,
     output: Output,
 }
@@ -21,7 +21,7 @@ impl DemoCallbacks for Demo {
     {
         let commands = command::Commands::create(gpu)?;
         let queries = query::Queries::create(gpu)?;
-        let shaders = create_shaders(gpu)?;
+        let shader = create_shaders(gpu)?;
         let format = vk::Format::R8g8b8a8Unorm;
         let width = 256;
         let height = 256;
@@ -30,7 +30,7 @@ impl DemoCallbacks for Demo {
         Ok(Self {
             commands,
             queries,
-            shaders,
+            shader,
             render_targets,
             output,
         })
@@ -44,13 +44,13 @@ impl DemoCallbacks for Demo {
         let Self {
             commands,
             queries,
-            shaders,
+            shader,
             render_targets,
             output,
         } = state;
         destroy_output(gpu, &output);
         destroy_render_targets(gpu, &render_targets);
-        destroy_shaders(gpu, &shaders);
+        shader.destroy(gpu);
         queries.destroy(gpu);
         commands.destroy(gpu);
         Ok(())
@@ -61,13 +61,7 @@ impl DemoCallbacks for Demo {
 // Shaders
 //
 
-struct Shaders {
-    task: vk::ShaderEXT,
-    mesh: vk::ShaderEXT,
-    fragment: vk::ShaderEXT,
-}
-
-unsafe fn create_shaders(Gpu { device, .. }: &Gpu) -> Result<Shaders> {
+unsafe fn create_shaders(gpu: &Gpu) -> Result<shader::Shader> {
     // Shader compiler
     let mut compiler = shader::Compiler::new()?;
 
@@ -93,6 +87,7 @@ unsafe fn create_shaders(Gpu { device, .. }: &Gpu) -> Result<Shaders> {
 
     // Shaders.
     let task_spirv = compiler.compile(
+        shader::ShaderType::Task,
         r#"
             #version 460 core
             #include "common.glsl"
@@ -104,9 +99,9 @@ unsafe fn create_shaders(Gpu { device, .. }: &Gpu) -> Result<Shaders> {
                 EmitMeshTasksEXT(1, 1, 1);
             }
         "#,
-        shader::ShaderType::Task,
     )?;
     let mesh_spirv = compiler.compile(
+        shader::ShaderType::Mesh,
         r#"
             #version 460 core
             #include "common.glsl"
@@ -143,9 +138,9 @@ unsafe fn create_shaders(Gpu { device, .. }: &Gpu) -> Result<Shaders> {
                 mesh_primitives[0].alpha = 1.0;
             }
         "#,
-        shader::ShaderType::Mesh,
     )?;
     let fragment_spirv = compiler.compile(
+        shader::ShaderType::Fragment,
         r#"
             #version 460 core
             #include "common.glsl"
@@ -158,78 +153,15 @@ unsafe fn create_shaders(Gpu { device, .. }: &Gpu) -> Result<Shaders> {
                 fragment_color = vec4(mesh_vertex.color, mesh_primitive.alpha);
             }
         "#,
-        shader::ShaderType::Fragment,
     )?;
 
-    // Shader objects.
-    let shader_create_infos = [
-        vk::ShaderCreateInfoEXT {
-            s_type: vk::StructureType::ShaderCreateInfoEXT,
-            p_next: null(),
-            flags: vk::ShaderCreateFlagsEXT::LINK_STAGE_EXT,
-            stage: vk::ShaderStageFlagBits::TASK_EXT,
-            next_stage: vk::ShaderStageFlags::MESH_EXT,
-            code_type: vk::ShaderCodeTypeEXT::SpirvEXT,
-            code_size: task_spirv.len(),
-            p_code: task_spirv.as_ptr().cast(),
-            p_name: b"main\0".as_ptr().cast(),
-            set_layout_count: 0,
-            p_set_layouts: null(),
-            push_constant_range_count: 0,
-            p_push_constant_ranges: null(),
-            p_specialization_info: null(),
-        },
-        vk::ShaderCreateInfoEXT {
-            s_type: vk::StructureType::ShaderCreateInfoEXT,
-            p_next: null(),
-            flags: vk::ShaderCreateFlagsEXT::LINK_STAGE_EXT,
-            stage: vk::ShaderStageFlagBits::MESH_EXT,
-            next_stage: vk::ShaderStageFlags::FRAGMENT,
-            code_type: vk::ShaderCodeTypeEXT::SpirvEXT,
-            code_size: mesh_spirv.len(),
-            p_code: mesh_spirv.as_ptr().cast(),
-            p_name: b"main\0".as_ptr().cast(),
-            set_layout_count: 0,
-            p_set_layouts: null(),
-            push_constant_range_count: 0,
-            p_push_constant_ranges: null(),
-            p_specialization_info: null(),
-        },
-        vk::ShaderCreateInfoEXT {
-            s_type: vk::StructureType::ShaderCreateInfoEXT,
-            p_next: null(),
-            flags: vk::ShaderCreateFlagsEXT::LINK_STAGE_EXT,
-            stage: vk::ShaderStageFlagBits::FRAGMENT,
-            next_stage: vk::ShaderStageFlags::empty(),
-            code_type: vk::ShaderCodeTypeEXT::SpirvEXT,
-            code_size: fragment_spirv.len(),
-            p_code: fragment_spirv.as_ptr().cast(),
-            p_name: b"main\0".as_ptr().cast(),
-            set_layout_count: 0,
-            p_set_layouts: null(),
-            push_constant_range_count: 0,
-            p_push_constant_ranges: null(),
-            p_specialization_info: null(),
-        },
-    ];
-    let mut shaders: [vk::ShaderEXT; 3] = zeroed();
-    device.create_shaders_ext(
-        shader_create_infos.len() as _,
-        shader_create_infos.as_ptr(),
-        shaders.as_mut_ptr(),
-    )?;
-
-    Ok(Shaders {
-        task: shaders[0],
-        mesh: shaders[1],
-        fragment: shaders[2],
-    })
-}
-
-unsafe fn destroy_shaders(Gpu { device, .. }: &Gpu, shaders: &Shaders) {
-    device.destroy_shader_ext(shaders.task);
-    device.destroy_shader_ext(shaders.mesh);
-    device.destroy_shader_ext(shaders.fragment);
+    shader::Shader::create(
+        gpu,
+        &[task_spirv, mesh_spirv, fragment_spirv],
+        &[],
+        &[],
+        None,
+    )
 }
 
 //
@@ -296,7 +228,7 @@ unsafe fn draw(
     Demo {
         commands,
         queries,
-        shaders,
+        shader,
         render_targets,
         output,
     }: &Demo,
@@ -400,15 +332,7 @@ unsafe fn draw(
     }
 
     // Bind shaders.
-    {
-        let stages = [
-            vk::ShaderStageFlagBits::TASK_EXT,
-            vk::ShaderStageFlagBits::MESH_EXT,
-            vk::ShaderStageFlagBits::FRAGMENT,
-        ];
-        let shaders = [shaders.task, shaders.mesh, shaders.fragment];
-        device.cmd_bind_shaders_ext(cmd, stages.len() as _, stages.as_ptr(), shaders.as_ptr());
-    }
+    shader.bind(gpu, cmd);
 
     // Draw.
     device.cmd_draw_mesh_tasks_ext(cmd, 1, 1, 1);

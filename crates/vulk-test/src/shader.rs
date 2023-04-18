@@ -5,14 +5,6 @@ pub(crate) struct Compiler {
     includes: HashMap<String, String>,
 }
 
-#[derive(Clone, Copy, Debug)]
-pub(crate) enum ShaderType {
-    Task,
-    Mesh,
-    Fragment,
-    Compute,
-}
-
 impl Compiler {
     pub(crate) fn new() -> Result<Self> {
         use shaderc::Compiler;
@@ -30,11 +22,7 @@ impl Compiler {
         );
     }
 
-    pub(crate) fn compile(
-        &self,
-        code: impl AsRef<str>,
-        shader_type: ShaderType,
-    ) -> Result<Vec<u8>> {
+    pub(crate) fn compile(&self, shader_type: ShaderType, code: impl AsRef<str>) -> Result<SpirV> {
         use shaderc::CompileOptions;
         use shaderc::OptimizationLevel;
         use shaderc::ResolvedInclude;
@@ -75,6 +63,106 @@ impl Compiler {
         if shader.get_num_warnings() > 0 {
             warn!("{}", shader.get_warning_messages());
         }
-        Ok(shader.as_binary_u8().to_owned())
+        Ok(SpirV {
+            ty: shader_type,
+            code: shader.as_binary_u8().to_owned(),
+        })
+    }
+}
+
+#[derive(Clone, Copy, Debug)]
+pub enum ShaderType {
+    Task,
+    Mesh,
+    Fragment,
+    Compute,
+}
+
+impl ShaderType {
+    pub fn shader_stage(self) -> vk::ShaderStageFlagBits {
+        match self {
+            ShaderType::Task => vk::ShaderStageFlagBits::TASK_EXT,
+            ShaderType::Mesh => vk::ShaderStageFlagBits::MESH_EXT,
+            ShaderType::Fragment => vk::ShaderStageFlagBits::FRAGMENT,
+            ShaderType::Compute => vk::ShaderStageFlagBits::COMPUTE,
+        }
+    }
+
+    pub fn next_shader_stage(self) -> vk::ShaderStageFlagBits {
+        match self {
+            ShaderType::Task => vk::ShaderStageFlagBits::MESH_EXT,
+            ShaderType::Mesh => vk::ShaderStageFlagBits::FRAGMENT,
+            ShaderType::Fragment | ShaderType::Compute => vk::ShaderStageFlagBits::empty(),
+        }
+    }
+}
+
+pub struct SpirV {
+    pub ty: ShaderType,
+    pub code: Vec<u8>,
+}
+
+pub struct Shader {
+    stages: Vec<vk::ShaderStageFlagBits>,
+    shaders: Vec<vk::ShaderEXT>,
+}
+
+impl Shader {
+    pub unsafe fn create(
+        Gpu { device, .. }: &Gpu,
+        spirvs: &[SpirV],
+        set_layouts: &[vk::DescriptorSetLayout],
+        push_constant_ranges: &[vk::PushConstantRange],
+        specialization_info: Option<&vk::SpecializationInfo>,
+    ) -> Result<Self> {
+        let create_infos = spirvs
+            .iter()
+            .map(|spirv| vk::ShaderCreateInfoEXT {
+                s_type: vk::StructureType::ShaderCreateInfoEXT,
+                p_next: null(),
+                flags: vk::ShaderCreateFlagsEXT::LINK_STAGE_EXT,
+                stage: spirv.ty.shader_stage(),
+                next_stage: spirv.ty.next_shader_stage(),
+                code_type: vk::ShaderCodeTypeEXT::SpirvEXT,
+                code_size: spirv.code.len(),
+                p_code: spirv.code.as_ptr().cast(),
+                p_name: b"main\0".as_ptr().cast(),
+                set_layout_count: set_layouts.len() as _,
+                p_set_layouts: set_layouts.as_ptr(),
+                push_constant_range_count: push_constant_ranges.len() as _,
+                p_push_constant_ranges: push_constant_ranges.as_ptr(),
+                p_specialization_info: if let Some(specialization_info) = specialization_info {
+                    specialization_info as *const _
+                } else {
+                    null()
+                },
+            })
+            .collect::<Vec<_>>();
+        let mut shaders = Vec::with_capacity(spirvs.len());
+        device.create_shaders_ext(
+            create_infos.len() as _,
+            create_infos.as_ptr(),
+            shaders.as_mut_ptr(),
+        )?;
+        shaders.set_len(spirvs.len());
+
+        let stages = spirvs.iter().map(|spirv| spirv.ty.shader_stage()).collect();
+
+        Ok(Self { stages, shaders })
+    }
+
+    pub unsafe fn destroy(&self, Gpu { device, .. }: &Gpu) {
+        for &shader in &self.shaders {
+            device.destroy_shader_ext(shader);
+        }
+    }
+
+    pub unsafe fn bind(&self, Gpu { device, .. }: &Gpu, cmd: vk::CommandBuffer) {
+        device.cmd_bind_shaders_ext(
+            cmd,
+            self.stages.len() as _,
+            self.stages.as_ptr(),
+            self.shaders.as_ptr(),
+        );
     }
 }
