@@ -109,11 +109,7 @@ struct Descriptors {
 }
 
 unsafe fn create_descriptors(
-    gpu @ Gpu {
-        device,
-        physical_device,
-        ..
-    }: &Gpu,
+    gpu @ Gpu { device, .. }: &Gpu,
     compute_buffer: &ComputeBuffer,
     indirect_buffer: &IndirectBuffer,
 ) -> Result<Descriptors> {
@@ -145,43 +141,26 @@ unsafe fn create_descriptors(
     )?;
 
     // Descriptor buffer.
-    let buffer_size = device.get_descriptor_set_layout_size_ext(descriptor_set_layout);
-    info!("Descriptor buffer size={buffer_size}");
-    let usage = vk::BufferUsageFlags::STORAGE_BUFFER;
-    let flags = vk::MemoryPropertyFlags::HOST_VISIBLE | vk::MemoryPropertyFlags::HOST_COHERENT;
-    let buffer = DescriptorBuffer::create(gpu, buffer_size as _, usage, flags)?;
+    let buffer = {
+        let buffer_size = device.get_descriptor_set_layout_size_ext(descriptor_set_layout);
+        let usage = vk::BufferUsageFlags::STORAGE_BUFFER;
+        let flags = vk::MemoryPropertyFlags::HOST_VISIBLE | vk::MemoryPropertyFlags::HOST_COHERENT;
+        DescriptorBuffer::create(gpu, buffer_size as _, usage, flags)?
+    };
 
     // Descriptors.
-    let storage_buffer_descriptor_size = physical_device
-        .descriptor_buffer_properties_ext
-        .storage_buffer_descriptor_size;
-    for (buffer_index, (device_address, byte_size)) in [
-        (indirect_buffer.device_address, indirect_buffer.byte_size()),
-        (compute_buffer.device_address, compute_buffer.byte_size()),
-    ]
-    .into_iter()
-    .enumerate()
     {
-        device.get_descriptor_ext(
-            &(vk::DescriptorGetInfoEXT {
-                s_type: vk::StructureType::DescriptorGetInfoEXT,
-                p_next: null(),
-                ty: vk::DescriptorType::StorageBuffer,
-                data: vk::DescriptorDataEXT {
-                    p_storage_buffer: &(vk::DescriptorAddressInfoEXT {
-                        s_type: vk::StructureType::DescriptorAddressInfoEXT,
-                        p_next: null_mut(),
-                        address: device_address,
-                        range: byte_size as _,
-                        format: vk::Format::Undefined,
-                    }),
-                },
-            }),
-            storage_buffer_descriptor_size,
-            buffer
-                .ptr
-                .add(buffer_index * storage_buffer_descriptor_size)
-                .cast(),
+        let mut dst_offset = 0;
+        std::ptr::copy_nonoverlapping(
+            indirect_buffer.descriptor.as_ptr(),
+            buffer.ptr.add(dst_offset),
+            indirect_buffer.descriptor.byte_size(),
+        );
+        dst_offset += indirect_buffer.descriptor.byte_size();
+        std::ptr::copy_nonoverlapping(
+            compute_buffer.descriptor.as_ptr(),
+            buffer.ptr.add(dst_offset),
+            compute_buffer.descriptor.byte_size(),
         );
     }
 

@@ -309,6 +309,9 @@ unsafe fn create_physical_device(instance: &vulk::Instance) -> Result<PhysicalDe
     };
     instance.get_physical_device_properties2(physical_device, &mut physical_device_properties2);
 
+    // Assert that our descriptor type can fit any kind of descriptor.
+    descriptor::assert_descriptor_sizes(&physical_device_descriptor_buffer_properties_ext);
+
     // Queue family properties.
     let queue_family_properties = {
         let mut queue_family_property_count = 0;

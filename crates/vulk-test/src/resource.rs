@@ -17,11 +17,13 @@ pub struct Buffer<T> {
     pub device_address: vk::DeviceAddress,
     pub element_count: usize,
     pub ptr: *mut T,
+
+    pub descriptor: descriptor::Descriptor,
 }
 
 impl<T> Buffer<T> {
     pub unsafe fn create(
-        Gpu {
+        gpu @ Gpu {
             device,
             physical_device,
             ..
@@ -129,6 +131,9 @@ impl<T> Buffer<T> {
             .context("Mapping device memory")?
             .cast();
 
+        // Descriptor.
+        let descriptor = descriptor::Descriptor::create_storage_buffer(gpu, device_address, size);
+
         Ok(Buffer {
             buffer_create_info,
             buffer,
@@ -141,16 +146,14 @@ impl<T> Buffer<T> {
             device_address,
             element_count,
             ptr,
+
+            descriptor,
         })
     }
 
     pub unsafe fn destroy(&self, Gpu { device, .. }: &Gpu) {
         device.destroy_buffer(self.buffer);
         device.free_memory(self.device_memory);
-    }
-
-    pub fn byte_size(&self) -> usize {
-        self.element_count * size_of::<T>()
     }
 }
 
@@ -170,11 +173,13 @@ pub struct Image2d {
 
     pub image_view: vk::ImageView,
     pub image_view_create_info: vk::ImageViewCreateInfo,
+
+    pub descriptor: descriptor::Descriptor,
 }
 
 impl Image2d {
     pub unsafe fn create(
-        Gpu {
+        gpu @ Gpu {
             device,
             physical_device,
             ..
@@ -285,6 +290,13 @@ impl Image2d {
         // Image view.
         let image_view = device.create_image_view(&image_view_create_info)?;
 
+        // Descriptor.
+        let descriptor = descriptor::Descriptor::create_sampled_image(
+            gpu,
+            image_view,
+            vk::ImageLayout::ShaderReadOnlyOptimal,
+        );
+
         Ok(Self {
             image_create_info,
             image,
@@ -296,6 +308,8 @@ impl Image2d {
 
             image_view,
             image_view_create_info,
+
+            descriptor,
         })
     }
 
@@ -368,6 +382,7 @@ impl Image2d {
 pub struct Sampler {
     pub sampler: vk::Sampler,
     pub sampler_create_info: vk::SamplerCreateInfo,
+    pub descriptor: descriptor::Descriptor,
 }
 
 #[derive(Debug)]
@@ -380,9 +395,10 @@ pub struct SamplerCreateInfo {
 
 impl Sampler {
     pub unsafe fn create(
-        Gpu { device, .. }: &Gpu,
+        gpu @ Gpu { device, .. }: &Gpu,
         create_info: &SamplerCreateInfo,
     ) -> Result<Self> {
+        // Sampler info.
         let sampler_create_info = vk::SamplerCreateInfo {
             s_type: vk::StructureType::SamplerCreateInfo,
             p_next: null(),
@@ -403,10 +419,17 @@ impl Sampler {
             border_color: vk::BorderColor::FloatTransparentBlack,
             unnormalized_coordinates: vk::FALSE,
         };
+
+        // Sampler.
         let sampler = device.create_sampler(&sampler_create_info)?;
+
+        // Descriptor.
+        let descriptor = descriptor::Descriptor::create_sampler(gpu, sampler);
+
         Ok(Self {
             sampler,
             sampler_create_info,
+            descriptor,
         })
     }
 

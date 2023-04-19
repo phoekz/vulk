@@ -228,29 +228,14 @@ unsafe fn create_descriptors(
         let usage = vk::BufferUsageFlags::RESOURCE_DESCRIPTOR_BUFFER_EXT;
         let flags = vk::MemoryPropertyFlags::HOST_VISIBLE | vk::MemoryPropertyFlags::DEVICE_LOCAL;
         let buffer = DescriptorBuffer::create(gpu, buffer_size as _, usage, flags)?;
-
-        let descriptor_buffer_properties = physical_device.descriptor_buffer_properties_ext;
-        let sampled_image_size = descriptor_buffer_properties.sampled_image_descriptor_size;
-
         let mut dst_offset = 0;
         for image in &textures.images {
-            device.get_descriptor_ext(
-                &(vk::DescriptorGetInfoEXT {
-                    s_type: vk::StructureType::DescriptorGetInfoEXT,
-                    p_next: null(),
-                    ty: vk::DescriptorType::SampledImage,
-                    data: vk::DescriptorDataEXT {
-                        p_sampled_image: &vk::DescriptorImageInfo {
-                            sampler: vk::Sampler::null(),
-                            image_view: image.image_view,
-                            image_layout: vk::ImageLayout::ShaderReadOnlyOptimal,
-                        },
-                    },
-                }),
-                sampled_image_size,
+            std::ptr::copy_nonoverlapping(
+                image.descriptor.as_ptr(),
                 buffer.ptr.add(dst_offset).cast(),
+                image.descriptor.byte_size(),
             );
-            dst_offset += sampled_image_size;
+            dst_offset += image.descriptor.byte_size();
         }
         buffer
     };
@@ -259,25 +244,14 @@ unsafe fn create_descriptors(
         let usage = vk::BufferUsageFlags::SAMPLER_DESCRIPTOR_BUFFER_EXT;
         let flags = vk::MemoryPropertyFlags::HOST_VISIBLE | vk::MemoryPropertyFlags::DEVICE_LOCAL;
         let buffer = DescriptorBuffer::create(gpu, buffer_size as _, usage, flags)?;
-
-        let descriptor_buffer_properties = physical_device.descriptor_buffer_properties_ext;
-        let sampler_size = descriptor_buffer_properties.sampler_descriptor_size;
-
         let mut dst_offset = 0;
         for sampler in &textures.samplers {
-            device.get_descriptor_ext(
-                &(vk::DescriptorGetInfoEXT {
-                    s_type: vk::StructureType::DescriptorGetInfoEXT,
-                    p_next: null(),
-                    ty: vk::DescriptorType::Sampler,
-                    data: vk::DescriptorDataEXT {
-                        p_sampler: &sampler.sampler,
-                    },
-                }),
-                sampler_size,
+            std::ptr::copy_nonoverlapping(
+                sampler.descriptor.as_ptr(),
                 buffer.ptr.add(dst_offset).cast(),
+                sampler.descriptor.byte_size(),
             );
-            dst_offset += sampler_size;
+            dst_offset += sampler.descriptor.byte_size();
         }
         buffer
     };
