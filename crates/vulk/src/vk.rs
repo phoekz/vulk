@@ -2755,7 +2755,7 @@ impl Format {
     }
 
     #[must_use]
-    pub fn block_size(self) -> u32 {
+    pub const fn block_size(self) -> u32 {
         #[allow(clippy::match_same_arms)]
         match self {
             Format::Undefined => 0,
