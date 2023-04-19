@@ -1843,6 +1843,60 @@ pub enum SharingMode {
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Samplers"]
 #[doc = "<br>"]
+#[doc = "**Description**: Specify filters used for texture lookups"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkFilter`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkFilter.html)"]
+pub enum Filter {
+    #[doc = "**Translated from**: `VK_FILTER_NEAREST`"]
+    Nearest = 0,
+    #[doc = "**Translated from**: `VK_FILTER_LINEAR`"]
+    Linear = 1,
+}
+
+#[repr(i32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[doc = "**Chapter**: Samplers"]
+#[doc = "<br>"]
+#[doc = "**Description**: Specify mipmap mode used for texture lookups"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkSamplerMipmapMode`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSamplerMipmapMode.html)"]
+pub enum SamplerMipmapMode {
+    #[doc = "**Translated from**: `VK_SAMPLER_MIPMAP_MODE_NEAREST`"]
+    Nearest = 0,
+    #[doc = "**Translated from**: `VK_SAMPLER_MIPMAP_MODE_LINEAR`"]
+    Linear = 1,
+}
+
+#[repr(i32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[doc = "**Chapter**: Samplers"]
+#[doc = "<br>"]
+#[doc = "**Description**: Specify behavior of sampling with texture coordinates outside an image"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkSamplerAddressMode`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSamplerAddressMode.html)"]
+pub enum SamplerAddressMode {
+    #[doc = "**Translated from**: `VK_SAMPLER_ADDRESS_MODE_REPEAT`"]
+    Repeat = 0,
+    #[doc = "**Translated from**: `VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT`"]
+    MirroredRepeat = 1,
+    #[doc = "**Translated from**: `VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE`"]
+    ClampToEdge = 2,
+    #[doc = "**Translated from**: `VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER`"]
+    ClampToBorder = 3,
+    #[doc = "**Translated from**: `VK_SAMPLER_ADDRESS_MODE_MIRROR_CLAMP_TO_EDGE`"]
+    MirrorClampToEdge = 4,
+}
+
+#[repr(i32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[doc = "**Chapter**: Samplers"]
+#[doc = "<br>"]
 #[doc = "**Description**: Comparison operator for depth"]
 #[doc = "<br>"]
 #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
@@ -1865,6 +1919,30 @@ pub enum CompareOp {
     GreaterOrEqual = 6,
     #[doc = "**Translated from**: `VK_COMPARE_OP_ALWAYS`"]
     Always = 7,
+}
+
+#[repr(i32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[doc = "**Chapter**: Samplers"]
+#[doc = "<br>"]
+#[doc = "**Description**: Specify border color used for texture lookups"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkBorderColor`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkBorderColor.html)"]
+pub enum BorderColor {
+    #[doc = "**Translated from**: `VK_BORDER_COLOR_FLOAT_TRANSPARENT_BLACK`"]
+    FloatTransparentBlack = 0,
+    #[doc = "**Translated from**: `VK_BORDER_COLOR_INT_TRANSPARENT_BLACK`"]
+    IntTransparentBlack = 1,
+    #[doc = "**Translated from**: `VK_BORDER_COLOR_FLOAT_OPAQUE_BLACK`"]
+    FloatOpaqueBlack = 2,
+    #[doc = "**Translated from**: `VK_BORDER_COLOR_INT_OPAQUE_BLACK`"]
+    IntOpaqueBlack = 3,
+    #[doc = "**Translated from**: `VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE`"]
+    FloatOpaqueWhite = 4,
+    #[doc = "**Translated from**: `VK_BORDER_COLOR_INT_OPAQUE_WHITE`"]
+    IntOpaqueWhite = 5,
 }
 
 #[repr(i32)]
@@ -3965,6 +4043,33 @@ pub type ImageAspectFlagBits = ImageAspectFlags;
 bitflags! {
     #[repr(C)]
     #[derive(Clone, Copy, PartialEq, Eq, Debug)]
+    #[doc = "**Chapter**: Samplers"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Reserved for future use"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`VkSamplerCreateFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSamplerCreateFlags.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`VkSamplerCreateFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSamplerCreateFlagBits.html)"]
+    pub struct SamplerCreateFlags: u32 {
+        #[doc = "Translated from: `VK_SAMPLER_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_EXT`"]
+        const DESCRIPTOR_BUFFER_CAPTURE_REPLAY_EXT = 0b1000;
+    }
+}
+
+#[doc = "**Chapter**: Samplers"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask specifying additional parameters of sampler"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkSamplerCreateFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSamplerCreateFlagBits.html)"]
+pub type SamplerCreateFlagBits = SamplerCreateFlags;
+
+bitflags! {
+    #[repr(C)]
+    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
     #[doc = "**Chapter**: Resource Descriptors"]
     #[doc = "<br>"]
     #[doc = "**Description**: Bitmask of VkDescriptorSetLayoutCreateFlagBits"]
@@ -5941,6 +6046,60 @@ pub struct BindImageMemoryInfo {
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Samplers"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure specifying parameters of a newly created sampler"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkSamplerCreateInfo`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSamplerCreateInfo.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```
+let sampler_create_info = vk::SamplerCreateInfo {
+    s_type: vk::StructureType::SamplerCreateInfo,
+    p_next: null(),
+    flags: todo!("vk::SamplerCreateFlags"),
+    mag_filter: todo!("vk::Filter"),
+    min_filter: todo!("vk::Filter"),
+    mipmap_mode: todo!("vk::SamplerMipmapMode"),
+    address_mode_u: todo!("vk::SamplerAddressMode"),
+    address_mode_v: todo!("vk::SamplerAddressMode"),
+    address_mode_w: todo!("vk::SamplerAddressMode"),
+    mip_lod_bias: todo!("f32"),
+    anisotropy_enable: todo!("vk::Bool32"),
+    max_anisotropy: todo!("f32"),
+    compare_enable: todo!("vk::Bool32"),
+    compare_op: todo!("vk::CompareOp"),
+    min_lod: todo!("f32"),
+    max_lod: todo!("f32"),
+    border_color: todo!("vk::BorderColor"),
+    unnormalized_coordinates: todo!("vk::Bool32"),
+};
+```"#]
+pub struct SamplerCreateInfo {
+    pub s_type: StructureType,
+    pub p_next: *const c_void,
+    pub flags: SamplerCreateFlags,
+    pub mag_filter: Filter,
+    pub min_filter: Filter,
+    pub mipmap_mode: SamplerMipmapMode,
+    pub address_mode_u: SamplerAddressMode,
+    pub address_mode_v: SamplerAddressMode,
+    pub address_mode_w: SamplerAddressMode,
+    pub mip_lod_bias: f32,
+    pub anisotropy_enable: Bool32,
+    pub max_anisotropy: f32,
+    pub compare_enable: Bool32,
+    pub compare_op: CompareOp,
+    pub min_lod: f32,
+    pub max_lod: f32,
+    pub border_color: BorderColor,
+    pub unnormalized_coordinates: Bool32,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
 #[doc = "**Chapter**: Resource Descriptors"]
 #[doc = "<br>"]
 #[doc = "**Description**: Structure specifying parameters of a newly created descriptor set layout"]
@@ -6255,6 +6414,38 @@ pub struct ImageSubresourceLayers {
     pub mip_level: u32,
     pub base_array_layer: u32,
     pub layer_count: u32,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Copy Commands"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure specifying parameters of a buffer to image copy command"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkCopyBufferToImageInfo2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkCopyBufferToImageInfo2.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```
+let copy_buffer_to_image_info2 = vk::CopyBufferToImageInfo2 {
+    s_type: vk::StructureType::CopyBufferToImageInfo2,
+    p_next: null(),
+    src_buffer: todo!("vk::Buffer"),
+    dst_image: todo!("vk::Image"),
+    dst_image_layout: todo!("vk::ImageLayout"),
+    region_count: todo!("u32"),
+    p_regions: todo!("*const vk::BufferImageCopy2"),
+};
+```"#]
+pub struct CopyBufferToImageInfo2 {
+    pub s_type: StructureType,
+    pub p_next: *const c_void,
+    pub src_buffer: Buffer,
+    pub dst_image: Image,
+    pub dst_image_layout: ImageLayout,
+    pub region_count: u32,
+    pub p_regions: *const BufferImageCopy2,
 }
 
 #[repr(C)]
@@ -7901,6 +8092,33 @@ pub type BindImageMemory2 = unsafe extern "C" fn(
     p_bind_infos: *const BindImageMemoryInfo, //
 ) -> Result;
 
+#[doc = "**Chapter**: Samplers"]
+#[doc = "<br>"]
+#[doc = "**Description**: Create a new sampler object"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkCreateSampler`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateSampler.html)"]
+pub type CreateSampler = unsafe extern "C" fn(
+    device: Device,                          //
+    p_create_info: *const SamplerCreateInfo, //
+    p_allocator: *const AllocationCallbacks, //
+    p_sampler: *mut Sampler,                 //
+) -> Result;
+
+#[doc = "**Chapter**: Samplers"]
+#[doc = "<br>"]
+#[doc = "**Description**: Destroy a sampler object"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkDestroySampler`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroySampler.html)"]
+pub type DestroySampler = unsafe extern "C" fn(
+    device: Device,                          //
+    sampler: Sampler,                        //
+    p_allocator: *const AllocationCallbacks, //
+);
+
 #[doc = "**Chapter**: Resource Descriptors"]
 #[doc = "<br>"]
 #[doc = "**Description**: Create a new descriptor set layout"]
@@ -7953,6 +8171,22 @@ pub type DestroyPipelineLayout = unsafe extern "C" fn(
     device: Device,                          //
     pipeline_layout: PipelineLayout,         //
     p_allocator: *const AllocationCallbacks, //
+);
+
+#[doc = "**Chapter**: Resource Descriptors"]
+#[doc = "<br>"]
+#[doc = "**Description**: Update the values of push constants"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkCmdPushConstants`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdPushConstants.html)"]
+pub type CmdPushConstants = unsafe extern "C" fn(
+    command_buffer: CommandBuffer, //
+    layout: PipelineLayout,        //
+    stage_flags: ShaderStageFlags, //
+    offset: u32,                   //
+    size: u32,                     //
+    p_values: *const c_void,       //
 );
 
 #[doc = "**Chapter**: Resource Descriptors"]
@@ -8126,6 +8360,18 @@ pub type CmdWriteTimestamp2 = unsafe extern "C" fn(
 
 #[doc = "**Chapter**: Copy Commands"]
 #[doc = "<br>"]
+#[doc = "**Description**: Copy data from a buffer into an image"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkCmdCopyBufferToImage2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdCopyBufferToImage2.html)"]
+pub type CmdCopyBufferToImage2 = unsafe extern "C" fn(
+    command_buffer: CommandBuffer,                              //
+    p_copy_buffer_to_image_info: *const CopyBufferToImageInfo2, //
+);
+
+#[doc = "**Chapter**: Copy Commands"]
+#[doc = "<br>"]
 #[doc = "**Description**: Copy image data into a buffer"]
 #[doc = "<br>"]
 #[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
@@ -8174,6 +8420,18 @@ pub type CmdSetScissorWithCount = unsafe extern "C" fn(
     command_buffer: CommandBuffer, //
     scissor_count: u32,            //
     p_scissors: *const Rect2D,     //
+);
+
+#[doc = "**Chapter**: Rasterization"]
+#[doc = "<br>"]
+#[doc = "**Description**: Specify the rasterization samples dynamically for a command buffer"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_EXT_extended_dynamic_state3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state3.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkCmdSetRasterizationSamplesEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetRasterizationSamplesEXT.html)"]
+pub type CmdSetRasterizationSamplesEXT = unsafe extern "C" fn(
+    command_buffer: CommandBuffer,              //
+    rasterization_samples: SampleCountFlagBits, //
 );
 
 #[doc = "**Chapter**: Rasterization"]

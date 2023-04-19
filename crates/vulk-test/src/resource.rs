@@ -361,6 +361,249 @@ impl Image2d {
 }
 
 //
+// Sampler
+//
+
+#[derive(Debug)]
+pub struct Sampler {
+    pub sampler: vk::Sampler,
+    pub sampler_create_info: vk::SamplerCreateInfo,
+}
+
+#[derive(Debug)]
+pub struct SamplerCreateInfo {
+    pub mag_filter: vk::Filter,
+    pub min_filter: vk::Filter,
+    pub mipmap_mode: vk::SamplerMipmapMode,
+    pub address_mode: vk::SamplerAddressMode,
+}
+
+impl Sampler {
+    pub unsafe fn create(
+        Gpu { device, .. }: &Gpu,
+        create_info: &SamplerCreateInfo,
+    ) -> Result<Self> {
+        let sampler_create_info = vk::SamplerCreateInfo {
+            s_type: vk::StructureType::SamplerCreateInfo,
+            p_next: null(),
+            flags: vk::SamplerCreateFlags::empty(),
+            mag_filter: create_info.mag_filter,
+            min_filter: create_info.min_filter,
+            mipmap_mode: create_info.mipmap_mode,
+            address_mode_u: create_info.address_mode,
+            address_mode_v: create_info.address_mode,
+            address_mode_w: create_info.address_mode,
+            mip_lod_bias: 0.0,
+            anisotropy_enable: vk::FALSE,
+            max_anisotropy: 0.0,
+            compare_enable: vk::FALSE,
+            compare_op: vk::CompareOp::Always,
+            min_lod: 0.0,
+            max_lod: 0.0,
+            border_color: vk::BorderColor::FloatTransparentBlack,
+            unnormalized_coordinates: vk::FALSE,
+        };
+        let sampler = device.create_sampler(&sampler_create_info)?;
+        Ok(Self {
+            sampler,
+            sampler_create_info,
+        })
+    }
+
+    pub unsafe fn destroy(&self, Gpu { device, .. }: &Gpu) {
+        device.destroy_sampler(self.sampler);
+    }
+}
+
+//
+// Upload
+//
+
+pub unsafe fn multi_upload_images(
+    gpu @ Gpu { device, queue, .. }: &Gpu,
+    images: &[Image2d],
+    image_datas: &[Vec<u8>],
+) -> Result<()> {
+    // Validation.
+    assert!(!images.is_empty());
+    assert!(!image_datas.is_empty());
+    assert_eq!(images.len(), image_datas.len());
+    assert!(images.iter().all(|img| img.byte_size() > 0));
+    assert!(image_datas.iter().all(|p| !p.is_empty()));
+    assert!(images
+        .iter()
+        .zip(image_datas)
+        .all(|(img, p)| img.byte_size() as usize == p.len()));
+
+    // Staging buffer.
+    let byte_size = image_datas.iter().map(Vec::len).sum::<usize>();
+    let staging = resource::Buffer::<u8>::create(
+        gpu,
+        byte_size,
+        vk::BufferUsageFlags::TRANSFER_SRC,
+        vk::MemoryPropertyFlags::HOST_VISIBLE | vk::MemoryPropertyFlags::HOST_COHERENT,
+    )?;
+    let mut dst_offset = 0;
+    for image_data in image_datas {
+        // Copy.
+        std::ptr::copy_nonoverlapping(
+            image_data.as_ptr(),
+            staging.ptr.add(dst_offset),
+            image_data.len(),
+        );
+
+        // Advance.
+        dst_offset += image_data.len();
+    }
+
+    // Begin staging.
+    let commands = command::Commands::create(gpu)?;
+    let cmd = commands.command_buffer;
+    device.begin_command_buffer(
+        cmd,
+        &(vk::CommandBufferBeginInfo {
+            s_type: vk::StructureType::CommandBufferBeginInfo,
+            p_next: null(),
+            flags: vk::CommandBufferUsageFlags::ONE_TIME_SUBMIT,
+            p_inheritance_info: null(),
+        }),
+    )?;
+
+    // Transfer commands.
+    let mut src_offset = 0;
+    for (image, image_data) in images.iter().zip(image_datas) {
+        // Transition Undefined -> TransferDstOptimal.
+        device.cmd_pipeline_barrier2(
+            cmd,
+            &vk::DependencyInfo {
+                s_type: vk::StructureType::DependencyInfo,
+                p_next: null(),
+                dependency_flags: vk::DependencyFlags::empty(),
+                memory_barrier_count: 0,
+                p_memory_barriers: null(),
+                buffer_memory_barrier_count: 0,
+                p_buffer_memory_barriers: null(),
+                image_memory_barrier_count: 1,
+                p_image_memory_barriers: &vk::ImageMemoryBarrier2 {
+                    s_type: vk::StructureType::ImageMemoryBarrier2,
+                    p_next: null(),
+                    src_stage_mask: vk::PipelineStageFlags2::HOST,
+                    src_access_mask: vk::AccessFlags2::empty(),
+                    dst_stage_mask: vk::PipelineStageFlags2::ALL_TRANSFER,
+                    dst_access_mask: vk::AccessFlags2::TRANSFER_WRITE,
+                    old_layout: vk::ImageLayout::Undefined,
+                    new_layout: vk::ImageLayout::TransferDstOptimal,
+                    src_queue_family_index: 0,
+                    dst_queue_family_index: 0,
+                    image: image.image,
+                    subresource_range: image.subresource_range(),
+                },
+            },
+        );
+        device.cmd_copy_buffer_to_image2(
+            cmd,
+            &(vk::CopyBufferToImageInfo2 {
+                s_type: vk::StructureType::CopyBufferToImageInfo2,
+                p_next: null(),
+                src_buffer: staging.buffer,
+                dst_image: image.image,
+                dst_image_layout: vk::ImageLayout::TransferDstOptimal,
+                region_count: 1,
+                p_regions: &(vk::BufferImageCopy2 {
+                    s_type: vk::StructureType::BufferImageCopy2,
+                    p_next: null(),
+                    buffer_offset: src_offset as _,
+                    buffer_row_length: 0,
+                    buffer_image_height: 0,
+                    image_subresource: image.subresource_layers(),
+                    image_offset: vk::Offset3D { x: 0, y: 0, z: 0 },
+                    image_extent: image.extent_3d(),
+                }),
+            }),
+        );
+        // Transition TransferDstOptimal -> ShaderReadOnly.
+        device.cmd_pipeline_barrier2(
+            cmd,
+            &vk::DependencyInfo {
+                s_type: vk::StructureType::DependencyInfo,
+                p_next: null(),
+                dependency_flags: vk::DependencyFlags::empty(),
+                memory_barrier_count: 0,
+                p_memory_barriers: null(),
+                buffer_memory_barrier_count: 0,
+                p_buffer_memory_barriers: null(),
+                image_memory_barrier_count: 1,
+                p_image_memory_barriers: &vk::ImageMemoryBarrier2 {
+                    s_type: vk::StructureType::ImageMemoryBarrier2,
+                    p_next: null(),
+                    src_stage_mask: vk::PipelineStageFlags2::ALL_TRANSFER,
+                    src_access_mask: vk::AccessFlags2::TRANSFER_WRITE,
+                    dst_stage_mask: vk::PipelineStageFlags2::FRAGMENT_SHADER,
+                    dst_access_mask: vk::AccessFlags2::SHADER_READ,
+                    new_layout: vk::ImageLayout::ShaderReadOnlyOptimal,
+                    old_layout: vk::ImageLayout::TransferDstOptimal,
+                    src_queue_family_index: 0,
+                    dst_queue_family_index: 0,
+                    image: image.image,
+                    subresource_range: image.subresource_range(),
+                },
+            },
+        );
+
+        // Advance.
+        src_offset += image_data.len();
+    }
+
+    // End staging.
+    device.end_command_buffer(cmd)?;
+    device.queue_submit2(
+        *queue,
+        1,
+        &(vk::SubmitInfo2 {
+            s_type: vk::StructureType::SubmitInfo2,
+            p_next: null(),
+            flags: vk::SubmitFlags::empty(),
+            wait_semaphore_info_count: 0,
+            p_wait_semaphore_infos: null(),
+            command_buffer_info_count: 1,
+            p_command_buffer_infos: &(vk::CommandBufferSubmitInfo {
+                s_type: vk::StructureType::CommandBufferSubmitInfo,
+                p_next: null(),
+                command_buffer: cmd,
+                device_mask: 0,
+            }),
+            signal_semaphore_info_count: 1,
+            p_signal_semaphore_infos: &(vk::SemaphoreSubmitInfo {
+                s_type: vk::StructureType::SemaphoreSubmitInfo,
+                p_next: null(),
+                semaphore: commands.semaphore,
+                value: 1,
+                stage_mask: vk::PipelineStageFlags2::BOTTOM_OF_PIPE,
+                device_index: 0,
+            }),
+        }),
+        vk::Fence::null(),
+    )?;
+    device.wait_semaphores(
+        &(vk::SemaphoreWaitInfo {
+            s_type: vk::StructureType::SemaphoreWaitInfo,
+            p_next: null(),
+            flags: vk::SemaphoreWaitFlags::ANY,
+            semaphore_count: 1,
+            p_semaphores: [commands.semaphore].as_ptr(),
+            p_values: [1].as_ptr(),
+        }),
+        u64::MAX,
+    )?;
+
+    // Cleanup.
+    commands.destroy(gpu);
+    staging.destroy(gpu);
+
+    Ok(())
+}
+
+//
 // Utilities
 //
 

@@ -77,6 +77,13 @@
         "vkCmdSetViewportWithCount",
 
         "vkCmdDrawMeshTasksEXT",
+
+        "vkCmdPushConstants",
+        "vkCmdSetRasterizationSamplesEXT",
+        "vkCmdCopyBufferToImage2",
+
+        "vkCreateSampler",
+        "vkDestroySampler",
     ],
     structures: [
         "VkMemoryAllocateFlagsInfo",

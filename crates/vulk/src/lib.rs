@@ -52,11 +52,15 @@
 //! - [`vk::GetDeviceImageMemoryRequirements`] Returns the memory requirements for specified Vulkan object
 //! - [`vk::BindBufferMemory2`] Bind device memory to buffer objects
 //! - [`vk::BindImageMemory2`] Bind device memory to image objects
+//! ## Samplers
+//! - [`vk::CreateSampler`] Create a new sampler object
+//! - [`vk::DestroySampler`] Destroy a sampler object
 //! ## Resource Descriptors
 //! - [`vk::CreateDescriptorSetLayout`] Create a new descriptor set layout
 //! - [`vk::DestroyDescriptorSetLayout`] Destroy a descriptor set layout object
 //! - [`vk::CreatePipelineLayout`] Creates a new pipeline layout object
 //! - [`vk::DestroyPipelineLayout`] Destroy a pipeline layout object
+//! - [`vk::CmdPushConstants`] Update the values of push constants
 //! - [`vk::GetBufferDeviceAddress`] Query an address of a buffer
 //! - [`vk::GetDescriptorSetLayoutSizeEXT`] Get the size of a descriptor set layout in memory
 //! - [`vk::GetDescriptorEXT`] To get a descriptor to place in a buffer
@@ -71,6 +75,7 @@
 //! - [`vk::GetQueryPoolResults`] Copy results of queries in a query pool to a host memory region
 //! - [`vk::CmdWriteTimestamp2`] Write a device timestamp into a query object
 //! ## Copy Commands
+//! - [`vk::CmdCopyBufferToImage2`] Copy data from a buffer into an image
 //! - [`vk::CmdCopyImageToBuffer2`] Copy image data into a buffer
 //! ## Drawing Commands
 //! - [`vk::CmdDrawMeshTasksEXT`] Draw mesh task work items
@@ -78,6 +83,7 @@
 //! - [`vk::CmdSetViewportWithCount`] Set the viewport count and viewports dynamically for a command buffer
 //! - [`vk::CmdSetScissorWithCount`] Set the scissor count and scissor rectangular bounds dynamically for a command buffer
 //! ## Rasterization
+//! - [`vk::CmdSetRasterizationSamplesEXT`] Specify the rasterization samples dynamically for a command buffer
 //! - [`vk::CmdSetFrontFace`] Set front face orientation dynamically for a command buffer
 //! - [`vk::CmdSetCullMode`] Set cull mode dynamically for a command buffer
 //! ## Fragment Operations

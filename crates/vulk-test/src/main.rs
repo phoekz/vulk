@@ -29,7 +29,7 @@ use std::{
     mem::{size_of, zeroed, MaybeUninit},
     path::PathBuf,
     ptr::{addr_of, addr_of_mut, null, null_mut},
-    time::{Duration, Instant},
+    time::{Duration, Instant, SystemTime},
 };
 
 use anyhow::{ensure, Context, Result};
@@ -64,6 +64,7 @@ fn main() -> Result<()> {
         run_demo::<demos::ComputeDemo>(&gpu)?;
         run_demo::<demos::ClearDemo>(&gpu)?;
         run_demo::<demos::TriangleDemo>(&gpu)?;
+        run_demo::<demos::CubeDemo>(&gpu)?;
         gpu.destroy();
     };
 

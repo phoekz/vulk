@@ -335,10 +335,13 @@ pub struct DeviceFunctions {
     pub get_device_image_memory_requirements: vk::GetDeviceImageMemoryRequirements,
     pub bind_buffer_memory2: vk::BindBufferMemory2,
     pub bind_image_memory2: vk::BindImageMemory2,
+    pub create_sampler: vk::CreateSampler,
+    pub destroy_sampler: vk::DestroySampler,
     pub create_descriptor_set_layout: vk::CreateDescriptorSetLayout,
     pub destroy_descriptor_set_layout: vk::DestroyDescriptorSetLayout,
     pub create_pipeline_layout: vk::CreatePipelineLayout,
     pub destroy_pipeline_layout: vk::DestroyPipelineLayout,
+    pub cmd_push_constants: vk::CmdPushConstants,
     pub get_buffer_device_address: vk::GetBufferDeviceAddress,
     pub get_descriptor_set_layout_size_ext: vk::GetDescriptorSetLayoutSizeEXT,
     pub get_descriptor_ext: vk::GetDescriptorEXT,
@@ -351,10 +354,12 @@ pub struct DeviceFunctions {
     pub cmd_end_query: vk::CmdEndQuery,
     pub get_query_pool_results: vk::GetQueryPoolResults,
     pub cmd_write_timestamp2: vk::CmdWriteTimestamp2,
+    pub cmd_copy_buffer_to_image2: vk::CmdCopyBufferToImage2,
     pub cmd_copy_image_to_buffer2: vk::CmdCopyImageToBuffer2,
     pub cmd_draw_mesh_tasks_ext: vk::CmdDrawMeshTasksEXT,
     pub cmd_set_viewport_with_count: vk::CmdSetViewportWithCount,
     pub cmd_set_scissor_with_count: vk::CmdSetScissorWithCount,
+    pub cmd_set_rasterization_samples_ext: vk::CmdSetRasterizationSamplesEXT,
     pub cmd_set_front_face: vk::CmdSetFrontFace,
     pub cmd_set_cull_mode: vk::CmdSetCullMode,
     pub cmd_set_depth_test_enable: vk::CmdSetDepthTestEnable,
@@ -417,10 +422,13 @@ impl Device {
                 get_device_image_memory_requirements: std::mem::transmute(load(b"vkGetDeviceImageMemoryRequirements\0")?),
                 bind_buffer_memory2: std::mem::transmute(load(b"vkBindBufferMemory2\0")?),
                 bind_image_memory2: std::mem::transmute(load(b"vkBindImageMemory2\0")?),
+                create_sampler: std::mem::transmute(load(b"vkCreateSampler\0")?),
+                destroy_sampler: std::mem::transmute(load(b"vkDestroySampler\0")?),
                 create_descriptor_set_layout: std::mem::transmute(load(b"vkCreateDescriptorSetLayout\0")?),
                 destroy_descriptor_set_layout: std::mem::transmute(load(b"vkDestroyDescriptorSetLayout\0")?),
                 create_pipeline_layout: std::mem::transmute(load(b"vkCreatePipelineLayout\0")?),
                 destroy_pipeline_layout: std::mem::transmute(load(b"vkDestroyPipelineLayout\0")?),
+                cmd_push_constants: std::mem::transmute(load(b"vkCmdPushConstants\0")?),
                 get_buffer_device_address: std::mem::transmute(load(b"vkGetBufferDeviceAddress\0")?),
                 get_descriptor_set_layout_size_ext: std::mem::transmute(load(b"vkGetDescriptorSetLayoutSizeEXT\0")?),
                 get_descriptor_ext: std::mem::transmute(load(b"vkGetDescriptorEXT\0")?),
@@ -433,10 +441,12 @@ impl Device {
                 cmd_end_query: std::mem::transmute(load(b"vkCmdEndQuery\0")?),
                 get_query_pool_results: std::mem::transmute(load(b"vkGetQueryPoolResults\0")?),
                 cmd_write_timestamp2: std::mem::transmute(load(b"vkCmdWriteTimestamp2\0")?),
+                cmd_copy_buffer_to_image2: std::mem::transmute(load(b"vkCmdCopyBufferToImage2\0")?),
                 cmd_copy_image_to_buffer2: std::mem::transmute(load(b"vkCmdCopyImageToBuffer2\0")?),
                 cmd_draw_mesh_tasks_ext: std::mem::transmute(load(b"vkCmdDrawMeshTasksEXT\0")?),
                 cmd_set_viewport_with_count: std::mem::transmute(load(b"vkCmdSetViewportWithCount\0")?),
                 cmd_set_scissor_with_count: std::mem::transmute(load(b"vkCmdSetScissorWithCount\0")?),
+                cmd_set_rasterization_samples_ext: std::mem::transmute(load(b"vkCmdSetRasterizationSamplesEXT\0")?),
                 cmd_set_front_face: std::mem::transmute(load(b"vkCmdSetFrontFace\0")?),
                 cmd_set_cull_mode: std::mem::transmute(load(b"vkCmdSetCullMode\0")?),
                 cmd_set_depth_test_enable: std::mem::transmute(load(b"vkCmdSetDepthTestEnable\0")?),
@@ -968,6 +978,34 @@ impl Device {
     }
 
     #[inline]
+    #[doc = "**Chapter**: Samplers"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Create a new sampler object"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkCreateSampler`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateSampler.html)"]
+    pub unsafe fn create_sampler(&self, p_create_info: *const vk::SamplerCreateInfo) -> Result<vk::Sampler, Error> {
+        let mut p_sampler = std::mem::MaybeUninit::uninit();
+        match (self.fns.create_sampler)(self.handle, p_create_info, std::ptr::null(), p_sampler.as_mut_ptr()) {
+            vk::Result::Success => Ok(p_sampler.assume_init()),
+            result => Err(Error::Vulkan(result)),
+        }
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Samplers"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Destroy a sampler object"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkDestroySampler`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroySampler.html)"]
+    pub unsafe fn destroy_sampler(&self, sampler: vk::Sampler) {
+        (self.fns.destroy_sampler)(self.handle, sampler, std::ptr::null());
+    }
+
+    #[inline]
     #[doc = "**Chapter**: Resource Descriptors"]
     #[doc = "<br>"]
     #[doc = "**Description**: Create a new descriptor set layout"]
@@ -1021,6 +1059,18 @@ impl Device {
     #[doc = "**Reference**: [`vkDestroyPipelineLayout`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroyPipelineLayout.html)"]
     pub unsafe fn destroy_pipeline_layout(&self, pipeline_layout: vk::PipelineLayout) {
         (self.fns.destroy_pipeline_layout)(self.handle, pipeline_layout, std::ptr::null());
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Resource Descriptors"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Update the values of push constants"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkCmdPushConstants`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdPushConstants.html)"]
+    pub unsafe fn cmd_push_constants(&self, command_buffer: vk::CommandBuffer, layout: vk::PipelineLayout, stage_flags: vk::ShaderStageFlags, offset: u32, size: u32, p_values: *const c_void) {
+        (self.fns.cmd_push_constants)(command_buffer, layout, stage_flags, offset, size, p_values);
     }
 
     #[must_use]
@@ -1199,6 +1249,18 @@ impl Device {
     #[inline]
     #[doc = "**Chapter**: Copy Commands"]
     #[doc = "<br>"]
+    #[doc = "**Description**: Copy data from a buffer into an image"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkCmdCopyBufferToImage2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdCopyBufferToImage2.html)"]
+    pub unsafe fn cmd_copy_buffer_to_image2(&self, command_buffer: vk::CommandBuffer, p_copy_buffer_to_image_info: *const vk::CopyBufferToImageInfo2) {
+        (self.fns.cmd_copy_buffer_to_image2)(command_buffer, p_copy_buffer_to_image_info);
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Copy Commands"]
+    #[doc = "<br>"]
     #[doc = "**Description**: Copy image data into a buffer"]
     #[doc = "<br>"]
     #[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
@@ -1242,6 +1304,18 @@ impl Device {
     #[doc = "**Reference**: [`vkCmdSetScissorWithCount`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetScissorWithCount.html)"]
     pub unsafe fn cmd_set_scissor_with_count(&self, command_buffer: vk::CommandBuffer, scissor_count: u32, p_scissors: *const vk::Rect2D) {
         (self.fns.cmd_set_scissor_with_count)(command_buffer, scissor_count, p_scissors);
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Rasterization"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Specify the rasterization samples dynamically for a command buffer"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_EXT_extended_dynamic_state3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state3.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkCmdSetRasterizationSamplesEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetRasterizationSamplesEXT.html)"]
+    pub unsafe fn cmd_set_rasterization_samples_ext(&self, command_buffer: vk::CommandBuffer, rasterization_samples: vk::SampleCountFlagBits) {
+        (self.fns.cmd_set_rasterization_samples_ext)(command_buffer, rasterization_samples);
     }
 
     #[inline]
