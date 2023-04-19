@@ -12,3 +12,15 @@ pub use clear::Demo as ClearDemo;
 pub use compute::Demo as ComputeDemo;
 pub use cube::Demo as CubeDemo;
 pub use triangle::Demo as TriangleDemo;
+
+pub const DEFAULT_RENDER_TARGET_WIDTH: u32 = 256;
+pub const DEFAULT_RENDER_TARGET_HEIGHT: u32 = 256;
+pub const DEFAULT_RENDER_TARGET_COLOR_FORMAT: vk::Format = vk::Format::R8g8b8a8Unorm;
+pub const DEFAULT_RENDER_TARGET_DEPTH_FORMAT: vk::Format = vk::Format::D32Sfloat;
+pub const DEFAULT_RENDER_TARGET_RESOLVE_FORMAT: vk::Format = vk::Format::R8g8b8a8Unorm;
+pub const DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE: u32 = DEFAULT_RENDER_TARGET_COLOR_FORMAT
+    .block_size()
+    * DEFAULT_RENDER_TARGET_WIDTH
+    * DEFAULT_RENDER_TARGET_HEIGHT;
+pub const DEFAULT_RENDER_TARGET_SAMPLES: vk::SampleCountFlags = vk::SampleCountFlagBits::NUM_8;
+pub const DEFAULT_RENDER_TARGET_CLEAR_COLOR: [f32; 4] = [0.2, 0.2, 0.2, 1.0];

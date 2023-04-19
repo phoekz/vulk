@@ -90,7 +90,7 @@ type IndirectBuffer = resource::Buffer<IndirectDispatch>;
 
 unsafe fn create_indirect_buffer(gpu: &Gpu) -> Result<IndirectBuffer> {
     let element_count = 1;
-    let usage = vk::BufferUsageFlags::INDIRECT_BUFFER;
+    let usage = vk::BufferUsageFlags::STORAGE_BUFFER | vk::BufferUsageFlags::INDIRECT_BUFFER;
     let flags = vk::MemoryPropertyFlags::HOST_VISIBLE | vk::MemoryPropertyFlags::HOST_COHERENT;
     let buffer = IndirectBuffer::create(gpu, element_count, usage, flags)?;
     Ok(buffer)

@@ -22,11 +22,8 @@ impl DemoCallbacks for Demo {
         let commands = command::Commands::create(gpu)?;
         let queries = query::Queries::create(gpu)?;
         let shader = create_shaders(gpu)?;
-        let format = vk::Format::R8g8b8a8Unorm;
-        let width = 256;
-        let height = 256;
-        let render_targets = create_render_targets(gpu, format, width, height)?;
-        let output = create_output(gpu, format, width, height)?;
+        let render_targets = create_render_targets(gpu)?;
+        let output = create_output(gpu)?;
         Ok(Self {
             commands,
             queries,
@@ -172,17 +169,12 @@ struct RenderTargets {
     color: resource::Image2d,
 }
 
-unsafe fn create_render_targets(
-    gpu: &Gpu,
-    format: vk::Format,
-    width: u32,
-    height: u32,
-) -> Result<RenderTargets> {
+unsafe fn create_render_targets(gpu: &Gpu) -> Result<RenderTargets> {
     let color = resource::Image2d::create(
         gpu,
-        format,
-        width,
-        height,
+        DEFAULT_RENDER_TARGET_COLOR_FORMAT,
+        DEFAULT_RENDER_TARGET_WIDTH,
+        DEFAULT_RENDER_TARGET_HEIGHT,
         vk::SampleCountFlagBits::NUM_1,
         vk::ImageUsageFlags::COLOR_ATTACHMENT | vk::ImageUsageFlags::TRANSFER_SRC,
         vk::MemoryPropertyFlags::DEVICE_LOCAL,
@@ -204,11 +196,10 @@ struct Output {
     buffer: OutputBuffer,
 }
 
-unsafe fn create_output(gpu: &Gpu, format: vk::Format, width: u32, height: u32) -> Result<Output> {
-    let element_count = format.block_size() * width * height;
+unsafe fn create_output(gpu: &Gpu) -> Result<Output> {
     let buffer = OutputBuffer::create(
         gpu,
-        element_count as _,
+        DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE as _,
         vk::BufferUsageFlags::TRANSFER_DST,
         vk::MemoryPropertyFlags::HOST_VISIBLE,
     )?;
@@ -301,7 +292,7 @@ unsafe fn draw(
                 store_op: vk::AttachmentStoreOp::Store,
                 clear_value: vk::ClearValue {
                     color: vk::ClearColorValue {
-                        float32: [0.2, 0.2, 0.2, 1.0],
+                        float32: DEFAULT_RENDER_TARGET_CLEAR_COLOR,
                     },
                 },
             }),

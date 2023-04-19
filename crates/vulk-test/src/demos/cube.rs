@@ -4,13 +4,6 @@ use super::*;
 // Demo
 //
 
-const RENDER_TARGET_WIDTH: u32 = 256;
-const RENDER_TARGET_HEIGHT: u32 = 256;
-const RENDER_TARGET_COLOR_FORMAT: vk::Format = vk::Format::R8g8b8a8Unorm;
-const RENDER_TARGET_DEPTH_FORMAT: vk::Format = vk::Format::D32Sfloat;
-const RENDER_TARGET_RESOLVE_FORMAT: vk::Format = vk::Format::R8g8b8a8Unorm;
-const RENDER_TARGET_SAMPLES: vk::SampleCountFlags = vk::SampleCountFlagBits::NUM_8;
-
 pub struct Demo {
     commands: command::Commands,
     queries: query::Queries,
@@ -498,27 +491,27 @@ struct RenderTargets {
 unsafe fn create_render_targets(gpu: &Gpu) -> Result<RenderTargets> {
     let color = resource::Image2d::create(
         gpu,
-        RENDER_TARGET_COLOR_FORMAT,
-        RENDER_TARGET_WIDTH,
-        RENDER_TARGET_HEIGHT,
-        RENDER_TARGET_SAMPLES,
+        DEFAULT_RENDER_TARGET_COLOR_FORMAT,
+        DEFAULT_RENDER_TARGET_WIDTH,
+        DEFAULT_RENDER_TARGET_HEIGHT,
+        DEFAULT_RENDER_TARGET_SAMPLES,
         vk::ImageUsageFlags::COLOR_ATTACHMENT,
         vk::MemoryPropertyFlags::DEVICE_LOCAL,
     )?;
     let depth = resource::Image2d::create(
         gpu,
-        RENDER_TARGET_DEPTH_FORMAT,
-        RENDER_TARGET_WIDTH,
-        RENDER_TARGET_HEIGHT,
-        RENDER_TARGET_SAMPLES,
+        DEFAULT_RENDER_TARGET_DEPTH_FORMAT,
+        DEFAULT_RENDER_TARGET_WIDTH,
+        DEFAULT_RENDER_TARGET_HEIGHT,
+        DEFAULT_RENDER_TARGET_SAMPLES,
         vk::ImageUsageFlags::DEPTH_STENCIL_ATTACHMENT,
         vk::MemoryPropertyFlags::DEVICE_LOCAL,
     )?;
     let resolve = resource::Image2d::create(
         gpu,
-        RENDER_TARGET_RESOLVE_FORMAT,
-        RENDER_TARGET_WIDTH,
-        RENDER_TARGET_HEIGHT,
+        DEFAULT_RENDER_TARGET_RESOLVE_FORMAT,
+        DEFAULT_RENDER_TARGET_WIDTH,
+        DEFAULT_RENDER_TARGET_HEIGHT,
         vk::SampleCountFlagBits::NUM_1,
         vk::ImageUsageFlags::COLOR_ATTACHMENT | vk::ImageUsageFlags::TRANSFER_SRC,
         vk::MemoryPropertyFlags::DEVICE_LOCAL,
@@ -547,11 +540,9 @@ struct Output {
 }
 
 unsafe fn create_output(gpu: &Gpu) -> Result<Output> {
-    let element_count =
-        RENDER_TARGET_COLOR_FORMAT.block_size() * RENDER_TARGET_WIDTH * RENDER_TARGET_HEIGHT;
     let buffer = OutputBuffer::create(
         gpu,
-        element_count as _,
+        DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE as _,
         vk::BufferUsageFlags::TRANSFER_DST,
         vk::MemoryPropertyFlags::HOST_VISIBLE,
     )?;
@@ -646,7 +637,7 @@ unsafe fn draw(
                 store_op: vk::AttachmentStoreOp::Store,
                 clear_value: vk::ClearValue {
                     color: vk::ClearColorValue {
-                        float32: [0.2, 0.2, 0.2, 1.0],
+                        float32: DEFAULT_RENDER_TARGET_CLEAR_COLOR,
                     },
                 },
             }),
@@ -681,7 +672,7 @@ unsafe fn draw(
         device.cmd_set_depth_test_enable(cmd, vk::TRUE);
         device.cmd_set_depth_write_enable(cmd, vk::TRUE);
         device.cmd_set_depth_compare_op(cmd, vk::CompareOp::Less);
-        device.cmd_set_rasterization_samples_ext(cmd, RENDER_TARGET_SAMPLES);
+        device.cmd_set_rasterization_samples_ext(cmd, DEFAULT_RENDER_TARGET_SAMPLES);
         device.cmd_set_viewport_with_count(
             cmd,
             1,
