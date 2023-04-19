@@ -226,16 +226,7 @@ unsafe fn draw(
     demo_name: &str,
 ) -> Result<()> {
     // Begin command buffer.
-    let cmd = commands.command_buffer;
-    device.begin_command_buffer(
-        cmd,
-        &(vk::CommandBufferBeginInfo {
-            s_type: vk::StructureType::CommandBufferBeginInfo,
-            p_next: null(),
-            flags: vk::CommandBufferUsageFlags::ONE_TIME_SUBMIT,
-            p_inheritance_info: null(),
-        }),
-    )?;
+    let cmd = commands.begin(gpu)?;
 
     // Begin queries.
     queries.begin(gpu, cmd);
@@ -387,7 +378,7 @@ unsafe fn draw(
     queries.end(gpu, cmd);
 
     // End command buffer.
-    device.end_command_buffer(cmd)?;
+    commands.end(gpu)?;
 
     // Queue submit.
     device.queue_submit2(

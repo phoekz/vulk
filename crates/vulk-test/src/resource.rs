@@ -481,16 +481,7 @@ pub unsafe fn multi_upload_images(
 
     // Begin staging.
     let commands = command::Commands::create(gpu)?;
-    let cmd = commands.command_buffer;
-    device.begin_command_buffer(
-        cmd,
-        &(vk::CommandBufferBeginInfo {
-            s_type: vk::StructureType::CommandBufferBeginInfo,
-            p_next: null(),
-            flags: vk::CommandBufferUsageFlags::ONE_TIME_SUBMIT,
-            p_inheritance_info: null(),
-        }),
-    )?;
+    let cmd = commands.begin(gpu)?;
 
     // Transfer commands.
     let mut src_offset = 0;
@@ -578,7 +569,7 @@ pub unsafe fn multi_upload_images(
     }
 
     // End staging.
-    device.end_command_buffer(cmd)?;
+    commands.end(gpu)?;
     device.queue_submit2(
         *queue,
         1,

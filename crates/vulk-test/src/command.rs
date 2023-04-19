@@ -15,18 +15,14 @@ impl Commands {
         }: &Gpu,
     ) -> Result<Self> {
         // Command pool.
-        let command_pool = {
-            let command_pool = device.create_command_pool(
-                &(vk::CommandPoolCreateInfo {
-                    s_type: vk::StructureType::CommandPoolCreateInfo,
-                    p_next: null(),
-                    flags: vk::CommandPoolCreateFlags::empty(),
-                    queue_family_index: queue_family.index,
-                }),
-            )?;
-            device.reset_command_pool(command_pool, vk::CommandPoolResetFlags::empty())?;
-            command_pool
-        };
+        let command_pool = device.create_command_pool(
+            &(vk::CommandPoolCreateInfo {
+                s_type: vk::StructureType::CommandPoolCreateInfo,
+                p_next: null(),
+                flags: vk::CommandPoolCreateFlags::empty(),
+                queue_family_index: queue_family.index,
+            }),
+        )?;
 
         // Command buffer.
         let command_buffer = {
@@ -72,5 +68,24 @@ impl Commands {
         device.destroy_semaphore(self.semaphore);
         device.free_command_buffers(self.command_pool, 1, addr_of!(self.command_buffer).cast());
         device.destroy_command_pool(self.command_pool);
+    }
+
+    pub unsafe fn begin(&self, Gpu { device, .. }: &Gpu) -> Result<vk::CommandBuffer> {
+        device.reset_command_pool(self.command_pool, vk::CommandPoolResetFlags::empty())?;
+        device.begin_command_buffer(
+            self.command_buffer,
+            &(vk::CommandBufferBeginInfo {
+                s_type: vk::StructureType::CommandBufferBeginInfo,
+                p_next: null(),
+                flags: vk::CommandBufferUsageFlags::ONE_TIME_SUBMIT,
+                p_inheritance_info: null(),
+            }),
+        )?;
+        Ok(self.command_buffer)
+    }
+
+    pub unsafe fn end(&self, Gpu { device, .. }: &Gpu) -> Result<()> {
+        device.end_command_buffer(self.command_buffer)?;
+        Ok(())
     }
 }
