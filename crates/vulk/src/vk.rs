@@ -4863,6 +4863,8 @@ pub struct QueueFamilyProperties2 {
 #[doc = "<br>"]
 #[doc = "**Extendable by**: [`VkPhysicalDeviceFeatures2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceFeatures2.html)"]
 #[doc = "<br>"]
+#[doc = "**Extendable by**: [`VkPhysicalDeviceVulkan11Features`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceVulkan11Features.html)"]
+#[doc = "<br>"]
 #[doc = "**Extendable by**: [`VkPhysicalDeviceVulkan12Features`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceVulkan12Features.html)"]
 #[doc = "<br>"]
 #[doc = "**Extendable by**: [`VkPhysicalDeviceVulkan13Features`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceVulkan13Features.html)"]
@@ -6717,6 +6719,8 @@ pub struct PhysicalDeviceSparseProperties {
 #[doc = "<br>"]
 #[doc = "**Reference**: [`VkPhysicalDeviceFeatures2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceFeatures2.html)"]
 #[doc = "<br>"]
+#[doc = "**Extendable by**: [`VkPhysicalDeviceVulkan11Features`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceVulkan11Features.html)"]
+#[doc = "<br>"]
 #[doc = "**Extendable by**: [`VkPhysicalDeviceVulkan12Features`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceVulkan12Features.html)"]
 #[doc = "<br>"]
 #[doc = "**Extendable by**: [`VkPhysicalDeviceVulkan13Features`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceVulkan13Features.html)"]
@@ -6867,6 +6871,52 @@ pub struct PhysicalDeviceFeatures {
     pub sparse_residency_aliased: Bool32,
     pub variable_multisample_rate: Bool32,
     pub inherited_queries: Bool32,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Features"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure describing the Vulkan 1.1 features that can be supported by an implementation"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_2.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkPhysicalDeviceVulkan11Features`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceVulkan11Features.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```
+let physical_device_vulkan11_features = vk::PhysicalDeviceVulkan11Features {
+    s_type: vk::StructureType::PhysicalDeviceVulkan11Features,
+    p_next: null_mut(),
+    storage_buffer16_bit_access: todo!("vk::Bool32"),
+    uniform_and_storage_buffer16_bit_access: todo!("vk::Bool32"),
+    storage_push_constant16: todo!("vk::Bool32"),
+    storage_input_output16: todo!("vk::Bool32"),
+    multiview: todo!("vk::Bool32"),
+    multiview_geometry_shader: todo!("vk::Bool32"),
+    multiview_tessellation_shader: todo!("vk::Bool32"),
+    variable_pointers_storage_buffer: todo!("vk::Bool32"),
+    variable_pointers: todo!("vk::Bool32"),
+    protected_memory: todo!("vk::Bool32"),
+    sampler_ycbcr_conversion: todo!("vk::Bool32"),
+    shader_draw_parameters: todo!("vk::Bool32"),
+};
+```"#]
+pub struct PhysicalDeviceVulkan11Features {
+    pub s_type: StructureType,
+    pub p_next: *mut c_void,
+    pub storage_buffer16_bit_access: Bool32,
+    pub uniform_and_storage_buffer16_bit_access: Bool32,
+    pub storage_push_constant16: Bool32,
+    pub storage_input_output16: Bool32,
+    pub multiview: Bool32,
+    pub multiview_geometry_shader: Bool32,
+    pub multiview_tessellation_shader: Bool32,
+    pub variable_pointers_storage_buffer: Bool32,
+    pub variable_pointers: Bool32,
+    pub protected_memory: Bool32,
+    pub sampler_ycbcr_conversion: Bool32,
+    pub shader_draw_parameters: Bool32,
 }
 
 #[repr(C)]

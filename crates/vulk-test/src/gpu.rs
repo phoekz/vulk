@@ -482,9 +482,25 @@ unsafe fn create_device(
         shader_output_layer: vk::FALSE,
         subgroup_broadcast_dynamic_id: vk::FALSE,
     };
+    let mut physical_device_vulkan11_features = vk::PhysicalDeviceVulkan11Features {
+        s_type: vk::StructureType::PhysicalDeviceVulkan11Features,
+        p_next: addr_of_mut!(physical_device_vulkan12_features).cast(),
+        storage_buffer16_bit_access: vk::TRUE,
+        uniform_and_storage_buffer16_bit_access: vk::TRUE,
+        storage_push_constant16: vk::TRUE,
+        storage_input_output16: vk::FALSE,
+        multiview: vk::FALSE,
+        multiview_geometry_shader: vk::FALSE,
+        multiview_tessellation_shader: vk::FALSE,
+        variable_pointers_storage_buffer: vk::FALSE,
+        variable_pointers: vk::FALSE,
+        protected_memory: vk::FALSE,
+        sampler_ycbcr_conversion: vk::FALSE,
+        shader_draw_parameters: vk::FALSE,
+    };
     let physical_device_features2 = vk::PhysicalDeviceFeatures2 {
         s_type: vk::StructureType::PhysicalDeviceFeatures2,
-        p_next: addr_of_mut!(physical_device_vulkan12_features).cast(),
+        p_next: addr_of_mut!(physical_device_vulkan11_features).cast(),
         features: vk::PhysicalDeviceFeatures {
             robust_buffer_access: vk::FALSE,
             full_draw_index_uint32: vk::FALSE,

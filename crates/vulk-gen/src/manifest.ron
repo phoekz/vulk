@@ -96,6 +96,7 @@
         "VkPhysicalDeviceFeatures2",
         "VkPhysicalDeviceMeshShaderFeaturesEXT",
         "VkPhysicalDeviceShaderObjectFeaturesEXT",
+        "VkPhysicalDeviceVulkan11Features",
         "VkPhysicalDeviceVulkan12Features",
         "VkPhysicalDeviceVulkan13Features",
         "VkSemaphoreTypeCreateInfo",
