@@ -8481,6 +8481,20 @@ pub type GetDescriptorSetLayoutSizeEXT = unsafe extern "C" fn(
 
 #[doc = "**Chapter**: Resource Descriptors"]
 #[doc = "<br>"]
+#[doc = "**Description**: Get the offset of a binding within a descriptor set layout"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_EXT_descriptor_buffer`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_descriptor_buffer.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkGetDescriptorSetLayoutBindingOffsetEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetDescriptorSetLayoutBindingOffsetEXT.html)"]
+pub type GetDescriptorSetLayoutBindingOffsetEXT = unsafe extern "C" fn(
+    device: Device,              //
+    layout: DescriptorSetLayout, //
+    binding: u32,                //
+    p_offset: *mut DeviceSize,   //
+);
+
+#[doc = "**Chapter**: Resource Descriptors"]
+#[doc = "<br>"]
 #[doc = "**Description**: To get a descriptor to place in a buffer"]
 #[doc = "<br>"]
 #[doc = "**Provided by**: [`VK_EXT_descriptor_buffer`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_descriptor_buffer.html)"]

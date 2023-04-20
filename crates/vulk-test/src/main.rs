@@ -35,7 +35,7 @@ use std::{
 
 use anyhow::{ensure, Context, Result};
 use gpu::Gpu;
-use log::{info, log, warn};
+use log::{debug, info, log, warn};
 use vulk::vk;
 
 //
@@ -105,8 +105,8 @@ where
 //
 
 trait GpuResource {
-    type CreateInfo;
-    unsafe fn create(gpu: &Gpu, create_info: &Self::CreateInfo) -> Result<Self>
+    type CreateInfo<'a>;
+    unsafe fn create(gpu: &Gpu, create_info: &Self::CreateInfo<'_>) -> Result<Self>
     where
         Self: Sized;
     unsafe fn destroy(&self, gpu: &Gpu);

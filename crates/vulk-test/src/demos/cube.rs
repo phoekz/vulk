@@ -171,15 +171,8 @@ unsafe fn destroy_textures(gpu: &Gpu, textures: &Textures) {
 // Descriptors
 //
 
-type DescriptorBuffer = resource::Buffer<u8>;
-
 struct Descriptors {
-    images_set_layout: vk::DescriptorSetLayout,
-    images_buffer: DescriptorBuffer,
-
-    samplers_set_layout: vk::DescriptorSetLayout,
-    samplers_buffer: DescriptorBuffer,
-
+    storage: descriptor::DescriptorStorage,
     pipeline_layout: vk::PipelineLayout,
     push_constant_ranges: vk::PushConstantRange,
 }
@@ -188,81 +181,35 @@ unsafe fn create_descriptors(
     gpu @ Gpu { device, .. }: &Gpu,
     textures: &Textures,
 ) -> Result<Descriptors> {
-    // Descriptor set layout.
-    let images_set_layout = device.create_descriptor_set_layout(
-        &(vk::DescriptorSetLayoutCreateInfo {
-            s_type: vk::StructureType::DescriptorSetLayoutCreateInfo,
-            p_next: null(),
-            flags: vk::DescriptorSetLayoutCreateFlags::DESCRIPTOR_BUFFER_EXT,
-            binding_count: 1,
-            p_bindings: &vk::DescriptorSetLayoutBinding {
-                binding: 0,
-                descriptor_type: vk::DescriptorType::SampledImage,
-                descriptor_count: textures.images.len() as _,
-                stage_flags: vk::ShaderStageFlags::FRAGMENT,
-                p_immutable_samplers: null(),
-            },
-        }),
+    // Descriptor storage.
+    let stage_flags = vk::ShaderStageFlags::FRAGMENT;
+    let image_descriptors = textures
+        .images
+        .iter()
+        .map(|img| img.descriptor)
+        .collect::<Vec<_>>();
+    let sampler_descriptors = textures
+        .samplers
+        .iter()
+        .map(|sampler| sampler.descriptor)
+        .collect::<Vec<_>>();
+    let storage = descriptor::DescriptorStorage::create(
+        gpu,
+        &descriptor::DescriptorStorageCreateInfo {
+            bindings: &[
+                descriptor::DescriptorStorageBinding {
+                    descriptor_type: vk::DescriptorType::SampledImage,
+                    stage_flags,
+                    descriptors: &image_descriptors,
+                },
+                descriptor::DescriptorStorageBinding {
+                    descriptor_type: vk::DescriptorType::Sampler,
+                    stage_flags,
+                    descriptors: &sampler_descriptors,
+                },
+            ],
+        },
     )?;
-    let samplers_set_layout = device.create_descriptor_set_layout(
-        &(vk::DescriptorSetLayoutCreateInfo {
-            s_type: vk::StructureType::DescriptorSetLayoutCreateInfo,
-            p_next: null(),
-            flags: vk::DescriptorSetLayoutCreateFlags::DESCRIPTOR_BUFFER_EXT,
-            binding_count: 1,
-            p_bindings: &vk::DescriptorSetLayoutBinding {
-                binding: 0,
-                descriptor_type: vk::DescriptorType::Sampler,
-                descriptor_count: textures.samplers.len() as _,
-                stage_flags: vk::ShaderStageFlags::FRAGMENT,
-                p_immutable_samplers: null(),
-            },
-        }),
-    )?;
-
-    // Descriptor buffer.
-    let images_buffer = {
-        let buffer = DescriptorBuffer::create(
-            gpu,
-            &resource::BufferCreateInfo {
-                element_count: device.get_descriptor_set_layout_size_ext(images_set_layout) as _,
-                usage: vk::BufferUsageFlags::RESOURCE_DESCRIPTOR_BUFFER_EXT,
-                property_flags: vk::MemoryPropertyFlags::HOST_VISIBLE
-                    | vk::MemoryPropertyFlags::DEVICE_LOCAL,
-            },
-        )?;
-        let mut dst_offset = 0;
-        for image in &textures.images {
-            std::ptr::copy_nonoverlapping(
-                image.descriptor.as_ptr(),
-                buffer.ptr.add(dst_offset).cast(),
-                image.descriptor.byte_size(),
-            );
-            dst_offset += image.descriptor.byte_size();
-        }
-        buffer
-    };
-    let samplers_buffer = {
-        let buffer = DescriptorBuffer::create(
-            gpu,
-            &resource::BufferCreateInfo {
-                element_count: device.get_descriptor_set_layout_size_ext(samplers_set_layout) as _,
-                usage: vk::BufferUsageFlags::SAMPLER_DESCRIPTOR_BUFFER_EXT,
-                property_flags: vk::MemoryPropertyFlags::HOST_VISIBLE
-                    | vk::MemoryPropertyFlags::DEVICE_LOCAL,
-            },
-        )?;
-        let mut dst_offset = 0;
-        for sampler in &textures.samplers {
-            std::ptr::copy_nonoverlapping(
-                sampler.descriptor.as_ptr(),
-                buffer.ptr.add(dst_offset).cast(),
-                sampler.descriptor.byte_size(),
-            );
-            dst_offset += sampler.descriptor.byte_size();
-        }
-        buffer
-    };
 
     // Push constants.
     let push_constant_ranges = vk::PushConstantRange {
@@ -275,28 +222,22 @@ unsafe fn create_descriptors(
             s_type: vk::StructureType::PipelineLayoutCreateInfo,
             p_next: null(),
             flags: vk::PipelineLayoutCreateFlags::empty(),
-            set_layout_count: 2,
-            p_set_layouts: [images_set_layout, samplers_set_layout].as_ptr(),
+            set_layout_count: 1,
+            p_set_layouts: &storage.set_layout(),
             push_constant_range_count: 1,
             p_push_constant_ranges: &push_constant_ranges,
         }),
     )?;
 
     Ok(Descriptors {
-        images_set_layout,
-        images_buffer,
-        samplers_set_layout,
-        samplers_buffer,
+        storage,
         pipeline_layout,
         push_constant_ranges,
     })
 }
 
 unsafe fn destroy_descriptors(gpu @ Gpu { device, .. }: &Gpu, descriptors: &Descriptors) {
-    descriptors.images_buffer.destroy(gpu);
-    device.destroy_descriptor_set_layout(descriptors.images_set_layout);
-    descriptors.samplers_buffer.destroy(gpu);
-    device.destroy_descriptor_set_layout(descriptors.samplers_set_layout);
+    descriptors.storage.destroy(gpu);
     device.destroy_pipeline_layout(descriptors.pipeline_layout);
 }
 
@@ -431,8 +372,8 @@ unsafe fn create_shaders(gpu: &Gpu, descriptors: &Descriptors) -> Result<shader:
 
             layout(location = 0) in MeshVertex mesh_vertex;
             layout(location = 1) perprimitiveEXT flat in MeshPrimitive mesh_primitive;
-            layout(set = 0, binding = 0) uniform texture2D textures[];
-            layout(set = 1, binding = 0) uniform sampler samplers[];
+            layout(binding = 0) uniform texture2D textures[];
+            layout(binding = 1) uniform sampler samplers[];
             layout(location = 0) out vec4 fragment_color;
 
             void main() {
@@ -452,10 +393,7 @@ unsafe fn create_shaders(gpu: &Gpu, descriptors: &Descriptors) -> Result<shader:
     shader::Shader::create(
         gpu,
         &[task_spirv, mesh_spirv, fragment_spirv],
-        &[
-            descriptors.images_set_layout,
-            descriptors.samplers_set_layout,
-        ],
+        &[descriptors.storage.set_layout()],
         &[descriptors.push_constant_ranges],
         None,
     )
@@ -670,33 +608,12 @@ unsafe fn draw(
     }
 
     // Bind descriptors.
-    device.cmd_bind_descriptor_buffers_ext(
-        cmd,
-        2,
-        [
-            vk::DescriptorBufferBindingInfoEXT {
-                s_type: vk::StructureType::DescriptorBufferBindingInfoEXT,
-                p_next: null_mut(),
-                address: descriptors.images_buffer.device_address,
-                usage: descriptors.images_buffer.buffer_create_info.usage,
-            },
-            vk::DescriptorBufferBindingInfoEXT {
-                s_type: vk::StructureType::DescriptorBufferBindingInfoEXT,
-                p_next: null_mut(),
-                address: descriptors.samplers_buffer.device_address,
-                usage: descriptors.samplers_buffer.buffer_create_info.usage,
-            },
-        ]
-        .as_ptr(),
-    );
-    device.cmd_set_descriptor_buffer_offsets_ext(
+    descriptors.storage.bind(gpu, cmd);
+    descriptors.storage.set_offsets(
+        gpu,
         cmd,
         vk::PipelineBindPoint::Graphics,
         descriptors.pipeline_layout,
-        0,
-        2,
-        [0, 1].as_ptr(),
-        [0, 0].as_ptr(),
     );
 
     // Bind shaders.

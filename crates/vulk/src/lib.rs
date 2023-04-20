@@ -63,6 +63,7 @@
 //! - [`vk::CmdPushConstants`] Update the values of push constants
 //! - [`vk::GetBufferDeviceAddress`] Query an address of a buffer
 //! - [`vk::GetDescriptorSetLayoutSizeEXT`] Get the size of a descriptor set layout in memory
+//! - [`vk::GetDescriptorSetLayoutBindingOffsetEXT`] Get the offset of a binding within a descriptor set layout
 //! - [`vk::GetDescriptorEXT`] To get a descriptor to place in a buffer
 //! - [`vk::CmdBindDescriptorBuffersEXT`] Binding descriptor buffers to a command buffer
 //! - [`vk::CmdSetDescriptorBufferOffsetsEXT`] Setting descriptor buffer offsets in a command buffer

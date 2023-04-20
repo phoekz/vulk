@@ -88,6 +88,8 @@
         "vkCmdSetColorBlendEnableEXT",
         "vkCmdSetColorBlendEquationEXT",
         "vkCmdSetColorWriteMaskEXT",
+
+        "vkGetDescriptorSetLayoutBindingOffsetEXT",
     ],
     structures: [
         "VkMemoryAllocateFlagsInfo",

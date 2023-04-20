@@ -344,6 +344,7 @@ pub struct DeviceFunctions {
     pub cmd_push_constants: vk::CmdPushConstants,
     pub get_buffer_device_address: vk::GetBufferDeviceAddress,
     pub get_descriptor_set_layout_size_ext: vk::GetDescriptorSetLayoutSizeEXT,
+    pub get_descriptor_set_layout_binding_offset_ext: vk::GetDescriptorSetLayoutBindingOffsetEXT,
     pub get_descriptor_ext: vk::GetDescriptorEXT,
     pub cmd_bind_descriptor_buffers_ext: vk::CmdBindDescriptorBuffersEXT,
     pub cmd_set_descriptor_buffer_offsets_ext: vk::CmdSetDescriptorBufferOffsetsEXT,
@@ -434,6 +435,7 @@ impl Device {
                 cmd_push_constants: std::mem::transmute(load(b"vkCmdPushConstants\0")?),
                 get_buffer_device_address: std::mem::transmute(load(b"vkGetBufferDeviceAddress\0")?),
                 get_descriptor_set_layout_size_ext: std::mem::transmute(load(b"vkGetDescriptorSetLayoutSizeEXT\0")?),
+                get_descriptor_set_layout_binding_offset_ext: std::mem::transmute(load(b"vkGetDescriptorSetLayoutBindingOffsetEXT\0")?),
                 get_descriptor_ext: std::mem::transmute(load(b"vkGetDescriptorEXT\0")?),
                 cmd_bind_descriptor_buffers_ext: std::mem::transmute(load(b"vkCmdBindDescriptorBuffersEXT\0")?),
                 cmd_set_descriptor_buffer_offsets_ext: std::mem::transmute(load(b"vkCmdSetDescriptorBufferOffsetsEXT\0")?),
@@ -1105,6 +1107,21 @@ impl Device {
         let mut p_layout_size_in_bytes = std::mem::MaybeUninit::uninit();
         (self.fns.get_descriptor_set_layout_size_ext)(self.handle, layout, p_layout_size_in_bytes.as_mut_ptr());
         p_layout_size_in_bytes.assume_init()
+    }
+
+    #[must_use]
+    #[inline]
+    #[doc = "**Chapter**: Resource Descriptors"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Get the offset of a binding within a descriptor set layout"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_EXT_descriptor_buffer`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_descriptor_buffer.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkGetDescriptorSetLayoutBindingOffsetEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetDescriptorSetLayoutBindingOffsetEXT.html)"]
+    pub unsafe fn get_descriptor_set_layout_binding_offset_ext(&self, layout: vk::DescriptorSetLayout, binding: u32) -> vk::DeviceSize {
+        let mut p_offset = std::mem::MaybeUninit::uninit();
+        (self.fns.get_descriptor_set_layout_binding_offset_ext)(self.handle, layout, binding, p_offset.as_mut_ptr());
+        p_offset.assume_init()
     }
 
     #[inline]

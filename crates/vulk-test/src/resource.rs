@@ -29,7 +29,7 @@ pub struct Buffer<T> {
 }
 
 impl<T> GpuResource for Buffer<T> {
-    type CreateInfo = BufferCreateInfo;
+    type CreateInfo<'a> = BufferCreateInfo;
 
     unsafe fn create(
         gpu @ Gpu {
@@ -37,7 +37,7 @@ impl<T> GpuResource for Buffer<T> {
             physical_device,
             ..
         }: &Gpu,
-        create_info: &Self::CreateInfo,
+        create_info: &Self::CreateInfo<'_>,
     ) -> Result<Self> {
         // Size.
         let size = (create_info.element_count * size_of::<T>()) as vk::DeviceSize;
@@ -164,18 +164,6 @@ impl<T> GpuResource for Buffer<T> {
     }
 }
 
-impl<T> Buffer<T> {
-    // TODO: move to descriptor.rs
-    pub unsafe fn descriptor_buffer_binding_info(&self) -> vk::DescriptorBufferBindingInfoEXT {
-        vk::DescriptorBufferBindingInfoEXT {
-            s_type: vk::StructureType::DescriptorBufferBindingInfoEXT,
-            p_next: null_mut(),
-            address: self.device_address,
-            usage: self.buffer_create_info.usage,
-        }
-    }
-}
-
 //
 // Texture
 //
@@ -207,7 +195,7 @@ pub struct Image2d {
 }
 
 impl GpuResource for Image2d {
-    type CreateInfo = Image2dCreateInfo;
+    type CreateInfo<'a> = Image2dCreateInfo;
 
     unsafe fn create(
         gpu @ Gpu {
@@ -215,7 +203,7 @@ impl GpuResource for Image2d {
             physical_device,
             ..
         }: &Gpu,
-        create_info: &Self::CreateInfo,
+        create_info: &Self::CreateInfo<'_>,
     ) -> Result<Self> {
         // Image info.
         let image_create_info = vk::ImageCreateInfo {
@@ -422,11 +410,11 @@ pub struct Sampler {
 }
 
 impl GpuResource for Sampler {
-    type CreateInfo = SamplerCreateInfo;
+    type CreateInfo<'a> = SamplerCreateInfo;
 
     unsafe fn create(
         gpu @ Gpu { device, .. }: &Gpu,
-        create_info: &Self::CreateInfo,
+        create_info: &Self::CreateInfo<'_>,
     ) -> Result<Self> {
         // Sampler info.
         let sampler_create_info = vk::SamplerCreateInfo {

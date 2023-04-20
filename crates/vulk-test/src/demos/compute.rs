@@ -53,11 +53,10 @@ impl DemoCallbacks for Demo {
         } = state;
         compute_shader.destroy(gpu);
         indirect_shader.destroy(gpu);
-        device.destroy_descriptor_set_layout(descriptors.set_layout);
         device.destroy_pipeline_layout(descriptors.pipeline_layout);
         compute_buffer.destroy(gpu);
         indirect_buffer.destroy(gpu);
-        descriptors.buffer.destroy(gpu);
+        descriptors.storage.destroy(gpu);
         queries.destroy(gpu);
         commands.destroy(gpu);
         Ok(())
@@ -110,12 +109,9 @@ unsafe fn create_indirect_buffer(gpu: &Gpu) -> Result<IndirectBuffer> {
 // Descriptors
 //
 
-type DescriptorBuffer = resource::Buffer<u8>;
-
 struct Descriptors {
-    set_layout: vk::DescriptorSetLayout,
+    storage: descriptor::DescriptorStorage,
     pipeline_layout: vk::PipelineLayout,
-    buffer: DescriptorBuffer,
 }
 
 unsafe fn create_descriptors(
@@ -123,78 +119,42 @@ unsafe fn create_descriptors(
     compute_buffer: &ComputeBuffer,
     indirect_buffer: &IndirectBuffer,
 ) -> Result<Descriptors> {
-    // Descriptor set layout.
-    let bindings = [
-        vk::DescriptorSetLayoutBinding {
-            binding: 0,
-            descriptor_type: vk::DescriptorType::StorageBuffer,
-            descriptor_count: 1,
-            stage_flags: vk::ShaderStageFlags::COMPUTE,
-            p_immutable_samplers: null(),
-        },
-        vk::DescriptorSetLayoutBinding {
-            binding: 1,
-            descriptor_type: vk::DescriptorType::StorageBuffer,
-            descriptor_count: 1,
-            stage_flags: vk::ShaderStageFlags::COMPUTE,
-            p_immutable_samplers: null(),
-        },
-    ];
-    let descriptor_set_layout = device.create_descriptor_set_layout(
-        &(vk::DescriptorSetLayoutCreateInfo {
-            s_type: vk::StructureType::DescriptorSetLayoutCreateInfo,
-            p_next: null(),
-            flags: vk::DescriptorSetLayoutCreateFlags::DESCRIPTOR_BUFFER_EXT,
-            binding_count: bindings.len() as _,
-            p_bindings: bindings.as_ptr(),
-        }),
-    )?;
-
-    // Descriptor buffer.
-    let buffer = DescriptorBuffer::create(
+    // Descriptor storage.
+    let stage_flags = vk::ShaderStageFlags::COMPUTE;
+    let storage = descriptor::DescriptorStorage::create(
         gpu,
-        &resource::BufferCreateInfo {
-            element_count: device.get_descriptor_set_layout_size_ext(descriptor_set_layout) as _,
-            usage: vk::BufferUsageFlags::STORAGE_BUFFER,
-            property_flags: vk::MemoryPropertyFlags::HOST_VISIBLE
-                | vk::MemoryPropertyFlags::HOST_COHERENT,
+        &descriptor::DescriptorStorageCreateInfo {
+            bindings: &[
+                descriptor::DescriptorStorageBinding {
+                    descriptor_type: vk::DescriptorType::StorageBuffer,
+                    stage_flags,
+                    descriptors: &[indirect_buffer.descriptor],
+                },
+                descriptor::DescriptorStorageBinding {
+                    descriptor_type: vk::DescriptorType::StorageBuffer,
+                    stage_flags,
+                    descriptors: &[compute_buffer.descriptor],
+                },
+            ],
         },
     )?;
-
-    // Descriptors.
-    {
-        let mut dst_offset = 0;
-        std::ptr::copy_nonoverlapping(
-            indirect_buffer.descriptor.as_ptr(),
-            buffer.ptr.add(dst_offset),
-            indirect_buffer.descriptor.byte_size(),
-        );
-        dst_offset += indirect_buffer.descriptor.byte_size();
-        std::ptr::copy_nonoverlapping(
-            compute_buffer.descriptor.as_ptr(),
-            buffer.ptr.add(dst_offset),
-            compute_buffer.descriptor.byte_size(),
-        );
-    }
 
     // Pipeline layout.
-    let set_layouts = [descriptor_set_layout];
     let pipeline_layout = device.create_pipeline_layout(
         &(vk::PipelineLayoutCreateInfo {
             s_type: vk::StructureType::PipelineLayoutCreateInfo,
             p_next: null(),
             flags: vk::PipelineLayoutCreateFlags::empty(),
-            set_layout_count: set_layouts.len() as _,
-            p_set_layouts: set_layouts.as_ptr(),
+            set_layout_count: 1,
+            p_set_layouts: &storage.set_layout(),
             push_constant_range_count: 0,
             p_push_constant_ranges: null(),
         }),
     )?;
 
     Ok(Descriptors {
-        set_layout: descriptor_set_layout,
+        storage,
         pipeline_layout,
-        buffer,
     })
 }
 
@@ -225,7 +185,7 @@ unsafe fn create_shaders(
                 uint z;
             };
 
-            layout(scalar, set = 0, binding = 0) buffer IndirectCommands {
+            layout(scalar, binding = 0) buffer IndirectCommands {
                 IndirectCommand data[];
             } indirect_commands;
 
@@ -246,7 +206,7 @@ unsafe fn create_shaders(
 
             layout(local_size_x_id = 0) in;
 
-            layout(scalar, set = 0, binding = 1) buffer Values {
+            layout(scalar, binding = 1) buffer Values {
                 uint data[];
             } values;
 
@@ -258,8 +218,13 @@ unsafe fn create_shaders(
     )?;
 
     // Create shaders.
-    let indirect_shader =
-        shader::Shader::create(gpu, &[indirect_spirv], &[descriptors.set_layout], &[], None)?;
+    let indirect_shader = shader::Shader::create(
+        gpu,
+        &[indirect_spirv],
+        &[descriptors.storage.set_layout()],
+        &[],
+        None,
+    )?;
     let specialization_map_entry = vk::SpecializationMapEntry {
         constant_id: 0,
         offset: 0,
@@ -275,7 +240,7 @@ unsafe fn create_shaders(
     let compute_shader = shader::Shader::create(
         gpu,
         &[compute_spirv],
-        &[descriptors.set_layout],
+        &[descriptors.storage.set_layout()],
         &[],
         Some(&specialization_info),
     )?;
@@ -306,31 +271,14 @@ unsafe fn dispatch(
     // Begin queries.
     queries.begin(gpu, cmd);
 
-    // Descriptors.
-    {
-        let binding_infos = [vk::DescriptorBufferBindingInfoEXT {
-            s_type: vk::StructureType::DescriptorBufferBindingInfoEXT,
-            p_next: null_mut(),
-            address: descriptors.buffer.device_address,
-            usage: vk::BufferUsageFlags::STORAGE_BUFFER | vk::BufferUsageFlags::INDIRECT_BUFFER,
-        }];
-        device.cmd_bind_descriptor_buffers_ext(
-            cmd,
-            binding_infos.len() as _,
-            binding_infos.as_ptr(),
-        );
-        let buffer_indices = [0];
-        let offsets = [0];
-        device.cmd_set_descriptor_buffer_offsets_ext(
-            cmd,
-            vk::PipelineBindPoint::Compute,
-            descriptors.pipeline_layout,
-            0,
-            buffer_indices.len() as _,
-            buffer_indices.as_ptr(),
-            offsets.as_ptr(),
-        );
-    }
+    // Bind descriptors.
+    descriptors.storage.bind(gpu, cmd);
+    descriptors.storage.set_offsets(
+        gpu,
+        cmd,
+        vk::PipelineBindPoint::Compute,
+        descriptors.pipeline_layout,
+    );
 
     // Dispatch indirect shader.
     {

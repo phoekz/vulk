@@ -1,10 +1,16 @@
 use super::*;
 
+//
+// Descriptor
+//
+
 pub const MAX_DESCRIPTOR_SIZE: usize = 16;
 
+#[derive(Clone, Copy)]
 pub struct Descriptor {
     data: [u8; MAX_DESCRIPTOR_SIZE],
     size: usize,
+    ty: vk::DescriptorType,
 }
 
 impl std::fmt::Debug for Descriptor {
@@ -32,6 +38,7 @@ impl Descriptor {
         let mut descriptor: Self = Self {
             data: Default::default(),
             size: Default::default(),
+            ty,
         };
         device.get_descriptor_ext(
             &(vk::DescriptorGetInfoEXT {
@@ -102,7 +109,168 @@ impl Descriptor {
     pub fn byte_size(&self) -> usize {
         self.size
     }
+
+    pub fn ty(&self) -> vk::DescriptorType {
+        self.ty
+    }
 }
+
+//
+// Descriptor storage
+//
+
+pub struct DescriptorStorageBinding<'a> {
+    pub descriptor_type: vk::DescriptorType,
+    pub stage_flags: vk::ShaderStageFlags,
+    pub descriptors: &'a [Descriptor],
+}
+
+pub struct DescriptorStorageCreateInfo<'a> {
+    pub bindings: &'a [DescriptorStorageBinding<'a>],
+}
+
+pub type DescriptorBuffer = resource::Buffer<u8>;
+
+pub struct DescriptorStorage {
+    set_layout: vk::DescriptorSetLayout,
+    buffer: DescriptorBuffer,
+}
+
+impl GpuResource for DescriptorStorage {
+    type CreateInfo<'a> = DescriptorStorageCreateInfo<'a>;
+
+    unsafe fn create(gpu: &Gpu, create_info: &Self::CreateInfo<'_>) -> Result<Self> {
+        // Validate.
+        ensure!(
+            !create_info.bindings.is_empty(),
+            "Expected 1 or more bindings"
+        );
+        for (binding_index, binding) in create_info.bindings.iter().enumerate() {
+            ensure!(
+                !binding.descriptors.is_empty(),
+                "Binding {} expected 1 or more descriptors",
+                binding_index
+            );
+            for descriptor in binding.descriptors {
+                ensure!(
+                    binding.descriptor_type == descriptor.ty(),
+                    "Binding {} expected descriptor type to be equal to {:?}, got {:?} instead",
+                    binding_index,
+                    binding.descriptor_type,
+                    descriptor.ty()
+                );
+            }
+        }
+
+        // Descriptor set layout.
+        let bindings = create_info
+            .bindings
+            .iter()
+            .enumerate()
+            .map(|(binding_index, binding)| vk::DescriptorSetLayoutBinding {
+                binding: binding_index as _,
+                descriptor_type: binding.descriptor_type,
+                descriptor_count: binding.descriptors.len() as _,
+                stage_flags: binding.stage_flags,
+                p_immutable_samplers: null(),
+            })
+            .collect::<Vec<_>>();
+        let set_layout = gpu.device.create_descriptor_set_layout(
+            &(vk::DescriptorSetLayoutCreateInfo {
+                s_type: vk::StructureType::DescriptorSetLayoutCreateInfo,
+                p_next: null(),
+                flags: vk::DescriptorSetLayoutCreateFlags::DESCRIPTOR_BUFFER_EXT,
+                binding_count: bindings.len() as _,
+                p_bindings: bindings.as_ptr(),
+            }),
+        )?;
+
+        // Buffer.
+        let buffer = DescriptorBuffer::create(
+            gpu,
+            &resource::BufferCreateInfo {
+                element_count: gpu.device.get_descriptor_set_layout_size_ext(set_layout) as _,
+                usage: vk::BufferUsageFlags::RESOURCE_DESCRIPTOR_BUFFER_EXT
+                    | vk::BufferUsageFlags::SAMPLER_DESCRIPTOR_BUFFER_EXT,
+                property_flags: vk::MemoryPropertyFlags::HOST_VISIBLE
+                    | vk::MemoryPropertyFlags::HOST_COHERENT,
+            },
+        )?;
+        debug!("set_layout={}", buffer.element_count);
+
+        // Write.
+        for (binding_index, binding) in create_info.bindings.iter().enumerate() {
+            let descriptor_offset = gpu
+                .device
+                .get_descriptor_set_layout_binding_offset_ext(set_layout, binding_index as _);
+            debug!(
+                "index={binding_index}, offset={descriptor_offset}, type={:?}",
+                binding.descriptor_type
+            );
+            for (array_index, descriptor) in binding.descriptors.iter().enumerate() {
+                let dst_offset = descriptor_offset as usize + array_index * descriptor.byte_size();
+                debug!(
+                    "  index={array_index}, size={}, dst={dst_offset}",
+                    descriptor.size
+                );
+                std::ptr::copy_nonoverlapping(
+                    descriptor.as_ptr(),
+                    buffer.ptr.add(dst_offset),
+                    descriptor.byte_size(),
+                );
+            }
+        }
+
+        Ok(Self { set_layout, buffer })
+    }
+
+    unsafe fn destroy(&self, gpu: &Gpu) {
+        gpu.device.destroy_descriptor_set_layout(self.set_layout);
+        self.buffer.destroy(gpu);
+    }
+}
+
+impl DescriptorStorage {
+    pub fn set_layout(&self) -> vk::DescriptorSetLayout {
+        self.set_layout
+    }
+
+    pub unsafe fn bind(&self, gpu: &Gpu, cmd: vk::CommandBuffer) {
+        gpu.device.cmd_bind_descriptor_buffers_ext(
+            cmd,
+            1,
+            &vk::DescriptorBufferBindingInfoEXT {
+                s_type: vk::StructureType::DescriptorBufferBindingInfoEXT,
+                p_next: null_mut(),
+                address: self.buffer.device_address,
+                usage: self.buffer.buffer_create_info.usage,
+            },
+        );
+    }
+
+    #[allow(clippy::unused_self)]
+    pub unsafe fn set_offsets(
+        &self,
+        gpu: &Gpu,
+        cmd: vk::CommandBuffer,
+        pipeline_bind_point: vk::PipelineBindPoint,
+        layout: vk::PipelineLayout,
+    ) {
+        gpu.device.cmd_set_descriptor_buffer_offsets_ext(
+            cmd,
+            pipeline_bind_point,
+            layout,
+            0,
+            1,
+            [0].as_ptr(),
+            [0].as_ptr(),
+        );
+    }
+}
+
+//
+// Utilities
+//
 
 pub fn assert_descriptor_sizes(properties: &vk::PhysicalDeviceDescriptorBufferPropertiesEXT) {
     assert!(MAX_DESCRIPTOR_SIZE >= properties.buffer_capture_replay_descriptor_data_size);
