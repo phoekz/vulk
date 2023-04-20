@@ -95,6 +95,7 @@
         "VkPhysicalDeviceDescriptorBufferPropertiesEXT",
         "VkPhysicalDeviceFeatures2",
         "VkPhysicalDeviceMeshShaderFeaturesEXT",
+        "VkPhysicalDeviceMeshShaderPropertiesEXT",
         "VkPhysicalDeviceShaderObjectFeaturesEXT",
         "VkPhysicalDeviceVulkan11Features",
         "VkPhysicalDeviceVulkan12Features",

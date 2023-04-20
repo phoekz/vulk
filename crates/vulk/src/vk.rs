@@ -4785,6 +4785,8 @@ pub struct PhysicalDeviceProperties {
 #[doc = "<br>"]
 #[doc = "**Reference**: [`VkPhysicalDeviceProperties2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceProperties2.html)"]
 #[doc = "<br>"]
+#[doc = "**Extendable by**: [`VkPhysicalDeviceMeshShaderPropertiesEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceMeshShaderPropertiesEXT.html)"]
+#[doc = "<br>"]
 #[doc = "**Extendable by**: [`VkPhysicalDeviceDescriptorBufferPropertiesEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceDescriptorBufferPropertiesEXT.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
@@ -7401,6 +7403,84 @@ pub struct PhysicalDeviceLimits {
     pub optimal_buffer_copy_offset_alignment: DeviceSize,
     pub optimal_buffer_copy_row_pitch_alignment: DeviceSize,
     pub non_coherent_atom_size: DeviceSize,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Limits"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure describing mesh shading properties"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_EXT_mesh_shader`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_mesh_shader.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkPhysicalDeviceMeshShaderPropertiesEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceMeshShaderPropertiesEXT.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```
+let physical_device_mesh_shader_properties_ext = vk::PhysicalDeviceMeshShaderPropertiesEXT {
+    s_type: vk::StructureType::PhysicalDeviceMeshShaderPropertiesEXT,
+    p_next: null_mut(),
+    max_task_work_group_total_count: todo!("u32"),
+    max_task_work_group_count: todo!("[u32; 3]"),
+    max_task_work_group_invocations: todo!("u32"),
+    max_task_work_group_size: todo!("[u32; 3]"),
+    max_task_payload_size: todo!("u32"),
+    max_task_shared_memory_size: todo!("u32"),
+    max_task_payload_and_shared_memory_size: todo!("u32"),
+    max_mesh_work_group_total_count: todo!("u32"),
+    max_mesh_work_group_count: todo!("[u32; 3]"),
+    max_mesh_work_group_invocations: todo!("u32"),
+    max_mesh_work_group_size: todo!("[u32; 3]"),
+    max_mesh_shared_memory_size: todo!("u32"),
+    max_mesh_payload_and_shared_memory_size: todo!("u32"),
+    max_mesh_output_memory_size: todo!("u32"),
+    max_mesh_payload_and_output_memory_size: todo!("u32"),
+    max_mesh_output_components: todo!("u32"),
+    max_mesh_output_vertices: todo!("u32"),
+    max_mesh_output_primitives: todo!("u32"),
+    max_mesh_output_layers: todo!("u32"),
+    max_mesh_multiview_view_count: todo!("u32"),
+    mesh_output_per_vertex_granularity: todo!("u32"),
+    mesh_output_per_primitive_granularity: todo!("u32"),
+    max_preferred_task_work_group_invocations: todo!("u32"),
+    max_preferred_mesh_work_group_invocations: todo!("u32"),
+    prefers_local_invocation_vertex_output: todo!("vk::Bool32"),
+    prefers_local_invocation_primitive_output: todo!("vk::Bool32"),
+    prefers_compact_vertex_output: todo!("vk::Bool32"),
+    prefers_compact_primitive_output: todo!("vk::Bool32"),
+};
+```"#]
+pub struct PhysicalDeviceMeshShaderPropertiesEXT {
+    pub s_type: StructureType,
+    pub p_next: *mut c_void,
+    pub max_task_work_group_total_count: u32,
+    pub max_task_work_group_count: [u32; 3],
+    pub max_task_work_group_invocations: u32,
+    pub max_task_work_group_size: [u32; 3],
+    pub max_task_payload_size: u32,
+    pub max_task_shared_memory_size: u32,
+    pub max_task_payload_and_shared_memory_size: u32,
+    pub max_mesh_work_group_total_count: u32,
+    pub max_mesh_work_group_count: [u32; 3],
+    pub max_mesh_work_group_invocations: u32,
+    pub max_mesh_work_group_size: [u32; 3],
+    pub max_mesh_shared_memory_size: u32,
+    pub max_mesh_payload_and_shared_memory_size: u32,
+    pub max_mesh_output_memory_size: u32,
+    pub max_mesh_payload_and_output_memory_size: u32,
+    pub max_mesh_output_components: u32,
+    pub max_mesh_output_vertices: u32,
+    pub max_mesh_output_primitives: u32,
+    pub max_mesh_output_layers: u32,
+    pub max_mesh_multiview_view_count: u32,
+    pub mesh_output_per_vertex_granularity: u32,
+    pub mesh_output_per_primitive_granularity: u32,
+    pub max_preferred_task_work_group_invocations: u32,
+    pub max_preferred_mesh_work_group_invocations: u32,
+    pub prefers_local_invocation_vertex_output: Bool32,
+    pub prefers_local_invocation_primitive_output: Bool32,
+    pub prefers_compact_vertex_output: Bool32,
+    pub prefers_compact_primitive_output: Bool32,
 }
 
 #[repr(C)]

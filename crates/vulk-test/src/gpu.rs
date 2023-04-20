@@ -6,6 +6,7 @@ pub struct PhysicalDevice {
     pub queue_family_properties: Vec<vk::QueueFamilyProperties>,
     pub memory_properties: vk::PhysicalDeviceMemoryProperties,
     pub descriptor_buffer_properties_ext: vk::PhysicalDeviceDescriptorBufferPropertiesEXT,
+    pub mesh_shader_properties_ext: vk::PhysicalDeviceMeshShaderPropertiesEXT,
 }
 
 pub struct QueueFamily {
@@ -299,18 +300,22 @@ unsafe fn create_physical_device(instance: &vulk::Instance) -> Result<PhysicalDe
     let physical_device = physical_devices[0];
 
     // Device properties.
-    let mut physical_device_descriptor_buffer_properties_ext: vk::PhysicalDeviceDescriptorBufferPropertiesEXT = zeroed();
-    physical_device_descriptor_buffer_properties_ext.s_type =
+    let mut mesh_shader_properties: vk::PhysicalDeviceMeshShaderPropertiesEXT = zeroed();
+    mesh_shader_properties.s_type = vk::StructureType::PhysicalDeviceMeshShaderPropertiesEXT;
+    let mut descriptor_buffer_properties: vk::PhysicalDeviceDescriptorBufferPropertiesEXT =
+        zeroed();
+    descriptor_buffer_properties.s_type =
         vk::StructureType::PhysicalDeviceDescriptorBufferPropertiesEXT;
-    let mut physical_device_properties2 = vk::PhysicalDeviceProperties2 {
+    descriptor_buffer_properties.p_next = addr_of_mut!(mesh_shader_properties).cast();
+    let mut properties2 = vk::PhysicalDeviceProperties2 {
         s_type: vk::StructureType::PhysicalDeviceProperties2,
-        p_next: addr_of_mut!(physical_device_descriptor_buffer_properties_ext).cast(),
+        p_next: addr_of_mut!(descriptor_buffer_properties).cast(),
         properties: zeroed(),
     };
-    instance.get_physical_device_properties2(physical_device, &mut physical_device_properties2);
+    instance.get_physical_device_properties2(physical_device, &mut properties2);
 
     // Assert that our descriptor type can fit any kind of descriptor.
-    descriptor::assert_descriptor_sizes(&physical_device_descriptor_buffer_properties_ext);
+    descriptor::assert_descriptor_sizes(&descriptor_buffer_properties);
 
     // Queue family properties.
     let queue_family_properties = {
@@ -349,13 +354,14 @@ unsafe fn create_physical_device(instance: &vulk::Instance) -> Result<PhysicalDe
 
     Ok(PhysicalDevice {
         handle: physical_device,
-        properties: physical_device_properties2.properties,
+        properties: properties2.properties,
         queue_family_properties: queue_family_properties
             .into_iter()
             .map(|queue_family_property| queue_family_property.queue_family_properties)
             .collect(),
         memory_properties: physical_device_memory_properties2.memory_properties,
-        descriptor_buffer_properties_ext: physical_device_descriptor_buffer_properties_ext,
+        descriptor_buffer_properties_ext: descriptor_buffer_properties,
+        mesh_shader_properties_ext: mesh_shader_properties,
     })
 }
 
