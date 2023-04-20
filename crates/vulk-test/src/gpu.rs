@@ -7,6 +7,7 @@ pub struct PhysicalDevice {
     pub memory_properties: vk::PhysicalDeviceMemoryProperties,
     pub descriptor_buffer_properties_ext: vk::PhysicalDeviceDescriptorBufferPropertiesEXT,
     pub mesh_shader_properties_ext: vk::PhysicalDeviceMeshShaderPropertiesEXT,
+    pub subgroup_properties: vk::PhysicalDeviceSubgroupProperties,
 }
 
 pub struct QueueFamily {
@@ -300,13 +301,19 @@ unsafe fn create_physical_device(instance: &vulk::Instance) -> Result<PhysicalDe
     let physical_device = physical_devices[0];
 
     // Device properties.
+    let mut subgroup_properties: vk::PhysicalDeviceSubgroupProperties = zeroed();
+    subgroup_properties.s_type = vk::StructureType::PhysicalDeviceSubgroupProperties;
+
     let mut mesh_shader_properties: vk::PhysicalDeviceMeshShaderPropertiesEXT = zeroed();
     mesh_shader_properties.s_type = vk::StructureType::PhysicalDeviceMeshShaderPropertiesEXT;
+    mesh_shader_properties.p_next = addr_of_mut!(subgroup_properties).cast();
+
     let mut descriptor_buffer_properties: vk::PhysicalDeviceDescriptorBufferPropertiesEXT =
         zeroed();
     descriptor_buffer_properties.s_type =
         vk::StructureType::PhysicalDeviceDescriptorBufferPropertiesEXT;
     descriptor_buffer_properties.p_next = addr_of_mut!(mesh_shader_properties).cast();
+
     let mut properties2 = vk::PhysicalDeviceProperties2 {
         s_type: vk::StructureType::PhysicalDeviceProperties2,
         p_next: addr_of_mut!(descriptor_buffer_properties).cast(),
@@ -362,6 +369,7 @@ unsafe fn create_physical_device(instance: &vulk::Instance) -> Result<PhysicalDe
         memory_properties: physical_device_memory_properties2.memory_properties,
         descriptor_buffer_properties_ext: descriptor_buffer_properties,
         mesh_shader_properties_ext: mesh_shader_properties,
+        subgroup_properties,
     })
 }
 

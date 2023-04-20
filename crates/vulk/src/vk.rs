@@ -4430,6 +4430,47 @@ pub type SampleCountFlagBits = SampleCountFlags;
 bitflags! {
     #[repr(C)]
     #[derive(Clone, Copy, PartialEq, Eq, Debug)]
+    #[doc = "**Chapter**: Limits"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Bitmask of VkSubgroupFeatureFlagBits"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_VERSION_1_1`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_1.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`VkSubgroupFeatureFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSubgroupFeatureFlags.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`VkSubgroupFeatureFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSubgroupFeatureFlagBits.html)"]
+    pub struct SubgroupFeatureFlags: u32 {
+        #[doc = "Translated from: `VK_SUBGROUP_FEATURE_BASIC_BIT`"]
+        const BASIC = 0b1;
+        #[doc = "Translated from: `VK_SUBGROUP_FEATURE_VOTE_BIT`"]
+        const VOTE = 0b10;
+        #[doc = "Translated from: `VK_SUBGROUP_FEATURE_ARITHMETIC_BIT`"]
+        const ARITHMETIC = 0b100;
+        #[doc = "Translated from: `VK_SUBGROUP_FEATURE_BALLOT_BIT`"]
+        const BALLOT = 0b1000;
+        #[doc = "Translated from: `VK_SUBGROUP_FEATURE_SHUFFLE_BIT`"]
+        const SHUFFLE = 0b10000;
+        #[doc = "Translated from: `VK_SUBGROUP_FEATURE_SHUFFLE_RELATIVE_BIT`"]
+        const SHUFFLE_RELATIVE = 0b100000;
+        #[doc = "Translated from: `VK_SUBGROUP_FEATURE_CLUSTERED_BIT`"]
+        const CLUSTERED = 0b1000000;
+        #[doc = "Translated from: `VK_SUBGROUP_FEATURE_QUAD_BIT`"]
+        const QUAD = 0b10000000;
+    }
+}
+
+#[doc = "**Chapter**: Limits"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask describing what group operations are supported with subgroup scope"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_1`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_1.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkSubgroupFeatureFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSubgroupFeatureFlagBits.html)"]
+pub type SubgroupFeatureFlagBits = SubgroupFeatureFlags;
+
+bitflags! {
+    #[repr(C)]
+    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
     #[doc = "**Chapter**: Debugging"]
     #[doc = "<br>"]
     #[doc = "**Description**: Reserved for future use"]
@@ -4784,6 +4825,8 @@ pub struct PhysicalDeviceProperties {
 #[doc = "**Provided by**: [`VK_VERSION_1_1`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_1.html)"]
 #[doc = "<br>"]
 #[doc = "**Reference**: [`VkPhysicalDeviceProperties2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceProperties2.html)"]
+#[doc = "<br>"]
+#[doc = "**Extendable by**: [`VkPhysicalDeviceSubgroupProperties`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceSubgroupProperties.html)"]
 #[doc = "<br>"]
 #[doc = "**Extendable by**: [`VkPhysicalDeviceMeshShaderPropertiesEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceMeshShaderPropertiesEXT.html)"]
 #[doc = "<br>"]
@@ -7403,6 +7446,36 @@ pub struct PhysicalDeviceLimits {
     pub optimal_buffer_copy_offset_alignment: DeviceSize,
     pub optimal_buffer_copy_row_pitch_alignment: DeviceSize,
     pub non_coherent_atom_size: DeviceSize,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Limits"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure describing subgroup support for an implementation"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_1`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_1.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkPhysicalDeviceSubgroupProperties`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceSubgroupProperties.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```
+let physical_device_subgroup_properties = vk::PhysicalDeviceSubgroupProperties {
+    s_type: vk::StructureType::PhysicalDeviceSubgroupProperties,
+    p_next: null_mut(),
+    subgroup_size: todo!("u32"),
+    supported_stages: todo!("vk::ShaderStageFlags"),
+    supported_operations: todo!("vk::SubgroupFeatureFlags"),
+    quad_operations_in_all_stages: todo!("vk::Bool32"),
+};
+```"#]
+pub struct PhysicalDeviceSubgroupProperties {
+    pub s_type: StructureType,
+    pub p_next: *mut c_void,
+    pub subgroup_size: u32,
+    pub supported_stages: ShaderStageFlags,
+    pub supported_operations: SubgroupFeatureFlags,
+    pub quad_operations_in_all_stages: Bool32,
 }
 
 #[repr(C)]
