@@ -2019,6 +2019,78 @@ pub enum FrontFace {
 
 #[repr(i32)]
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[doc = "**Chapter**: The Framebuffer"]
+#[doc = "<br>"]
+#[doc = "**Description**: Framebuffer blending factors"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkBlendFactor`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkBlendFactor.html)"]
+pub enum BlendFactor {
+    #[doc = "**Translated from**: `VK_BLEND_FACTOR_ZERO`"]
+    Zero = 0,
+    #[doc = "**Translated from**: `VK_BLEND_FACTOR_ONE`"]
+    One = 1,
+    #[doc = "**Translated from**: `VK_BLEND_FACTOR_SRC_COLOR`"]
+    SrcColor = 2,
+    #[doc = "**Translated from**: `VK_BLEND_FACTOR_ONE_MINUS_SRC_COLOR`"]
+    OneMinusSrcColor = 3,
+    #[doc = "**Translated from**: `VK_BLEND_FACTOR_DST_COLOR`"]
+    DstColor = 4,
+    #[doc = "**Translated from**: `VK_BLEND_FACTOR_ONE_MINUS_DST_COLOR`"]
+    OneMinusDstColor = 5,
+    #[doc = "**Translated from**: `VK_BLEND_FACTOR_SRC_ALPHA`"]
+    SrcAlpha = 6,
+    #[doc = "**Translated from**: `VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA`"]
+    OneMinusSrcAlpha = 7,
+    #[doc = "**Translated from**: `VK_BLEND_FACTOR_DST_ALPHA`"]
+    DstAlpha = 8,
+    #[doc = "**Translated from**: `VK_BLEND_FACTOR_ONE_MINUS_DST_ALPHA`"]
+    OneMinusDstAlpha = 9,
+    #[doc = "**Translated from**: `VK_BLEND_FACTOR_CONSTANT_COLOR`"]
+    ConstantColor = 10,
+    #[doc = "**Translated from**: `VK_BLEND_FACTOR_ONE_MINUS_CONSTANT_COLOR`"]
+    OneMinusConstantColor = 11,
+    #[doc = "**Translated from**: `VK_BLEND_FACTOR_CONSTANT_ALPHA`"]
+    ConstantAlpha = 12,
+    #[doc = "**Translated from**: `VK_BLEND_FACTOR_ONE_MINUS_CONSTANT_ALPHA`"]
+    OneMinusConstantAlpha = 13,
+    #[doc = "**Translated from**: `VK_BLEND_FACTOR_SRC_ALPHA_SATURATE`"]
+    SrcAlphaSaturate = 14,
+    #[doc = "**Translated from**: `VK_BLEND_FACTOR_SRC1_COLOR`"]
+    Src1Color = 15,
+    #[doc = "**Translated from**: `VK_BLEND_FACTOR_ONE_MINUS_SRC1_COLOR`"]
+    OneMinusSrc1Color = 16,
+    #[doc = "**Translated from**: `VK_BLEND_FACTOR_SRC1_ALPHA`"]
+    Src1Alpha = 17,
+    #[doc = "**Translated from**: `VK_BLEND_FACTOR_ONE_MINUS_SRC1_ALPHA`"]
+    OneMinusSrc1Alpha = 18,
+}
+
+#[repr(i32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[doc = "**Chapter**: The Framebuffer"]
+#[doc = "<br>"]
+#[doc = "**Description**: Framebuffer blending operations"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkBlendOp`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkBlendOp.html)"]
+pub enum BlendOp {
+    #[doc = "**Translated from**: `VK_BLEND_OP_ADD`"]
+    Add = 0,
+    #[doc = "**Translated from**: `VK_BLEND_OP_SUBTRACT`"]
+    Subtract = 1,
+    #[doc = "**Translated from**: `VK_BLEND_OP_REVERSE_SUBTRACT`"]
+    ReverseSubtract = 2,
+    #[doc = "**Translated from**: `VK_BLEND_OP_MIN`"]
+    Min = 3,
+    #[doc = "**Translated from**: `VK_BLEND_OP_MAX`"]
+    Max = 4,
+}
+
+#[repr(i32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Formats"]
 #[doc = "<br>"]
 #[doc = "**Description**: Available image formats"]
@@ -4286,6 +4358,39 @@ pub type CullModeFlagBits = CullModeFlags;
 bitflags! {
     #[repr(C)]
     #[derive(Clone, Copy, PartialEq, Eq, Debug)]
+    #[doc = "**Chapter**: The Framebuffer"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Bitmask of VkColorComponentFlagBits"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`VkColorComponentFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkColorComponentFlags.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`VkColorComponentFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkColorComponentFlagBits.html)"]
+    pub struct ColorComponentFlags: u32 {
+        #[doc = "Translated from: `VK_COLOR_COMPONENT_R_BIT`"]
+        const R = 0b1;
+        #[doc = "Translated from: `VK_COLOR_COMPONENT_G_BIT`"]
+        const G = 0b10;
+        #[doc = "Translated from: `VK_COLOR_COMPONENT_B_BIT`"]
+        const B = 0b100;
+        #[doc = "Translated from: `VK_COLOR_COMPONENT_A_BIT`"]
+        const A = 0b1000;
+    }
+}
+
+#[doc = "**Chapter**: The Framebuffer"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask controlling which components are written to the framebuffer"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkColorComponentFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkColorComponentFlagBits.html)"]
+pub type ColorComponentFlagBits = ColorComponentFlags;
+
+bitflags! {
+    #[repr(C)]
+    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
     #[doc = "**Chapter**: Limits"]
     #[doc = "<br>"]
     #[doc = "**Description**: Bitmask of VkSampleCountFlagBits"]
@@ -6546,6 +6651,36 @@ pub struct Viewport {
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: The Framebuffer"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure specifying the color blend factors and operations for an attachment"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_EXT_extended_dynamic_state3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state3.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkColorBlendEquationEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkColorBlendEquationEXT.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```
+let color_blend_equation_ext = vk::ColorBlendEquationEXT {
+    src_color_blend_factor: todo!("vk::BlendFactor"),
+    dst_color_blend_factor: todo!("vk::BlendFactor"),
+    color_blend_op: todo!("vk::BlendOp"),
+    src_alpha_blend_factor: todo!("vk::BlendFactor"),
+    dst_alpha_blend_factor: todo!("vk::BlendFactor"),
+    alpha_blend_op: todo!("vk::BlendOp"),
+};
+```"#]
+pub struct ColorBlendEquationEXT {
+    pub src_color_blend_factor: BlendFactor,
+    pub dst_color_blend_factor: BlendFactor,
+    pub color_blend_op: BlendOp,
+    pub src_alpha_blend_factor: BlendFactor,
+    pub dst_alpha_blend_factor: BlendFactor,
+    pub alpha_blend_op: BlendOp,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
 #[doc = "**Chapter**: Sparse Resources"]
 #[doc = "<br>"]
 #[doc = "**Description**: Structure specifying physical device sparse memory properties"]
@@ -8492,6 +8627,48 @@ pub type CmdSetDepthCompareOp = unsafe extern "C" fn(
 pub type CmdSetDepthWriteEnable = unsafe extern "C" fn(
     command_buffer: CommandBuffer, //
     depth_write_enable: Bool32,    //
+);
+
+#[doc = "**Chapter**: The Framebuffer"]
+#[doc = "<br>"]
+#[doc = "**Description**: Specify the pname:blendEnable for each attachment dynamically for a command buffer"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_EXT_extended_dynamic_state3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state3.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkCmdSetColorBlendEnableEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetColorBlendEnableEXT.html)"]
+pub type CmdSetColorBlendEnableEXT = unsafe extern "C" fn(
+    command_buffer: CommandBuffer,        //
+    first_attachment: u32,                //
+    attachment_count: u32,                //
+    p_color_blend_enables: *const Bool32, //
+);
+
+#[doc = "**Chapter**: The Framebuffer"]
+#[doc = "<br>"]
+#[doc = "**Description**: Specify the blend factors and operations dynamically for a command buffer"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_EXT_extended_dynamic_state3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state3.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkCmdSetColorBlendEquationEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetColorBlendEquationEXT.html)"]
+pub type CmdSetColorBlendEquationEXT = unsafe extern "C" fn(
+    command_buffer: CommandBuffer,                         //
+    first_attachment: u32,                                 //
+    attachment_count: u32,                                 //
+    p_color_blend_equations: *const ColorBlendEquationEXT, //
+);
+
+#[doc = "**Chapter**: The Framebuffer"]
+#[doc = "<br>"]
+#[doc = "**Description**: Specify the color write masks for each attachment dynamically for a command buffer"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_EXT_extended_dynamic_state3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state3.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkCmdSetColorWriteMaskEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetColorWriteMaskEXT.html)"]
+pub type CmdSetColorWriteMaskEXT = unsafe extern "C" fn(
+    command_buffer: CommandBuffer,                   //
+    first_attachment: u32,                           //
+    attachment_count: u32,                           //
+    p_color_write_masks: *const ColorComponentFlags, //
 );
 
 #[doc = "**Chapter**: Dispatching Commands"]

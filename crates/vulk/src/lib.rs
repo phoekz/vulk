@@ -90,6 +90,10 @@
 //! - [`vk::CmdSetDepthTestEnable`] Set depth test enable dynamically for a command buffer
 //! - [`vk::CmdSetDepthCompareOp`] Set depth comparison operator dynamically for a command buffer
 //! - [`vk::CmdSetDepthWriteEnable`] Set depth write enable dynamically for a command buffer
+//! ## The Framebuffer
+//! - [`vk::CmdSetColorBlendEnableEXT`] Specify the pname:blendEnable for each attachment dynamically for a command buffer
+//! - [`vk::CmdSetColorBlendEquationEXT`] Specify the blend factors and operations dynamically for a command buffer
+//! - [`vk::CmdSetColorWriteMaskEXT`] Specify the color write masks for each attachment dynamically for a command buffer
 //! ## Dispatching Commands
 //! - [`vk::CmdDispatch`] Dispatch compute work items
 //! - [`vk::CmdDispatchIndirect`] Dispatch compute work items with indirect parameters

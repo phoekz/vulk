@@ -365,6 +365,9 @@ pub struct DeviceFunctions {
     pub cmd_set_depth_test_enable: vk::CmdSetDepthTestEnable,
     pub cmd_set_depth_compare_op: vk::CmdSetDepthCompareOp,
     pub cmd_set_depth_write_enable: vk::CmdSetDepthWriteEnable,
+    pub cmd_set_color_blend_enable_ext: vk::CmdSetColorBlendEnableEXT,
+    pub cmd_set_color_blend_equation_ext: vk::CmdSetColorBlendEquationEXT,
+    pub cmd_set_color_write_mask_ext: vk::CmdSetColorWriteMaskEXT,
     pub cmd_dispatch: vk::CmdDispatch,
     pub cmd_dispatch_indirect: vk::CmdDispatchIndirect,
 }
@@ -452,6 +455,9 @@ impl Device {
                 cmd_set_depth_test_enable: std::mem::transmute(load(b"vkCmdSetDepthTestEnable\0")?),
                 cmd_set_depth_compare_op: std::mem::transmute(load(b"vkCmdSetDepthCompareOp\0")?),
                 cmd_set_depth_write_enable: std::mem::transmute(load(b"vkCmdSetDepthWriteEnable\0")?),
+                cmd_set_color_blend_enable_ext: std::mem::transmute(load(b"vkCmdSetColorBlendEnableEXT\0")?),
+                cmd_set_color_blend_equation_ext: std::mem::transmute(load(b"vkCmdSetColorBlendEquationEXT\0")?),
+                cmd_set_color_write_mask_ext: std::mem::transmute(load(b"vkCmdSetColorWriteMaskEXT\0")?),
                 cmd_dispatch: std::mem::transmute(load(b"vkCmdDispatch\0")?),
                 cmd_dispatch_indirect: std::mem::transmute(load(b"vkCmdDispatchIndirect\0")?),
             },
@@ -1376,6 +1382,42 @@ impl Device {
     #[doc = "**Reference**: [`vkCmdSetDepthWriteEnable`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetDepthWriteEnable.html)"]
     pub unsafe fn cmd_set_depth_write_enable(&self, command_buffer: vk::CommandBuffer, depth_write_enable: vk::Bool32) {
         (self.fns.cmd_set_depth_write_enable)(command_buffer, depth_write_enable);
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: The Framebuffer"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Specify the pname:blendEnable for each attachment dynamically for a command buffer"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_EXT_extended_dynamic_state3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state3.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkCmdSetColorBlendEnableEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetColorBlendEnableEXT.html)"]
+    pub unsafe fn cmd_set_color_blend_enable_ext(&self, command_buffer: vk::CommandBuffer, first_attachment: u32, attachment_count: u32, p_color_blend_enables: *const vk::Bool32) {
+        (self.fns.cmd_set_color_blend_enable_ext)(command_buffer, first_attachment, attachment_count, p_color_blend_enables);
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: The Framebuffer"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Specify the blend factors and operations dynamically for a command buffer"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_EXT_extended_dynamic_state3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state3.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkCmdSetColorBlendEquationEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetColorBlendEquationEXT.html)"]
+    pub unsafe fn cmd_set_color_blend_equation_ext(&self, command_buffer: vk::CommandBuffer, first_attachment: u32, attachment_count: u32, p_color_blend_equations: *const vk::ColorBlendEquationEXT) {
+        (self.fns.cmd_set_color_blend_equation_ext)(command_buffer, first_attachment, attachment_count, p_color_blend_equations);
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: The Framebuffer"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Specify the color write masks for each attachment dynamically for a command buffer"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_EXT_extended_dynamic_state3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_extended_dynamic_state3.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkCmdSetColorWriteMaskEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdSetColorWriteMaskEXT.html)"]
+    pub unsafe fn cmd_set_color_write_mask_ext(&self, command_buffer: vk::CommandBuffer, first_attachment: u32, attachment_count: u32, p_color_write_masks: *const vk::ColorComponentFlags) {
+        (self.fns.cmd_set_color_write_mask_ext)(command_buffer, first_attachment, attachment_count, p_color_write_masks);
     }
 
     #[inline]
