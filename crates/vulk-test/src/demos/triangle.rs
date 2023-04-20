@@ -172,12 +172,14 @@ struct RenderTargets {
 unsafe fn create_render_targets(gpu: &Gpu) -> Result<RenderTargets> {
     let color = resource::Image2d::create(
         gpu,
-        DEFAULT_RENDER_TARGET_COLOR_FORMAT,
-        DEFAULT_RENDER_TARGET_WIDTH,
-        DEFAULT_RENDER_TARGET_HEIGHT,
-        vk::SampleCountFlagBits::NUM_1,
-        vk::ImageUsageFlags::COLOR_ATTACHMENT | vk::ImageUsageFlags::TRANSFER_SRC,
-        vk::MemoryPropertyFlags::DEVICE_LOCAL,
+        &resource::Image2dCreateInfo {
+            format: DEFAULT_RENDER_TARGET_COLOR_FORMAT,
+            width: DEFAULT_RENDER_TARGET_WIDTH,
+            height: DEFAULT_RENDER_TARGET_HEIGHT,
+            samples: vk::SampleCountFlagBits::NUM_1,
+            usage: vk::ImageUsageFlags::COLOR_ATTACHMENT | vk::ImageUsageFlags::TRANSFER_SRC,
+            property_flags: vk::MemoryPropertyFlags::DEVICE_LOCAL,
+        },
     )?;
     Ok(RenderTargets { color })
 }

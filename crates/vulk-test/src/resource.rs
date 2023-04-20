@@ -158,7 +158,7 @@ impl<T> Buffer<T> {
 }
 
 //
-// Image
+// Texture
 //
 
 #[derive(Debug)]
@@ -177,6 +177,16 @@ pub struct Image2d {
     pub descriptor: descriptor::Descriptor,
 }
 
+#[derive(Debug)]
+pub struct Image2dCreateInfo {
+    pub format: vk::Format,
+    pub width: u32,
+    pub height: u32,
+    pub samples: vk::SampleCountFlagBits,
+    pub usage: vk::ImageUsageFlags,
+    pub property_flags: vk::MemoryPropertyFlags,
+}
+
 impl Image2d {
     pub unsafe fn create(
         gpu @ Gpu {
@@ -184,12 +194,7 @@ impl Image2d {
             physical_device,
             ..
         }: &Gpu,
-        format: vk::Format,
-        width: u32,
-        height: u32,
-        samples: vk::SampleCountFlagBits,
-        usage: vk::ImageUsageFlags,
-        property_flags: vk::MemoryPropertyFlags,
+        create_info: &Image2dCreateInfo,
     ) -> Result<Self> {
         // Image info.
         let image_create_info = vk::ImageCreateInfo {
@@ -197,17 +202,17 @@ impl Image2d {
             p_next: null(),
             flags: vk::ImageCreateFlags::empty(),
             image_type: vk::ImageType::Type2d,
-            format,
+            format: create_info.format,
             extent: vk::Extent3D {
-                width,
-                height,
+                width: create_info.width,
+                height: create_info.height,
                 depth: 1,
             },
             mip_levels: 1,
             array_layers: 1,
-            samples,
+            samples: create_info.samples,
             tiling: vk::ImageTiling::Optimal,
-            usage,
+            usage: create_info.usage,
             sharing_mode: vk::SharingMode::Exclusive,
             queue_family_index_count: 0,
             p_queue_family_indices: null(),
@@ -244,7 +249,7 @@ impl Image2d {
             allocation_size: memory_requirements.size,
             memory_type_index: memory_type_index(
                 &physical_device.memory_properties,
-                property_flags,
+                create_info.property_flags,
                 &memory_requirements,
             ),
         };
@@ -279,7 +284,7 @@ impl Image2d {
                 a: vk::ComponentSwizzle::A,
             },
             subresource_range: vk::ImageSubresourceRange {
-                aspect_mask: format.aspect_mask(),
+                aspect_mask: create_info.format.aspect_mask(),
                 base_mip_level: 0,
                 level_count: 1,
                 base_array_layer: 0,
@@ -445,21 +450,21 @@ impl Sampler {
 pub unsafe fn multi_upload_images(
     gpu @ Gpu { device, queue, .. }: &Gpu,
     images: &[Image2d],
-    image_datas: &[Vec<u8>],
+    datas: &[Vec<u8>],
 ) -> Result<()> {
     // Validation.
     assert!(!images.is_empty());
-    assert!(!image_datas.is_empty());
-    assert_eq!(images.len(), image_datas.len());
+    assert!(!datas.is_empty());
+    assert_eq!(images.len(), datas.len());
     assert!(images.iter().all(|img| img.byte_size() > 0));
-    assert!(image_datas.iter().all(|p| !p.is_empty()));
+    assert!(datas.iter().all(|p| !p.is_empty()));
     assert!(images
         .iter()
-        .zip(image_datas)
+        .zip(datas)
         .all(|(img, p)| img.byte_size() as usize == p.len()));
 
     // Staging buffer.
-    let byte_size = image_datas.iter().map(Vec::len).sum::<usize>();
+    let byte_size = datas.iter().map(Vec::len).sum::<usize>();
     let staging = resource::Buffer::<u8>::create(
         gpu,
         byte_size,
@@ -467,7 +472,7 @@ pub unsafe fn multi_upload_images(
         vk::MemoryPropertyFlags::HOST_VISIBLE | vk::MemoryPropertyFlags::HOST_COHERENT,
     )?;
     let mut dst_offset = 0;
-    for image_data in image_datas {
+    for image_data in datas {
         // Copy.
         std::ptr::copy_nonoverlapping(
             image_data.as_ptr(),
@@ -485,7 +490,7 @@ pub unsafe fn multi_upload_images(
 
     // Transfer commands.
     let mut src_offset = 0;
-    for (image, image_data) in images.iter().zip(image_datas) {
+    for (image, image_data) in images.iter().zip(datas) {
         // Transition Undefined -> TransferDstOptimal.
         device.cmd_pipeline_barrier2(
             cmd,
