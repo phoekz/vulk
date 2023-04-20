@@ -471,7 +471,7 @@ unsafe fn create_device(
         descriptor_binding_variable_descriptor_count: vk::FALSE,
         runtime_descriptor_array: vk::FALSE,
         sampler_filter_minmax: vk::FALSE,
-        scalar_block_layout: vk::FALSE,
+        scalar_block_layout: vk::TRUE,
         imageless_framebuffer: vk::FALSE,
         uniform_buffer_standard_layout: vk::FALSE,
         shader_subgroup_extended_types: vk::FALSE,

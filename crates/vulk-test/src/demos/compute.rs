@@ -202,8 +202,9 @@ unsafe fn create_shaders(
         shader::ShaderType::Compute,
         r#"
             #version 460 core
+            #extension GL_EXT_scalar_block_layout : require
 
-            layout (local_size_x = 1) in;
+            layout(local_size_x = 1) in;
 
             struct IndirectCommand {
                 uint x;
@@ -211,7 +212,7 @@ unsafe fn create_shaders(
                 uint z;
             };
 
-            layout (set = 0, binding = 0) buffer IndirectCommands {
+            layout(scalar, set = 0, binding = 0) buffer IndirectCommands {
                 IndirectCommand data[];
             } indirect_commands;
 
@@ -228,10 +229,11 @@ unsafe fn create_shaders(
         shader::ShaderType::Compute,
         r#"
             #version 460 core
+            #extension GL_EXT_scalar_block_layout : require
 
-            layout (local_size_x_id = 0) in;
+            layout(local_size_x_id = 0) in;
 
-            layout (set = 0, binding = 1) buffer Values {
+            layout(scalar, set = 0, binding = 1) buffer Values {
                 uint data[];
             } values;
 

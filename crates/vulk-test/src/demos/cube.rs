@@ -302,6 +302,7 @@ unsafe fn create_shaders(gpu: &Gpu, descriptors: &Descriptors) -> Result<shader:
         r#"
             #extension GL_EXT_mesh_shader : require
             #extension GL_EXT_nonuniform_qualifier : require
+            #extension GL_EXT_scalar_block_layout : require
 
             struct MeshVertex {
                 vec2 texcoord;
@@ -335,7 +336,7 @@ unsafe fn create_shaders(gpu: &Gpu, descriptors: &Descriptors) -> Result<shader:
             #define MAX_VERTICES 36
             #define MAX_PRIMITIVES 12
 
-            layout(push_constant) uniform PushBuffer {
+            layout(scalar, push_constant) uniform PushBuffer {
                 mat4 transform;
             };
             layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
