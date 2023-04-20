@@ -162,6 +162,16 @@ impl<T> Buffer<T> {
 //
 
 #[derive(Debug)]
+pub struct Image2dCreateInfo {
+    pub format: vk::Format,
+    pub width: u32,
+    pub height: u32,
+    pub samples: vk::SampleCountFlagBits,
+    pub usage: vk::ImageUsageFlags,
+    pub property_flags: vk::MemoryPropertyFlags,
+}
+
+#[derive(Debug)]
 pub struct Image2d {
     pub image_create_info: vk::ImageCreateInfo,
     pub image: vk::Image,
@@ -175,16 +185,6 @@ pub struct Image2d {
     pub image_view_create_info: vk::ImageViewCreateInfo,
 
     pub descriptor: descriptor::Descriptor,
-}
-
-#[derive(Debug)]
-pub struct Image2dCreateInfo {
-    pub format: vk::Format,
-    pub width: u32,
-    pub height: u32,
-    pub samples: vk::SampleCountFlagBits,
-    pub usage: vk::ImageUsageFlags,
-    pub property_flags: vk::MemoryPropertyFlags,
 }
 
 impl Image2d {
@@ -384,18 +384,18 @@ impl Image2d {
 //
 
 #[derive(Debug)]
-pub struct Sampler {
-    pub sampler: vk::Sampler,
-    pub sampler_create_info: vk::SamplerCreateInfo,
-    pub descriptor: descriptor::Descriptor,
-}
-
-#[derive(Debug)]
 pub struct SamplerCreateInfo {
     pub mag_filter: vk::Filter,
     pub min_filter: vk::Filter,
     pub mipmap_mode: vk::SamplerMipmapMode,
     pub address_mode: vk::SamplerAddressMode,
+}
+
+#[derive(Debug)]
+pub struct Sampler {
+    pub sampler: vk::Sampler,
+    pub sampler_create_info: vk::SamplerCreateInfo,
+    pub descriptor: descriptor::Descriptor,
 }
 
 impl Sampler {
