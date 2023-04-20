@@ -254,7 +254,7 @@ unsafe fn create_descriptors(
 
     // Push constants.
     let push_constant_ranges = vk::PushConstantRange {
-        stage_flags: vk::ShaderStageFlags::ALL_GRAPHICS,
+        stage_flags: vk::ShaderStageFlags::MESH_EXT,
         offset: 0,
         size: size_of::<Mat4>() as _,
     };
