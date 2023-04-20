@@ -17,6 +17,7 @@ heck = "0.4.1"
 imagelib = { version = "0.24.6", default-features = false, features = [
     "png",
 ], package = "image" }
+imgui = "0.11.0"
 libloading = "0.8.0"
 log = "0.4.17"
 palette = "0.7.1"
