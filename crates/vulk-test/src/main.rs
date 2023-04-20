@@ -67,6 +67,7 @@ fn main() -> Result<()> {
         run_demo::<demos::ClearDemo>(&gpu)?;
         run_demo::<demos::TriangleDemo>(&gpu)?;
         run_demo::<demos::CubeDemo>(&gpu)?;
+        run_demo::<demos::GuiDemo>(&gpu)?;
         gpu.destroy();
     };
 
