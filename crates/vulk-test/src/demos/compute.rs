@@ -71,10 +71,15 @@ impl DemoCallbacks for Demo {
 type ComputeBuffer = resource::Buffer<u32>;
 
 unsafe fn create_compute_buffer(gpu: &Gpu) -> Result<ComputeBuffer> {
-    let element_count = 8;
-    let usage = vk::BufferUsageFlags::STORAGE_BUFFER;
-    let flags = vk::MemoryPropertyFlags::HOST_VISIBLE | vk::MemoryPropertyFlags::HOST_COHERENT;
-    let buffer = ComputeBuffer::create(gpu, element_count, usage, flags)?;
+    let buffer = ComputeBuffer::create(
+        gpu,
+        &resource::BufferCreateInfo {
+            element_count: 8,
+            usage: vk::BufferUsageFlags::STORAGE_BUFFER,
+            property_flags: vk::MemoryPropertyFlags::HOST_VISIBLE
+                | vk::MemoryPropertyFlags::HOST_COHERENT,
+        },
+    )?;
     Ok(buffer)
 }
 
@@ -89,10 +94,15 @@ struct IndirectDispatch {
 type IndirectBuffer = resource::Buffer<IndirectDispatch>;
 
 unsafe fn create_indirect_buffer(gpu: &Gpu) -> Result<IndirectBuffer> {
-    let element_count = 1;
-    let usage = vk::BufferUsageFlags::STORAGE_BUFFER | vk::BufferUsageFlags::INDIRECT_BUFFER;
-    let flags = vk::MemoryPropertyFlags::HOST_VISIBLE | vk::MemoryPropertyFlags::HOST_COHERENT;
-    let buffer = IndirectBuffer::create(gpu, element_count, usage, flags)?;
+    let buffer = IndirectBuffer::create(
+        gpu,
+        &resource::BufferCreateInfo {
+            element_count: 1,
+            usage: vk::BufferUsageFlags::STORAGE_BUFFER | vk::BufferUsageFlags::INDIRECT_BUFFER,
+            property_flags: vk::MemoryPropertyFlags::HOST_VISIBLE
+                | vk::MemoryPropertyFlags::HOST_COHERENT,
+        },
+    )?;
     Ok(buffer)
 }
 
@@ -141,12 +151,15 @@ unsafe fn create_descriptors(
     )?;
 
     // Descriptor buffer.
-    let buffer = {
-        let buffer_size = device.get_descriptor_set_layout_size_ext(descriptor_set_layout);
-        let usage = vk::BufferUsageFlags::STORAGE_BUFFER;
-        let flags = vk::MemoryPropertyFlags::HOST_VISIBLE | vk::MemoryPropertyFlags::HOST_COHERENT;
-        DescriptorBuffer::create(gpu, buffer_size as _, usage, flags)?
-    };
+    let buffer = DescriptorBuffer::create(
+        gpu,
+        &resource::BufferCreateInfo {
+            element_count: device.get_descriptor_set_layout_size_ext(descriptor_set_layout) as _,
+            usage: vk::BufferUsageFlags::STORAGE_BUFFER,
+            property_flags: vk::MemoryPropertyFlags::HOST_VISIBLE
+                | vk::MemoryPropertyFlags::HOST_COHERENT,
+        },
+    )?;
 
     // Descriptors.
     {

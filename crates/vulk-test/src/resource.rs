@@ -5,6 +5,13 @@ use super::*;
 //
 
 #[derive(Debug)]
+pub struct BufferCreateInfo {
+    pub element_count: usize,
+    pub usage: vk::BufferUsageFlags,
+    pub property_flags: vk::MemoryPropertyFlags,
+}
+
+#[derive(Debug)]
 pub struct Buffer<T> {
     pub buffer_create_info: vk::BufferCreateInfo,
     pub buffer: vk::Buffer,
@@ -21,22 +28,22 @@ pub struct Buffer<T> {
     pub descriptor: descriptor::Descriptor,
 }
 
-impl<T> Buffer<T> {
-    pub unsafe fn create(
+impl<T> GpuResource for Buffer<T> {
+    type CreateInfo = BufferCreateInfo;
+
+    unsafe fn create(
         gpu @ Gpu {
             device,
             physical_device,
             ..
         }: &Gpu,
-        element_count: usize,
-        usage: vk::BufferUsageFlags,
-        flags: vk::MemoryPropertyFlags,
+        create_info: &Self::CreateInfo,
     ) -> Result<Self> {
         // Size.
-        let size = (element_count * size_of::<T>()) as vk::DeviceSize;
+        let size = (create_info.element_count * size_of::<T>()) as vk::DeviceSize;
 
         // Force SHADER_DEVICE_ADDRESS flag.
-        let usage = usage | vk::BufferUsageFlags::SHADER_DEVICE_ADDRESS;
+        let usage = create_info.usage | vk::BufferUsageFlags::SHADER_DEVICE_ADDRESS;
 
         // Buffer info.
         let buffer_create_info = vk::BufferCreateInfo {
@@ -87,7 +94,7 @@ impl<T> Buffer<T> {
             allocation_size: memory_requirements.size,
             memory_type_index: memory_type_index(
                 &physical_device.memory_properties,
-                flags,
+                create_info.property_flags,
                 &memory_requirements,
             ),
         };
@@ -144,16 +151,28 @@ impl<T> Buffer<T> {
             bind_buffer_memory_info,
 
             device_address,
-            element_count,
+            element_count: create_info.element_count,
             ptr,
 
             descriptor,
         })
     }
 
-    pub unsafe fn destroy(&self, Gpu { device, .. }: &Gpu) {
+    unsafe fn destroy(&self, Gpu { device, .. }: &Gpu) {
         device.destroy_buffer(self.buffer);
         device.free_memory(self.device_memory);
+    }
+}
+
+impl<T> Buffer<T> {
+    // TODO: move to descriptor.rs
+    pub unsafe fn descriptor_buffer_binding_info(&self) -> vk::DescriptorBufferBindingInfoEXT {
+        vk::DescriptorBufferBindingInfoEXT {
+            s_type: vk::StructureType::DescriptorBufferBindingInfoEXT,
+            p_next: null_mut(),
+            address: self.device_address,
+            usage: self.buffer_create_info.usage,
+        }
     }
 }
 
@@ -187,14 +206,16 @@ pub struct Image2d {
     pub descriptor: descriptor::Descriptor,
 }
 
-impl Image2d {
-    pub unsafe fn create(
+impl GpuResource for Image2d {
+    type CreateInfo = Image2dCreateInfo;
+
+    unsafe fn create(
         gpu @ Gpu {
             device,
             physical_device,
             ..
         }: &Gpu,
-        create_info: &Image2dCreateInfo,
+        create_info: &Self::CreateInfo,
     ) -> Result<Self> {
         // Image info.
         let image_create_info = vk::ImageCreateInfo {
@@ -318,12 +339,14 @@ impl Image2d {
         })
     }
 
-    pub unsafe fn destroy(&self, Gpu { device, .. }: &Gpu) {
+    unsafe fn destroy(&self, Gpu { device, .. }: &Gpu) {
         device.destroy_image_view(self.image_view);
         device.destroy_image(self.image);
         device.free_memory(self.device_memory);
     }
+}
 
+impl Image2d {
     pub unsafe fn format(&self) -> vk::Format {
         self.image_create_info.format
     }
@@ -398,10 +421,12 @@ pub struct Sampler {
     pub descriptor: descriptor::Descriptor,
 }
 
-impl Sampler {
-    pub unsafe fn create(
+impl GpuResource for Sampler {
+    type CreateInfo = SamplerCreateInfo;
+
+    unsafe fn create(
         gpu @ Gpu { device, .. }: &Gpu,
-        create_info: &SamplerCreateInfo,
+        create_info: &Self::CreateInfo,
     ) -> Result<Self> {
         // Sampler info.
         let sampler_create_info = vk::SamplerCreateInfo {
@@ -438,7 +463,7 @@ impl Sampler {
         })
     }
 
-    pub unsafe fn destroy(&self, Gpu { device, .. }: &Gpu) {
+    unsafe fn destroy(&self, Gpu { device, .. }: &Gpu) {
         device.destroy_sampler(self.sampler);
     }
 }
@@ -467,9 +492,12 @@ pub unsafe fn multi_upload_images(
     let byte_size = datas.iter().map(Vec::len).sum::<usize>();
     let staging = resource::Buffer::<u8>::create(
         gpu,
-        byte_size,
-        vk::BufferUsageFlags::TRANSFER_SRC,
-        vk::MemoryPropertyFlags::HOST_VISIBLE | vk::MemoryPropertyFlags::HOST_COHERENT,
+        &BufferCreateInfo {
+            element_count: byte_size,
+            usage: vk::BufferUsageFlags::TRANSFER_SRC,
+            property_flags: vk::MemoryPropertyFlags::HOST_VISIBLE
+                | vk::MemoryPropertyFlags::HOST_COHERENT,
+        },
     )?;
     let mut dst_offset = 0;
     for image_data in datas {

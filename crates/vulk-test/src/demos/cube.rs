@@ -222,10 +222,15 @@ unsafe fn create_descriptors(
 
     // Descriptor buffer.
     let images_buffer = {
-        let buffer_size = device.get_descriptor_set_layout_size_ext(images_set_layout);
-        let usage = vk::BufferUsageFlags::RESOURCE_DESCRIPTOR_BUFFER_EXT;
-        let flags = vk::MemoryPropertyFlags::HOST_VISIBLE | vk::MemoryPropertyFlags::DEVICE_LOCAL;
-        let buffer = DescriptorBuffer::create(gpu, buffer_size as _, usage, flags)?;
+        let buffer = DescriptorBuffer::create(
+            gpu,
+            &resource::BufferCreateInfo {
+                element_count: device.get_descriptor_set_layout_size_ext(images_set_layout) as _,
+                usage: vk::BufferUsageFlags::RESOURCE_DESCRIPTOR_BUFFER_EXT,
+                property_flags: vk::MemoryPropertyFlags::HOST_VISIBLE
+                    | vk::MemoryPropertyFlags::DEVICE_LOCAL,
+            },
+        )?;
         let mut dst_offset = 0;
         for image in &textures.images {
             std::ptr::copy_nonoverlapping(
@@ -238,10 +243,15 @@ unsafe fn create_descriptors(
         buffer
     };
     let samplers_buffer = {
-        let buffer_size = device.get_descriptor_set_layout_size_ext(samplers_set_layout);
-        let usage = vk::BufferUsageFlags::SAMPLER_DESCRIPTOR_BUFFER_EXT;
-        let flags = vk::MemoryPropertyFlags::HOST_VISIBLE | vk::MemoryPropertyFlags::DEVICE_LOCAL;
-        let buffer = DescriptorBuffer::create(gpu, buffer_size as _, usage, flags)?;
+        let buffer = DescriptorBuffer::create(
+            gpu,
+            &resource::BufferCreateInfo {
+                element_count: device.get_descriptor_set_layout_size_ext(samplers_set_layout) as _,
+                usage: vk::BufferUsageFlags::SAMPLER_DESCRIPTOR_BUFFER_EXT,
+                property_flags: vk::MemoryPropertyFlags::HOST_VISIBLE
+                    | vk::MemoryPropertyFlags::DEVICE_LOCAL,
+            },
+        )?;
         let mut dst_offset = 0;
         for sampler in &textures.samplers {
             std::ptr::copy_nonoverlapping(
@@ -521,9 +531,11 @@ struct Output {
 unsafe fn create_output(gpu: &Gpu) -> Result<Output> {
     let buffer = OutputBuffer::create(
         gpu,
-        DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE as _,
-        vk::BufferUsageFlags::TRANSFER_DST,
-        vk::MemoryPropertyFlags::HOST_VISIBLE,
+        &resource::BufferCreateInfo {
+            element_count: DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE as _,
+            usage: vk::BufferUsageFlags::TRANSFER_DST,
+            property_flags: vk::MemoryPropertyFlags::HOST_VISIBLE,
+        },
     )?;
     Ok(Output { buffer })
 }

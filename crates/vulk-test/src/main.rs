@@ -101,6 +101,18 @@ where
 }
 
 //
+// Gpu resources
+//
+
+trait GpuResource {
+    type CreateInfo;
+    unsafe fn create(gpu: &Gpu, create_info: &Self::CreateInfo) -> Result<Self>
+    where
+        Self: Sized;
+    unsafe fn destroy(&self, gpu: &Gpu);
+}
+
+//
 // Utilities
 //
 

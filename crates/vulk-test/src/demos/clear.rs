@@ -89,9 +89,11 @@ struct Output {
 unsafe fn create_output(gpu: &Gpu) -> Result<Output> {
     let buffer = OutputBuffer::create(
         gpu,
-        DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE as _,
-        vk::BufferUsageFlags::TRANSFER_DST,
-        vk::MemoryPropertyFlags::HOST_VISIBLE,
+        &resource::BufferCreateInfo {
+            element_count: DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE as _,
+            usage: vk::BufferUsageFlags::TRANSFER_DST,
+            property_flags: vk::MemoryPropertyFlags::HOST_VISIBLE,
+        },
     )?;
     Ok(Output { buffer })
 }
