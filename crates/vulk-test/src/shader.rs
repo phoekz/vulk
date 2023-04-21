@@ -126,7 +126,11 @@ impl GpuResource for Shader {
                 p_next: null(),
                 flags: vk::ShaderCreateFlagBitsEXT::LinkStageEXT.into(),
                 stage: spirv.ty.shader_stage(),
-                next_stage: spirv.ty.next_shader_stage().unwrap_or(zeroed()).into(),
+                next_stage: if let Some(next_stage) = spirv.ty.next_shader_stage() {
+                    next_stage.into()
+                } else {
+                    zeroed()
+                },
                 code_type: vk::ShaderCodeTypeEXT::SpirvEXT,
                 code_size: spirv.code.len(),
                 p_code: spirv.code.as_ptr().cast(),
