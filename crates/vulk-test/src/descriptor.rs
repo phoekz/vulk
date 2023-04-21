@@ -74,7 +74,7 @@ impl Descriptor {
         )
     }
 
-    pub(crate) unsafe fn create_sampled_image(
+    pub unsafe fn create_sampled_image(
         gpu: &Gpu,
         image_view: vk::ImageView,
         image_layout: vk::ImageLayout,
@@ -92,7 +92,7 @@ impl Descriptor {
         )
     }
 
-    pub(crate) unsafe fn create_sampler(gpu: &Gpu, sampler: vk::Sampler) -> Self {
+    pub unsafe fn create_sampler(gpu: &Gpu, sampler: vk::Sampler) -> Self {
         Self::create(
             gpu,
             vk::DescriptorType::Sampler,

@@ -74,13 +74,16 @@ unsafe fn get_timestamp_calibration(
     device: &vulk::Device,
 ) -> Result<TimestampCalibration> {
     // Check support.
-    let time_domains = vulk::read_to_vec(|count, ptr| {
-        instance.get_physical_device_calibrateable_time_domains_ext(
-            physical_device.handle,
-            count,
-            ptr,
-        )
-    })?;
+    let time_domains = vulk::read_to_vec(
+        |count, ptr| {
+            instance.get_physical_device_calibrateable_time_domains_ext(
+                physical_device.handle,
+                count,
+                ptr,
+            )
+        },
+        None,
+    )?;
     let supports_host_domain = time_domains.iter().any(|td| {
         matches!(
             *td,
@@ -292,8 +295,10 @@ unsafe fn create_debug_utils_messenger(
 
 unsafe fn create_physical_device(instance: &vulk::Instance) -> Result<PhysicalDevice> {
     // Find physical devices.
-    let physical_devices =
-        vulk::read_to_vec(|count, ptr| instance.enumerate_physical_devices(count, ptr))?;
+    let physical_devices = vulk::read_to_vec(
+        |count, ptr| instance.enumerate_physical_devices(count, ptr),
+        None,
+    )?;
     info!("Found {} physical devices", physical_devices.len());
 
     // Pick a physical device.
@@ -324,28 +329,13 @@ unsafe fn create_physical_device(instance: &vulk::Instance) -> Result<PhysicalDe
     descriptor::assert_descriptor_sizes(&descriptor_buffer_properties);
 
     // Queue family properties.
-    let queue_family_properties = {
-        let mut queue_family_property_count = 0;
-        instance.get_physical_device_queue_family_properties2(
-            physical_device,
-            &mut queue_family_property_count,
-            null_mut(),
-        );
-        let mut queue_family_properties = vec![
-            vk::QueueFamilyProperties2 {
-                s_type: vk::StructureType::QueueFamilyProperties2,
-                p_next: null_mut(),
-                queue_family_properties: zeroed()
-            };
-            queue_family_property_count as _
-        ];
-        instance.get_physical_device_queue_family_properties2(
-            physical_device,
-            &mut queue_family_property_count,
-            queue_family_properties.as_mut_ptr(),
-        );
-        queue_family_properties
-    };
+    let queue_family_properties = vulk::read_to_vec(
+        |a, b| {
+            instance.get_physical_device_queue_family_properties2(physical_device, a, b);
+            Ok(())
+        },
+        Some(vk::StructureType::QueueFamilyProperties2),
+    )?;
 
     // Memory properties.
     let mut physical_device_memory_properties2 = vk::PhysicalDeviceMemoryProperties2 {

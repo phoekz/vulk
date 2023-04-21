@@ -152,14 +152,39 @@ pub enum Error {
 // Utilities
 //
 
-pub unsafe fn read_to_vec<F, T>(f: F) -> Result<Vec<T>, Error>
+pub unsafe fn read_to_vec<F, T>(f: F, s_type: Option<vk::StructureType>) -> Result<Vec<T>, Error>
 where
     F: Fn(*mut u32, *mut T) -> Result<(), Error>,
 {
-    let mut len = 0_u32;
-    f(&mut len, std::ptr::null_mut())?;
-    let mut vec = Vec::with_capacity(len as _);
-    f(&mut len, vec.as_mut_ptr())?;
-    vec.set_len(len as _);
+    use std::alloc::alloc_zeroed;
+    use std::alloc::Layout;
+    use std::mem::size_of;
+    use std::mem::size_of_val;
+    use std::ptr::addr_of;
+
+    // Query the number of elements.
+    let mut len_u32 = 0_u32;
+    f(&mut len_u32, std::ptr::null_mut())?;
+    let len = len_u32 as usize;
+
+    // Allocate.
+    let layout = Layout::from_size_align(len * size_of::<T>(), 16).unwrap();
+    let ptr = alloc_zeroed(layout);
+
+    // Note: if the output type contains `s_type`, we have to write the
+    // structure type on each of the output elements.
+    if let Some(s_type) = s_type {
+        for i in 0..len {
+            let dst = ptr.add(i * size_of::<T>());
+            dst.copy_from(addr_of!(s_type).cast(), size_of_val(&s_type));
+        }
+    }
+
+    // Query elements.
+    f(&mut len_u32, ptr.cast())?;
+
+    // Build the Vec.
+    let vec = Vec::from_raw_parts(ptr.cast::<T>(), len, len);
+
     Ok(vec)
 }

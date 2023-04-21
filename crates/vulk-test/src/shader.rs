@@ -1,12 +1,12 @@
 use super::*;
 
-pub(crate) struct Compiler {
+pub struct Compiler {
     compiler: shaderc::Compiler,
     includes: HashMap<String, String>,
 }
 
 impl Compiler {
-    pub(crate) fn new() -> Result<Self> {
+    pub fn new() -> Result<Self> {
         use shaderc::Compiler;
         let compiler = Compiler::new().context("Creating shader compiler")?;
         Ok(Self {
@@ -15,14 +15,14 @@ impl Compiler {
         })
     }
 
-    pub(crate) fn include(&mut self, source_name: impl AsRef<str>, content: impl AsRef<str>) {
+    pub fn include(&mut self, source_name: impl AsRef<str>, content: impl AsRef<str>) {
         self.includes.insert(
             source_name.as_ref().to_string(),
             content.as_ref().to_string(),
         );
     }
 
-    pub(crate) fn compile(&self, shader_type: ShaderType, code: impl AsRef<str>) -> Result<SpirV> {
+    pub fn compile(&self, shader_type: ShaderType, code: impl AsRef<str>) -> Result<SpirV> {
         use shaderc::CompileOptions;
         use shaderc::OptimizationLevel;
         use shaderc::ResolvedInclude;
