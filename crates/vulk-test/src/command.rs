@@ -1,18 +1,23 @@
 use super::*;
 
+pub struct CommandsCreateInfo;
+
 pub struct Commands {
     pub command_pool: vk::CommandPool,
     pub command_buffer: vk::CommandBuffer,
     pub semaphore: vk::Semaphore,
 }
 
-impl Commands {
-    pub unsafe fn create(
+impl GpuResource for Commands {
+    type CreateInfo<'a> = CommandsCreateInfo;
+
+    unsafe fn create(
         Gpu {
             device,
             queue_family,
             ..
         }: &Gpu,
+        _: &Self::CreateInfo<'_>,
     ) -> Result<Self> {
         // Command pool.
         let command_pool = device.create_command_pool(
@@ -64,12 +69,14 @@ impl Commands {
         })
     }
 
-    pub unsafe fn destroy(&self, Gpu { device, .. }: &Gpu) {
+    unsafe fn destroy(&self, Gpu { device, .. }: &Gpu) {
         device.destroy_semaphore(self.semaphore);
         device.free_command_buffers(self.command_pool, 1, addr_of!(self.command_buffer).cast());
         device.destroy_command_pool(self.command_pool);
     }
+}
 
+impl Commands {
     pub unsafe fn begin(&self, Gpu { device, .. }: &Gpu) -> Result<vk::CommandBuffer> {
         device.reset_command_pool(self.command_pool, vk::CommandPoolResetFlags::empty())?;
         device.begin_command_buffer(

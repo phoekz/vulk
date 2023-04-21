@@ -504,7 +504,7 @@ pub unsafe fn multi_upload_images(
     }
 
     // Begin staging.
-    let commands = command::Commands::create(gpu)?;
+    let commands = command::Commands::create(gpu, &command::CommandsCreateInfo)?;
     let cmd = commands.begin(gpu)?;
 
     // Transfer commands.

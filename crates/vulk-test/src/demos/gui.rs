@@ -20,8 +20,8 @@ impl DemoCallbacks for Demo {
         Self: Sized,
     {
         let gui = GuiData::create();
-        let commands = command::Commands::create(gpu)?;
-        let queries = query::Queries::create(gpu)?;
+        let commands = command::Commands::create(gpu, &command::CommandsCreateInfo)?;
+        let queries = query::Queries::create(gpu, &query::QueriesCreateInfo)?;
         let geometry = Geometry::create(gpu, &gui)?;
         let textures = Textures::create(gpu, &gui)?;
         let descriptors = Descriptors::create(gpu, &geometry, &textures)?;

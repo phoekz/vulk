@@ -3,6 +3,9 @@ use std::mem::size_of_val;
 use super::*;
 
 #[derive(Debug)]
+pub struct QueriesCreateInfo;
+
+#[derive(Debug)]
 pub struct Queries {
     timestamp: vk::QueryPool,
     pipeline: vk::QueryPool,
@@ -10,13 +13,16 @@ pub struct Queries {
     timestamp_period: f32,
 }
 
-impl Queries {
-    pub unsafe fn create(
+impl GpuResource for Queries {
+    type CreateInfo<'a> = QueriesCreateInfo;
+
+    unsafe fn create(
         Gpu {
             device,
             physical_device,
             ..
         }: &Gpu,
+        _: &Self::CreateInfo<'_>,
     ) -> Result<Self> {
         let timestamp = device.create_query_pool(&vk::QueryPoolCreateInfo {
             s_type: vk::StructureType::QueryPoolCreateInfo,
@@ -59,12 +65,14 @@ impl Queries {
         })
     }
 
-    pub unsafe fn destroy(&self, Gpu { device, .. }: &Gpu) {
+    unsafe fn destroy(&self, Gpu { device, .. }: &Gpu) {
         device.destroy_query_pool(self.timestamp);
         device.destroy_query_pool(self.pipeline);
         device.destroy_query_pool(self.mesh_shader);
     }
+}
 
+impl Queries {
     pub unsafe fn begin(&self, Gpu { device, .. }: &Gpu, cmd: vk::CommandBuffer) {
         device.cmd_write_timestamp2(
             cmd,

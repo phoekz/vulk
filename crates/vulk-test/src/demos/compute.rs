@@ -18,8 +18,8 @@ impl DemoCallbacks for Demo {
     const NAME: &'static str = "compute";
 
     unsafe fn create(gpu: &Gpu) -> Result<Self> {
-        let commands = command::Commands::create(gpu)?;
-        let queries = query::Queries::create(gpu)?;
+        let commands = command::Commands::create(gpu, &command::CommandsCreateInfo)?;
+        let queries = query::Queries::create(gpu, &query::QueriesCreateInfo)?;
         let compute_buffer = create_compute_buffer(gpu)?;
         let indirect_buffer = create_indirect_buffer(gpu)?;
         let descriptors = create_descriptors(gpu, &compute_buffer, &indirect_buffer)?;

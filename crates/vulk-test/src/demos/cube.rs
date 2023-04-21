@@ -21,8 +21,8 @@ impl DemoCallbacks for Demo {
     where
         Self: Sized,
     {
-        let commands = command::Commands::create(gpu)?;
-        let queries = query::Queries::create(gpu)?;
+        let commands = command::Commands::create(gpu, &command::CommandsCreateInfo)?;
+        let queries = query::Queries::create(gpu, &query::QueriesCreateInfo)?;
         let textures = create_textures(gpu)?;
         let descriptors = create_descriptors(gpu, &textures)?;
         let shader = create_shaders(gpu, &descriptors)?;
