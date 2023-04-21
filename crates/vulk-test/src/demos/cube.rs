@@ -392,10 +392,12 @@ unsafe fn create_shaders(gpu: &Gpu, descriptors: &Descriptors) -> Result<shader:
 
     shader::Shader::create(
         gpu,
-        &[task_spirv, mesh_spirv, fragment_spirv],
-        &[descriptors.storage.set_layout()],
-        &[descriptors.push_constant_ranges],
-        None,
+        &shader::ShaderCreateInfo {
+            spirvs: &[task_spirv, mesh_spirv, fragment_spirv],
+            set_layouts: &[descriptors.storage.set_layout()],
+            push_constant_ranges: &[descriptors.push_constant_ranges],
+            specialization_info: None,
+        },
     )
 }
 

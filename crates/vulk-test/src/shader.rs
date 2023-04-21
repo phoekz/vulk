@@ -102,20 +102,24 @@ pub struct SpirV {
     pub code: Vec<u8>,
 }
 
+pub struct ShaderCreateInfo<'a> {
+    pub spirvs: &'a [SpirV],
+    pub set_layouts: &'a [vk::DescriptorSetLayout],
+    pub push_constant_ranges: &'a [vk::PushConstantRange],
+    pub specialization_info: Option<&'a vk::SpecializationInfo>,
+}
+
 pub struct Shader {
     stages: Vec<vk::ShaderStageFlagBits>,
     shaders: Vec<vk::ShaderEXT>,
 }
 
-impl Shader {
-    pub unsafe fn create(
-        Gpu { device, .. }: &Gpu,
-        spirvs: &[SpirV],
-        set_layouts: &[vk::DescriptorSetLayout],
-        push_constant_ranges: &[vk::PushConstantRange],
-        specialization_info: Option<&vk::SpecializationInfo>,
-    ) -> Result<Self> {
-        let create_infos = spirvs
+impl GpuResource for Shader {
+    type CreateInfo<'a> = ShaderCreateInfo<'a>;
+
+    unsafe fn create(Gpu { device, .. }: &Gpu, create_info: &Self::CreateInfo<'_>) -> Result<Self> {
+        let create_infos = create_info
+            .spirvs
             .iter()
             .map(|spirv| vk::ShaderCreateInfoEXT {
                 s_type: vk::StructureType::ShaderCreateInfoEXT,
@@ -127,36 +131,44 @@ impl Shader {
                 code_size: spirv.code.len(),
                 p_code: spirv.code.as_ptr().cast(),
                 p_name: b"main\0".as_ptr().cast(),
-                set_layout_count: set_layouts.len() as _,
-                p_set_layouts: set_layouts.as_ptr(),
-                push_constant_range_count: push_constant_ranges.len() as _,
-                p_push_constant_ranges: push_constant_ranges.as_ptr(),
-                p_specialization_info: if let Some(specialization_info) = specialization_info {
+                set_layout_count: create_info.set_layouts.len() as _,
+                p_set_layouts: create_info.set_layouts.as_ptr(),
+                push_constant_range_count: create_info.push_constant_ranges.len() as _,
+                p_push_constant_ranges: create_info.push_constant_ranges.as_ptr(),
+                p_specialization_info: if let Some(specialization_info) =
+                    create_info.specialization_info
+                {
                     specialization_info as *const _
                 } else {
                     null()
                 },
             })
             .collect::<Vec<_>>();
-        let mut shaders = Vec::with_capacity(spirvs.len());
+        let mut shaders = Vec::with_capacity(create_info.spirvs.len());
         device.create_shaders_ext(
             create_infos.len() as _,
             create_infos.as_ptr(),
             shaders.as_mut_ptr(),
         )?;
-        shaders.set_len(spirvs.len());
+        shaders.set_len(create_info.spirvs.len());
 
-        let stages = spirvs.iter().map(|spirv| spirv.ty.shader_stage()).collect();
+        let stages = create_info
+            .spirvs
+            .iter()
+            .map(|spirv| spirv.ty.shader_stage())
+            .collect();
 
         Ok(Self { stages, shaders })
     }
 
-    pub unsafe fn destroy(&self, Gpu { device, .. }: &Gpu) {
+    unsafe fn destroy(&self, Gpu { device, .. }: &Gpu) {
         for &shader in &self.shaders {
             device.destroy_shader_ext(shader);
         }
     }
+}
 
+impl Shader {
     pub unsafe fn bind(&self, Gpu { device, .. }: &Gpu, cmd: vk::CommandBuffer) {
         device.cmd_bind_shaders_ext(
             cmd,

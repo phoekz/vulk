@@ -154,10 +154,12 @@ unsafe fn create_shaders(gpu: &Gpu) -> Result<shader::Shader> {
 
     shader::Shader::create(
         gpu,
-        &[task_spirv, mesh_spirv, fragment_spirv],
-        &[],
-        &[],
-        None,
+        &shader::ShaderCreateInfo {
+            spirvs: &[task_spirv, mesh_spirv, fragment_spirv],
+            set_layouts: &[],
+            push_constant_ranges: &[],
+            specialization_info: None,
+        },
     )
 }
 

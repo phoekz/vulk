@@ -220,10 +220,12 @@ unsafe fn create_shaders(
     // Create shaders.
     let indirect_shader = shader::Shader::create(
         gpu,
-        &[indirect_spirv],
-        &[descriptors.storage.set_layout()],
-        &[],
-        None,
+        &shader::ShaderCreateInfo {
+            spirvs: &[indirect_spirv],
+            set_layouts: &[descriptors.storage.set_layout()],
+            push_constant_ranges: &[],
+            specialization_info: None,
+        },
     )?;
     let specialization_map_entry = vk::SpecializationMapEntry {
         constant_id: 0,
@@ -239,10 +241,12 @@ unsafe fn create_shaders(
     };
     let compute_shader = shader::Shader::create(
         gpu,
-        &[compute_spirv],
-        &[descriptors.storage.set_layout()],
-        &[],
-        Some(&specialization_info),
+        &shader::ShaderCreateInfo {
+            spirvs: &[compute_spirv],
+            set_layouts: &[descriptors.storage.set_layout()],
+            push_constant_ranges: &[],
+            specialization_info: Some(&specialization_info),
+        },
     )?;
 
     Ok((indirect_shader, compute_shader))
