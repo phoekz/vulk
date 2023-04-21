@@ -77,7 +77,7 @@ impl Commands {
             &(vk::CommandBufferBeginInfo {
                 s_type: vk::StructureType::CommandBufferBeginInfo,
                 p_next: null(),
-                flags: vk::CommandBufferUsageFlags::ONE_TIME_SUBMIT,
+                flags: vk::CommandBufferUsageFlagBits::OneTimeSubmit.into(),
                 p_inheritance_info: null(),
             }),
         )?;

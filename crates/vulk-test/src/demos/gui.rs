@@ -219,18 +219,18 @@ impl Geometry {
             gpu,
             &resource::BufferCreateInfo {
                 element_count: gui.vertex_data.len(),
-                usage: vk::BufferUsageFlags::STORAGE_BUFFER,
-                property_flags: vk::MemoryPropertyFlags::HOST_VISIBLE
-                    | vk::MemoryPropertyFlags::HOST_COHERENT,
+                usage: vk::BufferUsageFlagBits::StorageBuffer.into(),
+                property_flags: vk::MemoryPropertyFlagBits::HostVisible
+                    | vk::MemoryPropertyFlagBits::HostCoherent,
             },
         )?;
         let index_buffer = IndexBuffer::create(
             gpu,
             &resource::BufferCreateInfo {
                 element_count: gui.index_data.len(),
-                usage: vk::BufferUsageFlags::STORAGE_BUFFER,
-                property_flags: vk::MemoryPropertyFlags::HOST_VISIBLE
-                    | vk::MemoryPropertyFlags::HOST_COHERENT,
+                usage: vk::BufferUsageFlagBits::StorageBuffer.into(),
+                property_flags: vk::MemoryPropertyFlagBits::HostVisible
+                    | vk::MemoryPropertyFlagBits::HostCoherent,
             },
         )?;
 
@@ -275,9 +275,9 @@ impl Textures {
                 format: vk::Format::R8g8b8a8Unorm,
                 width: gui.texture_width,
                 height: gui.texture_height,
-                samples: vk::SampleCountFlagBits::NUM_1,
-                usage: vk::ImageUsageFlags::TRANSFER_DST | vk::ImageUsageFlags::SAMPLED,
-                property_flags: vk::MemoryPropertyFlags::DEVICE_LOCAL,
+                samples: vk::SampleCountFlagBits::Count1,
+                usage: vk::ImageUsageFlagBits::TransferDst | vk::ImageUsageFlagBits::Sampled,
+                property_flags: vk::MemoryPropertyFlagBits::DeviceLocal.into(),
             },
         )?;
         resource::multi_upload_images(
@@ -329,9 +329,9 @@ impl Descriptors {
         textures: &Textures,
     ) -> Result<Self> {
         // Descriptor storage.
-        let stage_flags = vk::ShaderStageFlags::TASK_EXT
-            | vk::ShaderStageFlags::MESH_EXT
-            | vk::ShaderStageFlags::FRAGMENT;
+        let stage_flags = vk::ShaderStageFlagBits::TaskEXT
+            | vk::ShaderStageFlagBits::MeshEXT
+            | vk::ShaderStageFlagBits::Fragment;
         let storage = descriptor::DescriptorStorage::create(
             gpu,
             &descriptor::DescriptorStorageCreateInfo {
@@ -582,9 +582,10 @@ impl RenderTargets {
                 format: DEFAULT_RENDER_TARGET_COLOR_FORMAT,
                 width: DEFAULT_RENDER_TARGET_WIDTH,
                 height: DEFAULT_RENDER_TARGET_HEIGHT,
-                samples: vk::SampleCountFlagBits::NUM_1,
-                usage: vk::ImageUsageFlags::COLOR_ATTACHMENT | vk::ImageUsageFlags::TRANSFER_SRC,
-                property_flags: vk::MemoryPropertyFlags::DEVICE_LOCAL,
+                samples: vk::SampleCountFlagBits::Count1,
+                usage: vk::ImageUsageFlagBits::ColorAttachment
+                    | vk::ImageUsageFlagBits::TransferSrc,
+                property_flags: vk::MemoryPropertyFlagBits::DeviceLocal.into(),
             },
         )?;
         Ok(Self { color })
@@ -611,8 +612,8 @@ impl Output {
             gpu,
             &resource::BufferCreateInfo {
                 element_count: DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE as _,
-                usage: vk::BufferUsageFlags::TRANSFER_DST,
-                property_flags: vk::MemoryPropertyFlags::HOST_VISIBLE,
+                usage: vk::BufferUsageFlagBits::TransferDst.into(),
+                property_flags: vk::MemoryPropertyFlagBits::HostVisible.into(),
             },
         )?;
         Ok(Self { buffer })
@@ -662,10 +663,10 @@ unsafe fn draw(
             p_image_memory_barriers: &vk::ImageMemoryBarrier2 {
                 s_type: vk::StructureType::ImageMemoryBarrier2,
                 p_next: null(),
-                src_stage_mask: vk::PipelineStageFlags2::TOP_OF_PIPE,
+                src_stage_mask: vk::PipelineStageFlagBits2::TopOfPipe.into(),
                 src_access_mask: vk::AccessFlags2::empty(),
-                dst_stage_mask: vk::PipelineStageFlags2::COLOR_ATTACHMENT_OUTPUT,
-                dst_access_mask: vk::AccessFlags2::COLOR_ATTACHMENT_WRITE,
+                dst_stage_mask: vk::PipelineStageFlagBits2::ColorAttachmentOutput.into(),
+                dst_access_mask: vk::AccessFlagBits2::ColorAttachmentWrite.into(),
                 old_layout: vk::ImageLayout::Undefined,
                 new_layout: vk::ImageLayout::AttachmentOptimal,
                 src_queue_family_index: 0,
@@ -692,7 +693,7 @@ unsafe fn draw(
                 p_next: null(),
                 image_view: render_targets.color.image_view,
                 image_layout: vk::ImageLayout::AttachmentOptimal,
-                resolve_mode: vk::ResolveModeFlagBits::NONE,
+                resolve_mode: vk::ResolveModeFlagBits::None,
                 resolve_image_view: vk::ImageView::null(),
                 resolve_image_layout: vk::ImageLayout::Undefined,
                 load_op: vk::AttachmentLoadOp::Clear,
@@ -722,7 +723,7 @@ unsafe fn draw(
         let width = render_targets.color.width() as f32;
         let height = render_targets.color.height() as f32;
 
-        device.cmd_set_cull_mode(cmd, vk::CullModeFlags::NONE);
+        device.cmd_set_cull_mode(cmd, vk::CullModeFlagBits::None.into());
         device.cmd_set_viewport_with_count(
             cmd,
             1,
@@ -754,10 +755,10 @@ unsafe fn draw(
             cmd,
             0,
             1,
-            [vk::ColorComponentFlags::R
-                | vk::ColorComponentFlags::G
-                | vk::ColorComponentFlags::B
-                | vk::ColorComponentFlags::A]
+            [vk::ColorComponentFlagBits::R
+                | vk::ColorComponentFlagBits::G
+                | vk::ColorComponentFlagBits::B
+                | vk::ColorComponentFlagBits::A]
             .as_ptr(),
         );
     }
@@ -804,10 +805,10 @@ unsafe fn draw(
             p_image_memory_barriers: &vk::ImageMemoryBarrier2 {
                 s_type: vk::StructureType::ImageMemoryBarrier2,
                 p_next: null(),
-                src_stage_mask: vk::PipelineStageFlags2::COLOR_ATTACHMENT_OUTPUT,
-                src_access_mask: vk::AccessFlags2::COLOR_ATTACHMENT_WRITE,
-                dst_stage_mask: vk::PipelineStageFlags2::COPY,
-                dst_access_mask: vk::AccessFlags2::TRANSFER_READ,
+                src_stage_mask: vk::PipelineStageFlagBits2::ColorAttachmentOutput.into(),
+                src_access_mask: vk::AccessFlagBits2::ColorAttachmentWrite.into(),
+                dst_stage_mask: vk::PipelineStageFlagBits2::Copy.into(),
+                dst_access_mask: vk::AccessFlagBits2::TransferRead.into(),
                 old_layout: vk::ImageLayout::AttachmentOptimal,
                 new_layout: vk::ImageLayout::TransferSrcOptimal,
                 src_queue_family_index: 0,
@@ -870,7 +871,7 @@ unsafe fn draw(
                 p_next: null(),
                 semaphore: commands.semaphore,
                 value: 1,
-                stage_mask: vk::PipelineStageFlags2::BOTTOM_OF_PIPE,
+                stage_mask: vk::PipelineStageFlagBits2::BottomOfPipe.into(),
                 device_index: 0,
             }),
         }),
@@ -885,7 +886,7 @@ unsafe fn draw(
             &(vk::SemaphoreWaitInfo {
                 s_type: vk::StructureType::SemaphoreWaitInfo,
                 p_next: null(),
-                flags: vk::SemaphoreWaitFlags::ANY,
+                flags: vk::SemaphoreWaitFlagBits::Any.into(),
                 semaphore_count: semaphores.len() as _,
                 p_semaphores: semaphores.as_ptr(),
                 p_values: values.as_ptr(),

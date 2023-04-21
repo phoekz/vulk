@@ -12,7 +12,9 @@ const TEMPLATE_MEMBER: &str = r#"pub {{rs_member_ident}}: {{rs_member_type}},"#;
 
 const TEMPLATE_RAW_STRING: &str = "r#\"```{{}}```\"#";
 
-const TEMPLATE_INIT: &str = r#"
+const TEMPLATE_INIT: &str = r#"no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let {{rs_init_ident}} = vk::{{rs_ident}} {
 {{rs_init_members}}
 };

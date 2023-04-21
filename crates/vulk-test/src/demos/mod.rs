@@ -25,5 +25,5 @@ pub const DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE: u32 = DEFAULT_RENDER_TARGET_COL
     .block_size()
     * DEFAULT_RENDER_TARGET_WIDTH
     * DEFAULT_RENDER_TARGET_HEIGHT;
-pub const DEFAULT_RENDER_TARGET_SAMPLES: vk::SampleCountFlags = vk::SampleCountFlagBits::NUM_8;
+pub const DEFAULT_RENDER_TARGET_SAMPLES: vk::SampleCountFlagBits = vk::SampleCountFlagBits::Count8;
 pub const DEFAULT_RENDER_TARGET_CLEAR_COLOR: [f32; 4] = [0.2, 0.2, 0.2, 1.0];

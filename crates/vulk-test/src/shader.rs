@@ -81,18 +81,18 @@ pub enum ShaderType {
 impl ShaderType {
     pub fn shader_stage(self) -> vk::ShaderStageFlagBits {
         match self {
-            ShaderType::Task => vk::ShaderStageFlagBits::TASK_EXT,
-            ShaderType::Mesh => vk::ShaderStageFlagBits::MESH_EXT,
-            ShaderType::Fragment => vk::ShaderStageFlagBits::FRAGMENT,
-            ShaderType::Compute => vk::ShaderStageFlagBits::COMPUTE,
+            ShaderType::Task => vk::ShaderStageFlagBits::TaskEXT,
+            ShaderType::Mesh => vk::ShaderStageFlagBits::MeshEXT,
+            ShaderType::Fragment => vk::ShaderStageFlagBits::Fragment,
+            ShaderType::Compute => vk::ShaderStageFlagBits::Compute,
         }
     }
 
-    pub fn next_shader_stage(self) -> vk::ShaderStageFlagBits {
+    pub fn next_shader_stage(self) -> Option<vk::ShaderStageFlagBits> {
         match self {
-            ShaderType::Task => vk::ShaderStageFlagBits::MESH_EXT,
-            ShaderType::Mesh => vk::ShaderStageFlagBits::FRAGMENT,
-            ShaderType::Fragment | ShaderType::Compute => vk::ShaderStageFlagBits::empty(),
+            ShaderType::Task => Some(vk::ShaderStageFlagBits::MeshEXT),
+            ShaderType::Mesh => Some(vk::ShaderStageFlagBits::Fragment),
+            ShaderType::Fragment | ShaderType::Compute => None,
         }
     }
 }
@@ -124,9 +124,9 @@ impl GpuResource for Shader {
             .map(|spirv| vk::ShaderCreateInfoEXT {
                 s_type: vk::StructureType::ShaderCreateInfoEXT,
                 p_next: null(),
-                flags: vk::ShaderCreateFlagsEXT::LINK_STAGE_EXT,
+                flags: vk::ShaderCreateFlagBitsEXT::LinkStageEXT.into(),
                 stage: spirv.ty.shader_stage(),
-                next_stage: spirv.ty.next_shader_stage(),
+                next_stage: spirv.ty.next_shader_stage().unwrap_or(zeroed()).into(),
                 code_type: vk::ShaderCodeTypeEXT::SpirvEXT,
                 code_size: spirv.code.len(),
                 p_code: spirv.code.as_ptr().cast(),

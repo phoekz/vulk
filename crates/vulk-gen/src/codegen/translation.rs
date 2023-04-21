@@ -124,50 +124,6 @@ pub fn vk_simple_ident(vk: &str) -> Result<String> {
     Ok(rs)
 }
 
-pub fn vk_bitmask_member(vk_name: &str, vk_member: &str) -> Result<String> {
-    const BITMASK_PREFIX: &str = "Vk";
-    const BITMASK_SUFFIX: &str = "Flags";
-    const BITMASK_SUFFIX_2: &str = "Flags2";
-    const BITMASK_SUFFIX_KHR: &str = "FlagsKHR";
-    const BITMASK_SUFFIX_EXT: &str = "FlagsEXT";
-    const BITMASK_MEMBER_PREFIX: &str = "VK_";
-    ensure!(
-        vk_name.starts_with(BITMASK_PREFIX),
-        "Vk bitmasks must begin with {BITMASK_PREFIX}, got {vk_name}"
-    );
-    ensure!(
-        vk_name.ends_with(BITMASK_SUFFIX)
-            || vk_name.ends_with(BITMASK_SUFFIX_2)
-            || vk_name.ends_with(BITMASK_SUFFIX_KHR)
-            || vk_name.ends_with(BITMASK_SUFFIX_EXT),
-        "Vk bitmasks must end with Flags|Flags2|FlagsKHR|FlagsEXT, got {vk_name}"
-    );
-    ensure!(
-        vk_member.starts_with(BITMASK_MEMBER_PREFIX),
-        "Vk bitmask members must begin with {BITMASK_MEMBER_PREFIX}, got {vk_member}"
-    );
-
-    let rs_name = format!("{}", heck::AsShoutySnakeCase(vk_name));
-    let rs_name = rs_name
-        .replace("FLAGS", "")
-        .replace("KHR", "")
-        .replace("EXT", "");
-    let rs_name = rs_name.trim_start_matches('_').trim_end_matches('_');
-    let rs_member = vk_member;
-    assert!(rs_member.starts_with(rs_name));
-    let rs_member = rs_member.replace("_BIT", "");
-    let rs_member = rs_member.trim_start_matches(rs_name);
-    let rs_member = rs_member.trim_start_matches('_').trim_end_matches('_');
-
-    let rs_member = if rs_member.chars().next().unwrap().is_ascii_digit() {
-        format!("NUM_{rs_member}")
-    } else {
-        rs_member.to_string()
-    };
-
-    Ok(rs_member)
-}
-
 pub fn vk_simple_function(vk: &str) -> Result<String> {
     const PREFIX: &str = "vk";
     ensure!(
@@ -179,7 +135,7 @@ pub fn vk_simple_function(vk: &str) -> Result<String> {
     Ok(rs)
 }
 
-pub fn vk_enum(vk_name: &str, vk_members: &[String]) -> Result<Vec<String>> {
+pub fn vk_enum(vk_name: &str, vk_members: &[&str]) -> Result<Vec<String>> {
     // Prepare name.
     let name = format!("{}", heck::AsShoutySnakeCase(vk_name));
     let name_parts = name.split('_').map(ToString::to_string).collect::<Vec<_>>();
@@ -256,6 +212,115 @@ pub fn vk_enum(vk_name: &str, vk_members: &[String]) -> Result<Vec<String>> {
     Ok(members)
 }
 
+pub fn vk_bitmask(vk_name: &str, vk_members: &[&str]) -> Result<Vec<String>> {
+    // Special: no members.
+    if vk_members.is_empty() {
+        return Ok(vec![]);
+    }
+
+    // Split into parts.
+    let name = format!("{}", heck::AsShoutySnakeCase(vk_name));
+    let name = name.replace("BITS2", "BITS_2");
+    let mut name_parts = name.split('_').map(ToString::to_string).collect::<Vec<_>>();
+
+    // Remove suffix.
+    if name_parts.last().unwrap() == "KHR" || name_parts.last().unwrap() == "EXT" {
+        name_parts.pop();
+    }
+
+    // Remove `FLAG` and `BITS`.
+    let name_parts = name_parts
+        .into_iter()
+        .filter(|part| !(part == "FLAG" || part == "BITS"))
+        .collect::<Vec<_>>();
+
+    // Do the same for members.
+    let mut members_parts = vec![];
+    let mut members_suffixes = vec![];
+    for vk_member in vk_members {
+        // Split into parts.
+        let mut parts = vk_member
+            .split('_')
+            .map(ToString::to_string)
+            .collect::<Vec<_>>();
+
+        // Remove suffix.
+        let mut suffix = None;
+        if parts.last().unwrap() == "KHR" || parts.last().unwrap() == "EXT" {
+            suffix = parts.pop();
+        }
+
+        // Remove `BIT`.
+        let parts = parts
+            .into_iter()
+            .filter(|part| part != "BIT")
+            .collect::<Vec<_>>();
+
+        // println!("  {vk_member}\n  {parts:?}");
+        members_parts.push(parts);
+        members_suffixes.push(suffix);
+    }
+
+    // Count the minimum number of shared parts in members.
+    let shared_parts = members_parts
+        .iter()
+        .map(|member_parts| {
+            name_parts
+                .iter()
+                .zip(member_parts)
+                .take_while(|(a, b)| a == b)
+                .count()
+        })
+        .min()
+        .unwrap();
+
+    // Strip shared parts from members.
+    let mut members_parts = members_parts
+        .into_iter()
+        .map(|member_parts| {
+            let (_, rhs_parts) = member_parts.split_at(shared_parts);
+            rhs_parts
+                .iter()
+                .map(ToString::to_string)
+                .collect::<Vec<_>>()
+        })
+        .collect::<Vec<_>>();
+
+    // Special: if resulting enum member starts with a digit, append the last part from the enum name.
+    let any_member_starts_with_digit = members_parts.iter().any(|member_parts| {
+        member_parts
+            .first()
+            .unwrap()
+            .chars()
+            .next()
+            .unwrap()
+            .is_ascii_digit()
+    });
+    if any_member_starts_with_digit {
+        for member_parts in &mut members_parts {
+            member_parts.insert(0, name_parts.last().unwrap().clone());
+        }
+    }
+
+    // Finalize.
+    let members = members_parts
+        .into_iter()
+        .zip(members_suffixes)
+        .map(|(parts, suffix)| {
+            let mut parts = parts
+                .into_iter()
+                .map(|part| format!("{}", heck::AsPascalCase(&part)))
+                .collect::<String>();
+            if let Some(suffix) = suffix {
+                parts.push_str(&suffix);
+            }
+            parts
+        })
+        .collect::<Vec<_>>();
+
+    Ok(members)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -275,9 +340,9 @@ mod tests {
     }
 
     #[test]
-    fn test_vk_enum() {
+    fn test_vk_enum_digits() {
         let name = "VkImageViewType";
-        let members = [
+        let cases = [
             ("VK_IMAGE_VIEW_TYPE_1D", "Type1d"),
             ("VK_IMAGE_VIEW_TYPE_2D", "Type2d"),
             ("VK_IMAGE_VIEW_TYPE_3D", "Type3d"),
@@ -286,30 +351,59 @@ mod tests {
             ("VK_IMAGE_VIEW_TYPE_2D_ARRAY", "Type2dArray"),
             ("VK_IMAGE_VIEW_TYPE_CUBE_ARRAY", "TypeCubeArray"),
         ];
-        let (member_idents, member_expect): (Vec<String>, Vec<String>) = members
-            .iter()
-            .map(|&(a, b)| (a.to_string(), b.to_string()))
-            .unzip();
+        let (member_idents, member_expect): (Vec<&str>, Vec<&str>) =
+            cases.iter().map(|&(a, b)| (a, b)).unzip();
         let output_idents = vk_enum(name, &member_idents).unwrap();
         for (input, output) in member_expect.into_iter().zip(output_idents) {
             assert_eq!(input, output);
         }
     }
 
-    #[test]
-    fn test_vk_bitmask_member() {
-        #[rustfmt::skip]
-        let cases = [
-            ("VkBufferUsageFlags", "VK_BUFFER_USAGE_TRANSFER_DST_BIT", "TRANSFER_DST"),
-            ("VkVideoDecodeCapabilityFlagsKHR", "VK_VIDEO_DECODE_CAPABILITY_DPB_AND_OUTPUT_COINCIDE_BIT_KHR", "DPB_AND_OUTPUT_COINCIDE_KHR"),
-            ("VkDebugUtilsMessageSeverityFlagsEXT", "VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT", "VERBOSE_EXT"),
-            ("VkPipelineStageFlags2", "VK_PIPELINE_STAGE_2_TOP_OF_PIPE_BIT", "TOP_OF_PIPE"),
-            ("VkPipelineStageFlags2", "VK_PIPELINE_STAGE_2_NONE", "NONE"),
-            ("VkShaderStageFlags", "VK_SHADER_STAGE_ALL_GRAPHICS", "ALL_GRAPHICS"),
-            ("VkSampleCountFlags", "VK_SAMPLE_COUNT_32_BIT", "NUM_32"),
-        ];
-        for (input_name, input_member, expect) in cases {
-            assert_eq!(vk_bitmask_member(input_name, input_member).unwrap(), expect);
+    fn run_vk_bitmask(name: &str, cases: &[(&str, &str)]) {
+        let (member_idents, member_expect): (Vec<&str>, Vec<&str>) =
+            cases.iter().map(|&(a, b)| (a, b)).unzip();
+        let output_idents = vk_bitmask(name, &member_idents).unwrap();
+        for (input, output) in member_expect.into_iter().zip(output_idents) {
+            assert_eq!(input, output);
         }
+    }
+
+    #[test]
+    fn test_vk_bitmask() {
+        #[rustfmt::skip]
+        run_vk_bitmask(
+            "VkSampleCountFlagBits",
+            &[
+                ("VK_SAMPLE_COUNT_1_BIT", "Count1"),
+                ("VK_SAMPLE_COUNT_2_BIT", "Count2"),
+                ("VK_SAMPLE_COUNT_4_BIT", "Count4"),
+                ("VK_SAMPLE_COUNT_8_BIT", "Count8"),
+                ("VK_SAMPLE_COUNT_16_BIT", "Count16"),
+                ("VK_SAMPLE_COUNT_32_BIT", "Count32"),
+                ("VK_SAMPLE_COUNT_64_BIT", "Count64"),
+            ],
+        );
+
+        #[rustfmt::skip]
+        run_vk_bitmask(
+            "VkDebugUtilsMessageSeverityFlagBitsEXT",
+            &[
+                ("VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT", "VerboseEXT"),
+                ("VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT", "InfoEXT"),
+                ("VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT", "WarningEXT"),
+                ("VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT", "ErrorEXT"),
+            ],
+        );
+
+        #[rustfmt::skip]
+        run_vk_bitmask(
+            "VkAccessFlagBits2",
+            &[
+                ("VK_ACCESS_2_SHADER_SAMPLED_READ_BIT", "ShaderSampledRead"),
+                ("VK_ACCESS_2_SHADER_STORAGE_READ_BIT", "ShaderStorageRead"),
+                ("VK_ACCESS_2_SHADER_STORAGE_WRITE_BIT", "ShaderStorageWrite"),
+                ("VK_ACCESS_2_DESCRIPTOR_BUFFER_READ_BIT_EXT", "DescriptorBufferReadEXT"),
+            ],
+        );
     }
 }

@@ -115,20 +115,6 @@ impl Builder {
             docs::reference_url(ident.as_ref())
         ))
     }
-
-    #[inline]
-    #[must_use]
-    pub fn indent(self) -> Self {
-        let mut indent = String::new();
-        for (line_count, line) in self.0.lines().enumerate() {
-            if line_count > 0 {
-                indent.push('\n');
-            }
-            indent.push_str("    ");
-            indent.push_str(line);
-        }
-        Self(indent)
-    }
 }
 
 impl std::fmt::Display for Builder {

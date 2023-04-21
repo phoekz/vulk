@@ -43,7 +43,7 @@ impl<T> GpuResource for Buffer<T> {
         let size = (create_info.element_count * size_of::<T>()) as vk::DeviceSize;
 
         // Force SHADER_DEVICE_ADDRESS flag.
-        let usage = create_info.usage | vk::BufferUsageFlags::SHADER_DEVICE_ADDRESS;
+        let usage = create_info.usage | vk::BufferUsageFlagBits::ShaderDeviceAddress;
 
         // Buffer info.
         let buffer_create_info = vk::BufferCreateInfo {
@@ -85,7 +85,7 @@ impl<T> GpuResource for Buffer<T> {
         let memory_allocate_flags_info = vk::MemoryAllocateFlagsInfo {
             s_type: vk::StructureType::MemoryAllocateFlagsInfo,
             p_next: null(),
-            flags: vk::MemoryAllocateFlags::DEVICE_ADDRESS,
+            flags: vk::MemoryAllocateFlagBits::DeviceAddress.into(),
             device_mask: 0,
         };
         let memory_allocate_info = vk::MemoryAllocateInfo {
@@ -238,7 +238,7 @@ impl GpuResource for Image2d {
             s_type: vk::StructureType::DeviceImageMemoryRequirements,
             p_next: null(),
             p_create_info: &image_create_info,
-            plane_aspect: vk::ImageAspectFlagBits::empty(),
+            plane_aspect: zeroed(),
         };
         let mut memory_requirements2 = vk::MemoryRequirements2 {
             s_type: vk::StructureType::MemoryRequirements2,
@@ -293,7 +293,10 @@ impl GpuResource for Image2d {
                 a: vk::ComponentSwizzle::A,
             },
             subresource_range: vk::ImageSubresourceRange {
-                aspect_mask: create_info.format.aspect_mask(),
+                aspect_mask: create_info
+                    .format
+                    .aspect_mask()
+                    .with_context(|| format!("Invalid image format: {}", create_info.format))?,
                 base_mip_level: 0,
                 level_count: 1,
                 base_array_layer: 0,
@@ -482,9 +485,9 @@ pub unsafe fn multi_upload_images(
         gpu,
         &BufferCreateInfo {
             element_count: byte_size,
-            usage: vk::BufferUsageFlags::TRANSFER_SRC,
-            property_flags: vk::MemoryPropertyFlags::HOST_VISIBLE
-                | vk::MemoryPropertyFlags::HOST_COHERENT,
+            usage: vk::BufferUsageFlagBits::TransferSrc.into(),
+            property_flags: vk::MemoryPropertyFlagBits::HostVisible
+                | vk::MemoryPropertyFlagBits::HostCoherent,
         },
     )?;
     let mut dst_offset = 0;
@@ -522,10 +525,10 @@ pub unsafe fn multi_upload_images(
                 p_image_memory_barriers: &vk::ImageMemoryBarrier2 {
                     s_type: vk::StructureType::ImageMemoryBarrier2,
                     p_next: null(),
-                    src_stage_mask: vk::PipelineStageFlags2::HOST,
+                    src_stage_mask: vk::PipelineStageFlagBits2::Host.into(),
                     src_access_mask: vk::AccessFlags2::empty(),
-                    dst_stage_mask: vk::PipelineStageFlags2::ALL_TRANSFER,
-                    dst_access_mask: vk::AccessFlags2::TRANSFER_WRITE,
+                    dst_stage_mask: vk::PipelineStageFlagBits2::AllTransfer.into(),
+                    dst_access_mask: vk::AccessFlagBits2::TransferWrite.into(),
                     old_layout: vk::ImageLayout::Undefined,
                     new_layout: vk::ImageLayout::TransferDstOptimal,
                     src_queue_family_index: 0,
@@ -571,10 +574,10 @@ pub unsafe fn multi_upload_images(
                 p_image_memory_barriers: &vk::ImageMemoryBarrier2 {
                     s_type: vk::StructureType::ImageMemoryBarrier2,
                     p_next: null(),
-                    src_stage_mask: vk::PipelineStageFlags2::ALL_TRANSFER,
-                    src_access_mask: vk::AccessFlags2::TRANSFER_WRITE,
-                    dst_stage_mask: vk::PipelineStageFlags2::FRAGMENT_SHADER,
-                    dst_access_mask: vk::AccessFlags2::SHADER_READ,
+                    src_stage_mask: vk::PipelineStageFlagBits2::AllTransfer.into(),
+                    src_access_mask: vk::AccessFlagBits2::TransferWrite.into(),
+                    dst_stage_mask: vk::PipelineStageFlagBits2::FragmentShader.into(),
+                    dst_access_mask: vk::AccessFlagBits2::ShaderRead.into(),
                     new_layout: vk::ImageLayout::ShaderReadOnlyOptimal,
                     old_layout: vk::ImageLayout::TransferDstOptimal,
                     src_queue_family_index: 0,
@@ -613,7 +616,7 @@ pub unsafe fn multi_upload_images(
                 p_next: null(),
                 semaphore: commands.semaphore,
                 value: 1,
-                stage_mask: vk::PipelineStageFlags2::BOTTOM_OF_PIPE,
+                stage_mask: vk::PipelineStageFlagBits2::BottomOfPipe.into(),
                 device_index: 0,
             }),
         }),
@@ -623,7 +626,7 @@ pub unsafe fn multi_upload_images(
         &(vk::SemaphoreWaitInfo {
             s_type: vk::StructureType::SemaphoreWaitInfo,
             p_next: null(),
-            flags: vk::SemaphoreWaitFlags::ANY,
+            flags: vk::SemaphoreWaitFlagBits::Any.into(),
             semaphore_count: 1,
             p_semaphores: [commands.semaphore].as_ptr(),
             p_values: [1].as_ptr(),
@@ -651,7 +654,7 @@ fn memory_type_index(
     for memory_type_index in 0..memory.memory_type_count {
         let memory_type = memory.memory_types[memory_type_index as usize];
         let type_matches = (1 << memory_type_index) & memory_type_bits != 0;
-        let property_matches = memory_type.property_flags & property_flags == property_flags;
+        let property_matches = (memory_type.property_flags & property_flags) == property_flags;
         if type_matches && property_matches {
             return memory_type_index;
         }

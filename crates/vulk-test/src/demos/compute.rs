@@ -74,9 +74,9 @@ unsafe fn create_compute_buffer(gpu: &Gpu) -> Result<ComputeBuffer> {
         gpu,
         &resource::BufferCreateInfo {
             element_count: 8,
-            usage: vk::BufferUsageFlags::STORAGE_BUFFER,
-            property_flags: vk::MemoryPropertyFlags::HOST_VISIBLE
-                | vk::MemoryPropertyFlags::HOST_COHERENT,
+            usage: vk::BufferUsageFlagBits::StorageBuffer.into(),
+            property_flags: vk::MemoryPropertyFlagBits::HostVisible
+                | vk::MemoryPropertyFlagBits::HostCoherent,
         },
     )?;
     Ok(buffer)
@@ -97,9 +97,9 @@ unsafe fn create_indirect_buffer(gpu: &Gpu) -> Result<IndirectBuffer> {
         gpu,
         &resource::BufferCreateInfo {
             element_count: 1,
-            usage: vk::BufferUsageFlags::STORAGE_BUFFER | vk::BufferUsageFlags::INDIRECT_BUFFER,
-            property_flags: vk::MemoryPropertyFlags::HOST_VISIBLE
-                | vk::MemoryPropertyFlags::HOST_COHERENT,
+            usage: vk::BufferUsageFlagBits::StorageBuffer | vk::BufferUsageFlagBits::IndirectBuffer,
+            property_flags: vk::MemoryPropertyFlagBits::HostVisible
+                | vk::MemoryPropertyFlagBits::HostCoherent,
         },
     )?;
     Ok(buffer)
@@ -120,7 +120,7 @@ unsafe fn create_descriptors(
     indirect_buffer: &IndirectBuffer,
 ) -> Result<Descriptors> {
     // Descriptor storage.
-    let stage_flags = vk::ShaderStageFlags::COMPUTE;
+    let stage_flags = vk::ShaderStageFlagBits::Compute.into();
     let storage = descriptor::DescriptorStorage::create(
         gpu,
         &descriptor::DescriptorStorageCreateInfo {
@@ -302,10 +302,10 @@ unsafe fn dispatch(
                 p_memory_barriers: &(vk::MemoryBarrier2 {
                     s_type: vk::StructureType::MemoryBarrier2,
                     p_next: null(),
-                    src_stage_mask: vk::PipelineStageFlags2::COMPUTE_SHADER,
-                    src_access_mask: vk::AccessFlags2::SHADER_WRITE,
-                    dst_stage_mask: vk::PipelineStageFlags2::DRAW_INDIRECT,
-                    dst_access_mask: vk::AccessFlags2::INDIRECT_COMMAND_READ,
+                    src_stage_mask: vk::PipelineStageFlagBits2::ComputeShader.into(),
+                    src_access_mask: vk::AccessFlagBits2::ShaderWrite.into(),
+                    dst_stage_mask: vk::PipelineStageFlagBits2::DrawIndirect.into(),
+                    dst_access_mask: vk::AccessFlagBits2::IndirectCommandRead.into(),
                 }),
                 buffer_memory_barrier_count: 0,
                 p_buffer_memory_barriers: null(),
@@ -350,7 +350,7 @@ unsafe fn dispatch(
                 p_next: null(),
                 semaphore: commands.semaphore,
                 value: 1,
-                stage_mask: vk::PipelineStageFlags2::COMPUTE_SHADER,
+                stage_mask: vk::PipelineStageFlagBits2::ComputeShader.into(),
                 device_index: 0,
             }),
         }),
@@ -365,7 +365,7 @@ unsafe fn dispatch(
             &(vk::SemaphoreWaitInfo {
                 s_type: vk::StructureType::SemaphoreWaitInfo,
                 p_next: null(),
-                flags: vk::SemaphoreWaitFlags::ANY,
+                flags: vk::SemaphoreWaitFlagBits::Any.into(),
                 semaphore_count: semaphores.len() as _,
                 p_semaphores: semaphores.as_ptr(),
                 p_values: values.as_ptr(),

@@ -131,14 +131,11 @@ unsafe fn get_timestamp_calibration(
 }
 
 unsafe extern "C" fn debug_utils_messenger_callback(
-    message_severity: vk::DebugUtilsMessageSeverityFlagsEXT,
+    message_severity: vk::DebugUtilsMessageSeverityFlagBitsEXT,
     message_type: vk::DebugUtilsMessageTypeFlagsEXT,
     p_callback_data: *const vk::DebugUtilsMessengerCallbackDataEXT,
     _user_data: *mut std::ffi::c_void,
 ) -> vk::Bool32 {
-    // Constants.
-    const WARNING_BITS: u32 = vk::DebugUtilsMessageSeverityFlagsEXT::WARNING_EXT.bits();
-
     // Unpack.
     let callback_data = *p_callback_data;
     let message_id_name = if callback_data.p_message_id_name.is_null() {
@@ -156,7 +153,8 @@ unsafe extern "C" fn debug_utils_messenger_callback(
     // Filter.
     if message_id_name == "Loader Message"
         && !message.starts_with("Loading layer library")
-        && message_severity.bits() < WARNING_BITS
+        && (message_severity == vk::DebugUtilsMessageSeverityFlagBitsEXT::InfoEXT
+            || message_severity == vk::DebugUtilsMessageSeverityFlagBitsEXT::VerboseEXT)
     {
         return vk::FALSE;
     }
@@ -199,11 +197,10 @@ unsafe extern "C" fn debug_utils_messenger_callback(
     // Severity.
     #[allow(clippy::match_same_arms)]
     let level = match message_severity {
-        vk::DebugUtilsMessageSeverityFlagsEXT::VERBOSE_EXT => log::Level::Debug,
-        vk::DebugUtilsMessageSeverityFlagsEXT::INFO_EXT => log::Level::Info,
-        vk::DebugUtilsMessageSeverityFlagsEXT::WARNING_EXT => log::Level::Warn,
-        vk::DebugUtilsMessageSeverityFlagsEXT::ERROR_EXT => log::Level::Error,
-        _ => log::Level::Warn,
+        vk::DebugUtilsMessageSeverityFlagBitsEXT::VerboseEXT => log::Level::Debug,
+        vk::DebugUtilsMessageSeverityFlagBitsEXT::InfoEXT => log::Level::Info,
+        vk::DebugUtilsMessageSeverityFlagBitsEXT::WarningEXT => log::Level::Warn,
+        vk::DebugUtilsMessageSeverityFlagBitsEXT::ErrorEXT => log::Level::Error,
     };
 
     // Log.
@@ -215,17 +212,28 @@ unsafe extern "C" fn debug_utils_messenger_callback(
     vk::FALSE
 }
 
-unsafe fn create_instance(init: &vulk::Init) -> Result<vulk::Instance> {
-    // Instance-specific debug messenger.
-    let debug_utils_messenger_create_info_ext = vk::DebugUtilsMessengerCreateInfoEXT {
+fn debug_utils_messenger_create_info_ext() -> vk::DebugUtilsMessengerCreateInfoEXT {
+    let message_severity = vk::DebugUtilsMessageSeverityFlagBitsEXT::VerboseEXT
+        | vk::DebugUtilsMessageSeverityFlagBitsEXT::InfoEXT
+        | vk::DebugUtilsMessageSeverityFlagBitsEXT::WarningEXT
+        | vk::DebugUtilsMessageSeverityFlagBitsEXT::ErrorEXT;
+    let message_type = vk::DebugUtilsMessageTypeFlagBitsEXT::GeneralEXT
+        | vk::DebugUtilsMessageTypeFlagBitsEXT::ValidationEXT
+        | vk::DebugUtilsMessageTypeFlagBitsEXT::PerformanceEXT;
+    vk::DebugUtilsMessengerCreateInfoEXT {
         s_type: vk::StructureType::DebugUtilsMessengerCreateInfoEXT,
         p_next: null(),
         flags: vk::DebugUtilsMessengerCreateFlagsEXT::empty(),
-        message_severity: vk::DebugUtilsMessageSeverityFlagsEXT::all(),
-        message_type: vk::DebugUtilsMessageTypeFlagsEXT::all(),
+        message_severity,
+        message_type,
         pfn_user_callback: debug_utils_messenger_callback as _,
         p_user_data: null_mut(),
-    };
+    }
+}
+
+unsafe fn create_instance(init: &vulk::Init) -> Result<vulk::Instance> {
+    // Instance-specific debug messenger.
+    let debug_utils_messenger_create_info_ext = debug_utils_messenger_create_info_ext();
 
     // Validation features.
     let enabled_validation_features = [
@@ -276,18 +284,9 @@ unsafe fn create_instance(init: &vulk::Init) -> Result<vulk::Instance> {
 unsafe fn create_debug_utils_messenger(
     instance: &vulk::Instance,
 ) -> Result<vk::DebugUtilsMessengerEXT> {
+    let debug_utils_messenger_create_info_ext = debug_utils_messenger_create_info_ext();
     instance
-        .create_debug_utils_messenger_ext(
-            &(vk::DebugUtilsMessengerCreateInfoEXT {
-                s_type: vk::StructureType::DebugUtilsMessengerCreateInfoEXT,
-                p_next: null(),
-                flags: vk::DebugUtilsMessengerCreateFlagsEXT::empty(),
-                message_severity: vk::DebugUtilsMessageSeverityFlagsEXT::all(),
-                message_type: vk::DebugUtilsMessageTypeFlagsEXT::all(),
-                pfn_user_callback: debug_utils_messenger_callback as _,
-                p_user_data: null_mut(),
-            }),
-        )
+        .create_debug_utils_messenger_ext(&debug_utils_messenger_create_info_ext)
         .map_err(Into::into)
 }
 
@@ -379,12 +378,11 @@ unsafe fn find_queue_family(physical_device: &PhysicalDevice) -> Result<QueueFam
         .iter()
         .enumerate()
         .find_map(|(queue_family_index, queue_family_properties)| {
-            let required_queue_flags =
-                vk::QueueFlags::GRAPHICS | vk::QueueFlags::COMPUTE | vk::QueueFlags::TRANSFER;
-            if queue_family_properties
-                .queue_flags
-                .contains(required_queue_flags)
-            {
+            let required_queue_flags = vk::QueueFlagBits::Graphics
+                | vk::QueueFlagBits::Compute
+                | vk::QueueFlagBits::Transfer;
+            let queue_flags = queue_family_properties.queue_flags;
+            if (queue_flags & required_queue_flags) == required_queue_flags {
                 Some(QueueFamily {
                     index: queue_family_index as _,
                     properties: *queue_family_properties,

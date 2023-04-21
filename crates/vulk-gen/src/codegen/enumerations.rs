@@ -4,6 +4,12 @@ const TEMPLATE: &str = r#"{{vk_attr}}
 pub enum {{rs_ident}} {
     {{rs_members}}
 }
+
+impl std::fmt::Display for {{rs_ident}} {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
 "#;
 
 const TEMPLATE_MEMBER: &str = r#"{{vk_member_attr}}{{rs_member_ident}} = {{rs_member_value}},"#;
@@ -11,7 +17,7 @@ const TEMPLATE_MEMBER: &str = r#"{{vk_member_attr}}{{rs_member_ident}} = {{rs_me
 const TEMPLATE_FORMAT_ASPECT_MASK: &str = r#"
 impl Format {
     #[must_use]
-    pub fn aspect_mask(self) -> ImageAspectFlags {
+    pub fn aspect_mask(self) -> Option<ImageAspectFlags> {
         #[allow(clippy::match_same_arms)]
         match self {
             {{aspect_mask_matches}}
@@ -63,7 +69,7 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
         let vk_member_idents = registry_enum
             .members
             .iter()
-            .map(|member| member.name.clone())
+            .map(|member| member.name.as_str())
             .collect::<Vec<_>>();
         let rs_member_idents = translation::vk_enum(vk_ident, &vk_member_idents)?;
         let mut rs_members = String::new();
@@ -100,7 +106,7 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
             let mut block_size_matches = String::new();
             for (vk_member_ident, rs_member_ident) in vk_member_idents.iter().zip(&rs_member_idents)
             {
-                let aspect_flags = if let Some(&format) = format_map.get(vk_member_ident.as_str()) {
+                let aspect_flags = if let Some(&format) = format_map.get(vk_member_ident) {
                     let color_aspect = format.components.iter().any(|c| {
                         matches!(
                             c,
@@ -138,23 +144,29 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
                                 if !$flags.is_empty() {
                                     flags.push('|');
                                 }
-                                flags.push_str("ImageAspectFlags::");
+                                flags.push_str("ImageAspectFlagBits::");
                                 flags.push_str($aspect);
                             }
                         };
                     }
-                    push!(flags, color_aspect, "COLOR");
-                    push!(flags, depth_aspect, "DEPTH");
-                    push!(flags, stencil_aspect, "STENCIL");
-                    push!(flags, plane_0_aspect, "PLANE_0");
-                    push!(flags, plane_1_aspect, "PLANE_1");
-                    push!(flags, plane_2_aspect, "PLANE_2");
-                    flags
+                    push!(flags, color_aspect, "Color");
+                    push!(flags, depth_aspect, "Depth");
+                    push!(flags, stencil_aspect, "Stencil");
+                    push!(flags, plane_0_aspect, "Plane0");
+                    push!(flags, plane_1_aspect, "Plane1");
+                    push!(flags, plane_2_aspect, "Plane2");
+
+                    // Special: make sure the return types match.
+                    if !flags.contains('|') {
+                        flags.push_str(".into()");
+                    }
+
+                    format!("Some({flags})")
                 } else {
-                    "ImageAspectFlags::empty()".to_string()
+                    r#"None"#.to_string()
                 };
 
-                let block_size = if let Some(&format) = format_map.get(vk_member_ident.as_str()) {
+                let block_size = if let Some(&format) = format_map.get(vk_member_ident) {
                     format.block_size.to_string()
                 } else {
                     "0".to_string()

@@ -97,9 +97,9 @@ unsafe fn create_textures(gpu: &Gpu) -> Result<Textures> {
                     format: vk::Format::R8g8b8a8Unorm,
                     width,
                     height,
-                    samples: vk::SampleCountFlagBits::NUM_1,
-                    usage: vk::ImageUsageFlags::TRANSFER_DST | vk::ImageUsageFlags::SAMPLED,
-                    property_flags: vk::MemoryPropertyFlags::DEVICE_LOCAL,
+                    samples: vk::SampleCountFlagBits::Count1,
+                    usage: vk::ImageUsageFlagBits::TransferDst | vk::ImageUsageFlagBits::Sampled,
+                    property_flags: vk::MemoryPropertyFlagBits::DeviceLocal.into(),
                 },
             )?;
 
@@ -182,7 +182,7 @@ unsafe fn create_descriptors(
     textures: &Textures,
 ) -> Result<Descriptors> {
     // Descriptor storage.
-    let stage_flags = vk::ShaderStageFlags::FRAGMENT;
+    let stage_flags = vk::ShaderStageFlagBits::Fragment.into();
     let image_descriptors = textures
         .images
         .iter()
@@ -213,7 +213,7 @@ unsafe fn create_descriptors(
 
     // Push constants.
     let push_constant_ranges = vk::PushConstantRange {
-        stage_flags: vk::ShaderStageFlags::MESH_EXT,
+        stage_flags: vk::ShaderStageFlagBits::MeshEXT.into(),
         offset: 0,
         size: size_of::<Mat4>() as _,
     };
@@ -419,8 +419,8 @@ unsafe fn create_render_targets(gpu: &Gpu) -> Result<RenderTargets> {
             width: DEFAULT_RENDER_TARGET_WIDTH,
             height: DEFAULT_RENDER_TARGET_HEIGHT,
             samples: DEFAULT_RENDER_TARGET_SAMPLES,
-            usage: vk::ImageUsageFlags::COLOR_ATTACHMENT,
-            property_flags: vk::MemoryPropertyFlags::DEVICE_LOCAL,
+            usage: vk::ImageUsageFlagBits::ColorAttachment.into(),
+            property_flags: vk::MemoryPropertyFlagBits::DeviceLocal.into(),
         },
     )?;
     let depth = resource::Image2d::create(
@@ -430,8 +430,8 @@ unsafe fn create_render_targets(gpu: &Gpu) -> Result<RenderTargets> {
             width: DEFAULT_RENDER_TARGET_WIDTH,
             height: DEFAULT_RENDER_TARGET_HEIGHT,
             samples: DEFAULT_RENDER_TARGET_SAMPLES,
-            usage: vk::ImageUsageFlags::DEPTH_STENCIL_ATTACHMENT,
-            property_flags: vk::MemoryPropertyFlags::DEVICE_LOCAL,
+            usage: vk::ImageUsageFlagBits::DepthStencilAttachment.into(),
+            property_flags: vk::MemoryPropertyFlagBits::DeviceLocal.into(),
         },
     )?;
     let resolve = resource::Image2d::create(
@@ -440,9 +440,9 @@ unsafe fn create_render_targets(gpu: &Gpu) -> Result<RenderTargets> {
             format: DEFAULT_RENDER_TARGET_RESOLVE_FORMAT,
             width: DEFAULT_RENDER_TARGET_WIDTH,
             height: DEFAULT_RENDER_TARGET_HEIGHT,
-            samples: vk::SampleCountFlagBits::NUM_1,
-            usage: vk::ImageUsageFlags::COLOR_ATTACHMENT | vk::ImageUsageFlags::TRANSFER_SRC,
-            property_flags: vk::MemoryPropertyFlags::DEVICE_LOCAL,
+            samples: vk::SampleCountFlagBits::Count1,
+            usage: vk::ImageUsageFlagBits::ColorAttachment | vk::ImageUsageFlagBits::TransferSrc,
+            property_flags: vk::MemoryPropertyFlagBits::DeviceLocal.into(),
         },
     )?;
     Ok(RenderTargets {
@@ -473,8 +473,8 @@ unsafe fn create_output(gpu: &Gpu) -> Result<Output> {
         gpu,
         &resource::BufferCreateInfo {
             element_count: DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE as _,
-            usage: vk::BufferUsageFlags::TRANSFER_DST,
-            property_flags: vk::MemoryPropertyFlags::HOST_VISIBLE,
+            usage: vk::BufferUsageFlagBits::TransferDst.into(),
+            property_flags: vk::MemoryPropertyFlagBits::HostVisible.into(),
         },
     )?;
     Ok(Output { buffer })
@@ -522,10 +522,10 @@ unsafe fn draw(
             p_image_memory_barriers: &vk::ImageMemoryBarrier2 {
                 s_type: vk::StructureType::ImageMemoryBarrier2,
                 p_next: null(),
-                src_stage_mask: vk::PipelineStageFlags2::TOP_OF_PIPE,
+                src_stage_mask: vk::PipelineStageFlagBits2::TopOfPipe.into(),
                 src_access_mask: vk::AccessFlags2::empty(),
-                dst_stage_mask: vk::PipelineStageFlags2::COLOR_ATTACHMENT_OUTPUT,
-                dst_access_mask: vk::AccessFlags2::COLOR_ATTACHMENT_WRITE,
+                dst_stage_mask: vk::PipelineStageFlagBits2::ColorAttachmentOutput.into(),
+                dst_access_mask: vk::AccessFlagBits2::ColorAttachmentWrite.into(),
                 old_layout: vk::ImageLayout::Undefined,
                 new_layout: vk::ImageLayout::AttachmentOptimal,
                 src_queue_family_index: 0,
@@ -552,7 +552,7 @@ unsafe fn draw(
                 p_next: null(),
                 image_view: render_targets.color.image_view,
                 image_layout: vk::ImageLayout::AttachmentOptimal,
-                resolve_mode: vk::ResolveModeFlagBits::AVERAGE,
+                resolve_mode: vk::ResolveModeFlagBits::Average,
                 resolve_image_view: render_targets.resolve.image_view,
                 resolve_image_layout: vk::ImageLayout::AttachmentOptimal,
                 load_op: vk::AttachmentLoadOp::Clear,
@@ -568,7 +568,7 @@ unsafe fn draw(
                 p_next: null(),
                 image_view: render_targets.depth.image_view,
                 image_layout: vk::ImageLayout::AttachmentOptimal,
-                resolve_mode: vk::ResolveModeFlagBits::NONE,
+                resolve_mode: vk::ResolveModeFlagBits::None,
                 resolve_image_view: vk::ImageView::null(),
                 resolve_image_layout: vk::ImageLayout::Undefined,
                 load_op: vk::AttachmentLoadOp::Clear,
@@ -589,7 +589,7 @@ unsafe fn draw(
         let width = render_targets.color.width() as f32;
         let height = render_targets.color.height() as f32;
 
-        device.cmd_set_cull_mode(cmd, vk::CullModeFlags::NONE);
+        device.cmd_set_cull_mode(cmd, vk::CullModeFlagBits::None.into());
         device.cmd_set_front_face(cmd, vk::FrontFace::CounterClockwise);
         device.cmd_set_depth_test_enable(cmd, vk::TRUE);
         device.cmd_set_depth_write_enable(cmd, vk::TRUE);
@@ -672,10 +672,10 @@ unsafe fn draw(
             p_image_memory_barriers: &vk::ImageMemoryBarrier2 {
                 s_type: vk::StructureType::ImageMemoryBarrier2,
                 p_next: null(),
-                src_stage_mask: vk::PipelineStageFlags2::COLOR_ATTACHMENT_OUTPUT,
-                src_access_mask: vk::AccessFlags2::COLOR_ATTACHMENT_WRITE,
-                dst_stage_mask: vk::PipelineStageFlags2::COPY,
-                dst_access_mask: vk::AccessFlags2::TRANSFER_READ,
+                src_stage_mask: vk::PipelineStageFlagBits2::ColorAttachmentOutput.into(),
+                src_access_mask: vk::AccessFlagBits2::ColorAttachmentWrite.into(),
+                dst_stage_mask: vk::PipelineStageFlagBits2::Copy.into(),
+                dst_access_mask: vk::AccessFlagBits2::TransferRead.into(),
                 old_layout: vk::ImageLayout::AttachmentOptimal,
                 new_layout: vk::ImageLayout::TransferSrcOptimal,
                 src_queue_family_index: 0,
@@ -738,7 +738,7 @@ unsafe fn draw(
                 p_next: null(),
                 semaphore: commands.semaphore,
                 value: 1,
-                stage_mask: vk::PipelineStageFlags2::BOTTOM_OF_PIPE,
+                stage_mask: vk::PipelineStageFlagBits2::BottomOfPipe.into(),
                 device_index: 0,
             }),
         }),
@@ -753,7 +753,7 @@ unsafe fn draw(
             &(vk::SemaphoreWaitInfo {
                 s_type: vk::StructureType::SemaphoreWaitInfo,
                 p_next: null(),
-                flags: vk::SemaphoreWaitFlags::ANY,
+                flags: vk::SemaphoreWaitFlagBits::Any.into(),
                 semaphore_count: semaphores.len() as _,
                 p_semaphores: semaphores.as_ptr(),
                 p_values: values.as_ptr(),

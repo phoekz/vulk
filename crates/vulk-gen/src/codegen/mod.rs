@@ -85,16 +85,19 @@ pub fn generate(registry: &Registry, vkspec: &docs::Vkspec, vulk_lib_dir: &Path)
         .replace("{{vk::bitmasks}}", &bitmasks)
         .replace("{{vk::structures}}", &structures)
         .replace("{{vk::unions}}", &unions);
+    let tests_rs = outputs::tests::TEMPLATE.to_string();
 
     // Formatting.
     let lib_rs = rustfmt(&lib_rs).context("Failed to format 'lib.rs' with rustfmt")?;
     let loader_rs = rustfmt(&loader_rs).context("Failed to format 'loader.rs' with rustfmt")?;
     let vk_rs = rustfmt(&vk_rs).context("Failed to format 'vk.rs' with rustfmt")?;
+    let tests_rs = rustfmt(&tests_rs).context("Failed to format 'tests.rs' with rustfmt")?;
 
     // Write.
     std::fs::write(vulk_lib_dir.join("lib.rs"), lib_rs)?;
     std::fs::write(vulk_lib_dir.join("loader.rs"), loader_rs)?;
     std::fs::write(vulk_lib_dir.join("vk.rs"), vk_rs)?;
+    std::fs::write(vulk_lib_dir.join("tests.rs"), tests_rs)?;
 
     Ok(())
 }

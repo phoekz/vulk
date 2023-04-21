@@ -179,7 +179,7 @@ impl GpuResource for DescriptorStorage {
             &(vk::DescriptorSetLayoutCreateInfo {
                 s_type: vk::StructureType::DescriptorSetLayoutCreateInfo,
                 p_next: null(),
-                flags: vk::DescriptorSetLayoutCreateFlags::DESCRIPTOR_BUFFER_EXT,
+                flags: vk::DescriptorSetLayoutCreateFlagBits::DescriptorBufferEXT.into(),
                 binding_count: bindings.len() as _,
                 p_bindings: bindings.as_ptr(),
             }),
@@ -190,10 +190,10 @@ impl GpuResource for DescriptorStorage {
             gpu,
             &resource::BufferCreateInfo {
                 element_count: gpu.device.get_descriptor_set_layout_size_ext(set_layout) as _,
-                usage: vk::BufferUsageFlags::RESOURCE_DESCRIPTOR_BUFFER_EXT
-                    | vk::BufferUsageFlags::SAMPLER_DESCRIPTOR_BUFFER_EXT,
-                property_flags: vk::MemoryPropertyFlags::HOST_VISIBLE
-                    | vk::MemoryPropertyFlags::HOST_COHERENT,
+                usage: vk::BufferUsageFlagBits::ResourceDescriptorBufferEXT
+                    | vk::BufferUsageFlagBits::SamplerDescriptorBufferEXT,
+                property_flags: vk::MemoryPropertyFlagBits::HostVisible
+                    | vk::MemoryPropertyFlagBits::HostCoherent,
             },
         )?;
         debug!("set_layout={}", buffer.element_count);

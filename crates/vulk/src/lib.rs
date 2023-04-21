@@ -123,6 +123,8 @@
 
 pub mod loader;
 pub mod vk;
+#[cfg(test)]
+mod tests;
 
 //
 // Re-exports

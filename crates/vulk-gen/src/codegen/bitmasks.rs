@@ -1,28 +1,95 @@
 use super::*;
 
 const TEMPLATE: &str = r#"
-bitflags! {
 {{vk_flags_attr}}
-    pub struct {{rs_flags_ident}}: {{rs_flags_type}} {
-{{rs_bits_members}}
+pub struct {{rs_flags_ident}}({{rs_type}});
+
+impl {{rs_flags_ident}} {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
     }
 }
 
-{{vk_bits_attr}}
-pub type {{rs_bits_ident}} = {{rs_flags_ident}};
-"#;
+impl std::ops::BitAnd for {{rs_flags_ident}} {
+    type Output = Self;
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Self(self.0 & rhs.0)
+    }
+}
 
-const TEMPLATE_NO_BITS: &str = r#"
-bitflags! {
-{{vk_flags_attr}}
-    pub struct {{rs_flags_ident}}: {{rs_flags_type}} {
+impl From<{{rs_flag_bits_ident}}> for {{rs_flags_ident}} {
+    fn from(flag_bits: {{rs_flag_bits_ident}}) -> Self {
+        Self(flag_bits as {{rs_type}})
+    }
+}
 
+impl std::ops::BitOr<{{rs_flag_bits_ident}}> for {{rs_flags_ident}} {
+    type Output = {{rs_flags_ident}};
+    fn bitor(self, rhs: {{rs_flag_bits_ident}}) -> Self::Output {
+        Self(self.0 | rhs as {{rs_type}})
+    }
+}
+
+impl std::fmt::Display for {{rs_flags_ident}} {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        display_flag_bits_{{rs_type}}(f, self.0, &[
+            {{rs_flag_bits_idents}}
+        ])
+    }
+}
+
+impl std::fmt::Debug for {{rs_flags_ident}} {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("{{rs_flags_ident}}")
+            .field(&format!("{self}"))
+            .finish()
+    }
+}
+
+{{vk_flag_bits_attr}}
+pub enum {{rs_flag_bits_ident}} {
+    {{rs_flag_bits_members}}
+}
+
+impl From<{{rs_flag_bits_ident}}> for {{rs_type}} {
+    fn from(flag_bits: {{rs_flag_bits_ident}}) -> Self {
+        flag_bits as {{rs_type}}
+    }
+}
+
+impl std::ops::BitOr for {{rs_flag_bits_ident}} {
+    type Output = {{rs_flags_ident}};
+    fn bitor(self, rhs: Self) -> Self::Output {
+        {{rs_flags_ident}}(self as {{rs_type}} | rhs as {{rs_type}})
+    }
+}
+
+impl std::ops::BitOr<{{rs_flags_ident}}> for {{rs_flag_bits_ident}} {
+    type Output = {{rs_flags_ident}};
+    fn bitor(self, rhs: {{rs_flags_ident}}) -> Self::Output {
+        {{rs_flags_ident}}(self as {{rs_type}} | rhs.0)
+    }
+}
+
+impl std::fmt::Display for {{rs_flag_bits_ident}} {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
     }
 }
 "#;
 
-const TEMPLATE_MEMBER: &str = r#"        #[doc = "Translated from: `{{vk_member_ident}}`"]
-        const {{rs_member_ident}} = {{rs_member_value}};"#;
+const TEMPLATE_NO_FLAG_BITS: &str = r#"
+{{vk_flags_attr}}
+pub struct {{rs_flags_ident}}({{rs_type}});
+
+impl {{rs_flags_ident}} {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
+    }
+}
+"#;
 
 pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
     let mut str = String::new();
@@ -43,16 +110,13 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
             ty,
             requires,
             bitvalues,
-        } = &registry_type.category else
-        {
+        } = &registry_type.category else {
             continue;
         };
 
         let vk_flags_ident = &registry_type.name;
-        let vk_flags_chapter = ctx.vkspec.type_chapter(vk_flags_ident);
-        let vk_flags_desc = ctx.vkspec.type_desc(vk_flags_ident);
         let rs_flags_ident = translation::vk_simple_type(vk_flags_ident)?;
-        let rs_flags_type = match ty.as_str() {
+        let rs_type = match ty.as_str() {
             "VkFlags" => "u32",
             "VkFlags64" => "u64",
             ty => bail!("Unknown bitmask type: {ty}"),
@@ -67,28 +131,50 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
         };
 
         if let Some(bitvalues) = bitvalues {
-            let vk_bits_ident = bitvalues;
-            let vk_bits_attr = attributes::Builder::new()
-                .doc_chapter(ctx.vkspec.type_chapter(vk_bits_ident))
+            let vk_flag_bits_ident = bitvalues;
+            let vk_flag_bits_attr = attributes::Builder::new()
+                .repr(rs_type)
+                .derive("Clone, Copy, PartialEq, Eq, Debug")
+                .doc_chapter(ctx.vkspec.type_chapter(vk_flag_bits_ident))
                 .doc_br()
-                .doc_desc(ctx.vkspec.type_desc(vk_bits_ident))
+                .doc_desc(ctx.vkspec.type_desc(vk_flag_bits_ident))
                 .doc_br()
-                .doc_provided(ctx.provided_by_map.get(vk_bits_ident))
+                .doc_provided(ctx.provided_by_map.get(vk_flag_bits_ident))
                 .doc_br()
-                .doc_ref(vk_bits_ident)
+                .doc_ref(vk_flag_bits_ident)
                 .build();
-            let rs_bits_ident = translation::vk_simple_type(vk_bits_ident)?;
+            let rs_flag_bits_ident = translation::vk_simple_type(vk_flag_bits_ident)?;
+            let vk_flags_attr = attributes::Builder::new()
+                .repr("C")
+                .derive("Clone, Copy, PartialEq, Eq")
+                .doc_chapter(ctx.vkspec.type_chapter(vk_flags_ident))
+                .doc_br()
+                .doc_desc(ctx.vkspec.type_desc(vk_flags_ident))
+                .doc_br()
+                .doc_provided(ctx.provided_by_map.get(vk_flags_ident))
+                .doc_br()
+                .doc_ref(vk_flags_ident)
+                .doc_br()
+                .doc_ref(vk_flag_bits_ident)
+                .build();
 
             let bitvalues = bitvalues_map.get(bitvalues).context("Missing bitvalues")?;
-            let mut rs_bits_members = String::new();
-            for member in &bitvalues.members {
-                if member.alias.is_some() {
-                    continue;
-                }
+            let (member_idents, members): (Vec<_>, Vec<_>) = bitvalues
+                .members
+                .iter()
+                .filter_map(|member| {
+                    if member.alias.is_some() {
+                        return None;
+                    }
+                    Some((member.name.as_str(), member))
+                })
+                .unzip();
+            let member_idents = translation::vk_bitmask(vk_flag_bits_ident, &member_idents)?;
 
+            let mut rs_flag_bits_members = String::new();
+            let mut rs_flag_bits_idents = String::new();
+            for (member, rs_member_ident) in members.iter().zip(&member_idents) {
                 let vk_member_ident = &member.name;
-                let rs_member_ident =
-                    translation::vk_bitmask_member(vk_flags_ident, vk_member_ident)?;
 
                 let rs_member_value = if let Some(bitpos) = &member.bitpos {
                     let bitpos: u64 = bitpos.parse()?;
@@ -106,66 +192,59 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
                 };
 
                 writeln!(
-                    rs_bits_members,
-                    "{}",
-                    TEMPLATE_MEMBER
-                        .replace("{{vk_member_ident}}", vk_member_ident)
-                        .replace("{{rs_member_ident}}", &rs_member_ident)
-                        .replace("{{rs_member_value}}", &rs_member_value)
+                    rs_flag_bits_members,
+                    r#"#[doc = "Translated from: `{vk_member_ident}`"]"#
+                )?;
+                writeln!(
+                    rs_flag_bits_members,
+                    "{rs_member_ident} = {rs_member_value},"
+                )?;
+                writeln!(
+                    rs_flag_bits_idents,
+                    "{rs_flag_bits_ident}::{rs_member_ident},",
                 )?;
             }
-            let rs_bits_members = rs_bits_members.trim_end();
+            let mut rs_flag_bits_members = rs_flag_bits_members.trim_end().to_string();
+            let mut rs_flag_bits_idents = rs_flag_bits_idents.trim_end().to_string();
 
-            let vk_flags_attr = attributes::Builder::new()
-                .repr("C")
-                .derive("Clone, Copy, PartialEq, Eq, Debug")
-                .doc_chapter(vk_flags_chapter)
-                .doc_br()
-                .doc_desc(vk_flags_desc)
-                .doc_br()
-                .doc_provided(ctx.provided_by_map.get(vk_flags_ident))
-                .doc_br()
-                .doc_ref(vk_flags_ident)
-                .doc_br()
-                .doc_ref(vk_bits_ident)
-                .indent()
-                .build();
+            // Special: Rust enums must have at least one variant.
+            if member_idents.is_empty() {
+                rs_flag_bits_members.push_str("Placeholder = 0b0,");
+                rs_flag_bits_idents.push_str(&format!("{rs_flag_bits_ident}::Placeholder,"));
+            }
 
             writeln!(
                 str,
                 "{}",
                 TEMPLATE
+                    .replace("{{vk_flag_bits_attr}}", &vk_flag_bits_attr)
                     .replace("{{vk_flags_attr}}", &vk_flags_attr)
-                    .replace("{{vk_flags_ident}}", vk_flags_ident)
+                    .replace("{{rs_type}}", rs_type)
+                    .replace("{{rs_flag_bits_ident}}", &rs_flag_bits_ident)
                     .replace("{{rs_flags_ident}}", &rs_flags_ident)
-                    .replace("{{rs_flags_type}}", rs_flags_type)
-                    .replace("{{vk_bits_attr}}", &vk_bits_attr)
-                    .replace("{{vk_bits_ident}}", vk_bits_ident)
-                    .replace("{{rs_bits_ident}}", &rs_bits_ident)
-                    .replace("{{rs_bits_members}}", rs_bits_members)
+                    .replace("{{rs_flag_bits_members}}", &rs_flag_bits_members)
+                    .replace("{{rs_flag_bits_idents}}", &rs_flag_bits_idents)
             )?;
         } else {
             let vk_flags_attr = attributes::Builder::new()
                 .repr("C")
                 .derive("Clone, Copy, PartialEq, Eq, Debug")
-                .doc_chapter(vk_flags_chapter)
+                .doc_chapter(ctx.vkspec.type_chapter(vk_flags_ident))
                 .doc_br()
-                .doc_desc(vk_flags_desc)
+                .doc_desc(ctx.vkspec.type_desc(vk_flags_ident))
                 .doc_br()
                 .doc_provided(ctx.provided_by_map.get(vk_flags_ident))
                 .doc_br()
                 .doc_ref(vk_flags_ident)
-                .indent()
                 .build();
 
             writeln!(
                 str,
                 "{}",
-                TEMPLATE_NO_BITS
+                TEMPLATE_NO_FLAG_BITS
                     .replace("{{vk_flags_attr}}", &vk_flags_attr)
-                    .replace("{{vk_flags_ident}}", vk_flags_ident)
                     .replace("{{rs_flags_ident}}", &rs_flags_ident)
-                    .replace("{{rs_flags_type}}", rs_flags_type)
+                    .replace("{{rs_type}}", rs_type)
             )?;
         }
     }

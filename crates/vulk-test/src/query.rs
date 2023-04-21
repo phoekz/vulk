@@ -34,10 +34,10 @@ impl Queries {
             flags: vk::QueryPoolCreateFlags::empty(),
             query_type: vk::QueryType::PipelineStatistics,
             query_count: 1,
-            pipeline_statistics: vk::QueryPipelineStatisticFlags::FRAGMENT_SHADER_INVOCATIONS
-                | vk::QueryPipelineStatisticFlags::COMPUTE_SHADER_INVOCATIONS
-                | vk::QueryPipelineStatisticFlags::TASK_SHADER_INVOCATIONS_EXT
-                | vk::QueryPipelineStatisticFlags::MESH_SHADER_INVOCATIONS_EXT,
+            pipeline_statistics: vk::QueryPipelineStatisticFlagBits::FragmentShaderInvocations
+                | vk::QueryPipelineStatisticFlagBits::ComputeShaderInvocations
+                | vk::QueryPipelineStatisticFlagBits::TaskShaderInvocationsEXT
+                | vk::QueryPipelineStatisticFlagBits::MeshShaderInvocationsEXT,
         })?;
         device.reset_query_pool(pipeline, 0, 1);
 
@@ -66,7 +66,12 @@ impl Queries {
     }
 
     pub unsafe fn begin(&self, Gpu { device, .. }: &Gpu, cmd: vk::CommandBuffer) {
-        device.cmd_write_timestamp2(cmd, vk::PipelineStageFlags2::TOP_OF_PIPE, self.timestamp, 0);
+        device.cmd_write_timestamp2(
+            cmd,
+            vk::PipelineStageFlagBits2::TopOfPipe.into(),
+            self.timestamp,
+            0,
+        );
         device.cmd_begin_query(cmd, self.pipeline, 0, vk::QueryControlFlags::empty());
         device.cmd_begin_query(cmd, self.mesh_shader, 0, vk::QueryControlFlags::empty());
     }
@@ -76,7 +81,7 @@ impl Queries {
         device.cmd_end_query(cmd, self.pipeline, 0);
         device.cmd_write_timestamp2(
             cmd,
-            vk::PipelineStageFlags2::BOTTOM_OF_PIPE,
+            vk::PipelineStageFlagBits2::BottomOfPipe.into(),
             self.timestamp,
             1,
         );
@@ -84,7 +89,7 @@ impl Queries {
 
     pub unsafe fn elapsed(&self, Gpu { device, .. }: &Gpu) -> Result<Duration> {
         let stride = size_of::<u64>() as u64;
-        let flags = vk::QueryResultFlags::NUM_64 | vk::QueryResultFlags::WAIT;
+        let flags = vk::QueryResultFlagBits::Result64 | vk::QueryResultFlagBits::ResultWait;
         let mut result: [u64; 2] = zeroed();
         device.get_query_pool_results(
             self.timestamp,
@@ -104,7 +109,7 @@ impl Queries {
 
     pub unsafe fn statistics(&self, Gpu { device, .. }: &Gpu) -> Result<Statistics> {
         let stride = size_of::<u64>() as u64;
-        let flags = vk::QueryResultFlags::NUM_64 | vk::QueryResultFlags::WAIT;
+        let flags = vk::QueryResultFlagBits::Result64 | vk::QueryResultFlagBits::ResultWait;
         let mut result: Statistics = zeroed();
         device.get_query_pool_results(
             self.pipeline,

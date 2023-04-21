@@ -2,7 +2,6 @@
 // Imports
 //
 
-use bitflags::bitflags;
 use std::ffi::{c_char, c_void};
 
 //
@@ -961,6 +960,12 @@ pub enum Result {
     ErrorIncompatibleShaderBinaryEXT = 1000482000,
 }
 
+impl std::fmt::Display for Result {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
 #[repr(i32)]
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Fundamentals"]
@@ -1463,6 +1468,12 @@ pub enum StructureType {
     VertexInputAttributeDescription2EXT = 1000352002,
 }
 
+impl std::fmt::Display for StructureType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
 #[repr(i32)]
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Initialization"]
@@ -1483,6 +1494,12 @@ pub enum ValidationFeatureEnableEXT {
     DebugPrintfEXT = 3,
     #[doc = "**Translated from**: `VK_VALIDATION_FEATURE_ENABLE_SYNCHRONIZATION_VALIDATION_EXT`"]
     SynchronizationValidationEXT = 4,
+}
+
+impl std::fmt::Display for ValidationFeatureEnableEXT {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
 }
 
 #[repr(i32)]
@@ -1513,6 +1530,12 @@ pub enum ValidationFeatureDisableEXT {
     ShaderValidationCacheEXT = 7,
 }
 
+impl std::fmt::Display for ValidationFeatureDisableEXT {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
 #[repr(i32)]
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Devices and Queues"]
@@ -1535,6 +1558,12 @@ pub enum PhysicalDeviceType {
     Cpu = 4,
 }
 
+impl std::fmt::Display for PhysicalDeviceType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
 #[repr(i32)]
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Command Buffers"]
@@ -1551,6 +1580,12 @@ pub enum CommandBufferLevel {
     Secondary = 1,
 }
 
+impl std::fmt::Display for CommandBufferLevel {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
 #[repr(i32)]
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Synchronization and Cache Control"]
@@ -1565,6 +1600,12 @@ pub enum SemaphoreType {
     Binary = 0,
     #[doc = "**Translated from**: `VK_SEMAPHORE_TYPE_TIMELINE`"]
     Timeline = 1,
+}
+
+impl std::fmt::Display for SemaphoreType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
 }
 
 #[repr(i32)]
@@ -1587,6 +1628,12 @@ pub enum TimeDomainEXT {
     QueryPerformanceCounterEXT = 3,
 }
 
+impl std::fmt::Display for TimeDomainEXT {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
 #[repr(i32)]
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Render Pass"]
@@ -1603,6 +1650,12 @@ pub enum AttachmentLoadOp {
     Clear = 1,
     #[doc = "**Translated from**: `VK_ATTACHMENT_LOAD_OP_DONT_CARE`"]
     DontCare = 2,
+}
+
+impl std::fmt::Display for AttachmentLoadOp {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
 }
 
 #[repr(i32)]
@@ -1623,6 +1676,12 @@ pub enum AttachmentStoreOp {
     None = 1000301000,
 }
 
+impl std::fmt::Display for AttachmentStoreOp {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
 #[repr(i32)]
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Shaders"]
@@ -1639,6 +1698,12 @@ pub enum ShaderCodeTypeEXT {
     SpirvEXT = 1,
 }
 
+impl std::fmt::Display for ShaderCodeTypeEXT {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
 #[repr(i32)]
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Pipelines"]
@@ -1653,6 +1718,12 @@ pub enum PipelineBindPoint {
     Graphics = 0,
     #[doc = "**Translated from**: `VK_PIPELINE_BIND_POINT_COMPUTE`"]
     Compute = 1,
+}
+
+impl std::fmt::Display for PipelineBindPoint {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
 }
 
 #[repr(i32)]
@@ -1677,6 +1748,12 @@ pub enum SystemAllocationScope {
     Instance = 4,
 }
 
+impl std::fmt::Display for SystemAllocationScope {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
 #[repr(i32)]
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Memory Allocation"]
@@ -1689,6 +1766,12 @@ pub enum SystemAllocationScope {
 pub enum InternalAllocationType {
     #[doc = "**Translated from**: `VK_INTERNAL_ALLOCATION_TYPE_EXECUTABLE`"]
     Executable = 0,
+}
+
+impl std::fmt::Display for InternalAllocationType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
 }
 
 #[repr(i32)]
@@ -1709,6 +1792,12 @@ pub enum ImageType {
     Type3d = 2,
 }
 
+impl std::fmt::Display for ImageType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
 #[repr(i32)]
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Resource Creation"]
@@ -1723,6 +1812,12 @@ pub enum ImageTiling {
     Optimal = 0,
     #[doc = "**Translated from**: `VK_IMAGE_TILING_LINEAR`"]
     Linear = 1,
+}
+
+impl std::fmt::Display for ImageTiling {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
 }
 
 #[repr(i32)]
@@ -1771,6 +1866,12 @@ pub enum ImageLayout {
     AttachmentOptimal = 1000314001,
 }
 
+impl std::fmt::Display for ImageLayout {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
 #[repr(i32)]
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Resource Creation"]
@@ -1795,6 +1896,12 @@ pub enum ImageViewType {
     Type2dArray = 5,
     #[doc = "**Translated from**: `VK_IMAGE_VIEW_TYPE_CUBE_ARRAY`"]
     TypeCubeArray = 6,
+}
+
+impl std::fmt::Display for ImageViewType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
 }
 
 #[repr(i32)]
@@ -1823,6 +1930,12 @@ pub enum ComponentSwizzle {
     A = 6,
 }
 
+impl std::fmt::Display for ComponentSwizzle {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
 #[repr(i32)]
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Resource Creation"]
@@ -1837,6 +1950,12 @@ pub enum SharingMode {
     Exclusive = 0,
     #[doc = "**Translated from**: `VK_SHARING_MODE_CONCURRENT`"]
     Concurrent = 1,
+}
+
+impl std::fmt::Display for SharingMode {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
 }
 
 #[repr(i32)]
@@ -1855,6 +1974,12 @@ pub enum Filter {
     Linear = 1,
 }
 
+impl std::fmt::Display for Filter {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
 #[repr(i32)]
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Samplers"]
@@ -1869,6 +1994,12 @@ pub enum SamplerMipmapMode {
     Nearest = 0,
     #[doc = "**Translated from**: `VK_SAMPLER_MIPMAP_MODE_LINEAR`"]
     Linear = 1,
+}
+
+impl std::fmt::Display for SamplerMipmapMode {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
 }
 
 #[repr(i32)]
@@ -1891,6 +2022,12 @@ pub enum SamplerAddressMode {
     ClampToBorder = 3,
     #[doc = "**Translated from**: `VK_SAMPLER_ADDRESS_MODE_MIRROR_CLAMP_TO_EDGE`"]
     MirrorClampToEdge = 4,
+}
+
+impl std::fmt::Display for SamplerAddressMode {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
 }
 
 #[repr(i32)]
@@ -1921,6 +2058,12 @@ pub enum CompareOp {
     Always = 7,
 }
 
+impl std::fmt::Display for CompareOp {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
 #[repr(i32)]
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Samplers"]
@@ -1943,6 +2086,12 @@ pub enum BorderColor {
     FloatOpaqueWhite = 4,
     #[doc = "**Translated from**: `VK_BORDER_COLOR_INT_OPAQUE_WHITE`"]
     IntOpaqueWhite = 5,
+}
+
+impl std::fmt::Display for BorderColor {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
 }
 
 #[repr(i32)]
@@ -1981,6 +2130,12 @@ pub enum DescriptorType {
     InlineUniformBlock = 1000138000,
 }
 
+impl std::fmt::Display for DescriptorType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
 #[repr(i32)]
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Queries"]
@@ -2001,6 +2156,12 @@ pub enum QueryType {
     MeshPrimitivesGeneratedEXT = 1000328000,
 }
 
+impl std::fmt::Display for QueryType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
 #[repr(i32)]
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Rasterization"]
@@ -2015,6 +2176,12 @@ pub enum FrontFace {
     CounterClockwise = 0,
     #[doc = "**Translated from**: `VK_FRONT_FACE_CLOCKWISE`"]
     Clockwise = 1,
+}
+
+impl std::fmt::Display for FrontFace {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
 }
 
 #[repr(i32)]
@@ -2067,6 +2234,12 @@ pub enum BlendFactor {
     OneMinusSrc1Alpha = 18,
 }
 
+impl std::fmt::Display for BlendFactor {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
 #[repr(i32)]
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: The Framebuffer"]
@@ -2087,6 +2260,12 @@ pub enum BlendOp {
     Min = 3,
     #[doc = "**Translated from**: `VK_BLEND_OP_MAX`"]
     Max = 4,
+}
+
+impl std::fmt::Display for BlendOp {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
 }
 
 #[repr(i32)]
@@ -2579,250 +2758,256 @@ pub enum Format {
     Astc12x12SfloatBlock = 1000066013,
 }
 
+impl std::fmt::Display for Format {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
 impl Format {
     #[must_use]
-    pub fn aspect_mask(self) -> ImageAspectFlags {
+    pub fn aspect_mask(self) -> Option<ImageAspectFlags> {
         #[allow(clippy::match_same_arms)]
         match self {
-            Format::Undefined => ImageAspectFlags::empty(),
-            Format::R4g4UnormPack8 => ImageAspectFlags::COLOR,
-            Format::R4g4b4a4UnormPack16 => ImageAspectFlags::COLOR,
-            Format::B4g4r4a4UnormPack16 => ImageAspectFlags::COLOR,
-            Format::R5g6b5UnormPack16 => ImageAspectFlags::COLOR,
-            Format::B5g6r5UnormPack16 => ImageAspectFlags::COLOR,
-            Format::R5g5b5a1UnormPack16 => ImageAspectFlags::COLOR,
-            Format::B5g5r5a1UnormPack16 => ImageAspectFlags::COLOR,
-            Format::A1r5g5b5UnormPack16 => ImageAspectFlags::COLOR,
-            Format::R8Unorm => ImageAspectFlags::COLOR,
-            Format::R8Snorm => ImageAspectFlags::COLOR,
-            Format::R8Uscaled => ImageAspectFlags::COLOR,
-            Format::R8Sscaled => ImageAspectFlags::COLOR,
-            Format::R8Uint => ImageAspectFlags::COLOR,
-            Format::R8Sint => ImageAspectFlags::COLOR,
-            Format::R8Srgb => ImageAspectFlags::COLOR,
-            Format::R8g8Unorm => ImageAspectFlags::COLOR,
-            Format::R8g8Snorm => ImageAspectFlags::COLOR,
-            Format::R8g8Uscaled => ImageAspectFlags::COLOR,
-            Format::R8g8Sscaled => ImageAspectFlags::COLOR,
-            Format::R8g8Uint => ImageAspectFlags::COLOR,
-            Format::R8g8Sint => ImageAspectFlags::COLOR,
-            Format::R8g8Srgb => ImageAspectFlags::COLOR,
-            Format::R8g8b8Unorm => ImageAspectFlags::COLOR,
-            Format::R8g8b8Snorm => ImageAspectFlags::COLOR,
-            Format::R8g8b8Uscaled => ImageAspectFlags::COLOR,
-            Format::R8g8b8Sscaled => ImageAspectFlags::COLOR,
-            Format::R8g8b8Uint => ImageAspectFlags::COLOR,
-            Format::R8g8b8Sint => ImageAspectFlags::COLOR,
-            Format::R8g8b8Srgb => ImageAspectFlags::COLOR,
-            Format::B8g8r8Unorm => ImageAspectFlags::COLOR,
-            Format::B8g8r8Snorm => ImageAspectFlags::COLOR,
-            Format::B8g8r8Uscaled => ImageAspectFlags::COLOR,
-            Format::B8g8r8Sscaled => ImageAspectFlags::COLOR,
-            Format::B8g8r8Uint => ImageAspectFlags::COLOR,
-            Format::B8g8r8Sint => ImageAspectFlags::COLOR,
-            Format::B8g8r8Srgb => ImageAspectFlags::COLOR,
-            Format::R8g8b8a8Unorm => ImageAspectFlags::COLOR,
-            Format::R8g8b8a8Snorm => ImageAspectFlags::COLOR,
-            Format::R8g8b8a8Uscaled => ImageAspectFlags::COLOR,
-            Format::R8g8b8a8Sscaled => ImageAspectFlags::COLOR,
-            Format::R8g8b8a8Uint => ImageAspectFlags::COLOR,
-            Format::R8g8b8a8Sint => ImageAspectFlags::COLOR,
-            Format::R8g8b8a8Srgb => ImageAspectFlags::COLOR,
-            Format::B8g8r8a8Unorm => ImageAspectFlags::COLOR,
-            Format::B8g8r8a8Snorm => ImageAspectFlags::COLOR,
-            Format::B8g8r8a8Uscaled => ImageAspectFlags::COLOR,
-            Format::B8g8r8a8Sscaled => ImageAspectFlags::COLOR,
-            Format::B8g8r8a8Uint => ImageAspectFlags::COLOR,
-            Format::B8g8r8a8Sint => ImageAspectFlags::COLOR,
-            Format::B8g8r8a8Srgb => ImageAspectFlags::COLOR,
-            Format::A8b8g8r8UnormPack32 => ImageAspectFlags::COLOR,
-            Format::A8b8g8r8SnormPack32 => ImageAspectFlags::COLOR,
-            Format::A8b8g8r8UscaledPack32 => ImageAspectFlags::COLOR,
-            Format::A8b8g8r8SscaledPack32 => ImageAspectFlags::COLOR,
-            Format::A8b8g8r8UintPack32 => ImageAspectFlags::COLOR,
-            Format::A8b8g8r8SintPack32 => ImageAspectFlags::COLOR,
-            Format::A8b8g8r8SrgbPack32 => ImageAspectFlags::COLOR,
-            Format::A2r10g10b10UnormPack32 => ImageAspectFlags::COLOR,
-            Format::A2r10g10b10SnormPack32 => ImageAspectFlags::COLOR,
-            Format::A2r10g10b10UscaledPack32 => ImageAspectFlags::COLOR,
-            Format::A2r10g10b10SscaledPack32 => ImageAspectFlags::COLOR,
-            Format::A2r10g10b10UintPack32 => ImageAspectFlags::COLOR,
-            Format::A2r10g10b10SintPack32 => ImageAspectFlags::COLOR,
-            Format::A2b10g10r10UnormPack32 => ImageAspectFlags::COLOR,
-            Format::A2b10g10r10SnormPack32 => ImageAspectFlags::COLOR,
-            Format::A2b10g10r10UscaledPack32 => ImageAspectFlags::COLOR,
-            Format::A2b10g10r10SscaledPack32 => ImageAspectFlags::COLOR,
-            Format::A2b10g10r10UintPack32 => ImageAspectFlags::COLOR,
-            Format::A2b10g10r10SintPack32 => ImageAspectFlags::COLOR,
-            Format::R16Unorm => ImageAspectFlags::COLOR,
-            Format::R16Snorm => ImageAspectFlags::COLOR,
-            Format::R16Uscaled => ImageAspectFlags::COLOR,
-            Format::R16Sscaled => ImageAspectFlags::COLOR,
-            Format::R16Uint => ImageAspectFlags::COLOR,
-            Format::R16Sint => ImageAspectFlags::COLOR,
-            Format::R16Sfloat => ImageAspectFlags::COLOR,
-            Format::R16g16Unorm => ImageAspectFlags::COLOR,
-            Format::R16g16Snorm => ImageAspectFlags::COLOR,
-            Format::R16g16Uscaled => ImageAspectFlags::COLOR,
-            Format::R16g16Sscaled => ImageAspectFlags::COLOR,
-            Format::R16g16Uint => ImageAspectFlags::COLOR,
-            Format::R16g16Sint => ImageAspectFlags::COLOR,
-            Format::R16g16Sfloat => ImageAspectFlags::COLOR,
-            Format::R16g16b16Unorm => ImageAspectFlags::COLOR,
-            Format::R16g16b16Snorm => ImageAspectFlags::COLOR,
-            Format::R16g16b16Uscaled => ImageAspectFlags::COLOR,
-            Format::R16g16b16Sscaled => ImageAspectFlags::COLOR,
-            Format::R16g16b16Uint => ImageAspectFlags::COLOR,
-            Format::R16g16b16Sint => ImageAspectFlags::COLOR,
-            Format::R16g16b16Sfloat => ImageAspectFlags::COLOR,
-            Format::R16g16b16a16Unorm => ImageAspectFlags::COLOR,
-            Format::R16g16b16a16Snorm => ImageAspectFlags::COLOR,
-            Format::R16g16b16a16Uscaled => ImageAspectFlags::COLOR,
-            Format::R16g16b16a16Sscaled => ImageAspectFlags::COLOR,
-            Format::R16g16b16a16Uint => ImageAspectFlags::COLOR,
-            Format::R16g16b16a16Sint => ImageAspectFlags::COLOR,
-            Format::R16g16b16a16Sfloat => ImageAspectFlags::COLOR,
-            Format::R32Uint => ImageAspectFlags::COLOR,
-            Format::R32Sint => ImageAspectFlags::COLOR,
-            Format::R32Sfloat => ImageAspectFlags::COLOR,
-            Format::R32g32Uint => ImageAspectFlags::COLOR,
-            Format::R32g32Sint => ImageAspectFlags::COLOR,
-            Format::R32g32Sfloat => ImageAspectFlags::COLOR,
-            Format::R32g32b32Uint => ImageAspectFlags::COLOR,
-            Format::R32g32b32Sint => ImageAspectFlags::COLOR,
-            Format::R32g32b32Sfloat => ImageAspectFlags::COLOR,
-            Format::R32g32b32a32Uint => ImageAspectFlags::COLOR,
-            Format::R32g32b32a32Sint => ImageAspectFlags::COLOR,
-            Format::R32g32b32a32Sfloat => ImageAspectFlags::COLOR,
-            Format::R64Uint => ImageAspectFlags::COLOR,
-            Format::R64Sint => ImageAspectFlags::COLOR,
-            Format::R64Sfloat => ImageAspectFlags::COLOR,
-            Format::R64g64Uint => ImageAspectFlags::COLOR,
-            Format::R64g64Sint => ImageAspectFlags::COLOR,
-            Format::R64g64Sfloat => ImageAspectFlags::COLOR,
-            Format::R64g64b64Uint => ImageAspectFlags::COLOR,
-            Format::R64g64b64Sint => ImageAspectFlags::COLOR,
-            Format::R64g64b64Sfloat => ImageAspectFlags::COLOR,
-            Format::R64g64b64a64Uint => ImageAspectFlags::COLOR,
-            Format::R64g64b64a64Sint => ImageAspectFlags::COLOR,
-            Format::R64g64b64a64Sfloat => ImageAspectFlags::COLOR,
-            Format::B10g11r11UfloatPack32 => ImageAspectFlags::COLOR,
-            Format::E5b9g9r9UfloatPack32 => ImageAspectFlags::COLOR,
-            Format::D16Unorm => ImageAspectFlags::DEPTH,
-            Format::X8D24UnormPack32 => ImageAspectFlags::DEPTH,
-            Format::D32Sfloat => ImageAspectFlags::DEPTH,
-            Format::S8Uint => ImageAspectFlags::STENCIL,
-            Format::D16UnormS8Uint => ImageAspectFlags::DEPTH | ImageAspectFlags::STENCIL,
-            Format::D24UnormS8Uint => ImageAspectFlags::DEPTH | ImageAspectFlags::STENCIL,
-            Format::D32SfloatS8Uint => ImageAspectFlags::DEPTH | ImageAspectFlags::STENCIL,
-            Format::Bc1RgbUnormBlock => ImageAspectFlags::COLOR,
-            Format::Bc1RgbSrgbBlock => ImageAspectFlags::COLOR,
-            Format::Bc1RgbaUnormBlock => ImageAspectFlags::COLOR,
-            Format::Bc1RgbaSrgbBlock => ImageAspectFlags::COLOR,
-            Format::Bc2UnormBlock => ImageAspectFlags::COLOR,
-            Format::Bc2SrgbBlock => ImageAspectFlags::COLOR,
-            Format::Bc3UnormBlock => ImageAspectFlags::COLOR,
-            Format::Bc3SrgbBlock => ImageAspectFlags::COLOR,
-            Format::Bc4UnormBlock => ImageAspectFlags::COLOR,
-            Format::Bc4SnormBlock => ImageAspectFlags::COLOR,
-            Format::Bc5UnormBlock => ImageAspectFlags::COLOR,
-            Format::Bc5SnormBlock => ImageAspectFlags::COLOR,
-            Format::Bc6hUfloatBlock => ImageAspectFlags::COLOR,
-            Format::Bc6hSfloatBlock => ImageAspectFlags::COLOR,
-            Format::Bc7UnormBlock => ImageAspectFlags::COLOR,
-            Format::Bc7SrgbBlock => ImageAspectFlags::COLOR,
-            Format::Etc2R8g8b8UnormBlock => ImageAspectFlags::COLOR,
-            Format::Etc2R8g8b8SrgbBlock => ImageAspectFlags::COLOR,
-            Format::Etc2R8g8b8a1UnormBlock => ImageAspectFlags::COLOR,
-            Format::Etc2R8g8b8a1SrgbBlock => ImageAspectFlags::COLOR,
-            Format::Etc2R8g8b8a8UnormBlock => ImageAspectFlags::COLOR,
-            Format::Etc2R8g8b8a8SrgbBlock => ImageAspectFlags::COLOR,
-            Format::EacR11UnormBlock => ImageAspectFlags::COLOR,
-            Format::EacR11SnormBlock => ImageAspectFlags::COLOR,
-            Format::EacR11g11UnormBlock => ImageAspectFlags::COLOR,
-            Format::EacR11g11SnormBlock => ImageAspectFlags::COLOR,
-            Format::Astc4x4UnormBlock => ImageAspectFlags::COLOR,
-            Format::Astc4x4SrgbBlock => ImageAspectFlags::COLOR,
-            Format::Astc5x4UnormBlock => ImageAspectFlags::COLOR,
-            Format::Astc5x4SrgbBlock => ImageAspectFlags::COLOR,
-            Format::Astc5x5UnormBlock => ImageAspectFlags::COLOR,
-            Format::Astc5x5SrgbBlock => ImageAspectFlags::COLOR,
-            Format::Astc6x5UnormBlock => ImageAspectFlags::COLOR,
-            Format::Astc6x5SrgbBlock => ImageAspectFlags::COLOR,
-            Format::Astc6x6UnormBlock => ImageAspectFlags::COLOR,
-            Format::Astc6x6SrgbBlock => ImageAspectFlags::COLOR,
-            Format::Astc8x5UnormBlock => ImageAspectFlags::COLOR,
-            Format::Astc8x5SrgbBlock => ImageAspectFlags::COLOR,
-            Format::Astc8x6UnormBlock => ImageAspectFlags::COLOR,
-            Format::Astc8x6SrgbBlock => ImageAspectFlags::COLOR,
-            Format::Astc8x8UnormBlock => ImageAspectFlags::COLOR,
-            Format::Astc8x8SrgbBlock => ImageAspectFlags::COLOR,
-            Format::Astc10x5UnormBlock => ImageAspectFlags::COLOR,
-            Format::Astc10x5SrgbBlock => ImageAspectFlags::COLOR,
-            Format::Astc10x6UnormBlock => ImageAspectFlags::COLOR,
-            Format::Astc10x6SrgbBlock => ImageAspectFlags::COLOR,
-            Format::Astc10x8UnormBlock => ImageAspectFlags::COLOR,
-            Format::Astc10x8SrgbBlock => ImageAspectFlags::COLOR,
-            Format::Astc10x10UnormBlock => ImageAspectFlags::COLOR,
-            Format::Astc10x10SrgbBlock => ImageAspectFlags::COLOR,
-            Format::Astc12x10UnormBlock => ImageAspectFlags::COLOR,
-            Format::Astc12x10SrgbBlock => ImageAspectFlags::COLOR,
-            Format::Astc12x12UnormBlock => ImageAspectFlags::COLOR,
-            Format::Astc12x12SrgbBlock => ImageAspectFlags::COLOR,
-            Format::G8b8g8r8422Unorm => ImageAspectFlags::COLOR,
-            Format::B8g8r8g8422Unorm => ImageAspectFlags::COLOR,
-            Format::G8B8R83plane420Unorm => ImageAspectFlags::COLOR | ImageAspectFlags::PLANE_0 | ImageAspectFlags::PLANE_1 | ImageAspectFlags::PLANE_2,
-            Format::G8B8r82plane420Unorm => ImageAspectFlags::COLOR | ImageAspectFlags::PLANE_0 | ImageAspectFlags::PLANE_1,
-            Format::G8B8R83plane422Unorm => ImageAspectFlags::COLOR | ImageAspectFlags::PLANE_0 | ImageAspectFlags::PLANE_1 | ImageAspectFlags::PLANE_2,
-            Format::G8B8r82plane422Unorm => ImageAspectFlags::COLOR | ImageAspectFlags::PLANE_0 | ImageAspectFlags::PLANE_1,
-            Format::G8B8R83plane444Unorm => ImageAspectFlags::COLOR | ImageAspectFlags::PLANE_0 | ImageAspectFlags::PLANE_1 | ImageAspectFlags::PLANE_2,
-            Format::R10x6UnormPack16 => ImageAspectFlags::COLOR,
-            Format::R10x6g10x6Unorm2pack16 => ImageAspectFlags::COLOR,
-            Format::R10x6g10x6b10x6a10x6Unorm4pack16 => ImageAspectFlags::COLOR,
-            Format::G10x6b10x6g10x6r10x6422Unorm4pack16 => ImageAspectFlags::COLOR,
-            Format::B10x6g10x6r10x6g10x6422Unorm4pack16 => ImageAspectFlags::COLOR,
-            Format::G10x6B10x6R10x63plane420Unorm3pack16 => ImageAspectFlags::COLOR | ImageAspectFlags::PLANE_0 | ImageAspectFlags::PLANE_1 | ImageAspectFlags::PLANE_2,
-            Format::G10x6B10x6r10x62plane420Unorm3pack16 => ImageAspectFlags::COLOR | ImageAspectFlags::PLANE_0 | ImageAspectFlags::PLANE_1,
-            Format::G10x6B10x6R10x63plane422Unorm3pack16 => ImageAspectFlags::COLOR | ImageAspectFlags::PLANE_0 | ImageAspectFlags::PLANE_1 | ImageAspectFlags::PLANE_2,
-            Format::G10x6B10x6r10x62plane422Unorm3pack16 => ImageAspectFlags::COLOR | ImageAspectFlags::PLANE_0 | ImageAspectFlags::PLANE_1,
-            Format::G10x6B10x6R10x63plane444Unorm3pack16 => ImageAspectFlags::COLOR | ImageAspectFlags::PLANE_0 | ImageAspectFlags::PLANE_1 | ImageAspectFlags::PLANE_2,
-            Format::R12x4UnormPack16 => ImageAspectFlags::COLOR,
-            Format::R12x4g12x4Unorm2pack16 => ImageAspectFlags::COLOR,
-            Format::R12x4g12x4b12x4a12x4Unorm4pack16 => ImageAspectFlags::COLOR,
-            Format::G12x4b12x4g12x4r12x4422Unorm4pack16 => ImageAspectFlags::COLOR,
-            Format::B12x4g12x4r12x4g12x4422Unorm4pack16 => ImageAspectFlags::COLOR,
-            Format::G12x4B12x4R12x43plane420Unorm3pack16 => ImageAspectFlags::COLOR | ImageAspectFlags::PLANE_0 | ImageAspectFlags::PLANE_1 | ImageAspectFlags::PLANE_2,
-            Format::G12x4B12x4r12x42plane420Unorm3pack16 => ImageAspectFlags::COLOR | ImageAspectFlags::PLANE_0 | ImageAspectFlags::PLANE_1,
-            Format::G12x4B12x4R12x43plane422Unorm3pack16 => ImageAspectFlags::COLOR | ImageAspectFlags::PLANE_0 | ImageAspectFlags::PLANE_1 | ImageAspectFlags::PLANE_2,
-            Format::G12x4B12x4r12x42plane422Unorm3pack16 => ImageAspectFlags::COLOR | ImageAspectFlags::PLANE_0 | ImageAspectFlags::PLANE_1,
-            Format::G12x4B12x4R12x43plane444Unorm3pack16 => ImageAspectFlags::COLOR | ImageAspectFlags::PLANE_0 | ImageAspectFlags::PLANE_1 | ImageAspectFlags::PLANE_2,
-            Format::G16b16g16r16422Unorm => ImageAspectFlags::COLOR,
-            Format::B16g16r16g16422Unorm => ImageAspectFlags::COLOR,
-            Format::G16B16R163plane420Unorm => ImageAspectFlags::COLOR | ImageAspectFlags::PLANE_0 | ImageAspectFlags::PLANE_1 | ImageAspectFlags::PLANE_2,
-            Format::G16B16r162plane420Unorm => ImageAspectFlags::COLOR | ImageAspectFlags::PLANE_0 | ImageAspectFlags::PLANE_1,
-            Format::G16B16R163plane422Unorm => ImageAspectFlags::COLOR | ImageAspectFlags::PLANE_0 | ImageAspectFlags::PLANE_1 | ImageAspectFlags::PLANE_2,
-            Format::G16B16r162plane422Unorm => ImageAspectFlags::COLOR | ImageAspectFlags::PLANE_0 | ImageAspectFlags::PLANE_1,
-            Format::G16B16R163plane444Unorm => ImageAspectFlags::COLOR | ImageAspectFlags::PLANE_0 | ImageAspectFlags::PLANE_1 | ImageAspectFlags::PLANE_2,
-            Format::G8B8r82plane444Unorm => ImageAspectFlags::COLOR | ImageAspectFlags::PLANE_0 | ImageAspectFlags::PLANE_1,
-            Format::G10x6B10x6r10x62plane444Unorm3pack16 => ImageAspectFlags::COLOR | ImageAspectFlags::PLANE_0 | ImageAspectFlags::PLANE_1,
-            Format::G12x4B12x4r12x42plane444Unorm3pack16 => ImageAspectFlags::COLOR | ImageAspectFlags::PLANE_0 | ImageAspectFlags::PLANE_1,
-            Format::G16B16r162plane444Unorm => ImageAspectFlags::COLOR | ImageAspectFlags::PLANE_0 | ImageAspectFlags::PLANE_1,
-            Format::A4r4g4b4UnormPack16 => ImageAspectFlags::COLOR,
-            Format::A4b4g4r4UnormPack16 => ImageAspectFlags::COLOR,
-            Format::Astc4x4SfloatBlock => ImageAspectFlags::COLOR,
-            Format::Astc5x4SfloatBlock => ImageAspectFlags::COLOR,
-            Format::Astc5x5SfloatBlock => ImageAspectFlags::COLOR,
-            Format::Astc6x5SfloatBlock => ImageAspectFlags::COLOR,
-            Format::Astc6x6SfloatBlock => ImageAspectFlags::COLOR,
-            Format::Astc8x5SfloatBlock => ImageAspectFlags::COLOR,
-            Format::Astc8x6SfloatBlock => ImageAspectFlags::COLOR,
-            Format::Astc8x8SfloatBlock => ImageAspectFlags::COLOR,
-            Format::Astc10x5SfloatBlock => ImageAspectFlags::COLOR,
-            Format::Astc10x6SfloatBlock => ImageAspectFlags::COLOR,
-            Format::Astc10x8SfloatBlock => ImageAspectFlags::COLOR,
-            Format::Astc10x10SfloatBlock => ImageAspectFlags::COLOR,
-            Format::Astc12x10SfloatBlock => ImageAspectFlags::COLOR,
-            Format::Astc12x12SfloatBlock => ImageAspectFlags::COLOR,
+            Format::Undefined => None,
+            Format::R4g4UnormPack8 => Some(ImageAspectFlagBits::Color.into()),
+            Format::R4g4b4a4UnormPack16 => Some(ImageAspectFlagBits::Color.into()),
+            Format::B4g4r4a4UnormPack16 => Some(ImageAspectFlagBits::Color.into()),
+            Format::R5g6b5UnormPack16 => Some(ImageAspectFlagBits::Color.into()),
+            Format::B5g6r5UnormPack16 => Some(ImageAspectFlagBits::Color.into()),
+            Format::R5g5b5a1UnormPack16 => Some(ImageAspectFlagBits::Color.into()),
+            Format::B5g5r5a1UnormPack16 => Some(ImageAspectFlagBits::Color.into()),
+            Format::A1r5g5b5UnormPack16 => Some(ImageAspectFlagBits::Color.into()),
+            Format::R8Unorm => Some(ImageAspectFlagBits::Color.into()),
+            Format::R8Snorm => Some(ImageAspectFlagBits::Color.into()),
+            Format::R8Uscaled => Some(ImageAspectFlagBits::Color.into()),
+            Format::R8Sscaled => Some(ImageAspectFlagBits::Color.into()),
+            Format::R8Uint => Some(ImageAspectFlagBits::Color.into()),
+            Format::R8Sint => Some(ImageAspectFlagBits::Color.into()),
+            Format::R8Srgb => Some(ImageAspectFlagBits::Color.into()),
+            Format::R8g8Unorm => Some(ImageAspectFlagBits::Color.into()),
+            Format::R8g8Snorm => Some(ImageAspectFlagBits::Color.into()),
+            Format::R8g8Uscaled => Some(ImageAspectFlagBits::Color.into()),
+            Format::R8g8Sscaled => Some(ImageAspectFlagBits::Color.into()),
+            Format::R8g8Uint => Some(ImageAspectFlagBits::Color.into()),
+            Format::R8g8Sint => Some(ImageAspectFlagBits::Color.into()),
+            Format::R8g8Srgb => Some(ImageAspectFlagBits::Color.into()),
+            Format::R8g8b8Unorm => Some(ImageAspectFlagBits::Color.into()),
+            Format::R8g8b8Snorm => Some(ImageAspectFlagBits::Color.into()),
+            Format::R8g8b8Uscaled => Some(ImageAspectFlagBits::Color.into()),
+            Format::R8g8b8Sscaled => Some(ImageAspectFlagBits::Color.into()),
+            Format::R8g8b8Uint => Some(ImageAspectFlagBits::Color.into()),
+            Format::R8g8b8Sint => Some(ImageAspectFlagBits::Color.into()),
+            Format::R8g8b8Srgb => Some(ImageAspectFlagBits::Color.into()),
+            Format::B8g8r8Unorm => Some(ImageAspectFlagBits::Color.into()),
+            Format::B8g8r8Snorm => Some(ImageAspectFlagBits::Color.into()),
+            Format::B8g8r8Uscaled => Some(ImageAspectFlagBits::Color.into()),
+            Format::B8g8r8Sscaled => Some(ImageAspectFlagBits::Color.into()),
+            Format::B8g8r8Uint => Some(ImageAspectFlagBits::Color.into()),
+            Format::B8g8r8Sint => Some(ImageAspectFlagBits::Color.into()),
+            Format::B8g8r8Srgb => Some(ImageAspectFlagBits::Color.into()),
+            Format::R8g8b8a8Unorm => Some(ImageAspectFlagBits::Color.into()),
+            Format::R8g8b8a8Snorm => Some(ImageAspectFlagBits::Color.into()),
+            Format::R8g8b8a8Uscaled => Some(ImageAspectFlagBits::Color.into()),
+            Format::R8g8b8a8Sscaled => Some(ImageAspectFlagBits::Color.into()),
+            Format::R8g8b8a8Uint => Some(ImageAspectFlagBits::Color.into()),
+            Format::R8g8b8a8Sint => Some(ImageAspectFlagBits::Color.into()),
+            Format::R8g8b8a8Srgb => Some(ImageAspectFlagBits::Color.into()),
+            Format::B8g8r8a8Unorm => Some(ImageAspectFlagBits::Color.into()),
+            Format::B8g8r8a8Snorm => Some(ImageAspectFlagBits::Color.into()),
+            Format::B8g8r8a8Uscaled => Some(ImageAspectFlagBits::Color.into()),
+            Format::B8g8r8a8Sscaled => Some(ImageAspectFlagBits::Color.into()),
+            Format::B8g8r8a8Uint => Some(ImageAspectFlagBits::Color.into()),
+            Format::B8g8r8a8Sint => Some(ImageAspectFlagBits::Color.into()),
+            Format::B8g8r8a8Srgb => Some(ImageAspectFlagBits::Color.into()),
+            Format::A8b8g8r8UnormPack32 => Some(ImageAspectFlagBits::Color.into()),
+            Format::A8b8g8r8SnormPack32 => Some(ImageAspectFlagBits::Color.into()),
+            Format::A8b8g8r8UscaledPack32 => Some(ImageAspectFlagBits::Color.into()),
+            Format::A8b8g8r8SscaledPack32 => Some(ImageAspectFlagBits::Color.into()),
+            Format::A8b8g8r8UintPack32 => Some(ImageAspectFlagBits::Color.into()),
+            Format::A8b8g8r8SintPack32 => Some(ImageAspectFlagBits::Color.into()),
+            Format::A8b8g8r8SrgbPack32 => Some(ImageAspectFlagBits::Color.into()),
+            Format::A2r10g10b10UnormPack32 => Some(ImageAspectFlagBits::Color.into()),
+            Format::A2r10g10b10SnormPack32 => Some(ImageAspectFlagBits::Color.into()),
+            Format::A2r10g10b10UscaledPack32 => Some(ImageAspectFlagBits::Color.into()),
+            Format::A2r10g10b10SscaledPack32 => Some(ImageAspectFlagBits::Color.into()),
+            Format::A2r10g10b10UintPack32 => Some(ImageAspectFlagBits::Color.into()),
+            Format::A2r10g10b10SintPack32 => Some(ImageAspectFlagBits::Color.into()),
+            Format::A2b10g10r10UnormPack32 => Some(ImageAspectFlagBits::Color.into()),
+            Format::A2b10g10r10SnormPack32 => Some(ImageAspectFlagBits::Color.into()),
+            Format::A2b10g10r10UscaledPack32 => Some(ImageAspectFlagBits::Color.into()),
+            Format::A2b10g10r10SscaledPack32 => Some(ImageAspectFlagBits::Color.into()),
+            Format::A2b10g10r10UintPack32 => Some(ImageAspectFlagBits::Color.into()),
+            Format::A2b10g10r10SintPack32 => Some(ImageAspectFlagBits::Color.into()),
+            Format::R16Unorm => Some(ImageAspectFlagBits::Color.into()),
+            Format::R16Snorm => Some(ImageAspectFlagBits::Color.into()),
+            Format::R16Uscaled => Some(ImageAspectFlagBits::Color.into()),
+            Format::R16Sscaled => Some(ImageAspectFlagBits::Color.into()),
+            Format::R16Uint => Some(ImageAspectFlagBits::Color.into()),
+            Format::R16Sint => Some(ImageAspectFlagBits::Color.into()),
+            Format::R16Sfloat => Some(ImageAspectFlagBits::Color.into()),
+            Format::R16g16Unorm => Some(ImageAspectFlagBits::Color.into()),
+            Format::R16g16Snorm => Some(ImageAspectFlagBits::Color.into()),
+            Format::R16g16Uscaled => Some(ImageAspectFlagBits::Color.into()),
+            Format::R16g16Sscaled => Some(ImageAspectFlagBits::Color.into()),
+            Format::R16g16Uint => Some(ImageAspectFlagBits::Color.into()),
+            Format::R16g16Sint => Some(ImageAspectFlagBits::Color.into()),
+            Format::R16g16Sfloat => Some(ImageAspectFlagBits::Color.into()),
+            Format::R16g16b16Unorm => Some(ImageAspectFlagBits::Color.into()),
+            Format::R16g16b16Snorm => Some(ImageAspectFlagBits::Color.into()),
+            Format::R16g16b16Uscaled => Some(ImageAspectFlagBits::Color.into()),
+            Format::R16g16b16Sscaled => Some(ImageAspectFlagBits::Color.into()),
+            Format::R16g16b16Uint => Some(ImageAspectFlagBits::Color.into()),
+            Format::R16g16b16Sint => Some(ImageAspectFlagBits::Color.into()),
+            Format::R16g16b16Sfloat => Some(ImageAspectFlagBits::Color.into()),
+            Format::R16g16b16a16Unorm => Some(ImageAspectFlagBits::Color.into()),
+            Format::R16g16b16a16Snorm => Some(ImageAspectFlagBits::Color.into()),
+            Format::R16g16b16a16Uscaled => Some(ImageAspectFlagBits::Color.into()),
+            Format::R16g16b16a16Sscaled => Some(ImageAspectFlagBits::Color.into()),
+            Format::R16g16b16a16Uint => Some(ImageAspectFlagBits::Color.into()),
+            Format::R16g16b16a16Sint => Some(ImageAspectFlagBits::Color.into()),
+            Format::R16g16b16a16Sfloat => Some(ImageAspectFlagBits::Color.into()),
+            Format::R32Uint => Some(ImageAspectFlagBits::Color.into()),
+            Format::R32Sint => Some(ImageAspectFlagBits::Color.into()),
+            Format::R32Sfloat => Some(ImageAspectFlagBits::Color.into()),
+            Format::R32g32Uint => Some(ImageAspectFlagBits::Color.into()),
+            Format::R32g32Sint => Some(ImageAspectFlagBits::Color.into()),
+            Format::R32g32Sfloat => Some(ImageAspectFlagBits::Color.into()),
+            Format::R32g32b32Uint => Some(ImageAspectFlagBits::Color.into()),
+            Format::R32g32b32Sint => Some(ImageAspectFlagBits::Color.into()),
+            Format::R32g32b32Sfloat => Some(ImageAspectFlagBits::Color.into()),
+            Format::R32g32b32a32Uint => Some(ImageAspectFlagBits::Color.into()),
+            Format::R32g32b32a32Sint => Some(ImageAspectFlagBits::Color.into()),
+            Format::R32g32b32a32Sfloat => Some(ImageAspectFlagBits::Color.into()),
+            Format::R64Uint => Some(ImageAspectFlagBits::Color.into()),
+            Format::R64Sint => Some(ImageAspectFlagBits::Color.into()),
+            Format::R64Sfloat => Some(ImageAspectFlagBits::Color.into()),
+            Format::R64g64Uint => Some(ImageAspectFlagBits::Color.into()),
+            Format::R64g64Sint => Some(ImageAspectFlagBits::Color.into()),
+            Format::R64g64Sfloat => Some(ImageAspectFlagBits::Color.into()),
+            Format::R64g64b64Uint => Some(ImageAspectFlagBits::Color.into()),
+            Format::R64g64b64Sint => Some(ImageAspectFlagBits::Color.into()),
+            Format::R64g64b64Sfloat => Some(ImageAspectFlagBits::Color.into()),
+            Format::R64g64b64a64Uint => Some(ImageAspectFlagBits::Color.into()),
+            Format::R64g64b64a64Sint => Some(ImageAspectFlagBits::Color.into()),
+            Format::R64g64b64a64Sfloat => Some(ImageAspectFlagBits::Color.into()),
+            Format::B10g11r11UfloatPack32 => Some(ImageAspectFlagBits::Color.into()),
+            Format::E5b9g9r9UfloatPack32 => Some(ImageAspectFlagBits::Color.into()),
+            Format::D16Unorm => Some(ImageAspectFlagBits::Depth.into()),
+            Format::X8D24UnormPack32 => Some(ImageAspectFlagBits::Depth.into()),
+            Format::D32Sfloat => Some(ImageAspectFlagBits::Depth.into()),
+            Format::S8Uint => Some(ImageAspectFlagBits::Stencil.into()),
+            Format::D16UnormS8Uint => Some(ImageAspectFlagBits::Depth | ImageAspectFlagBits::Stencil),
+            Format::D24UnormS8Uint => Some(ImageAspectFlagBits::Depth | ImageAspectFlagBits::Stencil),
+            Format::D32SfloatS8Uint => Some(ImageAspectFlagBits::Depth | ImageAspectFlagBits::Stencil),
+            Format::Bc1RgbUnormBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Bc1RgbSrgbBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Bc1RgbaUnormBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Bc1RgbaSrgbBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Bc2UnormBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Bc2SrgbBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Bc3UnormBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Bc3SrgbBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Bc4UnormBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Bc4SnormBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Bc5UnormBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Bc5SnormBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Bc6hUfloatBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Bc6hSfloatBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Bc7UnormBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Bc7SrgbBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Etc2R8g8b8UnormBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Etc2R8g8b8SrgbBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Etc2R8g8b8a1UnormBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Etc2R8g8b8a1SrgbBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Etc2R8g8b8a8UnormBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Etc2R8g8b8a8SrgbBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::EacR11UnormBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::EacR11SnormBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::EacR11g11UnormBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::EacR11g11SnormBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Astc4x4UnormBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Astc4x4SrgbBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Astc5x4UnormBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Astc5x4SrgbBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Astc5x5UnormBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Astc5x5SrgbBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Astc6x5UnormBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Astc6x5SrgbBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Astc6x6UnormBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Astc6x6SrgbBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Astc8x5UnormBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Astc8x5SrgbBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Astc8x6UnormBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Astc8x6SrgbBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Astc8x8UnormBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Astc8x8SrgbBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Astc10x5UnormBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Astc10x5SrgbBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Astc10x6UnormBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Astc10x6SrgbBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Astc10x8UnormBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Astc10x8SrgbBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Astc10x10UnormBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Astc10x10SrgbBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Astc12x10UnormBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Astc12x10SrgbBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Astc12x12UnormBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Astc12x12SrgbBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::G8b8g8r8422Unorm => Some(ImageAspectFlagBits::Color.into()),
+            Format::B8g8r8g8422Unorm => Some(ImageAspectFlagBits::Color.into()),
+            Format::G8B8R83plane420Unorm => Some(ImageAspectFlagBits::Color | ImageAspectFlagBits::Plane0 | ImageAspectFlagBits::Plane1 | ImageAspectFlagBits::Plane2),
+            Format::G8B8r82plane420Unorm => Some(ImageAspectFlagBits::Color | ImageAspectFlagBits::Plane0 | ImageAspectFlagBits::Plane1),
+            Format::G8B8R83plane422Unorm => Some(ImageAspectFlagBits::Color | ImageAspectFlagBits::Plane0 | ImageAspectFlagBits::Plane1 | ImageAspectFlagBits::Plane2),
+            Format::G8B8r82plane422Unorm => Some(ImageAspectFlagBits::Color | ImageAspectFlagBits::Plane0 | ImageAspectFlagBits::Plane1),
+            Format::G8B8R83plane444Unorm => Some(ImageAspectFlagBits::Color | ImageAspectFlagBits::Plane0 | ImageAspectFlagBits::Plane1 | ImageAspectFlagBits::Plane2),
+            Format::R10x6UnormPack16 => Some(ImageAspectFlagBits::Color.into()),
+            Format::R10x6g10x6Unorm2pack16 => Some(ImageAspectFlagBits::Color.into()),
+            Format::R10x6g10x6b10x6a10x6Unorm4pack16 => Some(ImageAspectFlagBits::Color.into()),
+            Format::G10x6b10x6g10x6r10x6422Unorm4pack16 => Some(ImageAspectFlagBits::Color.into()),
+            Format::B10x6g10x6r10x6g10x6422Unorm4pack16 => Some(ImageAspectFlagBits::Color.into()),
+            Format::G10x6B10x6R10x63plane420Unorm3pack16 => Some(ImageAspectFlagBits::Color | ImageAspectFlagBits::Plane0 | ImageAspectFlagBits::Plane1 | ImageAspectFlagBits::Plane2),
+            Format::G10x6B10x6r10x62plane420Unorm3pack16 => Some(ImageAspectFlagBits::Color | ImageAspectFlagBits::Plane0 | ImageAspectFlagBits::Plane1),
+            Format::G10x6B10x6R10x63plane422Unorm3pack16 => Some(ImageAspectFlagBits::Color | ImageAspectFlagBits::Plane0 | ImageAspectFlagBits::Plane1 | ImageAspectFlagBits::Plane2),
+            Format::G10x6B10x6r10x62plane422Unorm3pack16 => Some(ImageAspectFlagBits::Color | ImageAspectFlagBits::Plane0 | ImageAspectFlagBits::Plane1),
+            Format::G10x6B10x6R10x63plane444Unorm3pack16 => Some(ImageAspectFlagBits::Color | ImageAspectFlagBits::Plane0 | ImageAspectFlagBits::Plane1 | ImageAspectFlagBits::Plane2),
+            Format::R12x4UnormPack16 => Some(ImageAspectFlagBits::Color.into()),
+            Format::R12x4g12x4Unorm2pack16 => Some(ImageAspectFlagBits::Color.into()),
+            Format::R12x4g12x4b12x4a12x4Unorm4pack16 => Some(ImageAspectFlagBits::Color.into()),
+            Format::G12x4b12x4g12x4r12x4422Unorm4pack16 => Some(ImageAspectFlagBits::Color.into()),
+            Format::B12x4g12x4r12x4g12x4422Unorm4pack16 => Some(ImageAspectFlagBits::Color.into()),
+            Format::G12x4B12x4R12x43plane420Unorm3pack16 => Some(ImageAspectFlagBits::Color | ImageAspectFlagBits::Plane0 | ImageAspectFlagBits::Plane1 | ImageAspectFlagBits::Plane2),
+            Format::G12x4B12x4r12x42plane420Unorm3pack16 => Some(ImageAspectFlagBits::Color | ImageAspectFlagBits::Plane0 | ImageAspectFlagBits::Plane1),
+            Format::G12x4B12x4R12x43plane422Unorm3pack16 => Some(ImageAspectFlagBits::Color | ImageAspectFlagBits::Plane0 | ImageAspectFlagBits::Plane1 | ImageAspectFlagBits::Plane2),
+            Format::G12x4B12x4r12x42plane422Unorm3pack16 => Some(ImageAspectFlagBits::Color | ImageAspectFlagBits::Plane0 | ImageAspectFlagBits::Plane1),
+            Format::G12x4B12x4R12x43plane444Unorm3pack16 => Some(ImageAspectFlagBits::Color | ImageAspectFlagBits::Plane0 | ImageAspectFlagBits::Plane1 | ImageAspectFlagBits::Plane2),
+            Format::G16b16g16r16422Unorm => Some(ImageAspectFlagBits::Color.into()),
+            Format::B16g16r16g16422Unorm => Some(ImageAspectFlagBits::Color.into()),
+            Format::G16B16R163plane420Unorm => Some(ImageAspectFlagBits::Color | ImageAspectFlagBits::Plane0 | ImageAspectFlagBits::Plane1 | ImageAspectFlagBits::Plane2),
+            Format::G16B16r162plane420Unorm => Some(ImageAspectFlagBits::Color | ImageAspectFlagBits::Plane0 | ImageAspectFlagBits::Plane1),
+            Format::G16B16R163plane422Unorm => Some(ImageAspectFlagBits::Color | ImageAspectFlagBits::Plane0 | ImageAspectFlagBits::Plane1 | ImageAspectFlagBits::Plane2),
+            Format::G16B16r162plane422Unorm => Some(ImageAspectFlagBits::Color | ImageAspectFlagBits::Plane0 | ImageAspectFlagBits::Plane1),
+            Format::G16B16R163plane444Unorm => Some(ImageAspectFlagBits::Color | ImageAspectFlagBits::Plane0 | ImageAspectFlagBits::Plane1 | ImageAspectFlagBits::Plane2),
+            Format::G8B8r82plane444Unorm => Some(ImageAspectFlagBits::Color | ImageAspectFlagBits::Plane0 | ImageAspectFlagBits::Plane1),
+            Format::G10x6B10x6r10x62plane444Unorm3pack16 => Some(ImageAspectFlagBits::Color | ImageAspectFlagBits::Plane0 | ImageAspectFlagBits::Plane1),
+            Format::G12x4B12x4r12x42plane444Unorm3pack16 => Some(ImageAspectFlagBits::Color | ImageAspectFlagBits::Plane0 | ImageAspectFlagBits::Plane1),
+            Format::G16B16r162plane444Unorm => Some(ImageAspectFlagBits::Color | ImageAspectFlagBits::Plane0 | ImageAspectFlagBits::Plane1),
+            Format::A4r4g4b4UnormPack16 => Some(ImageAspectFlagBits::Color.into()),
+            Format::A4b4g4r4UnormPack16 => Some(ImageAspectFlagBits::Color.into()),
+            Format::Astc4x4SfloatBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Astc5x4SfloatBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Astc5x5SfloatBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Astc6x5SfloatBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Astc6x6SfloatBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Astc8x5SfloatBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Astc8x6SfloatBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Astc8x8SfloatBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Astc10x5SfloatBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Astc10x6SfloatBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Astc10x8SfloatBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Astc10x10SfloatBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Astc12x10SfloatBlock => Some(ImageAspectFlagBits::Color.into()),
+            Format::Astc12x12SfloatBlock => Some(ImageAspectFlagBits::Color.into()),
         }
     }
 
@@ -3147,27 +3332,70 @@ pub enum ObjectType {
     ShaderEXT = 1000482000,
 }
 
+impl std::fmt::Display for ObjectType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
 //
 // Bitmasks
 //
 
-bitflags! {
-    #[repr(C)]
-    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-    #[doc = "**Chapter**: Initialization"]
-    #[doc = "<br>"]
-    #[doc = "**Description**: Bitmask of VkInstanceCreateFlagBits"]
-    #[doc = "<br>"]
-    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkInstanceCreateFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkInstanceCreateFlags.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkInstanceCreateFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkInstanceCreateFlagBits.html)"]
-    pub struct InstanceCreateFlags: u32 {
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq)]
+#[doc = "**Chapter**: Initialization"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask of VkInstanceCreateFlagBits"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkInstanceCreateFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkInstanceCreateFlags.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkInstanceCreateFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkInstanceCreateFlagBits.html)"]
+pub struct InstanceCreateFlags(u32);
 
+impl InstanceCreateFlags {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
     }
 }
 
+impl std::ops::BitAnd for InstanceCreateFlags {
+    type Output = Self;
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Self(self.0 & rhs.0)
+    }
+}
+
+impl From<InstanceCreateFlagBits> for InstanceCreateFlags {
+    fn from(flag_bits: InstanceCreateFlagBits) -> Self {
+        Self(flag_bits as u32)
+    }
+}
+
+impl std::ops::BitOr<InstanceCreateFlagBits> for InstanceCreateFlags {
+    type Output = InstanceCreateFlags;
+    fn bitor(self, rhs: InstanceCreateFlagBits) -> Self::Output {
+        Self(self.0 | rhs as u32)
+    }
+}
+
+impl std::fmt::Display for InstanceCreateFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        display_flag_bits_u32(f, self.0, &[InstanceCreateFlagBits::Placeholder])
+    }
+}
+
+impl std::fmt::Debug for InstanceCreateFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("InstanceCreateFlags").field(&format!("{self}")).finish()
+    }
+}
+
+#[repr(u32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Initialization"]
 #[doc = "<br>"]
 #[doc = "**Description**: Bitmask specifying behavior of the instance"]
@@ -3175,34 +3403,100 @@ bitflags! {
 #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
 #[doc = "<br>"]
 #[doc = "**Reference**: [`VkInstanceCreateFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkInstanceCreateFlagBits.html)"]
-pub type InstanceCreateFlagBits = InstanceCreateFlags;
+pub enum InstanceCreateFlagBits {
+    Placeholder = 0b0,
+}
 
-bitflags! {
-    #[repr(C)]
-    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-    #[doc = "**Chapter**: Devices and Queues"]
-    #[doc = "<br>"]
-    #[doc = "**Description**: Bitmask of VkQueueFlagBits"]
-    #[doc = "<br>"]
-    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkQueueFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkQueueFlags.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkQueueFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkQueueFlagBits.html)"]
-    pub struct QueueFlags: u32 {
-        #[doc = "Translated from: `VK_QUEUE_GRAPHICS_BIT`"]
-        const GRAPHICS = 0b1;
-        #[doc = "Translated from: `VK_QUEUE_COMPUTE_BIT`"]
-        const COMPUTE = 0b10;
-        #[doc = "Translated from: `VK_QUEUE_TRANSFER_BIT`"]
-        const TRANSFER = 0b100;
-        #[doc = "Translated from: `VK_QUEUE_SPARSE_BINDING_BIT`"]
-        const SPARSE_BINDING = 0b1000;
-        #[doc = "Translated from: `VK_QUEUE_PROTECTED_BIT`"]
-        const PROTECTED = 0b10000;
+impl From<InstanceCreateFlagBits> for u32 {
+    fn from(flag_bits: InstanceCreateFlagBits) -> Self {
+        flag_bits as u32
     }
 }
 
+impl std::ops::BitOr for InstanceCreateFlagBits {
+    type Output = InstanceCreateFlags;
+    fn bitor(self, rhs: Self) -> Self::Output {
+        InstanceCreateFlags(self as u32 | rhs as u32)
+    }
+}
+
+impl std::ops::BitOr<InstanceCreateFlags> for InstanceCreateFlagBits {
+    type Output = InstanceCreateFlags;
+    fn bitor(self, rhs: InstanceCreateFlags) -> Self::Output {
+        InstanceCreateFlags(self as u32 | rhs.0)
+    }
+}
+
+impl std::fmt::Display for InstanceCreateFlagBits {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq)]
+#[doc = "**Chapter**: Devices and Queues"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask of VkQueueFlagBits"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkQueueFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkQueueFlags.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkQueueFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkQueueFlagBits.html)"]
+pub struct QueueFlags(u32);
+
+impl QueueFlags {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
+    }
+}
+
+impl std::ops::BitAnd for QueueFlags {
+    type Output = Self;
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Self(self.0 & rhs.0)
+    }
+}
+
+impl From<QueueFlagBits> for QueueFlags {
+    fn from(flag_bits: QueueFlagBits) -> Self {
+        Self(flag_bits as u32)
+    }
+}
+
+impl std::ops::BitOr<QueueFlagBits> for QueueFlags {
+    type Output = QueueFlags;
+    fn bitor(self, rhs: QueueFlagBits) -> Self::Output {
+        Self(self.0 | rhs as u32)
+    }
+}
+
+impl std::fmt::Display for QueueFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        display_flag_bits_u32(
+            f,
+            self.0,
+            &[
+                QueueFlagBits::Graphics,
+                QueueFlagBits::Compute,
+                QueueFlagBits::Transfer,
+                QueueFlagBits::SparseBinding,
+                QueueFlagBits::Protected,
+            ],
+        )
+    }
+}
+
+impl std::fmt::Debug for QueueFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("QueueFlags").field(&format!("{self}")).finish()
+    }
+}
+
+#[repr(u32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Devices and Queues"]
 #[doc = "<br>"]
 #[doc = "**Description**: Bitmask specifying capabilities of queues in a queue family"]
@@ -3210,41 +3504,117 @@ bitflags! {
 #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
 #[doc = "<br>"]
 #[doc = "**Reference**: [`VkQueueFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkQueueFlagBits.html)"]
-pub type QueueFlagBits = QueueFlags;
+pub enum QueueFlagBits {
+    #[doc = "Translated from: `VK_QUEUE_GRAPHICS_BIT`"]
+    Graphics = 0b1,
+    #[doc = "Translated from: `VK_QUEUE_COMPUTE_BIT`"]
+    Compute = 0b10,
+    #[doc = "Translated from: `VK_QUEUE_TRANSFER_BIT`"]
+    Transfer = 0b100,
+    #[doc = "Translated from: `VK_QUEUE_SPARSE_BINDING_BIT`"]
+    SparseBinding = 0b1000,
+    #[doc = "Translated from: `VK_QUEUE_PROTECTED_BIT`"]
+    Protected = 0b10000,
+}
 
-bitflags! {
-    #[repr(C)]
-    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-    #[doc = "**Chapter**: Devices and Queues"]
-    #[doc = "<br>"]
-    #[doc = "**Description**: Reserved for future use"]
-    #[doc = "<br>"]
-    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkDeviceCreateFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDeviceCreateFlags.html)"]
-    pub struct DeviceCreateFlags: u32 {
-
+impl From<QueueFlagBits> for u32 {
+    fn from(flag_bits: QueueFlagBits) -> Self {
+        flag_bits as u32
     }
 }
 
-bitflags! {
-    #[repr(C)]
-    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-    #[doc = "**Chapter**: Devices and Queues"]
-    #[doc = "<br>"]
-    #[doc = "**Description**: Bitmask of VkDeviceQueueCreateFlagBits"]
-    #[doc = "<br>"]
-    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkDeviceQueueCreateFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDeviceQueueCreateFlags.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkDeviceQueueCreateFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDeviceQueueCreateFlagBits.html)"]
-    pub struct DeviceQueueCreateFlags: u32 {
-        #[doc = "Translated from: `VK_DEVICE_QUEUE_CREATE_PROTECTED_BIT`"]
-        const PROTECTED = 0b1;
+impl std::ops::BitOr for QueueFlagBits {
+    type Output = QueueFlags;
+    fn bitor(self, rhs: Self) -> Self::Output {
+        QueueFlags(self as u32 | rhs as u32)
     }
 }
 
+impl std::ops::BitOr<QueueFlags> for QueueFlagBits {
+    type Output = QueueFlags;
+    fn bitor(self, rhs: QueueFlags) -> Self::Output {
+        QueueFlags(self as u32 | rhs.0)
+    }
+}
+
+impl std::fmt::Display for QueueFlagBits {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[doc = "**Chapter**: Devices and Queues"]
+#[doc = "<br>"]
+#[doc = "**Description**: Reserved for future use"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkDeviceCreateFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDeviceCreateFlags.html)"]
+pub struct DeviceCreateFlags(u32);
+
+impl DeviceCreateFlags {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq)]
+#[doc = "**Chapter**: Devices and Queues"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask of VkDeviceQueueCreateFlagBits"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkDeviceQueueCreateFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDeviceQueueCreateFlags.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkDeviceQueueCreateFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDeviceQueueCreateFlagBits.html)"]
+pub struct DeviceQueueCreateFlags(u32);
+
+impl DeviceQueueCreateFlags {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
+    }
+}
+
+impl std::ops::BitAnd for DeviceQueueCreateFlags {
+    type Output = Self;
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Self(self.0 & rhs.0)
+    }
+}
+
+impl From<DeviceQueueCreateFlagBits> for DeviceQueueCreateFlags {
+    fn from(flag_bits: DeviceQueueCreateFlagBits) -> Self {
+        Self(flag_bits as u32)
+    }
+}
+
+impl std::ops::BitOr<DeviceQueueCreateFlagBits> for DeviceQueueCreateFlags {
+    type Output = DeviceQueueCreateFlags;
+    fn bitor(self, rhs: DeviceQueueCreateFlagBits) -> Self::Output {
+        Self(self.0 | rhs as u32)
+    }
+}
+
+impl std::fmt::Display for DeviceQueueCreateFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        display_flag_bits_u32(f, self.0, &[DeviceQueueCreateFlagBits::Protected])
+    }
+}
+
+impl std::fmt::Debug for DeviceQueueCreateFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("DeviceQueueCreateFlags").field(&format!("{self}")).finish()
+    }
+}
+
+#[repr(u32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Devices and Queues"]
 #[doc = "<br>"]
 #[doc = "**Description**: Bitmask specifying behavior of the queue"]
@@ -3252,30 +3622,99 @@ bitflags! {
 #[doc = "**Provided by**: [`VK_VERSION_1_1`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_1.html)"]
 #[doc = "<br>"]
 #[doc = "**Reference**: [`VkDeviceQueueCreateFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDeviceQueueCreateFlagBits.html)"]
-pub type DeviceQueueCreateFlagBits = DeviceQueueCreateFlags;
+pub enum DeviceQueueCreateFlagBits {
+    #[doc = "Translated from: `VK_DEVICE_QUEUE_CREATE_PROTECTED_BIT`"]
+    Protected = 0b1,
+}
 
-bitflags! {
-    #[repr(C)]
-    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-    #[doc = "**Chapter**: Command Buffers"]
-    #[doc = "<br>"]
-    #[doc = "**Description**: Bitmask of VkCommandPoolCreateFlagBits"]
-    #[doc = "<br>"]
-    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkCommandPoolCreateFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkCommandPoolCreateFlags.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkCommandPoolCreateFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkCommandPoolCreateFlagBits.html)"]
-    pub struct CommandPoolCreateFlags: u32 {
-        #[doc = "Translated from: `VK_COMMAND_POOL_CREATE_TRANSIENT_BIT`"]
-        const TRANSIENT = 0b1;
-        #[doc = "Translated from: `VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT`"]
-        const RESET_COMMAND_BUFFER = 0b10;
-        #[doc = "Translated from: `VK_COMMAND_POOL_CREATE_PROTECTED_BIT`"]
-        const PROTECTED = 0b100;
+impl From<DeviceQueueCreateFlagBits> for u32 {
+    fn from(flag_bits: DeviceQueueCreateFlagBits) -> Self {
+        flag_bits as u32
     }
 }
 
+impl std::ops::BitOr for DeviceQueueCreateFlagBits {
+    type Output = DeviceQueueCreateFlags;
+    fn bitor(self, rhs: Self) -> Self::Output {
+        DeviceQueueCreateFlags(self as u32 | rhs as u32)
+    }
+}
+
+impl std::ops::BitOr<DeviceQueueCreateFlags> for DeviceQueueCreateFlagBits {
+    type Output = DeviceQueueCreateFlags;
+    fn bitor(self, rhs: DeviceQueueCreateFlags) -> Self::Output {
+        DeviceQueueCreateFlags(self as u32 | rhs.0)
+    }
+}
+
+impl std::fmt::Display for DeviceQueueCreateFlagBits {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq)]
+#[doc = "**Chapter**: Command Buffers"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask of VkCommandPoolCreateFlagBits"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkCommandPoolCreateFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkCommandPoolCreateFlags.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkCommandPoolCreateFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkCommandPoolCreateFlagBits.html)"]
+pub struct CommandPoolCreateFlags(u32);
+
+impl CommandPoolCreateFlags {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
+    }
+}
+
+impl std::ops::BitAnd for CommandPoolCreateFlags {
+    type Output = Self;
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Self(self.0 & rhs.0)
+    }
+}
+
+impl From<CommandPoolCreateFlagBits> for CommandPoolCreateFlags {
+    fn from(flag_bits: CommandPoolCreateFlagBits) -> Self {
+        Self(flag_bits as u32)
+    }
+}
+
+impl std::ops::BitOr<CommandPoolCreateFlagBits> for CommandPoolCreateFlags {
+    type Output = CommandPoolCreateFlags;
+    fn bitor(self, rhs: CommandPoolCreateFlagBits) -> Self::Output {
+        Self(self.0 | rhs as u32)
+    }
+}
+
+impl std::fmt::Display for CommandPoolCreateFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        display_flag_bits_u32(
+            f,
+            self.0,
+            &[
+                CommandPoolCreateFlagBits::Transient,
+                CommandPoolCreateFlagBits::ResetCommandBuffer,
+                CommandPoolCreateFlagBits::Protected,
+            ],
+        )
+    }
+}
+
+impl std::fmt::Debug for CommandPoolCreateFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("CommandPoolCreateFlags").field(&format!("{self}")).finish()
+    }
+}
+
+#[repr(u32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Command Buffers"]
 #[doc = "<br>"]
 #[doc = "**Description**: Bitmask specifying usage behavior for a command pool"]
@@ -3283,26 +3722,95 @@ bitflags! {
 #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
 #[doc = "<br>"]
 #[doc = "**Reference**: [`VkCommandPoolCreateFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkCommandPoolCreateFlagBits.html)"]
-pub type CommandPoolCreateFlagBits = CommandPoolCreateFlags;
+pub enum CommandPoolCreateFlagBits {
+    #[doc = "Translated from: `VK_COMMAND_POOL_CREATE_TRANSIENT_BIT`"]
+    Transient = 0b1,
+    #[doc = "Translated from: `VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT`"]
+    ResetCommandBuffer = 0b10,
+    #[doc = "Translated from: `VK_COMMAND_POOL_CREATE_PROTECTED_BIT`"]
+    Protected = 0b100,
+}
 
-bitflags! {
-    #[repr(C)]
-    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-    #[doc = "**Chapter**: Command Buffers"]
-    #[doc = "<br>"]
-    #[doc = "**Description**: Bitmask of VkCommandPoolResetFlagBits"]
-    #[doc = "<br>"]
-    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkCommandPoolResetFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkCommandPoolResetFlags.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkCommandPoolResetFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkCommandPoolResetFlagBits.html)"]
-    pub struct CommandPoolResetFlags: u32 {
-        #[doc = "Translated from: `VK_COMMAND_POOL_RESET_RELEASE_RESOURCES_BIT`"]
-        const RELEASE_RESOURCES = 0b1;
+impl From<CommandPoolCreateFlagBits> for u32 {
+    fn from(flag_bits: CommandPoolCreateFlagBits) -> Self {
+        flag_bits as u32
     }
 }
 
+impl std::ops::BitOr for CommandPoolCreateFlagBits {
+    type Output = CommandPoolCreateFlags;
+    fn bitor(self, rhs: Self) -> Self::Output {
+        CommandPoolCreateFlags(self as u32 | rhs as u32)
+    }
+}
+
+impl std::ops::BitOr<CommandPoolCreateFlags> for CommandPoolCreateFlagBits {
+    type Output = CommandPoolCreateFlags;
+    fn bitor(self, rhs: CommandPoolCreateFlags) -> Self::Output {
+        CommandPoolCreateFlags(self as u32 | rhs.0)
+    }
+}
+
+impl std::fmt::Display for CommandPoolCreateFlagBits {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq)]
+#[doc = "**Chapter**: Command Buffers"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask of VkCommandPoolResetFlagBits"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkCommandPoolResetFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkCommandPoolResetFlags.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkCommandPoolResetFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkCommandPoolResetFlagBits.html)"]
+pub struct CommandPoolResetFlags(u32);
+
+impl CommandPoolResetFlags {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
+    }
+}
+
+impl std::ops::BitAnd for CommandPoolResetFlags {
+    type Output = Self;
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Self(self.0 & rhs.0)
+    }
+}
+
+impl From<CommandPoolResetFlagBits> for CommandPoolResetFlags {
+    fn from(flag_bits: CommandPoolResetFlagBits) -> Self {
+        Self(flag_bits as u32)
+    }
+}
+
+impl std::ops::BitOr<CommandPoolResetFlagBits> for CommandPoolResetFlags {
+    type Output = CommandPoolResetFlags;
+    fn bitor(self, rhs: CommandPoolResetFlagBits) -> Self::Output {
+        Self(self.0 | rhs as u32)
+    }
+}
+
+impl std::fmt::Display for CommandPoolResetFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        display_flag_bits_u32(f, self.0, &[CommandPoolResetFlagBits::ReleaseResources])
+    }
+}
+
+impl std::fmt::Debug for CommandPoolResetFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("CommandPoolResetFlags").field(&format!("{self}")).finish()
+    }
+}
+
+#[repr(u32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Command Buffers"]
 #[doc = "<br>"]
 #[doc = "**Description**: Bitmask controlling behavior of a command pool reset"]
@@ -3310,30 +3818,99 @@ bitflags! {
 #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
 #[doc = "<br>"]
 #[doc = "**Reference**: [`VkCommandPoolResetFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkCommandPoolResetFlagBits.html)"]
-pub type CommandPoolResetFlagBits = CommandPoolResetFlags;
+pub enum CommandPoolResetFlagBits {
+    #[doc = "Translated from: `VK_COMMAND_POOL_RESET_RELEASE_RESOURCES_BIT`"]
+    ReleaseResources = 0b1,
+}
 
-bitflags! {
-    #[repr(C)]
-    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-    #[doc = "**Chapter**: Command Buffers"]
-    #[doc = "<br>"]
-    #[doc = "**Description**: Bitmask of VkCommandBufferUsageFlagBits"]
-    #[doc = "<br>"]
-    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkCommandBufferUsageFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkCommandBufferUsageFlags.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkCommandBufferUsageFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkCommandBufferUsageFlagBits.html)"]
-    pub struct CommandBufferUsageFlags: u32 {
-        #[doc = "Translated from: `VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT`"]
-        const ONE_TIME_SUBMIT = 0b1;
-        #[doc = "Translated from: `VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT`"]
-        const RENDER_PASS_CONTINUE = 0b10;
-        #[doc = "Translated from: `VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT`"]
-        const SIMULTANEOUS_USE = 0b100;
+impl From<CommandPoolResetFlagBits> for u32 {
+    fn from(flag_bits: CommandPoolResetFlagBits) -> Self {
+        flag_bits as u32
     }
 }
 
+impl std::ops::BitOr for CommandPoolResetFlagBits {
+    type Output = CommandPoolResetFlags;
+    fn bitor(self, rhs: Self) -> Self::Output {
+        CommandPoolResetFlags(self as u32 | rhs as u32)
+    }
+}
+
+impl std::ops::BitOr<CommandPoolResetFlags> for CommandPoolResetFlagBits {
+    type Output = CommandPoolResetFlags;
+    fn bitor(self, rhs: CommandPoolResetFlags) -> Self::Output {
+        CommandPoolResetFlags(self as u32 | rhs.0)
+    }
+}
+
+impl std::fmt::Display for CommandPoolResetFlagBits {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq)]
+#[doc = "**Chapter**: Command Buffers"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask of VkCommandBufferUsageFlagBits"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkCommandBufferUsageFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkCommandBufferUsageFlags.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkCommandBufferUsageFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkCommandBufferUsageFlagBits.html)"]
+pub struct CommandBufferUsageFlags(u32);
+
+impl CommandBufferUsageFlags {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
+    }
+}
+
+impl std::ops::BitAnd for CommandBufferUsageFlags {
+    type Output = Self;
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Self(self.0 & rhs.0)
+    }
+}
+
+impl From<CommandBufferUsageFlagBits> for CommandBufferUsageFlags {
+    fn from(flag_bits: CommandBufferUsageFlagBits) -> Self {
+        Self(flag_bits as u32)
+    }
+}
+
+impl std::ops::BitOr<CommandBufferUsageFlagBits> for CommandBufferUsageFlags {
+    type Output = CommandBufferUsageFlags;
+    fn bitor(self, rhs: CommandBufferUsageFlagBits) -> Self::Output {
+        Self(self.0 | rhs as u32)
+    }
+}
+
+impl std::fmt::Display for CommandBufferUsageFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        display_flag_bits_u32(
+            f,
+            self.0,
+            &[
+                CommandBufferUsageFlagBits::OneTimeSubmit,
+                CommandBufferUsageFlagBits::RenderPassContinue,
+                CommandBufferUsageFlagBits::SimultaneousUse,
+            ],
+        )
+    }
+}
+
+impl std::fmt::Debug for CommandBufferUsageFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("CommandBufferUsageFlags").field(&format!("{self}")).finish()
+    }
+}
+
+#[repr(u32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Command Buffers"]
 #[doc = "<br>"]
 #[doc = "**Description**: Bitmask specifying usage behavior for command buffer"]
@@ -3341,26 +3918,95 @@ bitflags! {
 #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
 #[doc = "<br>"]
 #[doc = "**Reference**: [`VkCommandBufferUsageFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkCommandBufferUsageFlagBits.html)"]
-pub type CommandBufferUsageFlagBits = CommandBufferUsageFlags;
+pub enum CommandBufferUsageFlagBits {
+    #[doc = "Translated from: `VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT`"]
+    OneTimeSubmit = 0b1,
+    #[doc = "Translated from: `VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT`"]
+    RenderPassContinue = 0b10,
+    #[doc = "Translated from: `VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT`"]
+    SimultaneousUse = 0b100,
+}
 
-bitflags! {
-    #[repr(C)]
-    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-    #[doc = "**Chapter**: Command Buffers"]
-    #[doc = "<br>"]
-    #[doc = "**Description**: Bitmask of VkSubmitFlagBits"]
-    #[doc = "<br>"]
-    #[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkSubmitFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSubmitFlags.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkSubmitFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSubmitFlagBits.html)"]
-    pub struct SubmitFlags: u32 {
-        #[doc = "Translated from: `VK_SUBMIT_PROTECTED_BIT`"]
-        const PROTECTED = 0b1;
+impl From<CommandBufferUsageFlagBits> for u32 {
+    fn from(flag_bits: CommandBufferUsageFlagBits) -> Self {
+        flag_bits as u32
     }
 }
 
+impl std::ops::BitOr for CommandBufferUsageFlagBits {
+    type Output = CommandBufferUsageFlags;
+    fn bitor(self, rhs: Self) -> Self::Output {
+        CommandBufferUsageFlags(self as u32 | rhs as u32)
+    }
+}
+
+impl std::ops::BitOr<CommandBufferUsageFlags> for CommandBufferUsageFlagBits {
+    type Output = CommandBufferUsageFlags;
+    fn bitor(self, rhs: CommandBufferUsageFlags) -> Self::Output {
+        CommandBufferUsageFlags(self as u32 | rhs.0)
+    }
+}
+
+impl std::fmt::Display for CommandBufferUsageFlagBits {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq)]
+#[doc = "**Chapter**: Command Buffers"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask of VkSubmitFlagBits"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkSubmitFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSubmitFlags.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkSubmitFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSubmitFlagBits.html)"]
+pub struct SubmitFlags(u32);
+
+impl SubmitFlags {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
+    }
+}
+
+impl std::ops::BitAnd for SubmitFlags {
+    type Output = Self;
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Self(self.0 & rhs.0)
+    }
+}
+
+impl From<SubmitFlagBits> for SubmitFlags {
+    fn from(flag_bits: SubmitFlagBits) -> Self {
+        Self(flag_bits as u32)
+    }
+}
+
+impl std::ops::BitOr<SubmitFlagBits> for SubmitFlags {
+    type Output = SubmitFlags;
+    fn bitor(self, rhs: SubmitFlagBits) -> Self::Output {
+        Self(self.0 | rhs as u32)
+    }
+}
+
+impl std::fmt::Display for SubmitFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        display_flag_bits_u32(f, self.0, &[SubmitFlagBits::Protected])
+    }
+}
+
+impl std::fmt::Debug for SubmitFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("SubmitFlags").field(&format!("{self}")).finish()
+    }
+}
+
+#[repr(u32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Command Buffers"]
 #[doc = "<br>"]
 #[doc = "**Description**: Bitmask specifying behavior of a submission"]
@@ -3368,74 +4014,121 @@ bitflags! {
 #[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
 #[doc = "<br>"]
 #[doc = "**Reference**: [`VkSubmitFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSubmitFlagBits.html)"]
-pub type SubmitFlagBits = SubmitFlags;
+pub enum SubmitFlagBits {
+    #[doc = "Translated from: `VK_SUBMIT_PROTECTED_BIT`"]
+    Protected = 0b1,
+}
 
-bitflags! {
-    #[repr(C)]
-    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-    #[doc = "**Chapter**: Synchronization and Cache Control"]
-    #[doc = "<br>"]
-    #[doc = "**Description**: 64-bit mask of pipeline stage flags"]
-    #[doc = "<br>"]
-    #[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkPipelineStageFlags2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPipelineStageFlags2.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkPipelineStageFlagBits2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPipelineStageFlagBits2.html)"]
-    pub struct PipelineStageFlags2: u64 {
-        #[doc = "Translated from: `VK_PIPELINE_STAGE_2_NONE`"]
-        const NONE = 0;
-        #[doc = "Translated from: `VK_PIPELINE_STAGE_2_TOP_OF_PIPE_BIT`"]
-        const TOP_OF_PIPE = 0b1;
-        #[doc = "Translated from: `VK_PIPELINE_STAGE_2_DRAW_INDIRECT_BIT`"]
-        const DRAW_INDIRECT = 0b10;
-        #[doc = "Translated from: `VK_PIPELINE_STAGE_2_VERTEX_INPUT_BIT`"]
-        const VERTEX_INPUT = 0b100;
-        #[doc = "Translated from: `VK_PIPELINE_STAGE_2_VERTEX_SHADER_BIT`"]
-        const VERTEX_SHADER = 0b1000;
-        #[doc = "Translated from: `VK_PIPELINE_STAGE_2_TESSELLATION_CONTROL_SHADER_BIT`"]
-        const TESSELLATION_CONTROL_SHADER = 0b10000;
-        #[doc = "Translated from: `VK_PIPELINE_STAGE_2_TESSELLATION_EVALUATION_SHADER_BIT`"]
-        const TESSELLATION_EVALUATION_SHADER = 0b100000;
-        #[doc = "Translated from: `VK_PIPELINE_STAGE_2_GEOMETRY_SHADER_BIT`"]
-        const GEOMETRY_SHADER = 0b1000000;
-        #[doc = "Translated from: `VK_PIPELINE_STAGE_2_FRAGMENT_SHADER_BIT`"]
-        const FRAGMENT_SHADER = 0b10000000;
-        #[doc = "Translated from: `VK_PIPELINE_STAGE_2_EARLY_FRAGMENT_TESTS_BIT`"]
-        const EARLY_FRAGMENT_TESTS = 0b100000000;
-        #[doc = "Translated from: `VK_PIPELINE_STAGE_2_LATE_FRAGMENT_TESTS_BIT`"]
-        const LATE_FRAGMENT_TESTS = 0b1000000000;
-        #[doc = "Translated from: `VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT`"]
-        const COLOR_ATTACHMENT_OUTPUT = 0b10000000000;
-        #[doc = "Translated from: `VK_PIPELINE_STAGE_2_COMPUTE_SHADER_BIT`"]
-        const COMPUTE_SHADER = 0b100000000000;
-        #[doc = "Translated from: `VK_PIPELINE_STAGE_2_ALL_TRANSFER_BIT`"]
-        const ALL_TRANSFER = 0b1000000000000;
-        #[doc = "Translated from: `VK_PIPELINE_STAGE_2_BOTTOM_OF_PIPE_BIT`"]
-        const BOTTOM_OF_PIPE = 0b10000000000000;
-        #[doc = "Translated from: `VK_PIPELINE_STAGE_2_HOST_BIT`"]
-        const HOST = 0b100000000000000;
-        #[doc = "Translated from: `VK_PIPELINE_STAGE_2_ALL_GRAPHICS_BIT`"]
-        const ALL_GRAPHICS = 0b1000000000000000;
-        #[doc = "Translated from: `VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT`"]
-        const ALL_COMMANDS = 0b10000000000000000;
-        #[doc = "Translated from: `VK_PIPELINE_STAGE_2_COPY_BIT`"]
-        const COPY = 0b100000000000000000000000000000000;
-        #[doc = "Translated from: `VK_PIPELINE_STAGE_2_RESOLVE_BIT`"]
-        const RESOLVE = 0b1000000000000000000000000000000000;
-        #[doc = "Translated from: `VK_PIPELINE_STAGE_2_BLIT_BIT`"]
-        const BLIT = 0b10000000000000000000000000000000000;
-        #[doc = "Translated from: `VK_PIPELINE_STAGE_2_CLEAR_BIT`"]
-        const CLEAR = 0b100000000000000000000000000000000000;
-        #[doc = "Translated from: `VK_PIPELINE_STAGE_2_INDEX_INPUT_BIT`"]
-        const INDEX_INPUT = 0b1000000000000000000000000000000000000;
-        #[doc = "Translated from: `VK_PIPELINE_STAGE_2_VERTEX_ATTRIBUTE_INPUT_BIT`"]
-        const VERTEX_ATTRIBUTE_INPUT = 0b10000000000000000000000000000000000000;
-        #[doc = "Translated from: `VK_PIPELINE_STAGE_2_PRE_RASTERIZATION_SHADERS_BIT`"]
-        const PRE_RASTERIZATION_SHADERS = 0b100000000000000000000000000000000000000;
+impl From<SubmitFlagBits> for u32 {
+    fn from(flag_bits: SubmitFlagBits) -> Self {
+        flag_bits as u32
     }
 }
 
+impl std::ops::BitOr for SubmitFlagBits {
+    type Output = SubmitFlags;
+    fn bitor(self, rhs: Self) -> Self::Output {
+        SubmitFlags(self as u32 | rhs as u32)
+    }
+}
+
+impl std::ops::BitOr<SubmitFlags> for SubmitFlagBits {
+    type Output = SubmitFlags;
+    fn bitor(self, rhs: SubmitFlags) -> Self::Output {
+        SubmitFlags(self as u32 | rhs.0)
+    }
+}
+
+impl std::fmt::Display for SubmitFlagBits {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq)]
+#[doc = "**Chapter**: Synchronization and Cache Control"]
+#[doc = "<br>"]
+#[doc = "**Description**: 64-bit mask of pipeline stage flags"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkPipelineStageFlags2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPipelineStageFlags2.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkPipelineStageFlagBits2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPipelineStageFlagBits2.html)"]
+pub struct PipelineStageFlags2(u64);
+
+impl PipelineStageFlags2 {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
+    }
+}
+
+impl std::ops::BitAnd for PipelineStageFlags2 {
+    type Output = Self;
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Self(self.0 & rhs.0)
+    }
+}
+
+impl From<PipelineStageFlagBits2> for PipelineStageFlags2 {
+    fn from(flag_bits: PipelineStageFlagBits2) -> Self {
+        Self(flag_bits as u64)
+    }
+}
+
+impl std::ops::BitOr<PipelineStageFlagBits2> for PipelineStageFlags2 {
+    type Output = PipelineStageFlags2;
+    fn bitor(self, rhs: PipelineStageFlagBits2) -> Self::Output {
+        Self(self.0 | rhs as u64)
+    }
+}
+
+impl std::fmt::Display for PipelineStageFlags2 {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        display_flag_bits_u64(
+            f,
+            self.0,
+            &[
+                PipelineStageFlagBits2::None,
+                PipelineStageFlagBits2::TopOfPipe,
+                PipelineStageFlagBits2::DrawIndirect,
+                PipelineStageFlagBits2::VertexInput,
+                PipelineStageFlagBits2::VertexShader,
+                PipelineStageFlagBits2::TessellationControlShader,
+                PipelineStageFlagBits2::TessellationEvaluationShader,
+                PipelineStageFlagBits2::GeometryShader,
+                PipelineStageFlagBits2::FragmentShader,
+                PipelineStageFlagBits2::EarlyFragmentTests,
+                PipelineStageFlagBits2::LateFragmentTests,
+                PipelineStageFlagBits2::ColorAttachmentOutput,
+                PipelineStageFlagBits2::ComputeShader,
+                PipelineStageFlagBits2::AllTransfer,
+                PipelineStageFlagBits2::BottomOfPipe,
+                PipelineStageFlagBits2::Host,
+                PipelineStageFlagBits2::AllGraphics,
+                PipelineStageFlagBits2::AllCommands,
+                PipelineStageFlagBits2::Copy,
+                PipelineStageFlagBits2::Resolve,
+                PipelineStageFlagBits2::Blit,
+                PipelineStageFlagBits2::Clear,
+                PipelineStageFlagBits2::IndexInput,
+                PipelineStageFlagBits2::VertexAttributeInput,
+                PipelineStageFlagBits2::PreRasterizationShaders,
+            ],
+        )
+    }
+}
+
+impl std::fmt::Debug for PipelineStageFlags2 {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("PipelineStageFlags2").field(&format!("{self}")).finish()
+    }
+}
+
+#[repr(u64)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Synchronization and Cache Control"]
 #[doc = "<br>"]
 #[doc = "**Description**: Pipeline stage flags for VkPipelineStageFlags2"]
@@ -3443,68 +4136,166 @@ bitflags! {
 #[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
 #[doc = "<br>"]
 #[doc = "**Reference**: [`VkPipelineStageFlagBits2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPipelineStageFlagBits2.html)"]
-pub type PipelineStageFlagBits2 = PipelineStageFlags2;
+pub enum PipelineStageFlagBits2 {
+    #[doc = "Translated from: `VK_PIPELINE_STAGE_2_NONE`"]
+    None = 0,
+    #[doc = "Translated from: `VK_PIPELINE_STAGE_2_TOP_OF_PIPE_BIT`"]
+    TopOfPipe = 0b1,
+    #[doc = "Translated from: `VK_PIPELINE_STAGE_2_DRAW_INDIRECT_BIT`"]
+    DrawIndirect = 0b10,
+    #[doc = "Translated from: `VK_PIPELINE_STAGE_2_VERTEX_INPUT_BIT`"]
+    VertexInput = 0b100,
+    #[doc = "Translated from: `VK_PIPELINE_STAGE_2_VERTEX_SHADER_BIT`"]
+    VertexShader = 0b1000,
+    #[doc = "Translated from: `VK_PIPELINE_STAGE_2_TESSELLATION_CONTROL_SHADER_BIT`"]
+    TessellationControlShader = 0b10000,
+    #[doc = "Translated from: `VK_PIPELINE_STAGE_2_TESSELLATION_EVALUATION_SHADER_BIT`"]
+    TessellationEvaluationShader = 0b100000,
+    #[doc = "Translated from: `VK_PIPELINE_STAGE_2_GEOMETRY_SHADER_BIT`"]
+    GeometryShader = 0b1000000,
+    #[doc = "Translated from: `VK_PIPELINE_STAGE_2_FRAGMENT_SHADER_BIT`"]
+    FragmentShader = 0b10000000,
+    #[doc = "Translated from: `VK_PIPELINE_STAGE_2_EARLY_FRAGMENT_TESTS_BIT`"]
+    EarlyFragmentTests = 0b100000000,
+    #[doc = "Translated from: `VK_PIPELINE_STAGE_2_LATE_FRAGMENT_TESTS_BIT`"]
+    LateFragmentTests = 0b1000000000,
+    #[doc = "Translated from: `VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT`"]
+    ColorAttachmentOutput = 0b10000000000,
+    #[doc = "Translated from: `VK_PIPELINE_STAGE_2_COMPUTE_SHADER_BIT`"]
+    ComputeShader = 0b100000000000,
+    #[doc = "Translated from: `VK_PIPELINE_STAGE_2_ALL_TRANSFER_BIT`"]
+    AllTransfer = 0b1000000000000,
+    #[doc = "Translated from: `VK_PIPELINE_STAGE_2_BOTTOM_OF_PIPE_BIT`"]
+    BottomOfPipe = 0b10000000000000,
+    #[doc = "Translated from: `VK_PIPELINE_STAGE_2_HOST_BIT`"]
+    Host = 0b100000000000000,
+    #[doc = "Translated from: `VK_PIPELINE_STAGE_2_ALL_GRAPHICS_BIT`"]
+    AllGraphics = 0b1000000000000000,
+    #[doc = "Translated from: `VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT`"]
+    AllCommands = 0b10000000000000000,
+    #[doc = "Translated from: `VK_PIPELINE_STAGE_2_COPY_BIT`"]
+    Copy = 0b100000000000000000000000000000000,
+    #[doc = "Translated from: `VK_PIPELINE_STAGE_2_RESOLVE_BIT`"]
+    Resolve = 0b1000000000000000000000000000000000,
+    #[doc = "Translated from: `VK_PIPELINE_STAGE_2_BLIT_BIT`"]
+    Blit = 0b10000000000000000000000000000000000,
+    #[doc = "Translated from: `VK_PIPELINE_STAGE_2_CLEAR_BIT`"]
+    Clear = 0b100000000000000000000000000000000000,
+    #[doc = "Translated from: `VK_PIPELINE_STAGE_2_INDEX_INPUT_BIT`"]
+    IndexInput = 0b1000000000000000000000000000000000000,
+    #[doc = "Translated from: `VK_PIPELINE_STAGE_2_VERTEX_ATTRIBUTE_INPUT_BIT`"]
+    VertexAttributeInput = 0b10000000000000000000000000000000000000,
+    #[doc = "Translated from: `VK_PIPELINE_STAGE_2_PRE_RASTERIZATION_SHADERS_BIT`"]
+    PreRasterizationShaders = 0b100000000000000000000000000000000000000,
+}
 
-bitflags! {
-    #[repr(C)]
-    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-    #[doc = "**Chapter**: Synchronization and Cache Control"]
-    #[doc = "<br>"]
-    #[doc = "**Description**: 64-bit mask of access flags"]
-    #[doc = "<br>"]
-    #[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkAccessFlags2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkAccessFlags2.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkAccessFlagBits2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkAccessFlagBits2.html)"]
-    pub struct AccessFlags2: u64 {
-        #[doc = "Translated from: `VK_ACCESS_2_NONE`"]
-        const NONE = 0;
-        #[doc = "Translated from: `VK_ACCESS_2_INDIRECT_COMMAND_READ_BIT`"]
-        const INDIRECT_COMMAND_READ = 0b1;
-        #[doc = "Translated from: `VK_ACCESS_2_INDEX_READ_BIT`"]
-        const INDEX_READ = 0b10;
-        #[doc = "Translated from: `VK_ACCESS_2_VERTEX_ATTRIBUTE_READ_BIT`"]
-        const VERTEX_ATTRIBUTE_READ = 0b100;
-        #[doc = "Translated from: `VK_ACCESS_2_UNIFORM_READ_BIT`"]
-        const UNIFORM_READ = 0b1000;
-        #[doc = "Translated from: `VK_ACCESS_2_INPUT_ATTACHMENT_READ_BIT`"]
-        const INPUT_ATTACHMENT_READ = 0b10000;
-        #[doc = "Translated from: `VK_ACCESS_2_SHADER_READ_BIT`"]
-        const SHADER_READ = 0b100000;
-        #[doc = "Translated from: `VK_ACCESS_2_SHADER_WRITE_BIT`"]
-        const SHADER_WRITE = 0b1000000;
-        #[doc = "Translated from: `VK_ACCESS_2_COLOR_ATTACHMENT_READ_BIT`"]
-        const COLOR_ATTACHMENT_READ = 0b10000000;
-        #[doc = "Translated from: `VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT`"]
-        const COLOR_ATTACHMENT_WRITE = 0b100000000;
-        #[doc = "Translated from: `VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_READ_BIT`"]
-        const DEPTH_STENCIL_ATTACHMENT_READ = 0b1000000000;
-        #[doc = "Translated from: `VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT`"]
-        const DEPTH_STENCIL_ATTACHMENT_WRITE = 0b10000000000;
-        #[doc = "Translated from: `VK_ACCESS_2_TRANSFER_READ_BIT`"]
-        const TRANSFER_READ = 0b100000000000;
-        #[doc = "Translated from: `VK_ACCESS_2_TRANSFER_WRITE_BIT`"]
-        const TRANSFER_WRITE = 0b1000000000000;
-        #[doc = "Translated from: `VK_ACCESS_2_HOST_READ_BIT`"]
-        const HOST_READ = 0b10000000000000;
-        #[doc = "Translated from: `VK_ACCESS_2_HOST_WRITE_BIT`"]
-        const HOST_WRITE = 0b100000000000000;
-        #[doc = "Translated from: `VK_ACCESS_2_MEMORY_READ_BIT`"]
-        const MEMORY_READ = 0b1000000000000000;
-        #[doc = "Translated from: `VK_ACCESS_2_MEMORY_WRITE_BIT`"]
-        const MEMORY_WRITE = 0b10000000000000000;
-        #[doc = "Translated from: `VK_ACCESS_2_SHADER_SAMPLED_READ_BIT`"]
-        const SHADER_SAMPLED_READ = 0b100000000000000000000000000000000;
-        #[doc = "Translated from: `VK_ACCESS_2_SHADER_STORAGE_READ_BIT`"]
-        const SHADER_STORAGE_READ = 0b1000000000000000000000000000000000;
-        #[doc = "Translated from: `VK_ACCESS_2_SHADER_STORAGE_WRITE_BIT`"]
-        const SHADER_STORAGE_WRITE = 0b10000000000000000000000000000000000;
-        #[doc = "Translated from: `VK_ACCESS_2_DESCRIPTOR_BUFFER_READ_BIT_EXT`"]
-        const DESCRIPTOR_BUFFER_READ_EXT = 0b100000000000000000000000000000000000000000;
+impl From<PipelineStageFlagBits2> for u64 {
+    fn from(flag_bits: PipelineStageFlagBits2) -> Self {
+        flag_bits as u64
     }
 }
 
+impl std::ops::BitOr for PipelineStageFlagBits2 {
+    type Output = PipelineStageFlags2;
+    fn bitor(self, rhs: Self) -> Self::Output {
+        PipelineStageFlags2(self as u64 | rhs as u64)
+    }
+}
+
+impl std::ops::BitOr<PipelineStageFlags2> for PipelineStageFlagBits2 {
+    type Output = PipelineStageFlags2;
+    fn bitor(self, rhs: PipelineStageFlags2) -> Self::Output {
+        PipelineStageFlags2(self as u64 | rhs.0)
+    }
+}
+
+impl std::fmt::Display for PipelineStageFlagBits2 {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq)]
+#[doc = "**Chapter**: Synchronization and Cache Control"]
+#[doc = "<br>"]
+#[doc = "**Description**: 64-bit mask of access flags"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkAccessFlags2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkAccessFlags2.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkAccessFlagBits2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkAccessFlagBits2.html)"]
+pub struct AccessFlags2(u64);
+
+impl AccessFlags2 {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
+    }
+}
+
+impl std::ops::BitAnd for AccessFlags2 {
+    type Output = Self;
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Self(self.0 & rhs.0)
+    }
+}
+
+impl From<AccessFlagBits2> for AccessFlags2 {
+    fn from(flag_bits: AccessFlagBits2) -> Self {
+        Self(flag_bits as u64)
+    }
+}
+
+impl std::ops::BitOr<AccessFlagBits2> for AccessFlags2 {
+    type Output = AccessFlags2;
+    fn bitor(self, rhs: AccessFlagBits2) -> Self::Output {
+        Self(self.0 | rhs as u64)
+    }
+}
+
+impl std::fmt::Display for AccessFlags2 {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        display_flag_bits_u64(
+            f,
+            self.0,
+            &[
+                AccessFlagBits2::None,
+                AccessFlagBits2::IndirectCommandRead,
+                AccessFlagBits2::IndexRead,
+                AccessFlagBits2::VertexAttributeRead,
+                AccessFlagBits2::UniformRead,
+                AccessFlagBits2::InputAttachmentRead,
+                AccessFlagBits2::ShaderRead,
+                AccessFlagBits2::ShaderWrite,
+                AccessFlagBits2::ColorAttachmentRead,
+                AccessFlagBits2::ColorAttachmentWrite,
+                AccessFlagBits2::DepthStencilAttachmentRead,
+                AccessFlagBits2::DepthStencilAttachmentWrite,
+                AccessFlagBits2::TransferRead,
+                AccessFlagBits2::TransferWrite,
+                AccessFlagBits2::HostRead,
+                AccessFlagBits2::HostWrite,
+                AccessFlagBits2::MemoryRead,
+                AccessFlagBits2::MemoryWrite,
+                AccessFlagBits2::ShaderSampledRead,
+                AccessFlagBits2::ShaderStorageRead,
+                AccessFlagBits2::ShaderStorageWrite,
+                AccessFlagBits2::DescriptorBufferReadEXT,
+            ],
+        )
+    }
+}
+
+impl std::fmt::Debug for AccessFlags2 {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("AccessFlags2").field(&format!("{self}")).finish()
+    }
+}
+
+#[repr(u64)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Synchronization and Cache Control"]
 #[doc = "<br>"]
 #[doc = "**Description**: Access flags for VkAccessFlags2"]
@@ -3512,41 +4303,151 @@ bitflags! {
 #[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
 #[doc = "<br>"]
 #[doc = "**Reference**: [`VkAccessFlagBits2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkAccessFlagBits2.html)"]
-pub type AccessFlagBits2 = AccessFlags2;
+pub enum AccessFlagBits2 {
+    #[doc = "Translated from: `VK_ACCESS_2_NONE`"]
+    None = 0,
+    #[doc = "Translated from: `VK_ACCESS_2_INDIRECT_COMMAND_READ_BIT`"]
+    IndirectCommandRead = 0b1,
+    #[doc = "Translated from: `VK_ACCESS_2_INDEX_READ_BIT`"]
+    IndexRead = 0b10,
+    #[doc = "Translated from: `VK_ACCESS_2_VERTEX_ATTRIBUTE_READ_BIT`"]
+    VertexAttributeRead = 0b100,
+    #[doc = "Translated from: `VK_ACCESS_2_UNIFORM_READ_BIT`"]
+    UniformRead = 0b1000,
+    #[doc = "Translated from: `VK_ACCESS_2_INPUT_ATTACHMENT_READ_BIT`"]
+    InputAttachmentRead = 0b10000,
+    #[doc = "Translated from: `VK_ACCESS_2_SHADER_READ_BIT`"]
+    ShaderRead = 0b100000,
+    #[doc = "Translated from: `VK_ACCESS_2_SHADER_WRITE_BIT`"]
+    ShaderWrite = 0b1000000,
+    #[doc = "Translated from: `VK_ACCESS_2_COLOR_ATTACHMENT_READ_BIT`"]
+    ColorAttachmentRead = 0b10000000,
+    #[doc = "Translated from: `VK_ACCESS_2_COLOR_ATTACHMENT_WRITE_BIT`"]
+    ColorAttachmentWrite = 0b100000000,
+    #[doc = "Translated from: `VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_READ_BIT`"]
+    DepthStencilAttachmentRead = 0b1000000000,
+    #[doc = "Translated from: `VK_ACCESS_2_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT`"]
+    DepthStencilAttachmentWrite = 0b10000000000,
+    #[doc = "Translated from: `VK_ACCESS_2_TRANSFER_READ_BIT`"]
+    TransferRead = 0b100000000000,
+    #[doc = "Translated from: `VK_ACCESS_2_TRANSFER_WRITE_BIT`"]
+    TransferWrite = 0b1000000000000,
+    #[doc = "Translated from: `VK_ACCESS_2_HOST_READ_BIT`"]
+    HostRead = 0b10000000000000,
+    #[doc = "Translated from: `VK_ACCESS_2_HOST_WRITE_BIT`"]
+    HostWrite = 0b100000000000000,
+    #[doc = "Translated from: `VK_ACCESS_2_MEMORY_READ_BIT`"]
+    MemoryRead = 0b1000000000000000,
+    #[doc = "Translated from: `VK_ACCESS_2_MEMORY_WRITE_BIT`"]
+    MemoryWrite = 0b10000000000000000,
+    #[doc = "Translated from: `VK_ACCESS_2_SHADER_SAMPLED_READ_BIT`"]
+    ShaderSampledRead = 0b100000000000000000000000000000000,
+    #[doc = "Translated from: `VK_ACCESS_2_SHADER_STORAGE_READ_BIT`"]
+    ShaderStorageRead = 0b1000000000000000000000000000000000,
+    #[doc = "Translated from: `VK_ACCESS_2_SHADER_STORAGE_WRITE_BIT`"]
+    ShaderStorageWrite = 0b10000000000000000000000000000000000,
+    #[doc = "Translated from: `VK_ACCESS_2_DESCRIPTOR_BUFFER_READ_BIT_EXT`"]
+    DescriptorBufferReadEXT = 0b100000000000000000000000000000000000000000,
+}
 
-bitflags! {
-    #[repr(C)]
-    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-    #[doc = "**Chapter**: Synchronization and Cache Control"]
-    #[doc = "<br>"]
-    #[doc = "**Description**: Reserved for future use"]
-    #[doc = "<br>"]
-    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkSemaphoreCreateFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSemaphoreCreateFlags.html)"]
-    pub struct SemaphoreCreateFlags: u32 {
-
+impl From<AccessFlagBits2> for u64 {
+    fn from(flag_bits: AccessFlagBits2) -> Self {
+        flag_bits as u64
     }
 }
 
-bitflags! {
-    #[repr(C)]
-    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-    #[doc = "**Chapter**: Synchronization and Cache Control"]
-    #[doc = "<br>"]
-    #[doc = "**Description**: Bitmask of VkSemaphoreWaitFlagBits"]
-    #[doc = "<br>"]
-    #[doc = "**Provided by**: [`VK_VERSION_1_2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_2.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkSemaphoreWaitFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSemaphoreWaitFlags.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkSemaphoreWaitFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSemaphoreWaitFlagBits.html)"]
-    pub struct SemaphoreWaitFlags: u32 {
-        #[doc = "Translated from: `VK_SEMAPHORE_WAIT_ANY_BIT`"]
-        const ANY = 0b1;
+impl std::ops::BitOr for AccessFlagBits2 {
+    type Output = AccessFlags2;
+    fn bitor(self, rhs: Self) -> Self::Output {
+        AccessFlags2(self as u64 | rhs as u64)
     }
 }
 
+impl std::ops::BitOr<AccessFlags2> for AccessFlagBits2 {
+    type Output = AccessFlags2;
+    fn bitor(self, rhs: AccessFlags2) -> Self::Output {
+        AccessFlags2(self as u64 | rhs.0)
+    }
+}
+
+impl std::fmt::Display for AccessFlagBits2 {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[doc = "**Chapter**: Synchronization and Cache Control"]
+#[doc = "<br>"]
+#[doc = "**Description**: Reserved for future use"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkSemaphoreCreateFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSemaphoreCreateFlags.html)"]
+pub struct SemaphoreCreateFlags(u32);
+
+impl SemaphoreCreateFlags {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq)]
+#[doc = "**Chapter**: Synchronization and Cache Control"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask of VkSemaphoreWaitFlagBits"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_2.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkSemaphoreWaitFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSemaphoreWaitFlags.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkSemaphoreWaitFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSemaphoreWaitFlagBits.html)"]
+pub struct SemaphoreWaitFlags(u32);
+
+impl SemaphoreWaitFlags {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
+    }
+}
+
+impl std::ops::BitAnd for SemaphoreWaitFlags {
+    type Output = Self;
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Self(self.0 & rhs.0)
+    }
+}
+
+impl From<SemaphoreWaitFlagBits> for SemaphoreWaitFlags {
+    fn from(flag_bits: SemaphoreWaitFlagBits) -> Self {
+        Self(flag_bits as u32)
+    }
+}
+
+impl std::ops::BitOr<SemaphoreWaitFlagBits> for SemaphoreWaitFlags {
+    type Output = SemaphoreWaitFlags;
+    fn bitor(self, rhs: SemaphoreWaitFlagBits) -> Self::Output {
+        Self(self.0 | rhs as u32)
+    }
+}
+
+impl std::fmt::Display for SemaphoreWaitFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        display_flag_bits_u32(f, self.0, &[SemaphoreWaitFlagBits::Any])
+    }
+}
+
+impl std::fmt::Debug for SemaphoreWaitFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("SemaphoreWaitFlags").field(&format!("{self}")).finish()
+    }
+}
+
+#[repr(u32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Synchronization and Cache Control"]
 #[doc = "<br>"]
 #[doc = "**Description**: Bitmask specifying additional parameters of a semaphore wait operation"]
@@ -3554,30 +4455,91 @@ bitflags! {
 #[doc = "**Provided by**: [`VK_VERSION_1_2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_2.html)"]
 #[doc = "<br>"]
 #[doc = "**Reference**: [`VkSemaphoreWaitFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSemaphoreWaitFlagBits.html)"]
-pub type SemaphoreWaitFlagBits = SemaphoreWaitFlags;
+pub enum SemaphoreWaitFlagBits {
+    #[doc = "Translated from: `VK_SEMAPHORE_WAIT_ANY_BIT`"]
+    Any = 0b1,
+}
 
-bitflags! {
-    #[repr(C)]
-    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-    #[doc = "**Chapter**: Synchronization and Cache Control"]
-    #[doc = "<br>"]
-    #[doc = "**Description**: Bitmask of VkDependencyFlagBits"]
-    #[doc = "<br>"]
-    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkDependencyFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDependencyFlags.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkDependencyFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDependencyFlagBits.html)"]
-    pub struct DependencyFlags: u32 {
-        #[doc = "Translated from: `VK_DEPENDENCY_BY_REGION_BIT`"]
-        const BY_REGION = 0b1;
-        #[doc = "Translated from: `VK_DEPENDENCY_DEVICE_GROUP_BIT`"]
-        const DEVICE_GROUP = 0b100;
-        #[doc = "Translated from: `VK_DEPENDENCY_VIEW_LOCAL_BIT`"]
-        const VIEW_LOCAL = 0b10;
+impl From<SemaphoreWaitFlagBits> for u32 {
+    fn from(flag_bits: SemaphoreWaitFlagBits) -> Self {
+        flag_bits as u32
     }
 }
 
+impl std::ops::BitOr for SemaphoreWaitFlagBits {
+    type Output = SemaphoreWaitFlags;
+    fn bitor(self, rhs: Self) -> Self::Output {
+        SemaphoreWaitFlags(self as u32 | rhs as u32)
+    }
+}
+
+impl std::ops::BitOr<SemaphoreWaitFlags> for SemaphoreWaitFlagBits {
+    type Output = SemaphoreWaitFlags;
+    fn bitor(self, rhs: SemaphoreWaitFlags) -> Self::Output {
+        SemaphoreWaitFlags(self as u32 | rhs.0)
+    }
+}
+
+impl std::fmt::Display for SemaphoreWaitFlagBits {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq)]
+#[doc = "**Chapter**: Synchronization and Cache Control"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask of VkDependencyFlagBits"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkDependencyFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDependencyFlags.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkDependencyFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDependencyFlagBits.html)"]
+pub struct DependencyFlags(u32);
+
+impl DependencyFlags {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
+    }
+}
+
+impl std::ops::BitAnd for DependencyFlags {
+    type Output = Self;
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Self(self.0 & rhs.0)
+    }
+}
+
+impl From<DependencyFlagBits> for DependencyFlags {
+    fn from(flag_bits: DependencyFlagBits) -> Self {
+        Self(flag_bits as u32)
+    }
+}
+
+impl std::ops::BitOr<DependencyFlagBits> for DependencyFlags {
+    type Output = DependencyFlags;
+    fn bitor(self, rhs: DependencyFlagBits) -> Self::Output {
+        Self(self.0 | rhs as u32)
+    }
+}
+
+impl std::fmt::Display for DependencyFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        display_flag_bits_u32(f, self.0, &[DependencyFlagBits::ByRegion, DependencyFlagBits::DeviceGroup, DependencyFlagBits::ViewLocal])
+    }
+}
+
+impl std::fmt::Debug for DependencyFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("DependencyFlags").field(&format!("{self}")).finish()
+    }
+}
+
+#[repr(u32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Synchronization and Cache Control"]
 #[doc = "<br>"]
 #[doc = "**Description**: Bitmask specifying how execution and memory dependencies are formed"]
@@ -3585,30 +4547,99 @@ bitflags! {
 #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
 #[doc = "<br>"]
 #[doc = "**Reference**: [`VkDependencyFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDependencyFlagBits.html)"]
-pub type DependencyFlagBits = DependencyFlags;
+pub enum DependencyFlagBits {
+    #[doc = "Translated from: `VK_DEPENDENCY_BY_REGION_BIT`"]
+    ByRegion = 0b1,
+    #[doc = "Translated from: `VK_DEPENDENCY_DEVICE_GROUP_BIT`"]
+    DeviceGroup = 0b100,
+    #[doc = "Translated from: `VK_DEPENDENCY_VIEW_LOCAL_BIT`"]
+    ViewLocal = 0b10,
+}
 
-bitflags! {
-    #[repr(C)]
-    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-    #[doc = "**Chapter**: Render Pass"]
-    #[doc = "<br>"]
-    #[doc = "**Description**: Bitmask of VkRenderingFlagBits"]
-    #[doc = "<br>"]
-    #[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkRenderingFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkRenderingFlags.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkRenderingFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkRenderingFlagBits.html)"]
-    pub struct RenderingFlags: u32 {
-        #[doc = "Translated from: `VK_RENDERING_CONTENTS_SECONDARY_COMMAND_BUFFERS_BIT`"]
-        const CONTENTS_SECONDARY_COMMAND_BUFFERS = 0b1;
-        #[doc = "Translated from: `VK_RENDERING_SUSPENDING_BIT`"]
-        const SUSPENDING = 0b10;
-        #[doc = "Translated from: `VK_RENDERING_RESUMING_BIT`"]
-        const RESUMING = 0b100;
+impl From<DependencyFlagBits> for u32 {
+    fn from(flag_bits: DependencyFlagBits) -> Self {
+        flag_bits as u32
     }
 }
 
+impl std::ops::BitOr for DependencyFlagBits {
+    type Output = DependencyFlags;
+    fn bitor(self, rhs: Self) -> Self::Output {
+        DependencyFlags(self as u32 | rhs as u32)
+    }
+}
+
+impl std::ops::BitOr<DependencyFlags> for DependencyFlagBits {
+    type Output = DependencyFlags;
+    fn bitor(self, rhs: DependencyFlags) -> Self::Output {
+        DependencyFlags(self as u32 | rhs.0)
+    }
+}
+
+impl std::fmt::Display for DependencyFlagBits {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq)]
+#[doc = "**Chapter**: Render Pass"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask of VkRenderingFlagBits"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkRenderingFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkRenderingFlags.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkRenderingFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkRenderingFlagBits.html)"]
+pub struct RenderingFlags(u32);
+
+impl RenderingFlags {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
+    }
+}
+
+impl std::ops::BitAnd for RenderingFlags {
+    type Output = Self;
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Self(self.0 & rhs.0)
+    }
+}
+
+impl From<RenderingFlagBits> for RenderingFlags {
+    fn from(flag_bits: RenderingFlagBits) -> Self {
+        Self(flag_bits as u32)
+    }
+}
+
+impl std::ops::BitOr<RenderingFlagBits> for RenderingFlags {
+    type Output = RenderingFlags;
+    fn bitor(self, rhs: RenderingFlagBits) -> Self::Output {
+        Self(self.0 | rhs as u32)
+    }
+}
+
+impl std::fmt::Display for RenderingFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        display_flag_bits_u32(
+            f,
+            self.0,
+            &[RenderingFlagBits::ContentsSecondaryCommandBuffers, RenderingFlagBits::Suspending, RenderingFlagBits::Resuming],
+        )
+    }
+}
+
+impl std::fmt::Debug for RenderingFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("RenderingFlags").field(&format!("{self}")).finish()
+    }
+}
+
+#[repr(u32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Render Pass"]
 #[doc = "<br>"]
 #[doc = "**Description**: Bitmask specifying additional properties of a dynamic render pass instance"]
@@ -3616,34 +4647,105 @@ bitflags! {
 #[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
 #[doc = "<br>"]
 #[doc = "**Reference**: [`VkRenderingFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkRenderingFlagBits.html)"]
-pub type RenderingFlagBits = RenderingFlags;
+pub enum RenderingFlagBits {
+    #[doc = "Translated from: `VK_RENDERING_CONTENTS_SECONDARY_COMMAND_BUFFERS_BIT`"]
+    ContentsSecondaryCommandBuffers = 0b1,
+    #[doc = "Translated from: `VK_RENDERING_SUSPENDING_BIT`"]
+    Suspending = 0b10,
+    #[doc = "Translated from: `VK_RENDERING_RESUMING_BIT`"]
+    Resuming = 0b100,
+}
 
-bitflags! {
-    #[repr(C)]
-    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-    #[doc = "**Chapter**: Render Pass"]
-    #[doc = "<br>"]
-    #[doc = "**Description**: Bitmask of VkResolveModeFlagBits"]
-    #[doc = "<br>"]
-    #[doc = "**Provided by**: [`VK_VERSION_1_2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_2.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkResolveModeFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkResolveModeFlags.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkResolveModeFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkResolveModeFlagBits.html)"]
-    pub struct ResolveModeFlags: u32 {
-        #[doc = "Translated from: `VK_RESOLVE_MODE_NONE`"]
-        const NONE = 0;
-        #[doc = "Translated from: `VK_RESOLVE_MODE_SAMPLE_ZERO_BIT`"]
-        const SAMPLE_ZERO = 0b1;
-        #[doc = "Translated from: `VK_RESOLVE_MODE_AVERAGE_BIT`"]
-        const AVERAGE = 0b10;
-        #[doc = "Translated from: `VK_RESOLVE_MODE_MIN_BIT`"]
-        const MIN = 0b100;
-        #[doc = "Translated from: `VK_RESOLVE_MODE_MAX_BIT`"]
-        const MAX = 0b1000;
+impl From<RenderingFlagBits> for u32 {
+    fn from(flag_bits: RenderingFlagBits) -> Self {
+        flag_bits as u32
     }
 }
 
+impl std::ops::BitOr for RenderingFlagBits {
+    type Output = RenderingFlags;
+    fn bitor(self, rhs: Self) -> Self::Output {
+        RenderingFlags(self as u32 | rhs as u32)
+    }
+}
+
+impl std::ops::BitOr<RenderingFlags> for RenderingFlagBits {
+    type Output = RenderingFlags;
+    fn bitor(self, rhs: RenderingFlags) -> Self::Output {
+        RenderingFlags(self as u32 | rhs.0)
+    }
+}
+
+impl std::fmt::Display for RenderingFlagBits {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq)]
+#[doc = "**Chapter**: Render Pass"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask of VkResolveModeFlagBits"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_2.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkResolveModeFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkResolveModeFlags.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkResolveModeFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkResolveModeFlagBits.html)"]
+pub struct ResolveModeFlags(u32);
+
+impl ResolveModeFlags {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
+    }
+}
+
+impl std::ops::BitAnd for ResolveModeFlags {
+    type Output = Self;
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Self(self.0 & rhs.0)
+    }
+}
+
+impl From<ResolveModeFlagBits> for ResolveModeFlags {
+    fn from(flag_bits: ResolveModeFlagBits) -> Self {
+        Self(flag_bits as u32)
+    }
+}
+
+impl std::ops::BitOr<ResolveModeFlagBits> for ResolveModeFlags {
+    type Output = ResolveModeFlags;
+    fn bitor(self, rhs: ResolveModeFlagBits) -> Self::Output {
+        Self(self.0 | rhs as u32)
+    }
+}
+
+impl std::fmt::Display for ResolveModeFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        display_flag_bits_u32(
+            f,
+            self.0,
+            &[
+                ResolveModeFlagBits::None,
+                ResolveModeFlagBits::SampleZero,
+                ResolveModeFlagBits::Average,
+                ResolveModeFlagBits::Min,
+                ResolveModeFlagBits::Max,
+            ],
+        )
+    }
+}
+
+impl std::fmt::Debug for ResolveModeFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("ResolveModeFlags").field(&format!("{self}")).finish()
+    }
+}
+
+#[repr(u32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Render Pass"]
 #[doc = "<br>"]
 #[doc = "**Description**: Bitmask indicating supported depth and stencil resolve modes"]
@@ -3651,38 +4753,111 @@ bitflags! {
 #[doc = "**Provided by**: [`VK_VERSION_1_2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_2.html)"]
 #[doc = "<br>"]
 #[doc = "**Reference**: [`VkResolveModeFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkResolveModeFlagBits.html)"]
-pub type ResolveModeFlagBits = ResolveModeFlags;
+pub enum ResolveModeFlagBits {
+    #[doc = "Translated from: `VK_RESOLVE_MODE_NONE`"]
+    None = 0,
+    #[doc = "Translated from: `VK_RESOLVE_MODE_SAMPLE_ZERO_BIT`"]
+    SampleZero = 0b1,
+    #[doc = "Translated from: `VK_RESOLVE_MODE_AVERAGE_BIT`"]
+    Average = 0b10,
+    #[doc = "Translated from: `VK_RESOLVE_MODE_MIN_BIT`"]
+    Min = 0b100,
+    #[doc = "Translated from: `VK_RESOLVE_MODE_MAX_BIT`"]
+    Max = 0b1000,
+}
 
-bitflags! {
-    #[repr(C)]
-    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-    #[doc = "**Chapter**: Shaders"]
-    #[doc = "<br>"]
-    #[doc = "**Description**: Bitmask of VkShaderCreateFlagBitsEXT"]
-    #[doc = "<br>"]
-    #[doc = "**Provided by**: [`VK_EXT_shader_object`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkShaderCreateFlagsEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkShaderCreateFlagsEXT.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkShaderCreateFlagBitsEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkShaderCreateFlagBitsEXT.html)"]
-    pub struct ShaderCreateFlagsEXT: u32 {
-        #[doc = "Translated from: `VK_SHADER_CREATE_LINK_STAGE_BIT_EXT`"]
-        const LINK_STAGE_EXT = 0b1;
-        #[doc = "Translated from: `VK_SHADER_CREATE_ALLOW_VARYING_SUBGROUP_SIZE_BIT_EXT`"]
-        const ALLOW_VARYING_SUBGROUP_SIZE_EXT = 0b10;
-        #[doc = "Translated from: `VK_SHADER_CREATE_REQUIRE_FULL_SUBGROUPS_BIT_EXT`"]
-        const REQUIRE_FULL_SUBGROUPS_EXT = 0b100;
-        #[doc = "Translated from: `VK_SHADER_CREATE_NO_TASK_SHADER_BIT_EXT`"]
-        const NO_TASK_SHADER_EXT = 0b1000;
-        #[doc = "Translated from: `VK_SHADER_CREATE_DISPATCH_BASE_BIT_EXT`"]
-        const DISPATCH_BASE_EXT = 0b10000;
-        #[doc = "Translated from: `VK_SHADER_CREATE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_EXT`"]
-        const FRAGMENT_SHADING_RATE_ATTACHMENT_EXT = 0b100000;
-        #[doc = "Translated from: `VK_SHADER_CREATE_FRAGMENT_DENSITY_MAP_ATTACHMENT_BIT_EXT`"]
-        const FRAGMENT_DENSITY_MAP_ATTACHMENT_EXT = 0b1000000;
+impl From<ResolveModeFlagBits> for u32 {
+    fn from(flag_bits: ResolveModeFlagBits) -> Self {
+        flag_bits as u32
     }
 }
 
+impl std::ops::BitOr for ResolveModeFlagBits {
+    type Output = ResolveModeFlags;
+    fn bitor(self, rhs: Self) -> Self::Output {
+        ResolveModeFlags(self as u32 | rhs as u32)
+    }
+}
+
+impl std::ops::BitOr<ResolveModeFlags> for ResolveModeFlagBits {
+    type Output = ResolveModeFlags;
+    fn bitor(self, rhs: ResolveModeFlags) -> Self::Output {
+        ResolveModeFlags(self as u32 | rhs.0)
+    }
+}
+
+impl std::fmt::Display for ResolveModeFlagBits {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq)]
+#[doc = "**Chapter**: Shaders"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask of VkShaderCreateFlagBitsEXT"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_EXT_shader_object`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkShaderCreateFlagsEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkShaderCreateFlagsEXT.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkShaderCreateFlagBitsEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkShaderCreateFlagBitsEXT.html)"]
+pub struct ShaderCreateFlagsEXT(u32);
+
+impl ShaderCreateFlagsEXT {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
+    }
+}
+
+impl std::ops::BitAnd for ShaderCreateFlagsEXT {
+    type Output = Self;
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Self(self.0 & rhs.0)
+    }
+}
+
+impl From<ShaderCreateFlagBitsEXT> for ShaderCreateFlagsEXT {
+    fn from(flag_bits: ShaderCreateFlagBitsEXT) -> Self {
+        Self(flag_bits as u32)
+    }
+}
+
+impl std::ops::BitOr<ShaderCreateFlagBitsEXT> for ShaderCreateFlagsEXT {
+    type Output = ShaderCreateFlagsEXT;
+    fn bitor(self, rhs: ShaderCreateFlagBitsEXT) -> Self::Output {
+        Self(self.0 | rhs as u32)
+    }
+}
+
+impl std::fmt::Display for ShaderCreateFlagsEXT {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        display_flag_bits_u32(
+            f,
+            self.0,
+            &[
+                ShaderCreateFlagBitsEXT::LinkStageEXT,
+                ShaderCreateFlagBitsEXT::AllowVaryingSubgroupSizeEXT,
+                ShaderCreateFlagBitsEXT::RequireFullSubgroupsEXT,
+                ShaderCreateFlagBitsEXT::NoTaskShaderEXT,
+                ShaderCreateFlagBitsEXT::DispatchBaseEXT,
+                ShaderCreateFlagBitsEXT::FragmentShadingRateAttachmentEXT,
+                ShaderCreateFlagBitsEXT::FragmentDensityMapAttachmentEXT,
+            ],
+        )
+    }
+}
+
+impl std::fmt::Debug for ShaderCreateFlagsEXT {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("ShaderCreateFlagsEXT").field(&format!("{self}")).finish()
+    }
+}
+
+#[repr(u32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Shaders"]
 #[doc = "<br>"]
 #[doc = "**Description**: Bitmask controlling how a shader object is created"]
@@ -3690,44 +4865,118 @@ bitflags! {
 #[doc = "**Provided by**: [`VK_EXT_shader_object`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)"]
 #[doc = "<br>"]
 #[doc = "**Reference**: [`VkShaderCreateFlagBitsEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkShaderCreateFlagBitsEXT.html)"]
-pub type ShaderCreateFlagBitsEXT = ShaderCreateFlagsEXT;
+pub enum ShaderCreateFlagBitsEXT {
+    #[doc = "Translated from: `VK_SHADER_CREATE_LINK_STAGE_BIT_EXT`"]
+    LinkStageEXT = 0b1,
+    #[doc = "Translated from: `VK_SHADER_CREATE_ALLOW_VARYING_SUBGROUP_SIZE_BIT_EXT`"]
+    AllowVaryingSubgroupSizeEXT = 0b10,
+    #[doc = "Translated from: `VK_SHADER_CREATE_REQUIRE_FULL_SUBGROUPS_BIT_EXT`"]
+    RequireFullSubgroupsEXT = 0b100,
+    #[doc = "Translated from: `VK_SHADER_CREATE_NO_TASK_SHADER_BIT_EXT`"]
+    NoTaskShaderEXT = 0b1000,
+    #[doc = "Translated from: `VK_SHADER_CREATE_DISPATCH_BASE_BIT_EXT`"]
+    DispatchBaseEXT = 0b10000,
+    #[doc = "Translated from: `VK_SHADER_CREATE_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_EXT`"]
+    FragmentShadingRateAttachmentEXT = 0b100000,
+    #[doc = "Translated from: `VK_SHADER_CREATE_FRAGMENT_DENSITY_MAP_ATTACHMENT_BIT_EXT`"]
+    FragmentDensityMapAttachmentEXT = 0b1000000,
+}
 
-bitflags! {
-    #[repr(C)]
-    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-    #[doc = "**Chapter**: Pipelines"]
-    #[doc = "<br>"]
-    #[doc = "**Description**: Bitmask of VkShaderStageFlagBits"]
-    #[doc = "<br>"]
-    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkShaderStageFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkShaderStageFlags.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkShaderStageFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkShaderStageFlagBits.html)"]
-    pub struct ShaderStageFlags: u32 {
-        #[doc = "Translated from: `VK_SHADER_STAGE_VERTEX_BIT`"]
-        const VERTEX = 0b1;
-        #[doc = "Translated from: `VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT`"]
-        const TESSELLATION_CONTROL = 0b10;
-        #[doc = "Translated from: `VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT`"]
-        const TESSELLATION_EVALUATION = 0b100;
-        #[doc = "Translated from: `VK_SHADER_STAGE_GEOMETRY_BIT`"]
-        const GEOMETRY = 0b1000;
-        #[doc = "Translated from: `VK_SHADER_STAGE_FRAGMENT_BIT`"]
-        const FRAGMENT = 0b10000;
-        #[doc = "Translated from: `VK_SHADER_STAGE_COMPUTE_BIT`"]
-        const COMPUTE = 0b100000;
-        #[doc = "Translated from: `VK_SHADER_STAGE_ALL_GRAPHICS`"]
-        const ALL_GRAPHICS = 0x1f;
-        #[doc = "Translated from: `VK_SHADER_STAGE_ALL`"]
-        const ALL = 0x7fffffff;
-        #[doc = "Translated from: `VK_SHADER_STAGE_TASK_BIT_EXT`"]
-        const TASK_EXT = 0b1000000;
-        #[doc = "Translated from: `VK_SHADER_STAGE_MESH_BIT_EXT`"]
-        const MESH_EXT = 0b10000000;
+impl From<ShaderCreateFlagBitsEXT> for u32 {
+    fn from(flag_bits: ShaderCreateFlagBitsEXT) -> Self {
+        flag_bits as u32
     }
 }
 
+impl std::ops::BitOr for ShaderCreateFlagBitsEXT {
+    type Output = ShaderCreateFlagsEXT;
+    fn bitor(self, rhs: Self) -> Self::Output {
+        ShaderCreateFlagsEXT(self as u32 | rhs as u32)
+    }
+}
+
+impl std::ops::BitOr<ShaderCreateFlagsEXT> for ShaderCreateFlagBitsEXT {
+    type Output = ShaderCreateFlagsEXT;
+    fn bitor(self, rhs: ShaderCreateFlagsEXT) -> Self::Output {
+        ShaderCreateFlagsEXT(self as u32 | rhs.0)
+    }
+}
+
+impl std::fmt::Display for ShaderCreateFlagBitsEXT {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq)]
+#[doc = "**Chapter**: Pipelines"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask of VkShaderStageFlagBits"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkShaderStageFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkShaderStageFlags.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkShaderStageFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkShaderStageFlagBits.html)"]
+pub struct ShaderStageFlags(u32);
+
+impl ShaderStageFlags {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
+    }
+}
+
+impl std::ops::BitAnd for ShaderStageFlags {
+    type Output = Self;
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Self(self.0 & rhs.0)
+    }
+}
+
+impl From<ShaderStageFlagBits> for ShaderStageFlags {
+    fn from(flag_bits: ShaderStageFlagBits) -> Self {
+        Self(flag_bits as u32)
+    }
+}
+
+impl std::ops::BitOr<ShaderStageFlagBits> for ShaderStageFlags {
+    type Output = ShaderStageFlags;
+    fn bitor(self, rhs: ShaderStageFlagBits) -> Self::Output {
+        Self(self.0 | rhs as u32)
+    }
+}
+
+impl std::fmt::Display for ShaderStageFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        display_flag_bits_u32(
+            f,
+            self.0,
+            &[
+                ShaderStageFlagBits::Vertex,
+                ShaderStageFlagBits::TessellationControl,
+                ShaderStageFlagBits::TessellationEvaluation,
+                ShaderStageFlagBits::Geometry,
+                ShaderStageFlagBits::Fragment,
+                ShaderStageFlagBits::Compute,
+                ShaderStageFlagBits::AllGraphics,
+                ShaderStageFlagBits::All,
+                ShaderStageFlagBits::TaskEXT,
+                ShaderStageFlagBits::MeshEXT,
+            ],
+        )
+    }
+}
+
+impl std::fmt::Debug for ShaderStageFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("ShaderStageFlags").field(&format!("{self}")).finish()
+    }
+}
+
+#[repr(u32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Pipelines"]
 #[doc = "<br>"]
 #[doc = "**Description**: Bitmask specifying a pipeline stage"]
@@ -3735,28 +4984,109 @@ bitflags! {
 #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
 #[doc = "<br>"]
 #[doc = "**Reference**: [`VkShaderStageFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkShaderStageFlagBits.html)"]
-pub type ShaderStageFlagBits = ShaderStageFlags;
+pub enum ShaderStageFlagBits {
+    #[doc = "Translated from: `VK_SHADER_STAGE_VERTEX_BIT`"]
+    Vertex = 0b1,
+    #[doc = "Translated from: `VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT`"]
+    TessellationControl = 0b10,
+    #[doc = "Translated from: `VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT`"]
+    TessellationEvaluation = 0b100,
+    #[doc = "Translated from: `VK_SHADER_STAGE_GEOMETRY_BIT`"]
+    Geometry = 0b1000,
+    #[doc = "Translated from: `VK_SHADER_STAGE_FRAGMENT_BIT`"]
+    Fragment = 0b10000,
+    #[doc = "Translated from: `VK_SHADER_STAGE_COMPUTE_BIT`"]
+    Compute = 0b100000,
+    #[doc = "Translated from: `VK_SHADER_STAGE_ALL_GRAPHICS`"]
+    AllGraphics = 0x1f,
+    #[doc = "Translated from: `VK_SHADER_STAGE_ALL`"]
+    All = 0x7fffffff,
+    #[doc = "Translated from: `VK_SHADER_STAGE_TASK_BIT_EXT`"]
+    TaskEXT = 0b1000000,
+    #[doc = "Translated from: `VK_SHADER_STAGE_MESH_BIT_EXT`"]
+    MeshEXT = 0b10000000,
+}
 
-bitflags! {
-    #[repr(C)]
-    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-    #[doc = "**Chapter**: Memory Allocation"]
-    #[doc = "<br>"]
-    #[doc = "**Description**: Bitmask of VkMemoryHeapFlagBits"]
-    #[doc = "<br>"]
-    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkMemoryHeapFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkMemoryHeapFlags.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkMemoryHeapFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkMemoryHeapFlagBits.html)"]
-    pub struct MemoryHeapFlags: u32 {
-        #[doc = "Translated from: `VK_MEMORY_HEAP_DEVICE_LOCAL_BIT`"]
-        const DEVICE_LOCAL = 0b1;
-        #[doc = "Translated from: `VK_MEMORY_HEAP_MULTI_INSTANCE_BIT`"]
-        const MULTI_INSTANCE = 0b10;
+impl From<ShaderStageFlagBits> for u32 {
+    fn from(flag_bits: ShaderStageFlagBits) -> Self {
+        flag_bits as u32
     }
 }
 
+impl std::ops::BitOr for ShaderStageFlagBits {
+    type Output = ShaderStageFlags;
+    fn bitor(self, rhs: Self) -> Self::Output {
+        ShaderStageFlags(self as u32 | rhs as u32)
+    }
+}
+
+impl std::ops::BitOr<ShaderStageFlags> for ShaderStageFlagBits {
+    type Output = ShaderStageFlags;
+    fn bitor(self, rhs: ShaderStageFlags) -> Self::Output {
+        ShaderStageFlags(self as u32 | rhs.0)
+    }
+}
+
+impl std::fmt::Display for ShaderStageFlagBits {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq)]
+#[doc = "**Chapter**: Memory Allocation"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask of VkMemoryHeapFlagBits"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkMemoryHeapFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkMemoryHeapFlags.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkMemoryHeapFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkMemoryHeapFlagBits.html)"]
+pub struct MemoryHeapFlags(u32);
+
+impl MemoryHeapFlags {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
+    }
+}
+
+impl std::ops::BitAnd for MemoryHeapFlags {
+    type Output = Self;
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Self(self.0 & rhs.0)
+    }
+}
+
+impl From<MemoryHeapFlagBits> for MemoryHeapFlags {
+    fn from(flag_bits: MemoryHeapFlagBits) -> Self {
+        Self(flag_bits as u32)
+    }
+}
+
+impl std::ops::BitOr<MemoryHeapFlagBits> for MemoryHeapFlags {
+    type Output = MemoryHeapFlags;
+    fn bitor(self, rhs: MemoryHeapFlagBits) -> Self::Output {
+        Self(self.0 | rhs as u32)
+    }
+}
+
+impl std::fmt::Display for MemoryHeapFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        display_flag_bits_u32(f, self.0, &[MemoryHeapFlagBits::DeviceLocal, MemoryHeapFlagBits::MultiInstance])
+    }
+}
+
+impl std::fmt::Debug for MemoryHeapFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("MemoryHeapFlags").field(&format!("{self}")).finish()
+    }
+}
+
+#[repr(u32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Memory Allocation"]
 #[doc = "<br>"]
 #[doc = "**Description**: Bitmask specifying attribute flags for a heap"]
@@ -3764,36 +5094,104 @@ bitflags! {
 #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
 #[doc = "<br>"]
 #[doc = "**Reference**: [`VkMemoryHeapFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkMemoryHeapFlagBits.html)"]
-pub type MemoryHeapFlagBits = MemoryHeapFlags;
+pub enum MemoryHeapFlagBits {
+    #[doc = "Translated from: `VK_MEMORY_HEAP_DEVICE_LOCAL_BIT`"]
+    DeviceLocal = 0b1,
+    #[doc = "Translated from: `VK_MEMORY_HEAP_MULTI_INSTANCE_BIT`"]
+    MultiInstance = 0b10,
+}
 
-bitflags! {
-    #[repr(C)]
-    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-    #[doc = "**Chapter**: Memory Allocation"]
-    #[doc = "<br>"]
-    #[doc = "**Description**: Bitmask of VkMemoryPropertyFlagBits"]
-    #[doc = "<br>"]
-    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkMemoryPropertyFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkMemoryPropertyFlags.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkMemoryPropertyFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkMemoryPropertyFlagBits.html)"]
-    pub struct MemoryPropertyFlags: u32 {
-        #[doc = "Translated from: `VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT`"]
-        const DEVICE_LOCAL = 0b1;
-        #[doc = "Translated from: `VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT`"]
-        const HOST_VISIBLE = 0b10;
-        #[doc = "Translated from: `VK_MEMORY_PROPERTY_HOST_COHERENT_BIT`"]
-        const HOST_COHERENT = 0b100;
-        #[doc = "Translated from: `VK_MEMORY_PROPERTY_HOST_CACHED_BIT`"]
-        const HOST_CACHED = 0b1000;
-        #[doc = "Translated from: `VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT`"]
-        const LAZILY_ALLOCATED = 0b10000;
-        #[doc = "Translated from: `VK_MEMORY_PROPERTY_PROTECTED_BIT`"]
-        const PROTECTED = 0b100000;
+impl From<MemoryHeapFlagBits> for u32 {
+    fn from(flag_bits: MemoryHeapFlagBits) -> Self {
+        flag_bits as u32
     }
 }
 
+impl std::ops::BitOr for MemoryHeapFlagBits {
+    type Output = MemoryHeapFlags;
+    fn bitor(self, rhs: Self) -> Self::Output {
+        MemoryHeapFlags(self as u32 | rhs as u32)
+    }
+}
+
+impl std::ops::BitOr<MemoryHeapFlags> for MemoryHeapFlagBits {
+    type Output = MemoryHeapFlags;
+    fn bitor(self, rhs: MemoryHeapFlags) -> Self::Output {
+        MemoryHeapFlags(self as u32 | rhs.0)
+    }
+}
+
+impl std::fmt::Display for MemoryHeapFlagBits {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq)]
+#[doc = "**Chapter**: Memory Allocation"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask of VkMemoryPropertyFlagBits"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkMemoryPropertyFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkMemoryPropertyFlags.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkMemoryPropertyFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkMemoryPropertyFlagBits.html)"]
+pub struct MemoryPropertyFlags(u32);
+
+impl MemoryPropertyFlags {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
+    }
+}
+
+impl std::ops::BitAnd for MemoryPropertyFlags {
+    type Output = Self;
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Self(self.0 & rhs.0)
+    }
+}
+
+impl From<MemoryPropertyFlagBits> for MemoryPropertyFlags {
+    fn from(flag_bits: MemoryPropertyFlagBits) -> Self {
+        Self(flag_bits as u32)
+    }
+}
+
+impl std::ops::BitOr<MemoryPropertyFlagBits> for MemoryPropertyFlags {
+    type Output = MemoryPropertyFlags;
+    fn bitor(self, rhs: MemoryPropertyFlagBits) -> Self::Output {
+        Self(self.0 | rhs as u32)
+    }
+}
+
+impl std::fmt::Display for MemoryPropertyFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        display_flag_bits_u32(
+            f,
+            self.0,
+            &[
+                MemoryPropertyFlagBits::DeviceLocal,
+                MemoryPropertyFlagBits::HostVisible,
+                MemoryPropertyFlagBits::HostCoherent,
+                MemoryPropertyFlagBits::HostCached,
+                MemoryPropertyFlagBits::LazilyAllocated,
+                MemoryPropertyFlagBits::Protected,
+            ],
+        )
+    }
+}
+
+impl std::fmt::Debug for MemoryPropertyFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("MemoryPropertyFlags").field(&format!("{self}")).finish()
+    }
+}
+
+#[repr(u32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Memory Allocation"]
 #[doc = "<br>"]
 #[doc = "**Description**: Bitmask specifying properties for a memory type"]
@@ -3801,30 +5199,109 @@ bitflags! {
 #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
 #[doc = "<br>"]
 #[doc = "**Reference**: [`VkMemoryPropertyFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkMemoryPropertyFlagBits.html)"]
-pub type MemoryPropertyFlagBits = MemoryPropertyFlags;
+pub enum MemoryPropertyFlagBits {
+    #[doc = "Translated from: `VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT`"]
+    DeviceLocal = 0b1,
+    #[doc = "Translated from: `VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT`"]
+    HostVisible = 0b10,
+    #[doc = "Translated from: `VK_MEMORY_PROPERTY_HOST_COHERENT_BIT`"]
+    HostCoherent = 0b100,
+    #[doc = "Translated from: `VK_MEMORY_PROPERTY_HOST_CACHED_BIT`"]
+    HostCached = 0b1000,
+    #[doc = "Translated from: `VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT`"]
+    LazilyAllocated = 0b10000,
+    #[doc = "Translated from: `VK_MEMORY_PROPERTY_PROTECTED_BIT`"]
+    Protected = 0b100000,
+}
 
-bitflags! {
-    #[repr(C)]
-    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-    #[doc = "**Chapter**: Memory Allocation"]
-    #[doc = "<br>"]
-    #[doc = "**Description**: Bitmask of VkMemoryAllocateFlagBits"]
-    #[doc = "<br>"]
-    #[doc = "**Provided by**: [`VK_VERSION_1_1`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_1.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkMemoryAllocateFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkMemoryAllocateFlags.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkMemoryAllocateFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkMemoryAllocateFlagBits.html)"]
-    pub struct MemoryAllocateFlags: u32 {
-        #[doc = "Translated from: `VK_MEMORY_ALLOCATE_DEVICE_MASK_BIT`"]
-        const DEVICE_MASK = 0b1;
-        #[doc = "Translated from: `VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT`"]
-        const DEVICE_ADDRESS = 0b10;
-        #[doc = "Translated from: `VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT`"]
-        const DEVICE_ADDRESS_CAPTURE_REPLAY = 0b100;
+impl From<MemoryPropertyFlagBits> for u32 {
+    fn from(flag_bits: MemoryPropertyFlagBits) -> Self {
+        flag_bits as u32
     }
 }
 
+impl std::ops::BitOr for MemoryPropertyFlagBits {
+    type Output = MemoryPropertyFlags;
+    fn bitor(self, rhs: Self) -> Self::Output {
+        MemoryPropertyFlags(self as u32 | rhs as u32)
+    }
+}
+
+impl std::ops::BitOr<MemoryPropertyFlags> for MemoryPropertyFlagBits {
+    type Output = MemoryPropertyFlags;
+    fn bitor(self, rhs: MemoryPropertyFlags) -> Self::Output {
+        MemoryPropertyFlags(self as u32 | rhs.0)
+    }
+}
+
+impl std::fmt::Display for MemoryPropertyFlagBits {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq)]
+#[doc = "**Chapter**: Memory Allocation"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask of VkMemoryAllocateFlagBits"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_1`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_1.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkMemoryAllocateFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkMemoryAllocateFlags.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkMemoryAllocateFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkMemoryAllocateFlagBits.html)"]
+pub struct MemoryAllocateFlags(u32);
+
+impl MemoryAllocateFlags {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
+    }
+}
+
+impl std::ops::BitAnd for MemoryAllocateFlags {
+    type Output = Self;
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Self(self.0 & rhs.0)
+    }
+}
+
+impl From<MemoryAllocateFlagBits> for MemoryAllocateFlags {
+    fn from(flag_bits: MemoryAllocateFlagBits) -> Self {
+        Self(flag_bits as u32)
+    }
+}
+
+impl std::ops::BitOr<MemoryAllocateFlagBits> for MemoryAllocateFlags {
+    type Output = MemoryAllocateFlags;
+    fn bitor(self, rhs: MemoryAllocateFlagBits) -> Self::Output {
+        Self(self.0 | rhs as u32)
+    }
+}
+
+impl std::fmt::Display for MemoryAllocateFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        display_flag_bits_u32(
+            f,
+            self.0,
+            &[
+                MemoryAllocateFlagBits::DeviceMask,
+                MemoryAllocateFlagBits::DeviceAddress,
+                MemoryAllocateFlagBits::DeviceAddressCaptureReplay,
+            ],
+        )
+    }
+}
+
+impl std::fmt::Debug for MemoryAllocateFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("MemoryAllocateFlags").field(&format!("{self}")).finish()
+    }
+}
+
+#[repr(u32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Memory Allocation"]
 #[doc = "<br>"]
 #[doc = "**Description**: Bitmask specifying flags for a device memory allocation"]
@@ -3832,80 +5309,149 @@ bitflags! {
 #[doc = "**Provided by**: [`VK_VERSION_1_1`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_1.html)"]
 #[doc = "<br>"]
 #[doc = "**Reference**: [`VkMemoryAllocateFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkMemoryAllocateFlagBits.html)"]
-pub type MemoryAllocateFlagBits = MemoryAllocateFlags;
+pub enum MemoryAllocateFlagBits {
+    #[doc = "Translated from: `VK_MEMORY_ALLOCATE_DEVICE_MASK_BIT`"]
+    DeviceMask = 0b1,
+    #[doc = "Translated from: `VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT`"]
+    DeviceAddress = 0b10,
+    #[doc = "Translated from: `VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT`"]
+    DeviceAddressCaptureReplay = 0b100,
+}
 
-bitflags! {
-    #[repr(C)]
-    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-    #[doc = "**Chapter**: Memory Allocation"]
-    #[doc = "<br>"]
-    #[doc = "**Description**: Reserved for future use"]
-    #[doc = "<br>"]
-    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkMemoryMapFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkMemoryMapFlags.html)"]
-    pub struct MemoryMapFlags: u32 {
-
+impl From<MemoryAllocateFlagBits> for u32 {
+    fn from(flag_bits: MemoryAllocateFlagBits) -> Self {
+        flag_bits as u32
     }
 }
 
-bitflags! {
-    #[repr(C)]
-    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-    #[doc = "**Chapter**: Memory Allocation"]
-    #[doc = "<br>"]
-    #[doc = "**Description**: Reserved for future use"]
-    #[doc = "<br>"]
-    #[doc = "**Provided by**: [`VK_KHR_map_memory2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_map_memory2.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkMemoryUnmapFlagsKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkMemoryUnmapFlagsKHR.html)"]
-    pub struct MemoryUnmapFlagsKHR: u32 {
-
+impl std::ops::BitOr for MemoryAllocateFlagBits {
+    type Output = MemoryAllocateFlags;
+    fn bitor(self, rhs: Self) -> Self::Output {
+        MemoryAllocateFlags(self as u32 | rhs as u32)
     }
 }
 
-bitflags! {
-    #[repr(C)]
-    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-    #[doc = "**Chapter**: Resource Creation"]
-    #[doc = "<br>"]
-    #[doc = "**Description**: Bitmask of VkBufferUsageFlagBits"]
-    #[doc = "<br>"]
-    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkBufferUsageFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkBufferUsageFlags.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkBufferUsageFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkBufferUsageFlagBits.html)"]
-    pub struct BufferUsageFlags: u32 {
-        #[doc = "Translated from: `VK_BUFFER_USAGE_TRANSFER_SRC_BIT`"]
-        const TRANSFER_SRC = 0b1;
-        #[doc = "Translated from: `VK_BUFFER_USAGE_TRANSFER_DST_BIT`"]
-        const TRANSFER_DST = 0b10;
-        #[doc = "Translated from: `VK_BUFFER_USAGE_UNIFORM_TEXEL_BUFFER_BIT`"]
-        const UNIFORM_TEXEL_BUFFER = 0b100;
-        #[doc = "Translated from: `VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT`"]
-        const STORAGE_TEXEL_BUFFER = 0b1000;
-        #[doc = "Translated from: `VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT`"]
-        const UNIFORM_BUFFER = 0b10000;
-        #[doc = "Translated from: `VK_BUFFER_USAGE_STORAGE_BUFFER_BIT`"]
-        const STORAGE_BUFFER = 0b100000;
-        #[doc = "Translated from: `VK_BUFFER_USAGE_INDEX_BUFFER_BIT`"]
-        const INDEX_BUFFER = 0b1000000;
-        #[doc = "Translated from: `VK_BUFFER_USAGE_VERTEX_BUFFER_BIT`"]
-        const VERTEX_BUFFER = 0b10000000;
-        #[doc = "Translated from: `VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT`"]
-        const INDIRECT_BUFFER = 0b100000000;
-        #[doc = "Translated from: `VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT`"]
-        const SHADER_DEVICE_ADDRESS = 0b100000000000000000;
-        #[doc = "Translated from: `VK_BUFFER_USAGE_SAMPLER_DESCRIPTOR_BUFFER_BIT_EXT`"]
-        const SAMPLER_DESCRIPTOR_BUFFER_EXT = 0b1000000000000000000000;
-        #[doc = "Translated from: `VK_BUFFER_USAGE_RESOURCE_DESCRIPTOR_BUFFER_BIT_EXT`"]
-        const RESOURCE_DESCRIPTOR_BUFFER_EXT = 0b10000000000000000000000;
-        #[doc = "Translated from: `VK_BUFFER_USAGE_PUSH_DESCRIPTORS_DESCRIPTOR_BUFFER_BIT_EXT`"]
-        const PUSH_DESCRIPTORS_DESCRIPTOR_BUFFER_EXT = 0b100000000000000000000000000;
+impl std::ops::BitOr<MemoryAllocateFlags> for MemoryAllocateFlagBits {
+    type Output = MemoryAllocateFlags;
+    fn bitor(self, rhs: MemoryAllocateFlags) -> Self::Output {
+        MemoryAllocateFlags(self as u32 | rhs.0)
     }
 }
 
+impl std::fmt::Display for MemoryAllocateFlagBits {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[doc = "**Chapter**: Memory Allocation"]
+#[doc = "<br>"]
+#[doc = "**Description**: Reserved for future use"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkMemoryMapFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkMemoryMapFlags.html)"]
+pub struct MemoryMapFlags(u32);
+
+impl MemoryMapFlags {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[doc = "**Chapter**: Memory Allocation"]
+#[doc = "<br>"]
+#[doc = "**Description**: Reserved for future use"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_map_memory2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_map_memory2.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkMemoryUnmapFlagsKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkMemoryUnmapFlagsKHR.html)"]
+pub struct MemoryUnmapFlagsKHR(u32);
+
+impl MemoryUnmapFlagsKHR {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq)]
+#[doc = "**Chapter**: Resource Creation"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask of VkBufferUsageFlagBits"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkBufferUsageFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkBufferUsageFlags.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkBufferUsageFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkBufferUsageFlagBits.html)"]
+pub struct BufferUsageFlags(u32);
+
+impl BufferUsageFlags {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
+    }
+}
+
+impl std::ops::BitAnd for BufferUsageFlags {
+    type Output = Self;
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Self(self.0 & rhs.0)
+    }
+}
+
+impl From<BufferUsageFlagBits> for BufferUsageFlags {
+    fn from(flag_bits: BufferUsageFlagBits) -> Self {
+        Self(flag_bits as u32)
+    }
+}
+
+impl std::ops::BitOr<BufferUsageFlagBits> for BufferUsageFlags {
+    type Output = BufferUsageFlags;
+    fn bitor(self, rhs: BufferUsageFlagBits) -> Self::Output {
+        Self(self.0 | rhs as u32)
+    }
+}
+
+impl std::fmt::Display for BufferUsageFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        display_flag_bits_u32(
+            f,
+            self.0,
+            &[
+                BufferUsageFlagBits::TransferSrc,
+                BufferUsageFlagBits::TransferDst,
+                BufferUsageFlagBits::UniformTexelBuffer,
+                BufferUsageFlagBits::StorageTexelBuffer,
+                BufferUsageFlagBits::UniformBuffer,
+                BufferUsageFlagBits::StorageBuffer,
+                BufferUsageFlagBits::IndexBuffer,
+                BufferUsageFlagBits::VertexBuffer,
+                BufferUsageFlagBits::IndirectBuffer,
+                BufferUsageFlagBits::ShaderDeviceAddress,
+                BufferUsageFlagBits::SamplerDescriptorBufferEXT,
+                BufferUsageFlagBits::ResourceDescriptorBufferEXT,
+                BufferUsageFlagBits::PushDescriptorsDescriptorBufferEXT,
+            ],
+        )
+    }
+}
+
+impl std::fmt::Debug for BufferUsageFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("BufferUsageFlags").field(&format!("{self}")).finish()
+    }
+}
+
+#[repr(u32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Resource Creation"]
 #[doc = "<br>"]
 #[doc = "**Description**: Bitmask specifying allowed usage of a buffer"]
@@ -3913,36 +5459,126 @@ bitflags! {
 #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
 #[doc = "<br>"]
 #[doc = "**Reference**: [`VkBufferUsageFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkBufferUsageFlagBits.html)"]
-pub type BufferUsageFlagBits = BufferUsageFlags;
+pub enum BufferUsageFlagBits {
+    #[doc = "Translated from: `VK_BUFFER_USAGE_TRANSFER_SRC_BIT`"]
+    TransferSrc = 0b1,
+    #[doc = "Translated from: `VK_BUFFER_USAGE_TRANSFER_DST_BIT`"]
+    TransferDst = 0b10,
+    #[doc = "Translated from: `VK_BUFFER_USAGE_UNIFORM_TEXEL_BUFFER_BIT`"]
+    UniformTexelBuffer = 0b100,
+    #[doc = "Translated from: `VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT`"]
+    StorageTexelBuffer = 0b1000,
+    #[doc = "Translated from: `VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT`"]
+    UniformBuffer = 0b10000,
+    #[doc = "Translated from: `VK_BUFFER_USAGE_STORAGE_BUFFER_BIT`"]
+    StorageBuffer = 0b100000,
+    #[doc = "Translated from: `VK_BUFFER_USAGE_INDEX_BUFFER_BIT`"]
+    IndexBuffer = 0b1000000,
+    #[doc = "Translated from: `VK_BUFFER_USAGE_VERTEX_BUFFER_BIT`"]
+    VertexBuffer = 0b10000000,
+    #[doc = "Translated from: `VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT`"]
+    IndirectBuffer = 0b100000000,
+    #[doc = "Translated from: `VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT`"]
+    ShaderDeviceAddress = 0b100000000000000000,
+    #[doc = "Translated from: `VK_BUFFER_USAGE_SAMPLER_DESCRIPTOR_BUFFER_BIT_EXT`"]
+    SamplerDescriptorBufferEXT = 0b1000000000000000000000,
+    #[doc = "Translated from: `VK_BUFFER_USAGE_RESOURCE_DESCRIPTOR_BUFFER_BIT_EXT`"]
+    ResourceDescriptorBufferEXT = 0b10000000000000000000000,
+    #[doc = "Translated from: `VK_BUFFER_USAGE_PUSH_DESCRIPTORS_DESCRIPTOR_BUFFER_BIT_EXT`"]
+    PushDescriptorsDescriptorBufferEXT = 0b100000000000000000000000000,
+}
 
-bitflags! {
-    #[repr(C)]
-    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-    #[doc = "**Chapter**: Resource Creation"]
-    #[doc = "<br>"]
-    #[doc = "**Description**: Bitmask of VkBufferCreateFlagBits"]
-    #[doc = "<br>"]
-    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkBufferCreateFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkBufferCreateFlags.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkBufferCreateFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkBufferCreateFlagBits.html)"]
-    pub struct BufferCreateFlags: u32 {
-        #[doc = "Translated from: `VK_BUFFER_CREATE_SPARSE_BINDING_BIT`"]
-        const SPARSE_BINDING = 0b1;
-        #[doc = "Translated from: `VK_BUFFER_CREATE_SPARSE_RESIDENCY_BIT`"]
-        const SPARSE_RESIDENCY = 0b10;
-        #[doc = "Translated from: `VK_BUFFER_CREATE_SPARSE_ALIASED_BIT`"]
-        const SPARSE_ALIASED = 0b100;
-        #[doc = "Translated from: `VK_BUFFER_CREATE_PROTECTED_BIT`"]
-        const PROTECTED = 0b1000;
-        #[doc = "Translated from: `VK_BUFFER_CREATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT`"]
-        const DEVICE_ADDRESS_CAPTURE_REPLAY = 0b10000;
-        #[doc = "Translated from: `VK_BUFFER_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_EXT`"]
-        const DESCRIPTOR_BUFFER_CAPTURE_REPLAY_EXT = 0b100000;
+impl From<BufferUsageFlagBits> for u32 {
+    fn from(flag_bits: BufferUsageFlagBits) -> Self {
+        flag_bits as u32
     }
 }
 
+impl std::ops::BitOr for BufferUsageFlagBits {
+    type Output = BufferUsageFlags;
+    fn bitor(self, rhs: Self) -> Self::Output {
+        BufferUsageFlags(self as u32 | rhs as u32)
+    }
+}
+
+impl std::ops::BitOr<BufferUsageFlags> for BufferUsageFlagBits {
+    type Output = BufferUsageFlags;
+    fn bitor(self, rhs: BufferUsageFlags) -> Self::Output {
+        BufferUsageFlags(self as u32 | rhs.0)
+    }
+}
+
+impl std::fmt::Display for BufferUsageFlagBits {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq)]
+#[doc = "**Chapter**: Resource Creation"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask of VkBufferCreateFlagBits"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkBufferCreateFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkBufferCreateFlags.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkBufferCreateFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkBufferCreateFlagBits.html)"]
+pub struct BufferCreateFlags(u32);
+
+impl BufferCreateFlags {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
+    }
+}
+
+impl std::ops::BitAnd for BufferCreateFlags {
+    type Output = Self;
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Self(self.0 & rhs.0)
+    }
+}
+
+impl From<BufferCreateFlagBits> for BufferCreateFlags {
+    fn from(flag_bits: BufferCreateFlagBits) -> Self {
+        Self(flag_bits as u32)
+    }
+}
+
+impl std::ops::BitOr<BufferCreateFlagBits> for BufferCreateFlags {
+    type Output = BufferCreateFlags;
+    fn bitor(self, rhs: BufferCreateFlagBits) -> Self::Output {
+        Self(self.0 | rhs as u32)
+    }
+}
+
+impl std::fmt::Display for BufferCreateFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        display_flag_bits_u32(
+            f,
+            self.0,
+            &[
+                BufferCreateFlagBits::SparseBinding,
+                BufferCreateFlagBits::SparseResidency,
+                BufferCreateFlagBits::SparseAliased,
+                BufferCreateFlagBits::Protected,
+                BufferCreateFlagBits::DeviceAddressCaptureReplay,
+                BufferCreateFlagBits::DescriptorBufferCaptureReplayEXT,
+            ],
+        )
+    }
+}
+
+impl std::fmt::Debug for BufferCreateFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("BufferCreateFlags").field(&format!("{self}")).finish()
+    }
+}
+
+#[repr(u32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Resource Creation"]
 #[doc = "<br>"]
 #[doc = "**Description**: Bitmask specifying additional parameters of a buffer"]
@@ -3950,40 +5586,114 @@ bitflags! {
 #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
 #[doc = "<br>"]
 #[doc = "**Reference**: [`VkBufferCreateFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkBufferCreateFlagBits.html)"]
-pub type BufferCreateFlagBits = BufferCreateFlags;
+pub enum BufferCreateFlagBits {
+    #[doc = "Translated from: `VK_BUFFER_CREATE_SPARSE_BINDING_BIT`"]
+    SparseBinding = 0b1,
+    #[doc = "Translated from: `VK_BUFFER_CREATE_SPARSE_RESIDENCY_BIT`"]
+    SparseResidency = 0b10,
+    #[doc = "Translated from: `VK_BUFFER_CREATE_SPARSE_ALIASED_BIT`"]
+    SparseAliased = 0b100,
+    #[doc = "Translated from: `VK_BUFFER_CREATE_PROTECTED_BIT`"]
+    Protected = 0b1000,
+    #[doc = "Translated from: `VK_BUFFER_CREATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT`"]
+    DeviceAddressCaptureReplay = 0b10000,
+    #[doc = "Translated from: `VK_BUFFER_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_EXT`"]
+    DescriptorBufferCaptureReplayEXT = 0b100000,
+}
 
-bitflags! {
-    #[repr(C)]
-    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-    #[doc = "**Chapter**: Resource Creation"]
-    #[doc = "<br>"]
-    #[doc = "**Description**: Bitmask of VkImageUsageFlagBits"]
-    #[doc = "<br>"]
-    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkImageUsageFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageUsageFlags.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkImageUsageFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageUsageFlagBits.html)"]
-    pub struct ImageUsageFlags: u32 {
-        #[doc = "Translated from: `VK_IMAGE_USAGE_TRANSFER_SRC_BIT`"]
-        const TRANSFER_SRC = 0b1;
-        #[doc = "Translated from: `VK_IMAGE_USAGE_TRANSFER_DST_BIT`"]
-        const TRANSFER_DST = 0b10;
-        #[doc = "Translated from: `VK_IMAGE_USAGE_SAMPLED_BIT`"]
-        const SAMPLED = 0b100;
-        #[doc = "Translated from: `VK_IMAGE_USAGE_STORAGE_BIT`"]
-        const STORAGE = 0b1000;
-        #[doc = "Translated from: `VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT`"]
-        const COLOR_ATTACHMENT = 0b10000;
-        #[doc = "Translated from: `VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT`"]
-        const DEPTH_STENCIL_ATTACHMENT = 0b100000;
-        #[doc = "Translated from: `VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT`"]
-        const TRANSIENT_ATTACHMENT = 0b1000000;
-        #[doc = "Translated from: `VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT`"]
-        const INPUT_ATTACHMENT = 0b10000000;
+impl From<BufferCreateFlagBits> for u32 {
+    fn from(flag_bits: BufferCreateFlagBits) -> Self {
+        flag_bits as u32
     }
 }
 
+impl std::ops::BitOr for BufferCreateFlagBits {
+    type Output = BufferCreateFlags;
+    fn bitor(self, rhs: Self) -> Self::Output {
+        BufferCreateFlags(self as u32 | rhs as u32)
+    }
+}
+
+impl std::ops::BitOr<BufferCreateFlags> for BufferCreateFlagBits {
+    type Output = BufferCreateFlags;
+    fn bitor(self, rhs: BufferCreateFlags) -> Self::Output {
+        BufferCreateFlags(self as u32 | rhs.0)
+    }
+}
+
+impl std::fmt::Display for BufferCreateFlagBits {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq)]
+#[doc = "**Chapter**: Resource Creation"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask of VkImageUsageFlagBits"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkImageUsageFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageUsageFlags.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkImageUsageFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageUsageFlagBits.html)"]
+pub struct ImageUsageFlags(u32);
+
+impl ImageUsageFlags {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
+    }
+}
+
+impl std::ops::BitAnd for ImageUsageFlags {
+    type Output = Self;
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Self(self.0 & rhs.0)
+    }
+}
+
+impl From<ImageUsageFlagBits> for ImageUsageFlags {
+    fn from(flag_bits: ImageUsageFlagBits) -> Self {
+        Self(flag_bits as u32)
+    }
+}
+
+impl std::ops::BitOr<ImageUsageFlagBits> for ImageUsageFlags {
+    type Output = ImageUsageFlags;
+    fn bitor(self, rhs: ImageUsageFlagBits) -> Self::Output {
+        Self(self.0 | rhs as u32)
+    }
+}
+
+impl std::fmt::Display for ImageUsageFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        display_flag_bits_u32(
+            f,
+            self.0,
+            &[
+                ImageUsageFlagBits::TransferSrc,
+                ImageUsageFlagBits::TransferDst,
+                ImageUsageFlagBits::Sampled,
+                ImageUsageFlagBits::Storage,
+                ImageUsageFlagBits::ColorAttachment,
+                ImageUsageFlagBits::DepthStencilAttachment,
+                ImageUsageFlagBits::TransientAttachment,
+                ImageUsageFlagBits::InputAttachment,
+            ],
+        )
+    }
+}
+
+impl std::fmt::Debug for ImageUsageFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("ImageUsageFlags").field(&format!("{self}")).finish()
+    }
+}
+
+#[repr(u32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Resource Creation"]
 #[doc = "<br>"]
 #[doc = "**Description**: Bitmask specifying intended usage of an image"]
@@ -3991,50 +5701,123 @@ bitflags! {
 #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
 #[doc = "<br>"]
 #[doc = "**Reference**: [`VkImageUsageFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageUsageFlagBits.html)"]
-pub type ImageUsageFlagBits = ImageUsageFlags;
+pub enum ImageUsageFlagBits {
+    #[doc = "Translated from: `VK_IMAGE_USAGE_TRANSFER_SRC_BIT`"]
+    TransferSrc = 0b1,
+    #[doc = "Translated from: `VK_IMAGE_USAGE_TRANSFER_DST_BIT`"]
+    TransferDst = 0b10,
+    #[doc = "Translated from: `VK_IMAGE_USAGE_SAMPLED_BIT`"]
+    Sampled = 0b100,
+    #[doc = "Translated from: `VK_IMAGE_USAGE_STORAGE_BIT`"]
+    Storage = 0b1000,
+    #[doc = "Translated from: `VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT`"]
+    ColorAttachment = 0b10000,
+    #[doc = "Translated from: `VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT`"]
+    DepthStencilAttachment = 0b100000,
+    #[doc = "Translated from: `VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT`"]
+    TransientAttachment = 0b1000000,
+    #[doc = "Translated from: `VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT`"]
+    InputAttachment = 0b10000000,
+}
 
-bitflags! {
-    #[repr(C)]
-    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-    #[doc = "**Chapter**: Resource Creation"]
-    #[doc = "<br>"]
-    #[doc = "**Description**: Bitmask of VkImageCreateFlagBits"]
-    #[doc = "<br>"]
-    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkImageCreateFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageCreateFlags.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkImageCreateFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageCreateFlagBits.html)"]
-    pub struct ImageCreateFlags: u32 {
-        #[doc = "Translated from: `VK_IMAGE_CREATE_SPARSE_BINDING_BIT`"]
-        const SPARSE_BINDING = 0b1;
-        #[doc = "Translated from: `VK_IMAGE_CREATE_SPARSE_RESIDENCY_BIT`"]
-        const SPARSE_RESIDENCY = 0b10;
-        #[doc = "Translated from: `VK_IMAGE_CREATE_SPARSE_ALIASED_BIT`"]
-        const SPARSE_ALIASED = 0b100;
-        #[doc = "Translated from: `VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT`"]
-        const MUTABLE_FORMAT = 0b1000;
-        #[doc = "Translated from: `VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT`"]
-        const CUBE_COMPATIBLE = 0b10000;
-        #[doc = "Translated from: `VK_IMAGE_CREATE_ALIAS_BIT`"]
-        const ALIAS = 0b10000000000;
-        #[doc = "Translated from: `VK_IMAGE_CREATE_SPLIT_INSTANCE_BIND_REGIONS_BIT`"]
-        const SPLIT_INSTANCE_BIND_REGIONS = 0b1000000;
-        #[doc = "Translated from: `VK_IMAGE_CREATE_2D_ARRAY_COMPATIBLE_BIT`"]
-        const NUM_2D_ARRAY_COMPATIBLE = 0b100000;
-        #[doc = "Translated from: `VK_IMAGE_CREATE_BLOCK_TEXEL_VIEW_COMPATIBLE_BIT`"]
-        const BLOCK_TEXEL_VIEW_COMPATIBLE = 0b10000000;
-        #[doc = "Translated from: `VK_IMAGE_CREATE_EXTENDED_USAGE_BIT`"]
-        const EXTENDED_USAGE = 0b100000000;
-        #[doc = "Translated from: `VK_IMAGE_CREATE_PROTECTED_BIT`"]
-        const PROTECTED = 0b100000000000;
-        #[doc = "Translated from: `VK_IMAGE_CREATE_DISJOINT_BIT`"]
-        const DISJOINT = 0b1000000000;
-        #[doc = "Translated from: `VK_IMAGE_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_EXT`"]
-        const DESCRIPTOR_BUFFER_CAPTURE_REPLAY_EXT = 0b10000000000000000;
+impl From<ImageUsageFlagBits> for u32 {
+    fn from(flag_bits: ImageUsageFlagBits) -> Self {
+        flag_bits as u32
     }
 }
 
+impl std::ops::BitOr for ImageUsageFlagBits {
+    type Output = ImageUsageFlags;
+    fn bitor(self, rhs: Self) -> Self::Output {
+        ImageUsageFlags(self as u32 | rhs as u32)
+    }
+}
+
+impl std::ops::BitOr<ImageUsageFlags> for ImageUsageFlagBits {
+    type Output = ImageUsageFlags;
+    fn bitor(self, rhs: ImageUsageFlags) -> Self::Output {
+        ImageUsageFlags(self as u32 | rhs.0)
+    }
+}
+
+impl std::fmt::Display for ImageUsageFlagBits {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq)]
+#[doc = "**Chapter**: Resource Creation"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask of VkImageCreateFlagBits"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkImageCreateFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageCreateFlags.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkImageCreateFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageCreateFlagBits.html)"]
+pub struct ImageCreateFlags(u32);
+
+impl ImageCreateFlags {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
+    }
+}
+
+impl std::ops::BitAnd for ImageCreateFlags {
+    type Output = Self;
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Self(self.0 & rhs.0)
+    }
+}
+
+impl From<ImageCreateFlagBits> for ImageCreateFlags {
+    fn from(flag_bits: ImageCreateFlagBits) -> Self {
+        Self(flag_bits as u32)
+    }
+}
+
+impl std::ops::BitOr<ImageCreateFlagBits> for ImageCreateFlags {
+    type Output = ImageCreateFlags;
+    fn bitor(self, rhs: ImageCreateFlagBits) -> Self::Output {
+        Self(self.0 | rhs as u32)
+    }
+}
+
+impl std::fmt::Display for ImageCreateFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        display_flag_bits_u32(
+            f,
+            self.0,
+            &[
+                ImageCreateFlagBits::CreateSparseBinding,
+                ImageCreateFlagBits::CreateSparseResidency,
+                ImageCreateFlagBits::CreateSparseAliased,
+                ImageCreateFlagBits::CreateMutableFormat,
+                ImageCreateFlagBits::CreateCubeCompatible,
+                ImageCreateFlagBits::CreateAlias,
+                ImageCreateFlagBits::CreateSplitInstanceBindRegions,
+                ImageCreateFlagBits::Create2dArrayCompatible,
+                ImageCreateFlagBits::CreateBlockTexelViewCompatible,
+                ImageCreateFlagBits::CreateExtendedUsage,
+                ImageCreateFlagBits::CreateProtected,
+                ImageCreateFlagBits::CreateDisjoint,
+                ImageCreateFlagBits::CreateDescriptorBufferCaptureReplayEXT,
+            ],
+        )
+    }
+}
+
+impl std::fmt::Debug for ImageCreateFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("ImageCreateFlags").field(&format!("{self}")).finish()
+    }
+}
+
+#[repr(u32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Resource Creation"]
 #[doc = "<br>"]
 #[doc = "**Description**: Bitmask specifying additional parameters of an image"]
@@ -4042,26 +5825,115 @@ bitflags! {
 #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
 #[doc = "<br>"]
 #[doc = "**Reference**: [`VkImageCreateFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageCreateFlagBits.html)"]
-pub type ImageCreateFlagBits = ImageCreateFlags;
+pub enum ImageCreateFlagBits {
+    #[doc = "Translated from: `VK_IMAGE_CREATE_SPARSE_BINDING_BIT`"]
+    CreateSparseBinding = 0b1,
+    #[doc = "Translated from: `VK_IMAGE_CREATE_SPARSE_RESIDENCY_BIT`"]
+    CreateSparseResidency = 0b10,
+    #[doc = "Translated from: `VK_IMAGE_CREATE_SPARSE_ALIASED_BIT`"]
+    CreateSparseAliased = 0b100,
+    #[doc = "Translated from: `VK_IMAGE_CREATE_MUTABLE_FORMAT_BIT`"]
+    CreateMutableFormat = 0b1000,
+    #[doc = "Translated from: `VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT`"]
+    CreateCubeCompatible = 0b10000,
+    #[doc = "Translated from: `VK_IMAGE_CREATE_ALIAS_BIT`"]
+    CreateAlias = 0b10000000000,
+    #[doc = "Translated from: `VK_IMAGE_CREATE_SPLIT_INSTANCE_BIND_REGIONS_BIT`"]
+    CreateSplitInstanceBindRegions = 0b1000000,
+    #[doc = "Translated from: `VK_IMAGE_CREATE_2D_ARRAY_COMPATIBLE_BIT`"]
+    Create2dArrayCompatible = 0b100000,
+    #[doc = "Translated from: `VK_IMAGE_CREATE_BLOCK_TEXEL_VIEW_COMPATIBLE_BIT`"]
+    CreateBlockTexelViewCompatible = 0b10000000,
+    #[doc = "Translated from: `VK_IMAGE_CREATE_EXTENDED_USAGE_BIT`"]
+    CreateExtendedUsage = 0b100000000,
+    #[doc = "Translated from: `VK_IMAGE_CREATE_PROTECTED_BIT`"]
+    CreateProtected = 0b100000000000,
+    #[doc = "Translated from: `VK_IMAGE_CREATE_DISJOINT_BIT`"]
+    CreateDisjoint = 0b1000000000,
+    #[doc = "Translated from: `VK_IMAGE_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_EXT`"]
+    CreateDescriptorBufferCaptureReplayEXT = 0b10000000000000000,
+}
 
-bitflags! {
-    #[repr(C)]
-    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-    #[doc = "**Chapter**: Resource Creation"]
-    #[doc = "<br>"]
-    #[doc = "**Description**: Reserved for future use"]
-    #[doc = "<br>"]
-    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkImageViewCreateFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageViewCreateFlags.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkImageViewCreateFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageViewCreateFlagBits.html)"]
-    pub struct ImageViewCreateFlags: u32 {
-        #[doc = "Translated from: `VK_IMAGE_VIEW_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_EXT`"]
-        const DESCRIPTOR_BUFFER_CAPTURE_REPLAY_EXT = 0b100;
+impl From<ImageCreateFlagBits> for u32 {
+    fn from(flag_bits: ImageCreateFlagBits) -> Self {
+        flag_bits as u32
     }
 }
 
+impl std::ops::BitOr for ImageCreateFlagBits {
+    type Output = ImageCreateFlags;
+    fn bitor(self, rhs: Self) -> Self::Output {
+        ImageCreateFlags(self as u32 | rhs as u32)
+    }
+}
+
+impl std::ops::BitOr<ImageCreateFlags> for ImageCreateFlagBits {
+    type Output = ImageCreateFlags;
+    fn bitor(self, rhs: ImageCreateFlags) -> Self::Output {
+        ImageCreateFlags(self as u32 | rhs.0)
+    }
+}
+
+impl std::fmt::Display for ImageCreateFlagBits {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq)]
+#[doc = "**Chapter**: Resource Creation"]
+#[doc = "<br>"]
+#[doc = "**Description**: Reserved for future use"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkImageViewCreateFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageViewCreateFlags.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkImageViewCreateFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageViewCreateFlagBits.html)"]
+pub struct ImageViewCreateFlags(u32);
+
+impl ImageViewCreateFlags {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
+    }
+}
+
+impl std::ops::BitAnd for ImageViewCreateFlags {
+    type Output = Self;
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Self(self.0 & rhs.0)
+    }
+}
+
+impl From<ImageViewCreateFlagBits> for ImageViewCreateFlags {
+    fn from(flag_bits: ImageViewCreateFlagBits) -> Self {
+        Self(flag_bits as u32)
+    }
+}
+
+impl std::ops::BitOr<ImageViewCreateFlagBits> for ImageViewCreateFlags {
+    type Output = ImageViewCreateFlags;
+    fn bitor(self, rhs: ImageViewCreateFlagBits) -> Self::Output {
+        Self(self.0 | rhs as u32)
+    }
+}
+
+impl std::fmt::Display for ImageViewCreateFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        display_flag_bits_u32(f, self.0, &[ImageViewCreateFlagBits::DescriptorBufferCaptureReplayEXT])
+    }
+}
+
+impl std::fmt::Debug for ImageViewCreateFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("ImageViewCreateFlags").field(&format!("{self}")).finish()
+    }
+}
+
+#[repr(u32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Resource Creation"]
 #[doc = "<br>"]
 #[doc = "**Description**: Bitmask specifying additional parameters of an image view"]
@@ -4069,40 +5941,104 @@ bitflags! {
 #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
 #[doc = "<br>"]
 #[doc = "**Reference**: [`VkImageViewCreateFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageViewCreateFlagBits.html)"]
-pub type ImageViewCreateFlagBits = ImageViewCreateFlags;
+pub enum ImageViewCreateFlagBits {
+    #[doc = "Translated from: `VK_IMAGE_VIEW_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_EXT`"]
+    DescriptorBufferCaptureReplayEXT = 0b100,
+}
 
-bitflags! {
-    #[repr(C)]
-    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-    #[doc = "**Chapter**: Resource Creation"]
-    #[doc = "<br>"]
-    #[doc = "**Description**: Bitmask of VkImageAspectFlagBits"]
-    #[doc = "<br>"]
-    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkImageAspectFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageAspectFlags.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkImageAspectFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageAspectFlagBits.html)"]
-    pub struct ImageAspectFlags: u32 {
-        #[doc = "Translated from: `VK_IMAGE_ASPECT_COLOR_BIT`"]
-        const COLOR = 0b1;
-        #[doc = "Translated from: `VK_IMAGE_ASPECT_DEPTH_BIT`"]
-        const DEPTH = 0b10;
-        #[doc = "Translated from: `VK_IMAGE_ASPECT_STENCIL_BIT`"]
-        const STENCIL = 0b100;
-        #[doc = "Translated from: `VK_IMAGE_ASPECT_METADATA_BIT`"]
-        const METADATA = 0b1000;
-        #[doc = "Translated from: `VK_IMAGE_ASPECT_PLANE_0_BIT`"]
-        const PLANE_0 = 0b10000;
-        #[doc = "Translated from: `VK_IMAGE_ASPECT_PLANE_1_BIT`"]
-        const PLANE_1 = 0b100000;
-        #[doc = "Translated from: `VK_IMAGE_ASPECT_PLANE_2_BIT`"]
-        const PLANE_2 = 0b1000000;
-        #[doc = "Translated from: `VK_IMAGE_ASPECT_NONE`"]
-        const NONE = 0;
+impl From<ImageViewCreateFlagBits> for u32 {
+    fn from(flag_bits: ImageViewCreateFlagBits) -> Self {
+        flag_bits as u32
     }
 }
 
+impl std::ops::BitOr for ImageViewCreateFlagBits {
+    type Output = ImageViewCreateFlags;
+    fn bitor(self, rhs: Self) -> Self::Output {
+        ImageViewCreateFlags(self as u32 | rhs as u32)
+    }
+}
+
+impl std::ops::BitOr<ImageViewCreateFlags> for ImageViewCreateFlagBits {
+    type Output = ImageViewCreateFlags;
+    fn bitor(self, rhs: ImageViewCreateFlags) -> Self::Output {
+        ImageViewCreateFlags(self as u32 | rhs.0)
+    }
+}
+
+impl std::fmt::Display for ImageViewCreateFlagBits {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq)]
+#[doc = "**Chapter**: Resource Creation"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask of VkImageAspectFlagBits"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkImageAspectFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageAspectFlags.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkImageAspectFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageAspectFlagBits.html)"]
+pub struct ImageAspectFlags(u32);
+
+impl ImageAspectFlags {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
+    }
+}
+
+impl std::ops::BitAnd for ImageAspectFlags {
+    type Output = Self;
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Self(self.0 & rhs.0)
+    }
+}
+
+impl From<ImageAspectFlagBits> for ImageAspectFlags {
+    fn from(flag_bits: ImageAspectFlagBits) -> Self {
+        Self(flag_bits as u32)
+    }
+}
+
+impl std::ops::BitOr<ImageAspectFlagBits> for ImageAspectFlags {
+    type Output = ImageAspectFlags;
+    fn bitor(self, rhs: ImageAspectFlagBits) -> Self::Output {
+        Self(self.0 | rhs as u32)
+    }
+}
+
+impl std::fmt::Display for ImageAspectFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        display_flag_bits_u32(
+            f,
+            self.0,
+            &[
+                ImageAspectFlagBits::Color,
+                ImageAspectFlagBits::Depth,
+                ImageAspectFlagBits::Stencil,
+                ImageAspectFlagBits::Metadata,
+                ImageAspectFlagBits::Plane0,
+                ImageAspectFlagBits::Plane1,
+                ImageAspectFlagBits::Plane2,
+                ImageAspectFlagBits::None,
+            ],
+        )
+    }
+}
+
+impl std::fmt::Debug for ImageAspectFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("ImageAspectFlags").field(&format!("{self}")).finish()
+    }
+}
+
+#[repr(u32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Resource Creation"]
 #[doc = "<br>"]
 #[doc = "**Description**: Bitmask specifying which aspects of an image are included in a view"]
@@ -4110,26 +6046,105 @@ bitflags! {
 #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
 #[doc = "<br>"]
 #[doc = "**Reference**: [`VkImageAspectFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageAspectFlagBits.html)"]
-pub type ImageAspectFlagBits = ImageAspectFlags;
+pub enum ImageAspectFlagBits {
+    #[doc = "Translated from: `VK_IMAGE_ASPECT_COLOR_BIT`"]
+    Color = 0b1,
+    #[doc = "Translated from: `VK_IMAGE_ASPECT_DEPTH_BIT`"]
+    Depth = 0b10,
+    #[doc = "Translated from: `VK_IMAGE_ASPECT_STENCIL_BIT`"]
+    Stencil = 0b100,
+    #[doc = "Translated from: `VK_IMAGE_ASPECT_METADATA_BIT`"]
+    Metadata = 0b1000,
+    #[doc = "Translated from: `VK_IMAGE_ASPECT_PLANE_0_BIT`"]
+    Plane0 = 0b10000,
+    #[doc = "Translated from: `VK_IMAGE_ASPECT_PLANE_1_BIT`"]
+    Plane1 = 0b100000,
+    #[doc = "Translated from: `VK_IMAGE_ASPECT_PLANE_2_BIT`"]
+    Plane2 = 0b1000000,
+    #[doc = "Translated from: `VK_IMAGE_ASPECT_NONE`"]
+    None = 0,
+}
 
-bitflags! {
-    #[repr(C)]
-    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-    #[doc = "**Chapter**: Samplers"]
-    #[doc = "<br>"]
-    #[doc = "**Description**: Reserved for future use"]
-    #[doc = "<br>"]
-    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkSamplerCreateFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSamplerCreateFlags.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkSamplerCreateFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSamplerCreateFlagBits.html)"]
-    pub struct SamplerCreateFlags: u32 {
-        #[doc = "Translated from: `VK_SAMPLER_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_EXT`"]
-        const DESCRIPTOR_BUFFER_CAPTURE_REPLAY_EXT = 0b1000;
+impl From<ImageAspectFlagBits> for u32 {
+    fn from(flag_bits: ImageAspectFlagBits) -> Self {
+        flag_bits as u32
     }
 }
 
+impl std::ops::BitOr for ImageAspectFlagBits {
+    type Output = ImageAspectFlags;
+    fn bitor(self, rhs: Self) -> Self::Output {
+        ImageAspectFlags(self as u32 | rhs as u32)
+    }
+}
+
+impl std::ops::BitOr<ImageAspectFlags> for ImageAspectFlagBits {
+    type Output = ImageAspectFlags;
+    fn bitor(self, rhs: ImageAspectFlags) -> Self::Output {
+        ImageAspectFlags(self as u32 | rhs.0)
+    }
+}
+
+impl std::fmt::Display for ImageAspectFlagBits {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq)]
+#[doc = "**Chapter**: Samplers"]
+#[doc = "<br>"]
+#[doc = "**Description**: Reserved for future use"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkSamplerCreateFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSamplerCreateFlags.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkSamplerCreateFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSamplerCreateFlagBits.html)"]
+pub struct SamplerCreateFlags(u32);
+
+impl SamplerCreateFlags {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
+    }
+}
+
+impl std::ops::BitAnd for SamplerCreateFlags {
+    type Output = Self;
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Self(self.0 & rhs.0)
+    }
+}
+
+impl From<SamplerCreateFlagBits> for SamplerCreateFlags {
+    fn from(flag_bits: SamplerCreateFlagBits) -> Self {
+        Self(flag_bits as u32)
+    }
+}
+
+impl std::ops::BitOr<SamplerCreateFlagBits> for SamplerCreateFlags {
+    type Output = SamplerCreateFlags;
+    fn bitor(self, rhs: SamplerCreateFlagBits) -> Self::Output {
+        Self(self.0 | rhs as u32)
+    }
+}
+
+impl std::fmt::Display for SamplerCreateFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        display_flag_bits_u32(f, self.0, &[SamplerCreateFlagBits::DescriptorBufferCaptureReplayEXT])
+    }
+}
+
+impl std::fmt::Debug for SamplerCreateFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("SamplerCreateFlags").field(&format!("{self}")).finish()
+    }
+}
+
+#[repr(u32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Samplers"]
 #[doc = "<br>"]
 #[doc = "**Description**: Bitmask specifying additional parameters of sampler"]
@@ -4137,30 +6152,99 @@ bitflags! {
 #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
 #[doc = "<br>"]
 #[doc = "**Reference**: [`VkSamplerCreateFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSamplerCreateFlagBits.html)"]
-pub type SamplerCreateFlagBits = SamplerCreateFlags;
+pub enum SamplerCreateFlagBits {
+    #[doc = "Translated from: `VK_SAMPLER_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_EXT`"]
+    DescriptorBufferCaptureReplayEXT = 0b1000,
+}
 
-bitflags! {
-    #[repr(C)]
-    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-    #[doc = "**Chapter**: Resource Descriptors"]
-    #[doc = "<br>"]
-    #[doc = "**Description**: Bitmask of VkDescriptorSetLayoutCreateFlagBits"]
-    #[doc = "<br>"]
-    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkDescriptorSetLayoutCreateFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDescriptorSetLayoutCreateFlags.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkDescriptorSetLayoutCreateFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDescriptorSetLayoutCreateFlagBits.html)"]
-    pub struct DescriptorSetLayoutCreateFlags: u32 {
-        #[doc = "Translated from: `VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT`"]
-        const UPDATE_AFTER_BIND_POOL = 0b10;
-        #[doc = "Translated from: `VK_DESCRIPTOR_SET_LAYOUT_CREATE_DESCRIPTOR_BUFFER_BIT_EXT`"]
-        const DESCRIPTOR_BUFFER_EXT = 0b10000;
-        #[doc = "Translated from: `VK_DESCRIPTOR_SET_LAYOUT_CREATE_EMBEDDED_IMMUTABLE_SAMPLERS_BIT_EXT`"]
-        const EMBEDDED_IMMUTABLE_SAMPLERS_EXT = 0b100000;
+impl From<SamplerCreateFlagBits> for u32 {
+    fn from(flag_bits: SamplerCreateFlagBits) -> Self {
+        flag_bits as u32
     }
 }
 
+impl std::ops::BitOr for SamplerCreateFlagBits {
+    type Output = SamplerCreateFlags;
+    fn bitor(self, rhs: Self) -> Self::Output {
+        SamplerCreateFlags(self as u32 | rhs as u32)
+    }
+}
+
+impl std::ops::BitOr<SamplerCreateFlags> for SamplerCreateFlagBits {
+    type Output = SamplerCreateFlags;
+    fn bitor(self, rhs: SamplerCreateFlags) -> Self::Output {
+        SamplerCreateFlags(self as u32 | rhs.0)
+    }
+}
+
+impl std::fmt::Display for SamplerCreateFlagBits {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq)]
+#[doc = "**Chapter**: Resource Descriptors"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask of VkDescriptorSetLayoutCreateFlagBits"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkDescriptorSetLayoutCreateFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDescriptorSetLayoutCreateFlags.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkDescriptorSetLayoutCreateFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDescriptorSetLayoutCreateFlagBits.html)"]
+pub struct DescriptorSetLayoutCreateFlags(u32);
+
+impl DescriptorSetLayoutCreateFlags {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
+    }
+}
+
+impl std::ops::BitAnd for DescriptorSetLayoutCreateFlags {
+    type Output = Self;
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Self(self.0 & rhs.0)
+    }
+}
+
+impl From<DescriptorSetLayoutCreateFlagBits> for DescriptorSetLayoutCreateFlags {
+    fn from(flag_bits: DescriptorSetLayoutCreateFlagBits) -> Self {
+        Self(flag_bits as u32)
+    }
+}
+
+impl std::ops::BitOr<DescriptorSetLayoutCreateFlagBits> for DescriptorSetLayoutCreateFlags {
+    type Output = DescriptorSetLayoutCreateFlags;
+    fn bitor(self, rhs: DescriptorSetLayoutCreateFlagBits) -> Self::Output {
+        Self(self.0 | rhs as u32)
+    }
+}
+
+impl std::fmt::Display for DescriptorSetLayoutCreateFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        display_flag_bits_u32(
+            f,
+            self.0,
+            &[
+                DescriptorSetLayoutCreateFlagBits::UpdateAfterBindPool,
+                DescriptorSetLayoutCreateFlagBits::DescriptorBufferEXT,
+                DescriptorSetLayoutCreateFlagBits::EmbeddedImmutableSamplersEXT,
+            ],
+        )
+    }
+}
+
+impl std::fmt::Debug for DescriptorSetLayoutCreateFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("DescriptorSetLayoutCreateFlags").field(&format!("{self}")).finish()
+    }
+}
+
+#[repr(u32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Resource Descriptors"]
 #[doc = "<br>"]
 #[doc = "**Description**: Bitmask specifying descriptor set layout properties"]
@@ -4168,25 +6252,95 @@ bitflags! {
 #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
 #[doc = "<br>"]
 #[doc = "**Reference**: [`VkDescriptorSetLayoutCreateFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDescriptorSetLayoutCreateFlagBits.html)"]
-pub type DescriptorSetLayoutCreateFlagBits = DescriptorSetLayoutCreateFlags;
+pub enum DescriptorSetLayoutCreateFlagBits {
+    #[doc = "Translated from: `VK_DESCRIPTOR_SET_LAYOUT_CREATE_UPDATE_AFTER_BIND_POOL_BIT`"]
+    UpdateAfterBindPool = 0b10,
+    #[doc = "Translated from: `VK_DESCRIPTOR_SET_LAYOUT_CREATE_DESCRIPTOR_BUFFER_BIT_EXT`"]
+    DescriptorBufferEXT = 0b10000,
+    #[doc = "Translated from: `VK_DESCRIPTOR_SET_LAYOUT_CREATE_EMBEDDED_IMMUTABLE_SAMPLERS_BIT_EXT`"]
+    EmbeddedImmutableSamplersEXT = 0b100000,
+}
 
-bitflags! {
-    #[repr(C)]
-    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-    #[doc = "**Chapter**: Resource Descriptors"]
-    #[doc = "<br>"]
-    #[doc = "**Description**: Bitmask of pipeline layout creation flag bits"]
-    #[doc = "<br>"]
-    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkPipelineLayoutCreateFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPipelineLayoutCreateFlags.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkPipelineLayoutCreateFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPipelineLayoutCreateFlagBits.html)"]
-    pub struct PipelineLayoutCreateFlags: u32 {
-
+impl From<DescriptorSetLayoutCreateFlagBits> for u32 {
+    fn from(flag_bits: DescriptorSetLayoutCreateFlagBits) -> Self {
+        flag_bits as u32
     }
 }
 
+impl std::ops::BitOr for DescriptorSetLayoutCreateFlagBits {
+    type Output = DescriptorSetLayoutCreateFlags;
+    fn bitor(self, rhs: Self) -> Self::Output {
+        DescriptorSetLayoutCreateFlags(self as u32 | rhs as u32)
+    }
+}
+
+impl std::ops::BitOr<DescriptorSetLayoutCreateFlags> for DescriptorSetLayoutCreateFlagBits {
+    type Output = DescriptorSetLayoutCreateFlags;
+    fn bitor(self, rhs: DescriptorSetLayoutCreateFlags) -> Self::Output {
+        DescriptorSetLayoutCreateFlags(self as u32 | rhs.0)
+    }
+}
+
+impl std::fmt::Display for DescriptorSetLayoutCreateFlagBits {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq)]
+#[doc = "**Chapter**: Resource Descriptors"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask of pipeline layout creation flag bits"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkPipelineLayoutCreateFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPipelineLayoutCreateFlags.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkPipelineLayoutCreateFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPipelineLayoutCreateFlagBits.html)"]
+pub struct PipelineLayoutCreateFlags(u32);
+
+impl PipelineLayoutCreateFlags {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
+    }
+}
+
+impl std::ops::BitAnd for PipelineLayoutCreateFlags {
+    type Output = Self;
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Self(self.0 & rhs.0)
+    }
+}
+
+impl From<PipelineLayoutCreateFlagBits> for PipelineLayoutCreateFlags {
+    fn from(flag_bits: PipelineLayoutCreateFlagBits) -> Self {
+        Self(flag_bits as u32)
+    }
+}
+
+impl std::ops::BitOr<PipelineLayoutCreateFlagBits> for PipelineLayoutCreateFlags {
+    type Output = PipelineLayoutCreateFlags;
+    fn bitor(self, rhs: PipelineLayoutCreateFlagBits) -> Self::Output {
+        Self(self.0 | rhs as u32)
+    }
+}
+
+impl std::fmt::Display for PipelineLayoutCreateFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        display_flag_bits_u32(f, self.0, &[PipelineLayoutCreateFlagBits::Placeholder])
+    }
+}
+
+impl std::fmt::Debug for PipelineLayoutCreateFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("PipelineLayoutCreateFlags").field(&format!("{self}")).finish()
+    }
+}
+
+#[repr(u32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Resource Descriptors"]
 #[doc = "<br>"]
 #[doc = "**Description**: Pipeline layout creation flag bits"]
@@ -4194,41 +6348,108 @@ bitflags! {
 #[doc = "**Provided by**: [`VK_EXT_graphics_pipeline_library`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_graphics_pipeline_library.html)"]
 #[doc = "<br>"]
 #[doc = "**Reference**: [`VkPipelineLayoutCreateFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPipelineLayoutCreateFlagBits.html)"]
-pub type PipelineLayoutCreateFlagBits = PipelineLayoutCreateFlags;
+pub enum PipelineLayoutCreateFlagBits {
+    Placeholder = 0b0,
+}
 
-bitflags! {
-    #[repr(C)]
-    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-    #[doc = "**Chapter**: Queries"]
-    #[doc = "<br>"]
-    #[doc = "**Description**: Reserved for future use"]
-    #[doc = "<br>"]
-    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkQueryPoolCreateFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkQueryPoolCreateFlags.html)"]
-    pub struct QueryPoolCreateFlags: u32 {
-
+impl From<PipelineLayoutCreateFlagBits> for u32 {
+    fn from(flag_bits: PipelineLayoutCreateFlagBits) -> Self {
+        flag_bits as u32
     }
 }
 
-bitflags! {
-    #[repr(C)]
-    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-    #[doc = "**Chapter**: Queries"]
-    #[doc = "<br>"]
-    #[doc = "**Description**: Bitmask of VkQueryControlFlagBits"]
-    #[doc = "<br>"]
-    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkQueryControlFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkQueryControlFlags.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkQueryControlFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkQueryControlFlagBits.html)"]
-    pub struct QueryControlFlags: u32 {
-        #[doc = "Translated from: `VK_QUERY_CONTROL_PRECISE_BIT`"]
-        const PRECISE = 0b1;
+impl std::ops::BitOr for PipelineLayoutCreateFlagBits {
+    type Output = PipelineLayoutCreateFlags;
+    fn bitor(self, rhs: Self) -> Self::Output {
+        PipelineLayoutCreateFlags(self as u32 | rhs as u32)
     }
 }
 
+impl std::ops::BitOr<PipelineLayoutCreateFlags> for PipelineLayoutCreateFlagBits {
+    type Output = PipelineLayoutCreateFlags;
+    fn bitor(self, rhs: PipelineLayoutCreateFlags) -> Self::Output {
+        PipelineLayoutCreateFlags(self as u32 | rhs.0)
+    }
+}
+
+impl std::fmt::Display for PipelineLayoutCreateFlagBits {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[doc = "**Chapter**: Queries"]
+#[doc = "<br>"]
+#[doc = "**Description**: Reserved for future use"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkQueryPoolCreateFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkQueryPoolCreateFlags.html)"]
+pub struct QueryPoolCreateFlags(u32);
+
+impl QueryPoolCreateFlags {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq)]
+#[doc = "**Chapter**: Queries"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask of VkQueryControlFlagBits"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkQueryControlFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkQueryControlFlags.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkQueryControlFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkQueryControlFlagBits.html)"]
+pub struct QueryControlFlags(u32);
+
+impl QueryControlFlags {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
+    }
+}
+
+impl std::ops::BitAnd for QueryControlFlags {
+    type Output = Self;
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Self(self.0 & rhs.0)
+    }
+}
+
+impl From<QueryControlFlagBits> for QueryControlFlags {
+    fn from(flag_bits: QueryControlFlagBits) -> Self {
+        Self(flag_bits as u32)
+    }
+}
+
+impl std::ops::BitOr<QueryControlFlagBits> for QueryControlFlags {
+    type Output = QueryControlFlags;
+    fn bitor(self, rhs: QueryControlFlagBits) -> Self::Output {
+        Self(self.0 | rhs as u32)
+    }
+}
+
+impl std::fmt::Display for QueryControlFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        display_flag_bits_u32(f, self.0, &[QueryControlFlagBits::Precise])
+    }
+}
+
+impl std::fmt::Debug for QueryControlFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("QueryControlFlags").field(&format!("{self}")).finish()
+    }
+}
+
+#[repr(u32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Queries"]
 #[doc = "<br>"]
 #[doc = "**Description**: Bitmask specifying constraints on a query"]
@@ -4236,32 +6457,100 @@ bitflags! {
 #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
 #[doc = "<br>"]
 #[doc = "**Reference**: [`VkQueryControlFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkQueryControlFlagBits.html)"]
-pub type QueryControlFlagBits = QueryControlFlags;
+pub enum QueryControlFlagBits {
+    #[doc = "Translated from: `VK_QUERY_CONTROL_PRECISE_BIT`"]
+    Precise = 0b1,
+}
 
-bitflags! {
-    #[repr(C)]
-    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-    #[doc = "**Chapter**: Queries"]
-    #[doc = "<br>"]
-    #[doc = "**Description**: Bitmask of VkQueryResultFlagBits"]
-    #[doc = "<br>"]
-    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkQueryResultFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkQueryResultFlags.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkQueryResultFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkQueryResultFlagBits.html)"]
-    pub struct QueryResultFlags: u32 {
-        #[doc = "Translated from: `VK_QUERY_RESULT_64_BIT`"]
-        const NUM_64 = 0b1;
-        #[doc = "Translated from: `VK_QUERY_RESULT_WAIT_BIT`"]
-        const WAIT = 0b10;
-        #[doc = "Translated from: `VK_QUERY_RESULT_WITH_AVAILABILITY_BIT`"]
-        const WITH_AVAILABILITY = 0b100;
-        #[doc = "Translated from: `VK_QUERY_RESULT_PARTIAL_BIT`"]
-        const PARTIAL = 0b1000;
+impl From<QueryControlFlagBits> for u32 {
+    fn from(flag_bits: QueryControlFlagBits) -> Self {
+        flag_bits as u32
     }
 }
 
+impl std::ops::BitOr for QueryControlFlagBits {
+    type Output = QueryControlFlags;
+    fn bitor(self, rhs: Self) -> Self::Output {
+        QueryControlFlags(self as u32 | rhs as u32)
+    }
+}
+
+impl std::ops::BitOr<QueryControlFlags> for QueryControlFlagBits {
+    type Output = QueryControlFlags;
+    fn bitor(self, rhs: QueryControlFlags) -> Self::Output {
+        QueryControlFlags(self as u32 | rhs.0)
+    }
+}
+
+impl std::fmt::Display for QueryControlFlagBits {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq)]
+#[doc = "**Chapter**: Queries"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask of VkQueryResultFlagBits"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkQueryResultFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkQueryResultFlags.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkQueryResultFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkQueryResultFlagBits.html)"]
+pub struct QueryResultFlags(u32);
+
+impl QueryResultFlags {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
+    }
+}
+
+impl std::ops::BitAnd for QueryResultFlags {
+    type Output = Self;
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Self(self.0 & rhs.0)
+    }
+}
+
+impl From<QueryResultFlagBits> for QueryResultFlags {
+    fn from(flag_bits: QueryResultFlagBits) -> Self {
+        Self(flag_bits as u32)
+    }
+}
+
+impl std::ops::BitOr<QueryResultFlagBits> for QueryResultFlags {
+    type Output = QueryResultFlags;
+    fn bitor(self, rhs: QueryResultFlagBits) -> Self::Output {
+        Self(self.0 | rhs as u32)
+    }
+}
+
+impl std::fmt::Display for QueryResultFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        display_flag_bits_u32(
+            f,
+            self.0,
+            &[
+                QueryResultFlagBits::Result64,
+                QueryResultFlagBits::ResultWait,
+                QueryResultFlagBits::ResultWithAvailability,
+                QueryResultFlagBits::ResultPartial,
+            ],
+        )
+    }
+}
+
+impl std::fmt::Debug for QueryResultFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("QueryResultFlags").field(&format!("{self}")).finish()
+    }
+}
+
+#[repr(u32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Queries"]
 #[doc = "<br>"]
 #[doc = "**Description**: Bitmask specifying how and when query results are returned"]
@@ -4269,50 +6558,115 @@ bitflags! {
 #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
 #[doc = "<br>"]
 #[doc = "**Reference**: [`VkQueryResultFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkQueryResultFlagBits.html)"]
-pub type QueryResultFlagBits = QueryResultFlags;
+pub enum QueryResultFlagBits {
+    #[doc = "Translated from: `VK_QUERY_RESULT_64_BIT`"]
+    Result64 = 0b1,
+    #[doc = "Translated from: `VK_QUERY_RESULT_WAIT_BIT`"]
+    ResultWait = 0b10,
+    #[doc = "Translated from: `VK_QUERY_RESULT_WITH_AVAILABILITY_BIT`"]
+    ResultWithAvailability = 0b100,
+    #[doc = "Translated from: `VK_QUERY_RESULT_PARTIAL_BIT`"]
+    ResultPartial = 0b1000,
+}
 
-bitflags! {
-    #[repr(C)]
-    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-    #[doc = "**Chapter**: Queries"]
-    #[doc = "<br>"]
-    #[doc = "**Description**: Bitmask of VkQueryPipelineStatisticFlagBits"]
-    #[doc = "<br>"]
-    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkQueryPipelineStatisticFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkQueryPipelineStatisticFlags.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkQueryPipelineStatisticFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkQueryPipelineStatisticFlagBits.html)"]
-    pub struct QueryPipelineStatisticFlags: u32 {
-        #[doc = "Translated from: `VK_QUERY_PIPELINE_STATISTIC_INPUT_ASSEMBLY_VERTICES_BIT`"]
-        const INPUT_ASSEMBLY_VERTICES = 0b1;
-        #[doc = "Translated from: `VK_QUERY_PIPELINE_STATISTIC_INPUT_ASSEMBLY_PRIMITIVES_BIT`"]
-        const INPUT_ASSEMBLY_PRIMITIVES = 0b10;
-        #[doc = "Translated from: `VK_QUERY_PIPELINE_STATISTIC_VERTEX_SHADER_INVOCATIONS_BIT`"]
-        const VERTEX_SHADER_INVOCATIONS = 0b100;
-        #[doc = "Translated from: `VK_QUERY_PIPELINE_STATISTIC_GEOMETRY_SHADER_INVOCATIONS_BIT`"]
-        const GEOMETRY_SHADER_INVOCATIONS = 0b1000;
-        #[doc = "Translated from: `VK_QUERY_PIPELINE_STATISTIC_GEOMETRY_SHADER_PRIMITIVES_BIT`"]
-        const GEOMETRY_SHADER_PRIMITIVES = 0b10000;
-        #[doc = "Translated from: `VK_QUERY_PIPELINE_STATISTIC_CLIPPING_INVOCATIONS_BIT`"]
-        const CLIPPING_INVOCATIONS = 0b100000;
-        #[doc = "Translated from: `VK_QUERY_PIPELINE_STATISTIC_CLIPPING_PRIMITIVES_BIT`"]
-        const CLIPPING_PRIMITIVES = 0b1000000;
-        #[doc = "Translated from: `VK_QUERY_PIPELINE_STATISTIC_FRAGMENT_SHADER_INVOCATIONS_BIT`"]
-        const FRAGMENT_SHADER_INVOCATIONS = 0b10000000;
-        #[doc = "Translated from: `VK_QUERY_PIPELINE_STATISTIC_TESSELLATION_CONTROL_SHADER_PATCHES_BIT`"]
-        const TESSELLATION_CONTROL_SHADER_PATCHES = 0b100000000;
-        #[doc = "Translated from: `VK_QUERY_PIPELINE_STATISTIC_TESSELLATION_EVALUATION_SHADER_INVOCATIONS_BIT`"]
-        const TESSELLATION_EVALUATION_SHADER_INVOCATIONS = 0b1000000000;
-        #[doc = "Translated from: `VK_QUERY_PIPELINE_STATISTIC_COMPUTE_SHADER_INVOCATIONS_BIT`"]
-        const COMPUTE_SHADER_INVOCATIONS = 0b10000000000;
-        #[doc = "Translated from: `VK_QUERY_PIPELINE_STATISTIC_TASK_SHADER_INVOCATIONS_BIT_EXT`"]
-        const TASK_SHADER_INVOCATIONS_EXT = 0b100000000000;
-        #[doc = "Translated from: `VK_QUERY_PIPELINE_STATISTIC_MESH_SHADER_INVOCATIONS_BIT_EXT`"]
-        const MESH_SHADER_INVOCATIONS_EXT = 0b1000000000000;
+impl From<QueryResultFlagBits> for u32 {
+    fn from(flag_bits: QueryResultFlagBits) -> Self {
+        flag_bits as u32
     }
 }
 
+impl std::ops::BitOr for QueryResultFlagBits {
+    type Output = QueryResultFlags;
+    fn bitor(self, rhs: Self) -> Self::Output {
+        QueryResultFlags(self as u32 | rhs as u32)
+    }
+}
+
+impl std::ops::BitOr<QueryResultFlags> for QueryResultFlagBits {
+    type Output = QueryResultFlags;
+    fn bitor(self, rhs: QueryResultFlags) -> Self::Output {
+        QueryResultFlags(self as u32 | rhs.0)
+    }
+}
+
+impl std::fmt::Display for QueryResultFlagBits {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq)]
+#[doc = "**Chapter**: Queries"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask of VkQueryPipelineStatisticFlagBits"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkQueryPipelineStatisticFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkQueryPipelineStatisticFlags.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkQueryPipelineStatisticFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkQueryPipelineStatisticFlagBits.html)"]
+pub struct QueryPipelineStatisticFlags(u32);
+
+impl QueryPipelineStatisticFlags {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
+    }
+}
+
+impl std::ops::BitAnd for QueryPipelineStatisticFlags {
+    type Output = Self;
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Self(self.0 & rhs.0)
+    }
+}
+
+impl From<QueryPipelineStatisticFlagBits> for QueryPipelineStatisticFlags {
+    fn from(flag_bits: QueryPipelineStatisticFlagBits) -> Self {
+        Self(flag_bits as u32)
+    }
+}
+
+impl std::ops::BitOr<QueryPipelineStatisticFlagBits> for QueryPipelineStatisticFlags {
+    type Output = QueryPipelineStatisticFlags;
+    fn bitor(self, rhs: QueryPipelineStatisticFlagBits) -> Self::Output {
+        Self(self.0 | rhs as u32)
+    }
+}
+
+impl std::fmt::Display for QueryPipelineStatisticFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        display_flag_bits_u32(
+            f,
+            self.0,
+            &[
+                QueryPipelineStatisticFlagBits::InputAssemblyVertices,
+                QueryPipelineStatisticFlagBits::InputAssemblyPrimitives,
+                QueryPipelineStatisticFlagBits::VertexShaderInvocations,
+                QueryPipelineStatisticFlagBits::GeometryShaderInvocations,
+                QueryPipelineStatisticFlagBits::GeometryShaderPrimitives,
+                QueryPipelineStatisticFlagBits::ClippingInvocations,
+                QueryPipelineStatisticFlagBits::ClippingPrimitives,
+                QueryPipelineStatisticFlagBits::FragmentShaderInvocations,
+                QueryPipelineStatisticFlagBits::TessellationControlShaderPatches,
+                QueryPipelineStatisticFlagBits::TessellationEvaluationShaderInvocations,
+                QueryPipelineStatisticFlagBits::ComputeShaderInvocations,
+                QueryPipelineStatisticFlagBits::TaskShaderInvocationsEXT,
+                QueryPipelineStatisticFlagBits::MeshShaderInvocationsEXT,
+            ],
+        )
+    }
+}
+
+impl std::fmt::Debug for QueryPipelineStatisticFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("QueryPipelineStatisticFlags").field(&format!("{self}")).finish()
+    }
+}
+
+#[repr(u32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Queries"]
 #[doc = "<br>"]
 #[doc = "**Description**: Bitmask specifying queried pipeline statistics"]
@@ -4320,32 +6674,115 @@ bitflags! {
 #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
 #[doc = "<br>"]
 #[doc = "**Reference**: [`VkQueryPipelineStatisticFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkQueryPipelineStatisticFlagBits.html)"]
-pub type QueryPipelineStatisticFlagBits = QueryPipelineStatisticFlags;
+pub enum QueryPipelineStatisticFlagBits {
+    #[doc = "Translated from: `VK_QUERY_PIPELINE_STATISTIC_INPUT_ASSEMBLY_VERTICES_BIT`"]
+    InputAssemblyVertices = 0b1,
+    #[doc = "Translated from: `VK_QUERY_PIPELINE_STATISTIC_INPUT_ASSEMBLY_PRIMITIVES_BIT`"]
+    InputAssemblyPrimitives = 0b10,
+    #[doc = "Translated from: `VK_QUERY_PIPELINE_STATISTIC_VERTEX_SHADER_INVOCATIONS_BIT`"]
+    VertexShaderInvocations = 0b100,
+    #[doc = "Translated from: `VK_QUERY_PIPELINE_STATISTIC_GEOMETRY_SHADER_INVOCATIONS_BIT`"]
+    GeometryShaderInvocations = 0b1000,
+    #[doc = "Translated from: `VK_QUERY_PIPELINE_STATISTIC_GEOMETRY_SHADER_PRIMITIVES_BIT`"]
+    GeometryShaderPrimitives = 0b10000,
+    #[doc = "Translated from: `VK_QUERY_PIPELINE_STATISTIC_CLIPPING_INVOCATIONS_BIT`"]
+    ClippingInvocations = 0b100000,
+    #[doc = "Translated from: `VK_QUERY_PIPELINE_STATISTIC_CLIPPING_PRIMITIVES_BIT`"]
+    ClippingPrimitives = 0b1000000,
+    #[doc = "Translated from: `VK_QUERY_PIPELINE_STATISTIC_FRAGMENT_SHADER_INVOCATIONS_BIT`"]
+    FragmentShaderInvocations = 0b10000000,
+    #[doc = "Translated from: `VK_QUERY_PIPELINE_STATISTIC_TESSELLATION_CONTROL_SHADER_PATCHES_BIT`"]
+    TessellationControlShaderPatches = 0b100000000,
+    #[doc = "Translated from: `VK_QUERY_PIPELINE_STATISTIC_TESSELLATION_EVALUATION_SHADER_INVOCATIONS_BIT`"]
+    TessellationEvaluationShaderInvocations = 0b1000000000,
+    #[doc = "Translated from: `VK_QUERY_PIPELINE_STATISTIC_COMPUTE_SHADER_INVOCATIONS_BIT`"]
+    ComputeShaderInvocations = 0b10000000000,
+    #[doc = "Translated from: `VK_QUERY_PIPELINE_STATISTIC_TASK_SHADER_INVOCATIONS_BIT_EXT`"]
+    TaskShaderInvocationsEXT = 0b100000000000,
+    #[doc = "Translated from: `VK_QUERY_PIPELINE_STATISTIC_MESH_SHADER_INVOCATIONS_BIT_EXT`"]
+    MeshShaderInvocationsEXT = 0b1000000000000,
+}
 
-bitflags! {
-    #[repr(C)]
-    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-    #[doc = "**Chapter**: Rasterization"]
-    #[doc = "<br>"]
-    #[doc = "**Description**: Bitmask of VkCullModeFlagBits"]
-    #[doc = "<br>"]
-    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkCullModeFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkCullModeFlags.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkCullModeFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkCullModeFlagBits.html)"]
-    pub struct CullModeFlags: u32 {
-        #[doc = "Translated from: `VK_CULL_MODE_NONE`"]
-        const NONE = 0;
-        #[doc = "Translated from: `VK_CULL_MODE_FRONT_BIT`"]
-        const FRONT = 0b1;
-        #[doc = "Translated from: `VK_CULL_MODE_BACK_BIT`"]
-        const BACK = 0b10;
-        #[doc = "Translated from: `VK_CULL_MODE_FRONT_AND_BACK`"]
-        const FRONT_AND_BACK = 0x3;
+impl From<QueryPipelineStatisticFlagBits> for u32 {
+    fn from(flag_bits: QueryPipelineStatisticFlagBits) -> Self {
+        flag_bits as u32
     }
 }
 
+impl std::ops::BitOr for QueryPipelineStatisticFlagBits {
+    type Output = QueryPipelineStatisticFlags;
+    fn bitor(self, rhs: Self) -> Self::Output {
+        QueryPipelineStatisticFlags(self as u32 | rhs as u32)
+    }
+}
+
+impl std::ops::BitOr<QueryPipelineStatisticFlags> for QueryPipelineStatisticFlagBits {
+    type Output = QueryPipelineStatisticFlags;
+    fn bitor(self, rhs: QueryPipelineStatisticFlags) -> Self::Output {
+        QueryPipelineStatisticFlags(self as u32 | rhs.0)
+    }
+}
+
+impl std::fmt::Display for QueryPipelineStatisticFlagBits {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq)]
+#[doc = "**Chapter**: Rasterization"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask of VkCullModeFlagBits"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkCullModeFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkCullModeFlags.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkCullModeFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkCullModeFlagBits.html)"]
+pub struct CullModeFlags(u32);
+
+impl CullModeFlags {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
+    }
+}
+
+impl std::ops::BitAnd for CullModeFlags {
+    type Output = Self;
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Self(self.0 & rhs.0)
+    }
+}
+
+impl From<CullModeFlagBits> for CullModeFlags {
+    fn from(flag_bits: CullModeFlagBits) -> Self {
+        Self(flag_bits as u32)
+    }
+}
+
+impl std::ops::BitOr<CullModeFlagBits> for CullModeFlags {
+    type Output = CullModeFlags;
+    fn bitor(self, rhs: CullModeFlagBits) -> Self::Output {
+        Self(self.0 | rhs as u32)
+    }
+}
+
+impl std::fmt::Display for CullModeFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        display_flag_bits_u32(f, self.0, &[CullModeFlagBits::None, CullModeFlagBits::Front, CullModeFlagBits::Back, CullModeFlagBits::FrontAndBack])
+    }
+}
+
+impl std::fmt::Debug for CullModeFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("CullModeFlags").field(&format!("{self}")).finish()
+    }
+}
+
+#[repr(u32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Rasterization"]
 #[doc = "<br>"]
 #[doc = "**Description**: Bitmask controlling triangle culling"]
@@ -4353,32 +6790,97 @@ bitflags! {
 #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
 #[doc = "<br>"]
 #[doc = "**Reference**: [`VkCullModeFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkCullModeFlagBits.html)"]
-pub type CullModeFlagBits = CullModeFlags;
+pub enum CullModeFlagBits {
+    #[doc = "Translated from: `VK_CULL_MODE_NONE`"]
+    None = 0,
+    #[doc = "Translated from: `VK_CULL_MODE_FRONT_BIT`"]
+    Front = 0b1,
+    #[doc = "Translated from: `VK_CULL_MODE_BACK_BIT`"]
+    Back = 0b10,
+    #[doc = "Translated from: `VK_CULL_MODE_FRONT_AND_BACK`"]
+    FrontAndBack = 0x3,
+}
 
-bitflags! {
-    #[repr(C)]
-    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-    #[doc = "**Chapter**: The Framebuffer"]
-    #[doc = "<br>"]
-    #[doc = "**Description**: Bitmask of VkColorComponentFlagBits"]
-    #[doc = "<br>"]
-    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkColorComponentFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkColorComponentFlags.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkColorComponentFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkColorComponentFlagBits.html)"]
-    pub struct ColorComponentFlags: u32 {
-        #[doc = "Translated from: `VK_COLOR_COMPONENT_R_BIT`"]
-        const R = 0b1;
-        #[doc = "Translated from: `VK_COLOR_COMPONENT_G_BIT`"]
-        const G = 0b10;
-        #[doc = "Translated from: `VK_COLOR_COMPONENT_B_BIT`"]
-        const B = 0b100;
-        #[doc = "Translated from: `VK_COLOR_COMPONENT_A_BIT`"]
-        const A = 0b1000;
+impl From<CullModeFlagBits> for u32 {
+    fn from(flag_bits: CullModeFlagBits) -> Self {
+        flag_bits as u32
     }
 }
 
+impl std::ops::BitOr for CullModeFlagBits {
+    type Output = CullModeFlags;
+    fn bitor(self, rhs: Self) -> Self::Output {
+        CullModeFlags(self as u32 | rhs as u32)
+    }
+}
+
+impl std::ops::BitOr<CullModeFlags> for CullModeFlagBits {
+    type Output = CullModeFlags;
+    fn bitor(self, rhs: CullModeFlags) -> Self::Output {
+        CullModeFlags(self as u32 | rhs.0)
+    }
+}
+
+impl std::fmt::Display for CullModeFlagBits {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq)]
+#[doc = "**Chapter**: The Framebuffer"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask of VkColorComponentFlagBits"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkColorComponentFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkColorComponentFlags.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkColorComponentFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkColorComponentFlagBits.html)"]
+pub struct ColorComponentFlags(u32);
+
+impl ColorComponentFlags {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
+    }
+}
+
+impl std::ops::BitAnd for ColorComponentFlags {
+    type Output = Self;
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Self(self.0 & rhs.0)
+    }
+}
+
+impl From<ColorComponentFlagBits> for ColorComponentFlags {
+    fn from(flag_bits: ColorComponentFlagBits) -> Self {
+        Self(flag_bits as u32)
+    }
+}
+
+impl std::ops::BitOr<ColorComponentFlagBits> for ColorComponentFlags {
+    type Output = ColorComponentFlags;
+    fn bitor(self, rhs: ColorComponentFlagBits) -> Self::Output {
+        Self(self.0 | rhs as u32)
+    }
+}
+
+impl std::fmt::Display for ColorComponentFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        display_flag_bits_u32(f, self.0, &[ColorComponentFlagBits::R, ColorComponentFlagBits::G, ColorComponentFlagBits::B, ColorComponentFlagBits::A])
+    }
+}
+
+impl std::fmt::Debug for ColorComponentFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("ColorComponentFlags").field(&format!("{self}")).finish()
+    }
+}
+
+#[repr(u32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: The Framebuffer"]
 #[doc = "<br>"]
 #[doc = "**Description**: Bitmask controlling which components are written to the framebuffer"]
@@ -4386,38 +6888,109 @@ bitflags! {
 #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
 #[doc = "<br>"]
 #[doc = "**Reference**: [`VkColorComponentFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkColorComponentFlagBits.html)"]
-pub type ColorComponentFlagBits = ColorComponentFlags;
+pub enum ColorComponentFlagBits {
+    #[doc = "Translated from: `VK_COLOR_COMPONENT_R_BIT`"]
+    R = 0b1,
+    #[doc = "Translated from: `VK_COLOR_COMPONENT_G_BIT`"]
+    G = 0b10,
+    #[doc = "Translated from: `VK_COLOR_COMPONENT_B_BIT`"]
+    B = 0b100,
+    #[doc = "Translated from: `VK_COLOR_COMPONENT_A_BIT`"]
+    A = 0b1000,
+}
 
-bitflags! {
-    #[repr(C)]
-    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-    #[doc = "**Chapter**: Limits"]
-    #[doc = "<br>"]
-    #[doc = "**Description**: Bitmask of VkSampleCountFlagBits"]
-    #[doc = "<br>"]
-    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkSampleCountFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSampleCountFlags.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkSampleCountFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSampleCountFlagBits.html)"]
-    pub struct SampleCountFlags: u32 {
-        #[doc = "Translated from: `VK_SAMPLE_COUNT_1_BIT`"]
-        const NUM_1 = 0b1;
-        #[doc = "Translated from: `VK_SAMPLE_COUNT_2_BIT`"]
-        const NUM_2 = 0b10;
-        #[doc = "Translated from: `VK_SAMPLE_COUNT_4_BIT`"]
-        const NUM_4 = 0b100;
-        #[doc = "Translated from: `VK_SAMPLE_COUNT_8_BIT`"]
-        const NUM_8 = 0b1000;
-        #[doc = "Translated from: `VK_SAMPLE_COUNT_16_BIT`"]
-        const NUM_16 = 0b10000;
-        #[doc = "Translated from: `VK_SAMPLE_COUNT_32_BIT`"]
-        const NUM_32 = 0b100000;
-        #[doc = "Translated from: `VK_SAMPLE_COUNT_64_BIT`"]
-        const NUM_64 = 0b1000000;
+impl From<ColorComponentFlagBits> for u32 {
+    fn from(flag_bits: ColorComponentFlagBits) -> Self {
+        flag_bits as u32
     }
 }
 
+impl std::ops::BitOr for ColorComponentFlagBits {
+    type Output = ColorComponentFlags;
+    fn bitor(self, rhs: Self) -> Self::Output {
+        ColorComponentFlags(self as u32 | rhs as u32)
+    }
+}
+
+impl std::ops::BitOr<ColorComponentFlags> for ColorComponentFlagBits {
+    type Output = ColorComponentFlags;
+    fn bitor(self, rhs: ColorComponentFlags) -> Self::Output {
+        ColorComponentFlags(self as u32 | rhs.0)
+    }
+}
+
+impl std::fmt::Display for ColorComponentFlagBits {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq)]
+#[doc = "**Chapter**: Limits"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask of VkSampleCountFlagBits"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkSampleCountFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSampleCountFlags.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkSampleCountFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSampleCountFlagBits.html)"]
+pub struct SampleCountFlags(u32);
+
+impl SampleCountFlags {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
+    }
+}
+
+impl std::ops::BitAnd for SampleCountFlags {
+    type Output = Self;
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Self(self.0 & rhs.0)
+    }
+}
+
+impl From<SampleCountFlagBits> for SampleCountFlags {
+    fn from(flag_bits: SampleCountFlagBits) -> Self {
+        Self(flag_bits as u32)
+    }
+}
+
+impl std::ops::BitOr<SampleCountFlagBits> for SampleCountFlags {
+    type Output = SampleCountFlags;
+    fn bitor(self, rhs: SampleCountFlagBits) -> Self::Output {
+        Self(self.0 | rhs as u32)
+    }
+}
+
+impl std::fmt::Display for SampleCountFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        display_flag_bits_u32(
+            f,
+            self.0,
+            &[
+                SampleCountFlagBits::Count1,
+                SampleCountFlagBits::Count2,
+                SampleCountFlagBits::Count4,
+                SampleCountFlagBits::Count8,
+                SampleCountFlagBits::Count16,
+                SampleCountFlagBits::Count32,
+                SampleCountFlagBits::Count64,
+            ],
+        )
+    }
+}
+
+impl std::fmt::Debug for SampleCountFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("SampleCountFlags").field(&format!("{self}")).finish()
+    }
+}
+
+#[repr(u32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Limits"]
 #[doc = "<br>"]
 #[doc = "**Description**: Bitmask specifying sample counts supported for an image used for storage operations"]
@@ -4425,40 +6998,116 @@ bitflags! {
 #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
 #[doc = "<br>"]
 #[doc = "**Reference**: [`VkSampleCountFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSampleCountFlagBits.html)"]
-pub type SampleCountFlagBits = SampleCountFlags;
+pub enum SampleCountFlagBits {
+    #[doc = "Translated from: `VK_SAMPLE_COUNT_1_BIT`"]
+    Count1 = 0b1,
+    #[doc = "Translated from: `VK_SAMPLE_COUNT_2_BIT`"]
+    Count2 = 0b10,
+    #[doc = "Translated from: `VK_SAMPLE_COUNT_4_BIT`"]
+    Count4 = 0b100,
+    #[doc = "Translated from: `VK_SAMPLE_COUNT_8_BIT`"]
+    Count8 = 0b1000,
+    #[doc = "Translated from: `VK_SAMPLE_COUNT_16_BIT`"]
+    Count16 = 0b10000,
+    #[doc = "Translated from: `VK_SAMPLE_COUNT_32_BIT`"]
+    Count32 = 0b100000,
+    #[doc = "Translated from: `VK_SAMPLE_COUNT_64_BIT`"]
+    Count64 = 0b1000000,
+}
 
-bitflags! {
-    #[repr(C)]
-    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-    #[doc = "**Chapter**: Limits"]
-    #[doc = "<br>"]
-    #[doc = "**Description**: Bitmask of VkSubgroupFeatureFlagBits"]
-    #[doc = "<br>"]
-    #[doc = "**Provided by**: [`VK_VERSION_1_1`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_1.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkSubgroupFeatureFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSubgroupFeatureFlags.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkSubgroupFeatureFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSubgroupFeatureFlagBits.html)"]
-    pub struct SubgroupFeatureFlags: u32 {
-        #[doc = "Translated from: `VK_SUBGROUP_FEATURE_BASIC_BIT`"]
-        const BASIC = 0b1;
-        #[doc = "Translated from: `VK_SUBGROUP_FEATURE_VOTE_BIT`"]
-        const VOTE = 0b10;
-        #[doc = "Translated from: `VK_SUBGROUP_FEATURE_ARITHMETIC_BIT`"]
-        const ARITHMETIC = 0b100;
-        #[doc = "Translated from: `VK_SUBGROUP_FEATURE_BALLOT_BIT`"]
-        const BALLOT = 0b1000;
-        #[doc = "Translated from: `VK_SUBGROUP_FEATURE_SHUFFLE_BIT`"]
-        const SHUFFLE = 0b10000;
-        #[doc = "Translated from: `VK_SUBGROUP_FEATURE_SHUFFLE_RELATIVE_BIT`"]
-        const SHUFFLE_RELATIVE = 0b100000;
-        #[doc = "Translated from: `VK_SUBGROUP_FEATURE_CLUSTERED_BIT`"]
-        const CLUSTERED = 0b1000000;
-        #[doc = "Translated from: `VK_SUBGROUP_FEATURE_QUAD_BIT`"]
-        const QUAD = 0b10000000;
+impl From<SampleCountFlagBits> for u32 {
+    fn from(flag_bits: SampleCountFlagBits) -> Self {
+        flag_bits as u32
     }
 }
 
+impl std::ops::BitOr for SampleCountFlagBits {
+    type Output = SampleCountFlags;
+    fn bitor(self, rhs: Self) -> Self::Output {
+        SampleCountFlags(self as u32 | rhs as u32)
+    }
+}
+
+impl std::ops::BitOr<SampleCountFlags> for SampleCountFlagBits {
+    type Output = SampleCountFlags;
+    fn bitor(self, rhs: SampleCountFlags) -> Self::Output {
+        SampleCountFlags(self as u32 | rhs.0)
+    }
+}
+
+impl std::fmt::Display for SampleCountFlagBits {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq)]
+#[doc = "**Chapter**: Limits"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask of VkSubgroupFeatureFlagBits"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_1`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_1.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkSubgroupFeatureFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSubgroupFeatureFlags.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkSubgroupFeatureFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSubgroupFeatureFlagBits.html)"]
+pub struct SubgroupFeatureFlags(u32);
+
+impl SubgroupFeatureFlags {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
+    }
+}
+
+impl std::ops::BitAnd for SubgroupFeatureFlags {
+    type Output = Self;
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Self(self.0 & rhs.0)
+    }
+}
+
+impl From<SubgroupFeatureFlagBits> for SubgroupFeatureFlags {
+    fn from(flag_bits: SubgroupFeatureFlagBits) -> Self {
+        Self(flag_bits as u32)
+    }
+}
+
+impl std::ops::BitOr<SubgroupFeatureFlagBits> for SubgroupFeatureFlags {
+    type Output = SubgroupFeatureFlags;
+    fn bitor(self, rhs: SubgroupFeatureFlagBits) -> Self::Output {
+        Self(self.0 | rhs as u32)
+    }
+}
+
+impl std::fmt::Display for SubgroupFeatureFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        display_flag_bits_u32(
+            f,
+            self.0,
+            &[
+                SubgroupFeatureFlagBits::Basic,
+                SubgroupFeatureFlagBits::Vote,
+                SubgroupFeatureFlagBits::Arithmetic,
+                SubgroupFeatureFlagBits::Ballot,
+                SubgroupFeatureFlagBits::Shuffle,
+                SubgroupFeatureFlagBits::ShuffleRelative,
+                SubgroupFeatureFlagBits::Clustered,
+                SubgroupFeatureFlagBits::Quad,
+            ],
+        )
+    }
+}
+
+impl std::fmt::Debug for SubgroupFeatureFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("SubgroupFeatureFlags").field(&format!("{self}")).finish()
+    }
+}
+
+#[repr(u32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Limits"]
 #[doc = "<br>"]
 #[doc = "**Description**: Bitmask describing what group operations are supported with subgroup scope"]
@@ -4466,47 +7115,132 @@ bitflags! {
 #[doc = "**Provided by**: [`VK_VERSION_1_1`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_1.html)"]
 #[doc = "<br>"]
 #[doc = "**Reference**: [`VkSubgroupFeatureFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSubgroupFeatureFlagBits.html)"]
-pub type SubgroupFeatureFlagBits = SubgroupFeatureFlags;
+pub enum SubgroupFeatureFlagBits {
+    #[doc = "Translated from: `VK_SUBGROUP_FEATURE_BASIC_BIT`"]
+    Basic = 0b1,
+    #[doc = "Translated from: `VK_SUBGROUP_FEATURE_VOTE_BIT`"]
+    Vote = 0b10,
+    #[doc = "Translated from: `VK_SUBGROUP_FEATURE_ARITHMETIC_BIT`"]
+    Arithmetic = 0b100,
+    #[doc = "Translated from: `VK_SUBGROUP_FEATURE_BALLOT_BIT`"]
+    Ballot = 0b1000,
+    #[doc = "Translated from: `VK_SUBGROUP_FEATURE_SHUFFLE_BIT`"]
+    Shuffle = 0b10000,
+    #[doc = "Translated from: `VK_SUBGROUP_FEATURE_SHUFFLE_RELATIVE_BIT`"]
+    ShuffleRelative = 0b100000,
+    #[doc = "Translated from: `VK_SUBGROUP_FEATURE_CLUSTERED_BIT`"]
+    Clustered = 0b1000000,
+    #[doc = "Translated from: `VK_SUBGROUP_FEATURE_QUAD_BIT`"]
+    Quad = 0b10000000,
+}
 
-bitflags! {
-    #[repr(C)]
-    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-    #[doc = "**Chapter**: Debugging"]
-    #[doc = "<br>"]
-    #[doc = "**Description**: Reserved for future use"]
-    #[doc = "<br>"]
-    #[doc = "**Provided by**: [`VK_EXT_debug_utils`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_debug_utils.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkDebugUtilsMessengerCreateFlagsEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDebugUtilsMessengerCreateFlagsEXT.html)"]
-    pub struct DebugUtilsMessengerCreateFlagsEXT: u32 {
-
+impl From<SubgroupFeatureFlagBits> for u32 {
+    fn from(flag_bits: SubgroupFeatureFlagBits) -> Self {
+        flag_bits as u32
     }
 }
 
-bitflags! {
-    #[repr(C)]
-    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-    #[doc = "**Chapter**: Debugging"]
-    #[doc = "<br>"]
-    #[doc = "**Description**: Bitmask of VkDebugUtilsMessageSeverityFlagBitsEXT"]
-    #[doc = "<br>"]
-    #[doc = "**Provided by**: [`VK_EXT_debug_utils`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_debug_utils.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkDebugUtilsMessageSeverityFlagsEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDebugUtilsMessageSeverityFlagsEXT.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkDebugUtilsMessageSeverityFlagBitsEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDebugUtilsMessageSeverityFlagBitsEXT.html)"]
-    pub struct DebugUtilsMessageSeverityFlagsEXT: u32 {
-        #[doc = "Translated from: `VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT`"]
-        const VERBOSE_EXT = 0b1;
-        #[doc = "Translated from: `VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT`"]
-        const INFO_EXT = 0b10000;
-        #[doc = "Translated from: `VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT`"]
-        const WARNING_EXT = 0b100000000;
-        #[doc = "Translated from: `VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT`"]
-        const ERROR_EXT = 0b1000000000000;
+impl std::ops::BitOr for SubgroupFeatureFlagBits {
+    type Output = SubgroupFeatureFlags;
+    fn bitor(self, rhs: Self) -> Self::Output {
+        SubgroupFeatureFlags(self as u32 | rhs as u32)
     }
 }
 
+impl std::ops::BitOr<SubgroupFeatureFlags> for SubgroupFeatureFlagBits {
+    type Output = SubgroupFeatureFlags;
+    fn bitor(self, rhs: SubgroupFeatureFlags) -> Self::Output {
+        SubgroupFeatureFlags(self as u32 | rhs.0)
+    }
+}
+
+impl std::fmt::Display for SubgroupFeatureFlagBits {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[doc = "**Chapter**: Debugging"]
+#[doc = "<br>"]
+#[doc = "**Description**: Reserved for future use"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_EXT_debug_utils`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_debug_utils.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkDebugUtilsMessengerCreateFlagsEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDebugUtilsMessengerCreateFlagsEXT.html)"]
+pub struct DebugUtilsMessengerCreateFlagsEXT(u32);
+
+impl DebugUtilsMessengerCreateFlagsEXT {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq)]
+#[doc = "**Chapter**: Debugging"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask of VkDebugUtilsMessageSeverityFlagBitsEXT"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_EXT_debug_utils`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_debug_utils.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkDebugUtilsMessageSeverityFlagsEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDebugUtilsMessageSeverityFlagsEXT.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkDebugUtilsMessageSeverityFlagBitsEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDebugUtilsMessageSeverityFlagBitsEXT.html)"]
+pub struct DebugUtilsMessageSeverityFlagsEXT(u32);
+
+impl DebugUtilsMessageSeverityFlagsEXT {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
+    }
+}
+
+impl std::ops::BitAnd for DebugUtilsMessageSeverityFlagsEXT {
+    type Output = Self;
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Self(self.0 & rhs.0)
+    }
+}
+
+impl From<DebugUtilsMessageSeverityFlagBitsEXT> for DebugUtilsMessageSeverityFlagsEXT {
+    fn from(flag_bits: DebugUtilsMessageSeverityFlagBitsEXT) -> Self {
+        Self(flag_bits as u32)
+    }
+}
+
+impl std::ops::BitOr<DebugUtilsMessageSeverityFlagBitsEXT> for DebugUtilsMessageSeverityFlagsEXT {
+    type Output = DebugUtilsMessageSeverityFlagsEXT;
+    fn bitor(self, rhs: DebugUtilsMessageSeverityFlagBitsEXT) -> Self::Output {
+        Self(self.0 | rhs as u32)
+    }
+}
+
+impl std::fmt::Display for DebugUtilsMessageSeverityFlagsEXT {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        display_flag_bits_u32(
+            f,
+            self.0,
+            &[
+                DebugUtilsMessageSeverityFlagBitsEXT::VerboseEXT,
+                DebugUtilsMessageSeverityFlagBitsEXT::InfoEXT,
+                DebugUtilsMessageSeverityFlagBitsEXT::WarningEXT,
+                DebugUtilsMessageSeverityFlagBitsEXT::ErrorEXT,
+            ],
+        )
+    }
+}
+
+impl std::fmt::Debug for DebugUtilsMessageSeverityFlagsEXT {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("DebugUtilsMessageSeverityFlagsEXT").field(&format!("{self}")).finish()
+    }
+}
+
+#[repr(u32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Debugging"]
 #[doc = "<br>"]
 #[doc = "**Description**: Bitmask specifying which severities of events cause a debug messenger callback"]
@@ -4514,30 +7248,105 @@ bitflags! {
 #[doc = "**Provided by**: [`VK_EXT_debug_utils`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_debug_utils.html)"]
 #[doc = "<br>"]
 #[doc = "**Reference**: [`VkDebugUtilsMessageSeverityFlagBitsEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDebugUtilsMessageSeverityFlagBitsEXT.html)"]
-pub type DebugUtilsMessageSeverityFlagBitsEXT = DebugUtilsMessageSeverityFlagsEXT;
+pub enum DebugUtilsMessageSeverityFlagBitsEXT {
+    #[doc = "Translated from: `VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT`"]
+    VerboseEXT = 0b1,
+    #[doc = "Translated from: `VK_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT`"]
+    InfoEXT = 0b10000,
+    #[doc = "Translated from: `VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT`"]
+    WarningEXT = 0b100000000,
+    #[doc = "Translated from: `VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT`"]
+    ErrorEXT = 0b1000000000000,
+}
 
-bitflags! {
-    #[repr(C)]
-    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-    #[doc = "**Chapter**: Debugging"]
-    #[doc = "<br>"]
-    #[doc = "**Description**: Bitmask of VkDebugUtilsMessageTypeFlagBitsEXT"]
-    #[doc = "<br>"]
-    #[doc = "**Provided by**: [`VK_EXT_debug_utils`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_debug_utils.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkDebugUtilsMessageTypeFlagsEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDebugUtilsMessageTypeFlagsEXT.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkDebugUtilsMessageTypeFlagBitsEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDebugUtilsMessageTypeFlagBitsEXT.html)"]
-    pub struct DebugUtilsMessageTypeFlagsEXT: u32 {
-        #[doc = "Translated from: `VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT`"]
-        const GENERAL_EXT = 0b1;
-        #[doc = "Translated from: `VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT`"]
-        const VALIDATION_EXT = 0b10;
-        #[doc = "Translated from: `VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT`"]
-        const PERFORMANCE_EXT = 0b100;
+impl From<DebugUtilsMessageSeverityFlagBitsEXT> for u32 {
+    fn from(flag_bits: DebugUtilsMessageSeverityFlagBitsEXT) -> Self {
+        flag_bits as u32
     }
 }
 
+impl std::ops::BitOr for DebugUtilsMessageSeverityFlagBitsEXT {
+    type Output = DebugUtilsMessageSeverityFlagsEXT;
+    fn bitor(self, rhs: Self) -> Self::Output {
+        DebugUtilsMessageSeverityFlagsEXT(self as u32 | rhs as u32)
+    }
+}
+
+impl std::ops::BitOr<DebugUtilsMessageSeverityFlagsEXT> for DebugUtilsMessageSeverityFlagBitsEXT {
+    type Output = DebugUtilsMessageSeverityFlagsEXT;
+    fn bitor(self, rhs: DebugUtilsMessageSeverityFlagsEXT) -> Self::Output {
+        DebugUtilsMessageSeverityFlagsEXT(self as u32 | rhs.0)
+    }
+}
+
+impl std::fmt::Display for DebugUtilsMessageSeverityFlagBitsEXT {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq)]
+#[doc = "**Chapter**: Debugging"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask of VkDebugUtilsMessageTypeFlagBitsEXT"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_EXT_debug_utils`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_debug_utils.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkDebugUtilsMessageTypeFlagsEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDebugUtilsMessageTypeFlagsEXT.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkDebugUtilsMessageTypeFlagBitsEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDebugUtilsMessageTypeFlagBitsEXT.html)"]
+pub struct DebugUtilsMessageTypeFlagsEXT(u32);
+
+impl DebugUtilsMessageTypeFlagsEXT {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
+    }
+}
+
+impl std::ops::BitAnd for DebugUtilsMessageTypeFlagsEXT {
+    type Output = Self;
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Self(self.0 & rhs.0)
+    }
+}
+
+impl From<DebugUtilsMessageTypeFlagBitsEXT> for DebugUtilsMessageTypeFlagsEXT {
+    fn from(flag_bits: DebugUtilsMessageTypeFlagBitsEXT) -> Self {
+        Self(flag_bits as u32)
+    }
+}
+
+impl std::ops::BitOr<DebugUtilsMessageTypeFlagBitsEXT> for DebugUtilsMessageTypeFlagsEXT {
+    type Output = DebugUtilsMessageTypeFlagsEXT;
+    fn bitor(self, rhs: DebugUtilsMessageTypeFlagBitsEXT) -> Self::Output {
+        Self(self.0 | rhs as u32)
+    }
+}
+
+impl std::fmt::Display for DebugUtilsMessageTypeFlagsEXT {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        display_flag_bits_u32(
+            f,
+            self.0,
+            &[
+                DebugUtilsMessageTypeFlagBitsEXT::GeneralEXT,
+                DebugUtilsMessageTypeFlagBitsEXT::ValidationEXT,
+                DebugUtilsMessageTypeFlagBitsEXT::PerformanceEXT,
+            ],
+        )
+    }
+}
+
+impl std::fmt::Debug for DebugUtilsMessageTypeFlagsEXT {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("DebugUtilsMessageTypeFlagsEXT").field(&format!("{self}")).finish()
+    }
+}
+
+#[repr(u32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Debugging"]
 #[doc = "<br>"]
 #[doc = "**Description**: Bitmask specifying which types of events cause a debug messenger callback"]
@@ -4545,20 +7354,56 @@ bitflags! {
 #[doc = "**Provided by**: [`VK_EXT_debug_utils`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_debug_utils.html)"]
 #[doc = "<br>"]
 #[doc = "**Reference**: [`VkDebugUtilsMessageTypeFlagBitsEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDebugUtilsMessageTypeFlagBitsEXT.html)"]
-pub type DebugUtilsMessageTypeFlagBitsEXT = DebugUtilsMessageTypeFlagsEXT;
+pub enum DebugUtilsMessageTypeFlagBitsEXT {
+    #[doc = "Translated from: `VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT`"]
+    GeneralEXT = 0b1,
+    #[doc = "Translated from: `VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT`"]
+    ValidationEXT = 0b10,
+    #[doc = "Translated from: `VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT`"]
+    PerformanceEXT = 0b100,
+}
 
-bitflags! {
-    #[repr(C)]
-    #[derive(Clone, Copy, PartialEq, Eq, Debug)]
-    #[doc = "**Chapter**: Debugging"]
-    #[doc = "<br>"]
-    #[doc = "**Description**: Reserved for future use"]
-    #[doc = "<br>"]
-    #[doc = "**Provided by**: [`VK_EXT_debug_utils`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_debug_utils.html)"]
-    #[doc = "<br>"]
-    #[doc = "**Reference**: [`VkDebugUtilsMessengerCallbackDataFlagsEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDebugUtilsMessengerCallbackDataFlagsEXT.html)"]
-    pub struct DebugUtilsMessengerCallbackDataFlagsEXT: u32 {
+impl From<DebugUtilsMessageTypeFlagBitsEXT> for u32 {
+    fn from(flag_bits: DebugUtilsMessageTypeFlagBitsEXT) -> Self {
+        flag_bits as u32
+    }
+}
 
+impl std::ops::BitOr for DebugUtilsMessageTypeFlagBitsEXT {
+    type Output = DebugUtilsMessageTypeFlagsEXT;
+    fn bitor(self, rhs: Self) -> Self::Output {
+        DebugUtilsMessageTypeFlagsEXT(self as u32 | rhs as u32)
+    }
+}
+
+impl std::ops::BitOr<DebugUtilsMessageTypeFlagsEXT> for DebugUtilsMessageTypeFlagBitsEXT {
+    type Output = DebugUtilsMessageTypeFlagsEXT;
+    fn bitor(self, rhs: DebugUtilsMessageTypeFlagsEXT) -> Self::Output {
+        DebugUtilsMessageTypeFlagsEXT(self as u32 | rhs.0)
+    }
+}
+
+impl std::fmt::Display for DebugUtilsMessageTypeFlagBitsEXT {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[doc = "**Chapter**: Debugging"]
+#[doc = "<br>"]
+#[doc = "**Description**: Reserved for future use"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_EXT_debug_utils`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_debug_utils.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkDebugUtilsMessengerCallbackDataFlagsEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDebugUtilsMessengerCallbackDataFlagsEXT.html)"]
+pub struct DebugUtilsMessengerCallbackDataFlagsEXT(u32);
+
+impl DebugUtilsMessengerCallbackDataFlagsEXT {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
     }
 }
 
@@ -4577,7 +7422,9 @@ bitflags! {
 #[doc = "**Reference**: [`VkOffset2D`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkOffset2D.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let offset_2d = vk::Offset2D {
     x: todo!("i32"),
     y: todo!("i32"),
@@ -4599,7 +7446,9 @@ pub struct Offset2D {
 #[doc = "**Reference**: [`VkOffset3D`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkOffset3D.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let offset_3d = vk::Offset3D {
     x: todo!("i32"),
     y: todo!("i32"),
@@ -4623,7 +7472,9 @@ pub struct Offset3D {
 #[doc = "**Reference**: [`VkExtent2D`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkExtent2D.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let extent_2d = vk::Extent2D {
     width: todo!("u32"),
     height: todo!("u32"),
@@ -4645,7 +7496,9 @@ pub struct Extent2D {
 #[doc = "**Reference**: [`VkExtent3D`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkExtent3D.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let extent_3d = vk::Extent3D {
     width: todo!("u32"),
     height: todo!("u32"),
@@ -4669,7 +7522,9 @@ pub struct Extent3D {
 #[doc = "**Reference**: [`VkRect2D`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkRect2D.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let rect_2d = vk::Rect2D {
     offset: todo!("vk::Offset2D"),
     extent: todo!("vk::Extent2D"),
@@ -4695,7 +7550,9 @@ pub struct Rect2D {
 #[doc = "**Extendable by**: [`VkDebugUtilsMessengerCreateInfoEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDebugUtilsMessengerCreateInfoEXT.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let instance_create_info = vk::InstanceCreateInfo {
     s_type: vk::StructureType::InstanceCreateInfo,
     p_next: null(),
@@ -4729,7 +7586,9 @@ pub struct InstanceCreateInfo {
 #[doc = "**Reference**: [`VkValidationFeaturesEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkValidationFeaturesEXT.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let validation_features_ext = vk::ValidationFeaturesEXT {
     s_type: vk::StructureType::ValidationFeaturesEXT,
     p_next: null(),
@@ -4759,7 +7618,9 @@ pub struct ValidationFeaturesEXT {
 #[doc = "**Reference**: [`VkApplicationInfo`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkApplicationInfo.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let application_info = vk::ApplicationInfo {
     s_type: vk::StructureType::ApplicationInfo,
     p_next: null(),
@@ -4791,7 +7652,9 @@ pub struct ApplicationInfo {
 #[doc = "**Reference**: [`VkPhysicalDeviceProperties`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceProperties.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let physical_device_properties = vk::PhysicalDeviceProperties {
     api_version: todo!("u32"),
     driver_version: todo!("u32"),
@@ -4833,7 +7696,9 @@ pub struct PhysicalDeviceProperties {
 #[doc = "**Extendable by**: [`VkPhysicalDeviceDescriptorBufferPropertiesEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceDescriptorBufferPropertiesEXT.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let physical_device_properties2 = vk::PhysicalDeviceProperties2 {
     s_type: vk::StructureType::PhysicalDeviceProperties2,
     p_next: null_mut(),
@@ -4857,7 +7722,9 @@ pub struct PhysicalDeviceProperties2 {
 #[doc = "**Reference**: [`VkQueueFamilyProperties`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkQueueFamilyProperties.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let queue_family_properties = vk::QueueFamilyProperties {
     queue_flags: todo!("vk::QueueFlags"),
     queue_count: todo!("u32"),
@@ -4883,7 +7750,9 @@ pub struct QueueFamilyProperties {
 #[doc = "**Reference**: [`VkQueueFamilyProperties2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkQueueFamilyProperties2.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let queue_family_properties2 = vk::QueueFamilyProperties2 {
     s_type: vk::StructureType::QueueFamilyProperties2,
     p_next: null_mut(),
@@ -4921,7 +7790,9 @@ pub struct QueueFamilyProperties2 {
 #[doc = "**Extendable by**: [`VkPhysicalDeviceShaderObjectFeaturesEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceShaderObjectFeaturesEXT.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let device_create_info = vk::DeviceCreateInfo {
     s_type: vk::StructureType::DeviceCreateInfo,
     p_next: null(),
@@ -4959,7 +7830,9 @@ pub struct DeviceCreateInfo {
 #[doc = "**Reference**: [`VkDeviceQueueCreateInfo`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDeviceQueueCreateInfo.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let device_queue_create_info = vk::DeviceQueueCreateInfo {
     s_type: vk::StructureType::DeviceQueueCreateInfo,
     p_next: null(),
@@ -4989,7 +7862,9 @@ pub struct DeviceQueueCreateInfo {
 #[doc = "**Reference**: [`VkDeviceQueueInfo2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDeviceQueueInfo2.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let device_queue_info2 = vk::DeviceQueueInfo2 {
     s_type: vk::StructureType::DeviceQueueInfo2,
     p_next: null(),
@@ -5017,7 +7892,9 @@ pub struct DeviceQueueInfo2 {
 #[doc = "**Reference**: [`VkCommandPoolCreateInfo`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkCommandPoolCreateInfo.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let command_pool_create_info = vk::CommandPoolCreateInfo {
     s_type: vk::StructureType::CommandPoolCreateInfo,
     p_next: null(),
@@ -5043,7 +7920,9 @@ pub struct CommandPoolCreateInfo {
 #[doc = "**Reference**: [`VkCommandBufferAllocateInfo`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkCommandBufferAllocateInfo.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let command_buffer_allocate_info = vk::CommandBufferAllocateInfo {
     s_type: vk::StructureType::CommandBufferAllocateInfo,
     p_next: null(),
@@ -5071,7 +7950,9 @@ pub struct CommandBufferAllocateInfo {
 #[doc = "**Reference**: [`VkCommandBufferBeginInfo`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkCommandBufferBeginInfo.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let command_buffer_begin_info = vk::CommandBufferBeginInfo {
     s_type: vk::StructureType::CommandBufferBeginInfo,
     p_next: null(),
@@ -5097,7 +7978,9 @@ pub struct CommandBufferBeginInfo {
 #[doc = "**Reference**: [`VkCommandBufferInheritanceInfo`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkCommandBufferInheritanceInfo.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let command_buffer_inheritance_info = vk::CommandBufferInheritanceInfo {
     s_type: vk::StructureType::CommandBufferInheritanceInfo,
     p_next: null(),
@@ -5131,7 +8014,9 @@ pub struct CommandBufferInheritanceInfo {
 #[doc = "**Reference**: [`VkSubmitInfo2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSubmitInfo2.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let submit_info2 = vk::SubmitInfo2 {
     s_type: vk::StructureType::SubmitInfo2,
     p_next: null(),
@@ -5167,7 +8052,9 @@ pub struct SubmitInfo2 {
 #[doc = "**Reference**: [`VkSemaphoreSubmitInfo`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSemaphoreSubmitInfo.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let semaphore_submit_info = vk::SemaphoreSubmitInfo {
     s_type: vk::StructureType::SemaphoreSubmitInfo,
     p_next: null(),
@@ -5197,7 +8084,9 @@ pub struct SemaphoreSubmitInfo {
 #[doc = "**Reference**: [`VkCommandBufferSubmitInfo`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkCommandBufferSubmitInfo.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let command_buffer_submit_info = vk::CommandBufferSubmitInfo {
     s_type: vk::StructureType::CommandBufferSubmitInfo,
     p_next: null(),
@@ -5225,7 +8114,9 @@ pub struct CommandBufferSubmitInfo {
 #[doc = "**Extendable by**: [`VkSemaphoreTypeCreateInfo`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSemaphoreTypeCreateInfo.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let semaphore_create_info = vk::SemaphoreCreateInfo {
     s_type: vk::StructureType::SemaphoreCreateInfo,
     p_next: null(),
@@ -5249,7 +8140,9 @@ pub struct SemaphoreCreateInfo {
 #[doc = "**Reference**: [`VkSemaphoreTypeCreateInfo`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSemaphoreTypeCreateInfo.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let semaphore_type_create_info = vk::SemaphoreTypeCreateInfo {
     s_type: vk::StructureType::SemaphoreTypeCreateInfo,
     p_next: null(),
@@ -5275,7 +8168,9 @@ pub struct SemaphoreTypeCreateInfo {
 #[doc = "**Reference**: [`VkSemaphoreWaitInfo`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSemaphoreWaitInfo.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let semaphore_wait_info = vk::SemaphoreWaitInfo {
     s_type: vk::StructureType::SemaphoreWaitInfo,
     p_next: null(),
@@ -5305,7 +8200,9 @@ pub struct SemaphoreWaitInfo {
 #[doc = "**Reference**: [`VkDependencyInfo`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDependencyInfo.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let dependency_info = vk::DependencyInfo {
     s_type: vk::StructureType::DependencyInfo,
     p_next: null(),
@@ -5341,7 +8238,9 @@ pub struct DependencyInfo {
 #[doc = "**Reference**: [`VkMemoryBarrier2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkMemoryBarrier2.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let memory_barrier2 = vk::MemoryBarrier2 {
     s_type: vk::StructureType::MemoryBarrier2,
     p_next: null(),
@@ -5371,7 +8270,9 @@ pub struct MemoryBarrier2 {
 #[doc = "**Reference**: [`VkBufferMemoryBarrier2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkBufferMemoryBarrier2.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let buffer_memory_barrier2 = vk::BufferMemoryBarrier2 {
     s_type: vk::StructureType::BufferMemoryBarrier2,
     p_next: null(),
@@ -5411,7 +8312,9 @@ pub struct BufferMemoryBarrier2 {
 #[doc = "**Reference**: [`VkImageMemoryBarrier2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageMemoryBarrier2.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let image_memory_barrier2 = vk::ImageMemoryBarrier2 {
     s_type: vk::StructureType::ImageMemoryBarrier2,
     p_next: null(),
@@ -5453,7 +8356,9 @@ pub struct ImageMemoryBarrier2 {
 #[doc = "**Reference**: [`VkCalibratedTimestampInfoEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkCalibratedTimestampInfoEXT.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let calibrated_timestamp_info_ext = vk::CalibratedTimestampInfoEXT {
     s_type: vk::StructureType::CalibratedTimestampInfoEXT,
     p_next: null(),
@@ -5477,7 +8382,9 @@ pub struct CalibratedTimestampInfoEXT {
 #[doc = "**Reference**: [`VkRenderingInfo`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkRenderingInfo.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let rendering_info = vk::RenderingInfo {
     s_type: vk::StructureType::RenderingInfo,
     p_next: null(),
@@ -5515,7 +8422,9 @@ pub struct RenderingInfo {
 #[doc = "**Reference**: [`VkRenderingAttachmentInfo`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkRenderingAttachmentInfo.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let rendering_attachment_info = vk::RenderingAttachmentInfo {
     s_type: vk::StructureType::RenderingAttachmentInfo,
     p_next: null(),
@@ -5553,7 +8462,9 @@ pub struct RenderingAttachmentInfo {
 #[doc = "**Reference**: [`VkShaderCreateInfoEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkShaderCreateInfoEXT.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let shader_create_info_ext = vk::ShaderCreateInfoEXT {
     s_type: vk::StructureType::ShaderCreateInfoEXT,
     p_next: null(),
@@ -5599,7 +8510,9 @@ pub struct ShaderCreateInfoEXT {
 #[doc = "**Reference**: [`VkSpecializationInfo`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSpecializationInfo.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let specialization_info = vk::SpecializationInfo {
     map_entry_count: todo!("u32"),
     p_map_entries: todo!("*const vk::SpecializationMapEntry"),
@@ -5625,7 +8538,9 @@ pub struct SpecializationInfo {
 #[doc = "**Reference**: [`VkSpecializationMapEntry`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSpecializationMapEntry.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let specialization_map_entry = vk::SpecializationMapEntry {
     constant_id: todo!("u32"),
     offset: todo!("u32"),
@@ -5649,7 +8564,9 @@ pub struct SpecializationMapEntry {
 #[doc = "**Reference**: [`VkAllocationCallbacks`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkAllocationCallbacks.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let allocation_callbacks = vk::AllocationCallbacks {
     p_user_data: todo!("*mut c_void"),
     pfn_allocation: todo!("vk::PfnAllocationFunction"),
@@ -5679,7 +8596,9 @@ pub struct AllocationCallbacks {
 #[doc = "**Reference**: [`VkPhysicalDeviceMemoryProperties`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceMemoryProperties.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let physical_device_memory_properties = vk::PhysicalDeviceMemoryProperties {
     memory_type_count: todo!("u32"),
     memory_types: todo!("[vk::MemoryType; MAX_MEMORY_TYPES as _]"),
@@ -5705,7 +8624,9 @@ pub struct PhysicalDeviceMemoryProperties {
 #[doc = "**Reference**: [`VkPhysicalDeviceMemoryProperties2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceMemoryProperties2.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let physical_device_memory_properties2 = vk::PhysicalDeviceMemoryProperties2 {
     s_type: vk::StructureType::PhysicalDeviceMemoryProperties2,
     p_next: null_mut(),
@@ -5729,7 +8650,9 @@ pub struct PhysicalDeviceMemoryProperties2 {
 #[doc = "**Reference**: [`VkMemoryHeap`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkMemoryHeap.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let memory_heap = vk::MemoryHeap {
     size: todo!("vk::DeviceSize"),
     flags: todo!("vk::MemoryHeapFlags"),
@@ -5751,7 +8674,9 @@ pub struct MemoryHeap {
 #[doc = "**Reference**: [`VkMemoryType`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkMemoryType.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let memory_type = vk::MemoryType {
     property_flags: todo!("vk::MemoryPropertyFlags"),
     heap_index: todo!("u32"),
@@ -5775,7 +8700,9 @@ pub struct MemoryType {
 #[doc = "**Extendable by**: [`VkMemoryAllocateFlagsInfo`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkMemoryAllocateFlagsInfo.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let memory_allocate_info = vk::MemoryAllocateInfo {
     s_type: vk::StructureType::MemoryAllocateInfo,
     p_next: null(),
@@ -5801,7 +8728,9 @@ pub struct MemoryAllocateInfo {
 #[doc = "**Reference**: [`VkMemoryAllocateFlagsInfo`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkMemoryAllocateFlagsInfo.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let memory_allocate_flags_info = vk::MemoryAllocateFlagsInfo {
     s_type: vk::StructureType::MemoryAllocateFlagsInfo,
     p_next: null(),
@@ -5827,7 +8756,9 @@ pub struct MemoryAllocateFlagsInfo {
 #[doc = "**Reference**: [`VkMemoryMapInfoKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkMemoryMapInfoKHR.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let memory_map_info_khr = vk::MemoryMapInfoKHR {
     s_type: vk::StructureType::MemoryMapInfoKHR,
     p_next: null(),
@@ -5857,7 +8788,9 @@ pub struct MemoryMapInfoKHR {
 #[doc = "**Reference**: [`VkMemoryUnmapInfoKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkMemoryUnmapInfoKHR.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let memory_unmap_info_khr = vk::MemoryUnmapInfoKHR {
     s_type: vk::StructureType::MemoryUnmapInfoKHR,
     p_next: null(),
@@ -5883,7 +8816,9 @@ pub struct MemoryUnmapInfoKHR {
 #[doc = "**Reference**: [`VkBufferCreateInfo`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkBufferCreateInfo.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let buffer_create_info = vk::BufferCreateInfo {
     s_type: vk::StructureType::BufferCreateInfo,
     p_next: null(),
@@ -5917,7 +8852,9 @@ pub struct BufferCreateInfo {
 #[doc = "**Reference**: [`VkImageCreateInfo`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageCreateInfo.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let image_create_info = vk::ImageCreateInfo {
     s_type: vk::StructureType::ImageCreateInfo,
     p_next: null(),
@@ -5965,7 +8902,9 @@ pub struct ImageCreateInfo {
 #[doc = "**Reference**: [`VkImageViewCreateInfo`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageViewCreateInfo.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let image_view_create_info = vk::ImageViewCreateInfo {
     s_type: vk::StructureType::ImageViewCreateInfo,
     p_next: null(),
@@ -5999,7 +8938,9 @@ pub struct ImageViewCreateInfo {
 #[doc = "**Reference**: [`VkImageSubresourceRange`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageSubresourceRange.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let image_subresource_range = vk::ImageSubresourceRange {
     aspect_mask: todo!("vk::ImageAspectFlags"),
     base_mip_level: todo!("u32"),
@@ -6027,7 +8968,9 @@ pub struct ImageSubresourceRange {
 #[doc = "**Reference**: [`VkComponentMapping`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkComponentMapping.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let component_mapping = vk::ComponentMapping {
     r: todo!("vk::ComponentSwizzle"),
     g: todo!("vk::ComponentSwizzle"),
@@ -6053,7 +8996,9 @@ pub struct ComponentMapping {
 #[doc = "**Reference**: [`VkMemoryRequirements`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkMemoryRequirements.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let memory_requirements = vk::MemoryRequirements {
     size: todo!("vk::DeviceSize"),
     alignment: todo!("vk::DeviceSize"),
@@ -6077,7 +9022,9 @@ pub struct MemoryRequirements {
 #[doc = "**Reference**: [`VkDeviceBufferMemoryRequirements`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDeviceBufferMemoryRequirements.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let device_buffer_memory_requirements = vk::DeviceBufferMemoryRequirements {
     s_type: vk::StructureType::DeviceBufferMemoryRequirements,
     p_next: null(),
@@ -6101,7 +9048,9 @@ pub struct DeviceBufferMemoryRequirements {
 #[doc = "**Reference**: [`VkDeviceImageMemoryRequirements`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDeviceImageMemoryRequirements.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let device_image_memory_requirements = vk::DeviceImageMemoryRequirements {
     s_type: vk::StructureType::DeviceImageMemoryRequirements,
     p_next: null(),
@@ -6127,7 +9076,9 @@ pub struct DeviceImageMemoryRequirements {
 #[doc = "**Reference**: [`VkMemoryRequirements2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkMemoryRequirements2.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let memory_requirements2 = vk::MemoryRequirements2 {
     s_type: vk::StructureType::MemoryRequirements2,
     p_next: null_mut(),
@@ -6151,7 +9102,9 @@ pub struct MemoryRequirements2 {
 #[doc = "**Reference**: [`VkBindBufferMemoryInfo`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkBindBufferMemoryInfo.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let bind_buffer_memory_info = vk::BindBufferMemoryInfo {
     s_type: vk::StructureType::BindBufferMemoryInfo,
     p_next: null(),
@@ -6179,7 +9132,9 @@ pub struct BindBufferMemoryInfo {
 #[doc = "**Reference**: [`VkBindImageMemoryInfo`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkBindImageMemoryInfo.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let bind_image_memory_info = vk::BindImageMemoryInfo {
     s_type: vk::StructureType::BindImageMemoryInfo,
     p_next: null(),
@@ -6207,7 +9162,9 @@ pub struct BindImageMemoryInfo {
 #[doc = "**Reference**: [`VkSamplerCreateInfo`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSamplerCreateInfo.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let sampler_create_info = vk::SamplerCreateInfo {
     s_type: vk::StructureType::SamplerCreateInfo,
     p_next: null(),
@@ -6261,7 +9218,9 @@ pub struct SamplerCreateInfo {
 #[doc = "**Reference**: [`VkDescriptorSetLayoutCreateInfo`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDescriptorSetLayoutCreateInfo.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let descriptor_set_layout_create_info = vk::DescriptorSetLayoutCreateInfo {
     s_type: vk::StructureType::DescriptorSetLayoutCreateInfo,
     p_next: null(),
@@ -6289,7 +9248,9 @@ pub struct DescriptorSetLayoutCreateInfo {
 #[doc = "**Reference**: [`VkDescriptorSetLayoutBinding`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDescriptorSetLayoutBinding.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let descriptor_set_layout_binding = vk::DescriptorSetLayoutBinding {
     binding: todo!("u32"),
     descriptor_type: todo!("vk::DescriptorType"),
@@ -6317,7 +9278,9 @@ pub struct DescriptorSetLayoutBinding {
 #[doc = "**Reference**: [`VkPipelineLayoutCreateInfo`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPipelineLayoutCreateInfo.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let pipeline_layout_create_info = vk::PipelineLayoutCreateInfo {
     s_type: vk::StructureType::PipelineLayoutCreateInfo,
     p_next: null(),
@@ -6349,7 +9312,9 @@ pub struct PipelineLayoutCreateInfo {
 #[doc = "**Reference**: [`VkPushConstantRange`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPushConstantRange.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let push_constant_range = vk::PushConstantRange {
     stage_flags: todo!("vk::ShaderStageFlags"),
     offset: todo!("u32"),
@@ -6373,7 +9338,9 @@ pub struct PushConstantRange {
 #[doc = "**Reference**: [`VkDescriptorImageInfo`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDescriptorImageInfo.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let descriptor_image_info = vk::DescriptorImageInfo {
     sampler: todo!("vk::Sampler"),
     image_view: todo!("vk::ImageView"),
@@ -6397,7 +9364,9 @@ pub struct DescriptorImageInfo {
 #[doc = "**Reference**: [`VkBufferDeviceAddressInfo`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkBufferDeviceAddressInfo.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let buffer_device_address_info = vk::BufferDeviceAddressInfo {
     s_type: vk::StructureType::BufferDeviceAddressInfo,
     p_next: null(),
@@ -6421,7 +9390,9 @@ pub struct BufferDeviceAddressInfo {
 #[doc = "**Reference**: [`VkDescriptorGetInfoEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDescriptorGetInfoEXT.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let descriptor_get_info_ext = vk::DescriptorGetInfoEXT {
     s_type: vk::StructureType::DescriptorGetInfoEXT,
     p_next: null(),
@@ -6447,7 +9418,9 @@ pub struct DescriptorGetInfoEXT {
 #[doc = "**Reference**: [`VkDescriptorAddressInfoEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDescriptorAddressInfoEXT.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let descriptor_address_info_ext = vk::DescriptorAddressInfoEXT {
     s_type: vk::StructureType::DescriptorAddressInfoEXT,
     p_next: null_mut(),
@@ -6475,7 +9448,9 @@ pub struct DescriptorAddressInfoEXT {
 #[doc = "**Reference**: [`VkDescriptorBufferBindingInfoEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDescriptorBufferBindingInfoEXT.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let descriptor_buffer_binding_info_ext = vk::DescriptorBufferBindingInfoEXT {
     s_type: vk::StructureType::DescriptorBufferBindingInfoEXT,
     p_next: null_mut(),
@@ -6501,7 +9476,9 @@ pub struct DescriptorBufferBindingInfoEXT {
 #[doc = "**Reference**: [`VkQueryPoolCreateInfo`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkQueryPoolCreateInfo.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let query_pool_create_info = vk::QueryPoolCreateInfo {
     s_type: vk::StructureType::QueryPoolCreateInfo,
     p_next: null(),
@@ -6531,7 +9508,9 @@ pub struct QueryPoolCreateInfo {
 #[doc = "**Reference**: [`VkClearDepthStencilValue`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkClearDepthStencilValue.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let clear_depth_stencil_value = vk::ClearDepthStencilValue {
     depth: todo!("f32"),
     stencil: todo!("u32"),
@@ -6553,7 +9532,9 @@ pub struct ClearDepthStencilValue {
 #[doc = "**Reference**: [`VkImageSubresourceLayers`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageSubresourceLayers.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let image_subresource_layers = vk::ImageSubresourceLayers {
     aspect_mask: todo!("vk::ImageAspectFlags"),
     mip_level: todo!("u32"),
@@ -6579,7 +9560,9 @@ pub struct ImageSubresourceLayers {
 #[doc = "**Reference**: [`VkCopyBufferToImageInfo2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkCopyBufferToImageInfo2.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let copy_buffer_to_image_info2 = vk::CopyBufferToImageInfo2 {
     s_type: vk::StructureType::CopyBufferToImageInfo2,
     p_next: null(),
@@ -6611,7 +9594,9 @@ pub struct CopyBufferToImageInfo2 {
 #[doc = "**Reference**: [`VkCopyImageToBufferInfo2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkCopyImageToBufferInfo2.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let copy_image_to_buffer_info2 = vk::CopyImageToBufferInfo2 {
     s_type: vk::StructureType::CopyImageToBufferInfo2,
     p_next: null(),
@@ -6643,7 +9628,9 @@ pub struct CopyImageToBufferInfo2 {
 #[doc = "**Reference**: [`VkBufferImageCopy2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkBufferImageCopy2.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let buffer_image_copy2 = vk::BufferImageCopy2 {
     s_type: vk::StructureType::BufferImageCopy2,
     p_next: null(),
@@ -6677,7 +9664,9 @@ pub struct BufferImageCopy2 {
 #[doc = "**Reference**: [`VkViewport`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkViewport.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let viewport = vk::Viewport {
     x: todo!("f32"),
     y: todo!("f32"),
@@ -6707,7 +9696,9 @@ pub struct Viewport {
 #[doc = "**Reference**: [`VkColorBlendEquationEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkColorBlendEquationEXT.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let color_blend_equation_ext = vk::ColorBlendEquationEXT {
     src_color_blend_factor: todo!("vk::BlendFactor"),
     dst_color_blend_factor: todo!("vk::BlendFactor"),
@@ -6737,7 +9728,9 @@ pub struct ColorBlendEquationEXT {
 #[doc = "**Reference**: [`VkPhysicalDeviceSparseProperties`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceSparseProperties.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let physical_device_sparse_properties = vk::PhysicalDeviceSparseProperties {
     residency_standard_2d_block_shape: todo!("vk::Bool32"),
     residency_standard_2d_multisample_block_shape: todo!("vk::Bool32"),
@@ -6777,7 +9770,9 @@ pub struct PhysicalDeviceSparseProperties {
 #[doc = "**Extendable by**: [`VkPhysicalDeviceShaderObjectFeaturesEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceShaderObjectFeaturesEXT.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let physical_device_features2 = vk::PhysicalDeviceFeatures2 {
     s_type: vk::StructureType::PhysicalDeviceFeatures2,
     p_next: null_mut(),
@@ -6801,7 +9796,9 @@ pub struct PhysicalDeviceFeatures2 {
 #[doc = "**Reference**: [`VkPhysicalDeviceFeatures`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceFeatures.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let physical_device_features = vk::PhysicalDeviceFeatures {
     robust_buffer_access: todo!("vk::Bool32"),
     full_draw_index_uint32: todo!("vk::Bool32"),
@@ -6929,7 +9926,9 @@ pub struct PhysicalDeviceFeatures {
 #[doc = "**Reference**: [`VkPhysicalDeviceVulkan11Features`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceVulkan11Features.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let physical_device_vulkan11_features = vk::PhysicalDeviceVulkan11Features {
     s_type: vk::StructureType::PhysicalDeviceVulkan11Features,
     p_next: null_mut(),
@@ -6975,7 +9974,9 @@ pub struct PhysicalDeviceVulkan11Features {
 #[doc = "**Reference**: [`VkPhysicalDeviceVulkan12Features`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceVulkan12Features.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let physical_device_vulkan12_features = vk::PhysicalDeviceVulkan12Features {
     s_type: vk::StructureType::PhysicalDeviceVulkan12Features,
     p_next: null_mut(),
@@ -7091,7 +10092,9 @@ pub struct PhysicalDeviceVulkan12Features {
 #[doc = "**Reference**: [`VkPhysicalDeviceVulkan13Features`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceVulkan13Features.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let physical_device_vulkan13_features = vk::PhysicalDeviceVulkan13Features {
     s_type: vk::StructureType::PhysicalDeviceVulkan13Features,
     p_next: null_mut(),
@@ -7143,7 +10146,9 @@ pub struct PhysicalDeviceVulkan13Features {
 #[doc = "**Reference**: [`VkPhysicalDeviceMeshShaderFeaturesEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceMeshShaderFeaturesEXT.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let physical_device_mesh_shader_features_ext = vk::PhysicalDeviceMeshShaderFeaturesEXT {
     s_type: vk::StructureType::PhysicalDeviceMeshShaderFeaturesEXT,
     p_next: null_mut(),
@@ -7175,7 +10180,9 @@ pub struct PhysicalDeviceMeshShaderFeaturesEXT {
 #[doc = "**Reference**: [`VkPhysicalDeviceDescriptorBufferFeaturesEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceDescriptorBufferFeaturesEXT.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let physical_device_descriptor_buffer_features_ext = vk::PhysicalDeviceDescriptorBufferFeaturesEXT {
     s_type: vk::StructureType::PhysicalDeviceDescriptorBufferFeaturesEXT,
     p_next: null_mut(),
@@ -7205,7 +10212,9 @@ pub struct PhysicalDeviceDescriptorBufferFeaturesEXT {
 #[doc = "**Reference**: [`VkPhysicalDeviceShaderObjectFeaturesEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceShaderObjectFeaturesEXT.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let physical_device_shader_object_features_ext = vk::PhysicalDeviceShaderObjectFeaturesEXT {
     s_type: vk::StructureType::PhysicalDeviceShaderObjectFeaturesEXT,
     p_next: null_mut(),
@@ -7229,7 +10238,9 @@ pub struct PhysicalDeviceShaderObjectFeaturesEXT {
 #[doc = "**Reference**: [`VkPhysicalDeviceLimits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceLimits.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let physical_device_limits = vk::PhysicalDeviceLimits {
     max_image_dimension_1d: todo!("u32"),
     max_image_dimension_2d: todo!("u32"),
@@ -7459,7 +10470,9 @@ pub struct PhysicalDeviceLimits {
 #[doc = "**Reference**: [`VkPhysicalDeviceSubgroupProperties`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceSubgroupProperties.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let physical_device_subgroup_properties = vk::PhysicalDeviceSubgroupProperties {
     s_type: vk::StructureType::PhysicalDeviceSubgroupProperties,
     p_next: null_mut(),
@@ -7489,7 +10502,9 @@ pub struct PhysicalDeviceSubgroupProperties {
 #[doc = "**Reference**: [`VkPhysicalDeviceMeshShaderPropertiesEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceMeshShaderPropertiesEXT.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let physical_device_mesh_shader_properties_ext = vk::PhysicalDeviceMeshShaderPropertiesEXT {
     s_type: vk::StructureType::PhysicalDeviceMeshShaderPropertiesEXT,
     p_next: null_mut(),
@@ -7567,7 +10582,9 @@ pub struct PhysicalDeviceMeshShaderPropertiesEXT {
 #[doc = "**Reference**: [`VkPhysicalDeviceDescriptorBufferPropertiesEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceDescriptorBufferPropertiesEXT.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let physical_device_descriptor_buffer_properties_ext = vk::PhysicalDeviceDescriptorBufferPropertiesEXT {
     s_type: vk::StructureType::PhysicalDeviceDescriptorBufferPropertiesEXT,
     p_next: null_mut(),
@@ -7655,7 +10672,9 @@ pub struct PhysicalDeviceDescriptorBufferPropertiesEXT {
 #[doc = "**Reference**: [`VkDebugUtilsObjectNameInfoEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDebugUtilsObjectNameInfoEXT.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let debug_utils_object_name_info_ext = vk::DebugUtilsObjectNameInfoEXT {
     s_type: vk::StructureType::DebugUtilsObjectNameInfoEXT,
     p_next: null(),
@@ -7683,7 +10702,9 @@ pub struct DebugUtilsObjectNameInfoEXT {
 #[doc = "**Reference**: [`VkDebugUtilsLabelEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDebugUtilsLabelEXT.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let debug_utils_label_ext = vk::DebugUtilsLabelEXT {
     s_type: vk::StructureType::DebugUtilsLabelEXT,
     p_next: null(),
@@ -7709,7 +10730,9 @@ pub struct DebugUtilsLabelEXT {
 #[doc = "**Reference**: [`VkDebugUtilsMessengerCreateInfoEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDebugUtilsMessengerCreateInfoEXT.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let debug_utils_messenger_create_info_ext = vk::DebugUtilsMessengerCreateInfoEXT {
     s_type: vk::StructureType::DebugUtilsMessengerCreateInfoEXT,
     p_next: null(),
@@ -7741,7 +10764,9 @@ pub struct DebugUtilsMessengerCreateInfoEXT {
 #[doc = "**Reference**: [`VkDebugUtilsMessengerCallbackDataEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDebugUtilsMessengerCallbackDataEXT.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
-#[doc = r#"```
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
 let debug_utils_messenger_callback_data_ext = vk::DebugUtilsMessengerCallbackDataEXT {
     s_type: vk::StructureType::DebugUtilsMessengerCallbackDataEXT,
     p_next: null(),
@@ -8954,3 +11979,57 @@ pub type DestroyDebugUtilsMessengerEXT = unsafe extern "C" fn(
     messenger: DebugUtilsMessengerEXT,       //
     p_allocator: *const AllocationCallbacks, //
 );
+
+//
+// Internal
+//
+
+fn display_flag_bits_u32<FlagBit>(f: &mut std::fmt::Formatter<'_>, flags: u32, flag_bits: &[FlagBit]) -> std::fmt::Result
+where
+    FlagBit: std::fmt::Debug + Into<u32> + Copy,
+{
+    let mut count = 0;
+    let mut remaining = flags;
+    for &flag_bit in flag_bits {
+        if flags & flag_bit.into() > 0 {
+            if count > 0 {
+                write!(f, " | ")?;
+            }
+            write!(f, "{flag_bit:?}")?;
+            remaining &= !flag_bit.into();
+            count += 1;
+        }
+    }
+    if remaining != 0 {
+        if count > 0 {
+            write!(f, " | ")?;
+        }
+        write!(f, "0b{remaining:b}")?;
+    }
+    Ok(())
+}
+
+fn display_flag_bits_u64<FlagBit>(f: &mut std::fmt::Formatter<'_>, flags: u64, flag_bits: &[FlagBit]) -> std::fmt::Result
+where
+    FlagBit: std::fmt::Debug + Into<u64> + Copy,
+{
+    let mut count = 0;
+    let mut remaining = flags;
+    for &flag_bit in flag_bits {
+        if flags & flag_bit.into() > 0 {
+            if count > 0 {
+                write!(f, " | ")?;
+            }
+            write!(f, "{flag_bit:?}")?;
+            remaining &= !flag_bit.into();
+            count += 1;
+        }
+    }
+    if remaining != 0 {
+        if count > 0 {
+            write!(f, " | ")?;
+        }
+        write!(f, "0b{remaining:b}")?;
+    }
+    Ok(())
+}

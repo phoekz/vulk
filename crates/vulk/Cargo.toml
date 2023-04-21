@@ -5,6 +5,5 @@ name = "vulk"
 version = "0.1.0"
 
 [dependencies]
-bitflags.workspace = true
 libloading.workspace = true
 thiserror.workspace = true
