@@ -3389,6 +3389,7 @@ impl std::ops::BitOr<InstanceCreateFlagBits> for InstanceCreateFlags {
 
 impl std::fmt::Display for InstanceCreateFlags {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        #[allow(deprecated)]
         display_flag_bits_u32(f, self.0, &[InstanceCreateFlagBits::Placeholder])
     }
 }
@@ -3485,6 +3486,7 @@ impl std::ops::BitOr<QueueFlagBits> for QueueFlags {
 
 impl std::fmt::Display for QueueFlags {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        #[allow(deprecated)]
         display_flag_bits_u32(
             f,
             self.0,
@@ -3618,6 +3620,7 @@ impl std::ops::BitOr<DeviceQueueCreateFlagBits> for DeviceQueueCreateFlags {
 
 impl std::fmt::Display for DeviceQueueCreateFlags {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        #[allow(deprecated)]
         display_flag_bits_u32(f, self.0, &[DeviceQueueCreateFlagBits::Protected])
     }
 }
@@ -3715,6 +3718,7 @@ impl std::ops::BitOr<CommandPoolCreateFlagBits> for CommandPoolCreateFlags {
 
 impl std::fmt::Display for CommandPoolCreateFlags {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        #[allow(deprecated)]
         display_flag_bits_u32(
             f,
             self.0,
@@ -3824,6 +3828,7 @@ impl std::ops::BitOr<CommandPoolResetFlagBits> for CommandPoolResetFlags {
 
 impl std::fmt::Display for CommandPoolResetFlags {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        #[allow(deprecated)]
         display_flag_bits_u32(f, self.0, &[CommandPoolResetFlagBits::ReleaseResources])
     }
 }
@@ -3921,6 +3926,7 @@ impl std::ops::BitOr<CommandBufferUsageFlagBits> for CommandBufferUsageFlags {
 
 impl std::fmt::Display for CommandBufferUsageFlags {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        #[allow(deprecated)]
         display_flag_bits_u32(
             f,
             self.0,
@@ -4030,6 +4036,7 @@ impl std::ops::BitOr<SubmitFlagBits> for SubmitFlags {
 
 impl std::fmt::Display for SubmitFlags {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        #[allow(deprecated)]
         display_flag_bits_u32(f, self.0, &[SubmitFlagBits::Protected])
     }
 }
@@ -4127,6 +4134,7 @@ impl std::ops::BitOr<PipelineStageFlagBits2> for PipelineStageFlags2 {
 
 impl std::fmt::Display for PipelineStageFlags2 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        #[allow(deprecated)]
         display_flag_bits_u64(
             f,
             self.0,
@@ -4302,6 +4310,7 @@ impl std::ops::BitOr<AccessFlagBits2> for AccessFlags2 {
 
 impl std::fmt::Display for AccessFlags2 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        #[allow(deprecated)]
         display_flag_bits_u64(
             f,
             self.0,
@@ -4486,6 +4495,7 @@ impl std::ops::BitOr<SemaphoreWaitFlagBits> for SemaphoreWaitFlags {
 
 impl std::fmt::Display for SemaphoreWaitFlags {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        #[allow(deprecated)]
         display_flag_bits_u32(f, self.0, &[SemaphoreWaitFlagBits::Any])
     }
 }
@@ -4583,6 +4593,7 @@ impl std::ops::BitOr<DependencyFlagBits> for DependencyFlags {
 
 impl std::fmt::Display for DependencyFlags {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        #[allow(deprecated)]
         display_flag_bits_u32(f, self.0, &[DependencyFlagBits::ByRegion, DependencyFlagBits::DeviceGroup, DependencyFlagBits::ViewLocal])
     }
 }
@@ -4684,6 +4695,7 @@ impl std::ops::BitOr<RenderingFlagBits> for RenderingFlags {
 
 impl std::fmt::Display for RenderingFlags {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        #[allow(deprecated)]
         display_flag_bits_u32(
             f,
             self.0,
@@ -4789,6 +4801,7 @@ impl std::ops::BitOr<ResolveModeFlagBits> for ResolveModeFlags {
 
 impl std::fmt::Display for ResolveModeFlags {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        #[allow(deprecated)]
         display_flag_bits_u32(
             f,
             self.0,
@@ -4904,6 +4917,7 @@ impl std::ops::BitOr<ShaderCreateFlagBitsEXT> for ShaderCreateFlagsEXT {
 
 impl std::fmt::Display for ShaderCreateFlagsEXT {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        #[allow(deprecated)]
         display_flag_bits_u32(
             f,
             self.0,
@@ -5025,6 +5039,7 @@ impl std::ops::BitOr<ShaderStageFlagBits> for ShaderStageFlags {
 
 impl std::fmt::Display for ShaderStageFlags {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        #[allow(deprecated)]
         display_flag_bits_u32(
             f,
             self.0,
@@ -5155,6 +5170,7 @@ impl std::ops::BitOr<MemoryHeapFlagBits> for MemoryHeapFlags {
 
 impl std::fmt::Display for MemoryHeapFlags {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        #[allow(deprecated)]
         display_flag_bits_u32(f, self.0, &[MemoryHeapFlagBits::DeviceLocal, MemoryHeapFlagBits::MultiInstance])
     }
 }
@@ -5254,6 +5270,7 @@ impl std::ops::BitOr<MemoryPropertyFlagBits> for MemoryPropertyFlags {
 
 impl std::fmt::Display for MemoryPropertyFlags {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        #[allow(deprecated)]
         display_flag_bits_u32(
             f,
             self.0,
@@ -5372,6 +5389,7 @@ impl std::ops::BitOr<MemoryAllocateFlagBits> for MemoryAllocateFlags {
 
 impl std::fmt::Display for MemoryAllocateFlags {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        #[allow(deprecated)]
         display_flag_bits_u32(
             f,
             self.0,
@@ -5517,6 +5535,7 @@ impl std::ops::BitOr<BufferUsageFlagBits> for BufferUsageFlags {
 
 impl std::fmt::Display for BufferUsageFlags {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        #[allow(deprecated)]
         display_flag_bits_u32(
             f,
             self.0,
@@ -5656,6 +5675,7 @@ impl std::ops::BitOr<BufferCreateFlagBits> for BufferCreateFlags {
 
 impl std::fmt::Display for BufferCreateFlags {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        #[allow(deprecated)]
         display_flag_bits_u32(
             f,
             self.0,
@@ -5774,6 +5794,7 @@ impl std::ops::BitOr<ImageUsageFlagBits> for ImageUsageFlags {
 
 impl std::fmt::Display for ImageUsageFlags {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        #[allow(deprecated)]
         display_flag_bits_u32(
             f,
             self.0,
@@ -5898,6 +5919,7 @@ impl std::ops::BitOr<ImageCreateFlagBits> for ImageCreateFlags {
 
 impl std::fmt::Display for ImageCreateFlags {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        #[allow(deprecated)]
         display_flag_bits_u32(
             f,
             self.0,
@@ -6037,6 +6059,7 @@ impl std::ops::BitOr<ImageViewCreateFlagBits> for ImageViewCreateFlags {
 
 impl std::fmt::Display for ImageViewCreateFlags {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        #[allow(deprecated)]
         display_flag_bits_u32(f, self.0, &[ImageViewCreateFlagBits::DescriptorBufferCaptureReplayEXT])
     }
 }
@@ -6134,6 +6157,7 @@ impl std::ops::BitOr<ImageAspectFlagBits> for ImageAspectFlags {
 
 impl std::fmt::Display for ImageAspectFlags {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        #[allow(deprecated)]
         display_flag_bits_u32(
             f,
             self.0,
@@ -6258,6 +6282,7 @@ impl std::ops::BitOr<SamplerCreateFlagBits> for SamplerCreateFlags {
 
 impl std::fmt::Display for SamplerCreateFlags {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        #[allow(deprecated)]
         display_flag_bits_u32(f, self.0, &[SamplerCreateFlagBits::DescriptorBufferCaptureReplayEXT])
     }
 }
@@ -6355,6 +6380,7 @@ impl std::ops::BitOr<DescriptorSetLayoutCreateFlagBits> for DescriptorSetLayoutC
 
 impl std::fmt::Display for DescriptorSetLayoutCreateFlags {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        #[allow(deprecated)]
         display_flag_bits_u32(
             f,
             self.0,
@@ -6464,6 +6490,7 @@ impl std::ops::BitOr<PipelineLayoutCreateFlagBits> for PipelineLayoutCreateFlags
 
 impl std::fmt::Display for PipelineLayoutCreateFlags {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        #[allow(deprecated)]
         display_flag_bits_u32(f, self.0, &[PipelineLayoutCreateFlagBits::Placeholder])
     }
 }
@@ -6578,6 +6605,7 @@ impl std::ops::BitOr<QueryControlFlagBits> for QueryControlFlags {
 
 impl std::fmt::Display for QueryControlFlags {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        #[allow(deprecated)]
         display_flag_bits_u32(f, self.0, &[QueryControlFlagBits::Precise])
     }
 }
@@ -6675,6 +6703,7 @@ impl std::ops::BitOr<QueryResultFlagBits> for QueryResultFlags {
 
 impl std::fmt::Display for QueryResultFlags {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        #[allow(deprecated)]
         display_flag_bits_u32(
             f,
             self.0,
@@ -6787,6 +6816,7 @@ impl std::ops::BitOr<QueryPipelineStatisticFlagBits> for QueryPipelineStatisticF
 
 impl std::fmt::Display for QueryPipelineStatisticFlags {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        #[allow(deprecated)]
         display_flag_bits_u32(
             f,
             self.0,
@@ -6926,6 +6956,7 @@ impl std::ops::BitOr<CullModeFlagBits> for CullModeFlags {
 
 impl std::fmt::Display for CullModeFlags {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        #[allow(deprecated)]
         display_flag_bits_u32(f, self.0, &[CullModeFlagBits::None, CullModeFlagBits::Front, CullModeFlagBits::Back, CullModeFlagBits::FrontAndBack])
     }
 }
@@ -7029,6 +7060,7 @@ impl std::ops::BitOr<ColorComponentFlagBits> for ColorComponentFlags {
 
 impl std::fmt::Display for ColorComponentFlags {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        #[allow(deprecated)]
         display_flag_bits_u32(f, self.0, &[ColorComponentFlagBits::R, ColorComponentFlagBits::G, ColorComponentFlagBits::B, ColorComponentFlagBits::A])
     }
 }
@@ -7132,6 +7164,7 @@ impl std::ops::BitOr<SampleCountFlagBits> for SampleCountFlags {
 
 impl std::fmt::Display for SampleCountFlags {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        #[allow(deprecated)]
         display_flag_bits_u32(
             f,
             self.0,
@@ -7253,6 +7286,7 @@ impl std::ops::BitOr<SubgroupFeatureFlagBits> for SubgroupFeatureFlags {
 
 impl std::fmt::Display for SubgroupFeatureFlags {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        #[allow(deprecated)]
         display_flag_bits_u32(
             f,
             self.0,
@@ -7395,6 +7429,7 @@ impl std::ops::BitOr<DebugUtilsMessageSeverityFlagBitsEXT> for DebugUtilsMessage
 
 impl std::fmt::Display for DebugUtilsMessageSeverityFlagsEXT {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        #[allow(deprecated)]
         display_flag_bits_u32(
             f,
             self.0,
@@ -7507,6 +7542,7 @@ impl std::ops::BitOr<DebugUtilsMessageTypeFlagBitsEXT> for DebugUtilsMessageType
 
 impl std::fmt::Display for DebugUtilsMessageTypeFlagsEXT {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        #[allow(deprecated)]
         display_flag_bits_u32(
             f,
             self.0,

@@ -38,6 +38,7 @@ impl std::ops::BitOr<{{rs_flag_bits_ident}}> for {{rs_flags_ident}} {
 
 impl std::fmt::Display for {{rs_flags_ident}} {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        #[allow(deprecated)]
         display_flag_bits_{{rs_type}}(f, self.0, &[
             {{rs_flag_bits_idents}}
         ])
