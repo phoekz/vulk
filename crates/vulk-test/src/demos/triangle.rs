@@ -235,7 +235,7 @@ unsafe fn draw(
     let cmd = commands.begin(gpu)?;
 
     // Begin queries.
-    queries.begin(gpu, cmd);
+    queries.begin(gpu, cmd, vk::PipelineStageFlagBits2::None.into());
 
     // Transition render target.
     device.cmd_pipeline_barrier2(
@@ -252,7 +252,7 @@ unsafe fn draw(
             p_image_memory_barriers: &vk::ImageMemoryBarrier2 {
                 s_type: vk::StructureType::ImageMemoryBarrier2,
                 p_next: null(),
-                src_stage_mask: vk::PipelineStageFlagBits2::TopOfPipe.into(),
+                src_stage_mask: vk::PipelineStageFlagBits2::None.into(),
                 src_access_mask: vk::AccessFlags2::empty(),
                 dst_stage_mask: vk::PipelineStageFlagBits2::ColorAttachmentOutput.into(),
                 dst_access_mask: vk::AccessFlagBits2::ColorAttachmentWrite.into(),
@@ -381,7 +381,7 @@ unsafe fn draw(
     );
 
     // End queries.
-    queries.end(gpu, cmd);
+    queries.end(gpu, cmd, vk::PipelineStageFlagBits2::AllTransfer.into());
 
     // End command buffer.
     commands.end(gpu)?;
@@ -409,7 +409,7 @@ unsafe fn draw(
                 p_next: null(),
                 semaphore: commands.semaphore,
                 value: 1,
-                stage_mask: vk::PipelineStageFlagBits2::BottomOfPipe.into(),
+                stage_mask: vk::PipelineStageFlagBits2::AllCommands.into(),
                 device_index: 0,
             }),
         }),

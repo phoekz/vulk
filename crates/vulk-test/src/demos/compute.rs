@@ -273,7 +273,7 @@ unsafe fn dispatch(
     let cmd = commands.begin(gpu)?;
 
     // Begin queries.
-    queries.begin(gpu, cmd);
+    queries.begin(gpu, cmd, vk::PipelineStageFlagBits2::None.into());
 
     // Bind descriptors.
     descriptors.storage.bind(gpu, cmd);
@@ -322,7 +322,7 @@ unsafe fn dispatch(
     }
 
     // End queries.
-    queries.end(gpu, cmd);
+    queries.end(gpu, cmd, vk::PipelineStageFlagBits2::ComputeShader.into());
 
     // End command buffer.
     commands.end(gpu)?;

@@ -73,26 +73,26 @@ impl GpuResource for Queries {
 }
 
 impl Queries {
-    pub unsafe fn begin(&self, Gpu { device, .. }: &Gpu, cmd: vk::CommandBuffer) {
-        device.cmd_write_timestamp2(
-            cmd,
-            vk::PipelineStageFlagBits2::TopOfPipe.into(),
-            self.timestamp,
-            0,
-        );
+    pub unsafe fn begin(
+        &self,
+        Gpu { device, .. }: &Gpu,
+        cmd: vk::CommandBuffer,
+        stage: vk::PipelineStageFlags2,
+    ) {
+        device.cmd_write_timestamp2(cmd, stage, self.timestamp, 0);
         device.cmd_begin_query(cmd, self.pipeline, 0, vk::QueryControlFlags::empty());
         device.cmd_begin_query(cmd, self.mesh_shader, 0, vk::QueryControlFlags::empty());
     }
 
-    pub unsafe fn end(&self, Gpu { device, .. }: &Gpu, cmd: vk::CommandBuffer) {
+    pub unsafe fn end(
+        &self,
+        Gpu { device, .. }: &Gpu,
+        cmd: vk::CommandBuffer,
+        stage: vk::PipelineStageFlags2,
+    ) {
         device.cmd_end_query(cmd, self.mesh_shader, 0);
         device.cmd_end_query(cmd, self.pipeline, 0);
-        device.cmd_write_timestamp2(
-            cmd,
-            vk::PipelineStageFlagBits2::BottomOfPipe.into(),
-            self.timestamp,
-            1,
-        );
+        device.cmd_write_timestamp2(cmd, stage, self.timestamp, 1);
     }
 
     pub unsafe fn elapsed(&self, Gpu { device, .. }: &Gpu) -> Result<Duration> {

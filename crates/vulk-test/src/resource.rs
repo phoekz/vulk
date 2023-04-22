@@ -623,7 +623,7 @@ pub unsafe fn multi_upload_images(
                 p_next: null(),
                 semaphore: commands.semaphore,
                 value: 1,
-                stage_mask: vk::PipelineStageFlagBits2::BottomOfPipe.into(),
+                stage_mask: vk::PipelineStageFlagBits2::AllCommands.into(),
                 device_index: 0,
             }),
         }),
