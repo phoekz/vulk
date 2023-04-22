@@ -469,12 +469,12 @@ pub unsafe fn multi_upload_images(
     datas: &[Vec<u8>],
 ) -> Result<()> {
     // Validation.
-    assert!(!images.is_empty());
-    assert!(!datas.is_empty());
-    assert_eq!(images.len(), datas.len());
-    assert!(images.iter().all(|img| img.byte_size() > 0));
-    assert!(datas.iter().all(|p| !p.is_empty()));
-    assert!(images
+    ensure!(!images.is_empty());
+    ensure!(!datas.is_empty());
+    ensure!(images.len() == datas.len());
+    ensure!(images.iter().all(|img| img.byte_size() > 0));
+    ensure!(datas.iter().all(|p| !p.is_empty()));
+    ensure!(images
         .iter()
         .zip(datas)
         .all(|(img, p)| img.byte_size() as usize == p.len()));

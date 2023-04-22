@@ -1,19 +1,8 @@
 use super::*;
 
-pub struct PhysicalDevice {
-    pub handle: vk::PhysicalDevice,
-    pub properties: vk::PhysicalDeviceProperties,
-    pub queue_family_properties: Vec<vk::QueueFamilyProperties>,
-    pub memory_properties: vk::PhysicalDeviceMemoryProperties,
-    pub descriptor_buffer_properties_ext: vk::PhysicalDeviceDescriptorBufferPropertiesEXT,
-    pub mesh_shader_properties_ext: vk::PhysicalDeviceMeshShaderPropertiesEXT,
-    pub subgroup_properties: vk::PhysicalDeviceSubgroupProperties,
-}
-
-pub struct QueueFamily {
-    pub index: u32,
-    pub properties: vk::QueueFamilyProperties,
-}
+//
+// Gpu
+//
 
 pub struct Gpu {
     pub init: vulk::Init,
@@ -28,17 +17,17 @@ pub struct Gpu {
 
 impl Gpu {
     pub unsafe fn create() -> Result<Self> {
-        let init = vulk::Init::load()?;
+        let init = vulk::Init::load().context("Initializing Vulk")?;
         let instance = create_instance(&init).context("Creating instance")?;
         let debug = debug::Debug::create(&instance).context("Creating debug")?;
         let physical_device =
             create_physical_device(&instance).context("Creating physical device")?;
         let queue_family = find_queue_family(&physical_device).context("Find queue family")?;
-        let device =
-            create_device(&instance, &physical_device, &queue_family).context("Creating device")?;
-        let queue = create_queue(&device, &queue_family);
-        let timestamp_calibration =
-            get_timestamp_calibration(&instance, &physical_device, &device)?;
+        let device = create_logical_device(&instance, &physical_device, &queue_family)
+            .context("Creating device")?;
+        let queue = get_queue(&device, &queue_family);
+        let timestamp_calibration = get_timestamp_calibration(&instance, &physical_device, &device)
+            .context("Getting timestamp calibration")?;
 
         Ok(Self {
             init,
@@ -59,77 +48,9 @@ impl Gpu {
     }
 }
 
-pub struct TimestampCalibration {
-    // On Posix, host_domain seems to match machine uptime.
-    pub host_domain: u64,
-    pub device_domain: u64,
-    pub max_deviation: u64,
-}
-
-unsafe fn get_timestamp_calibration(
-    instance: &vulk::Instance,
-    physical_device: &PhysicalDevice,
-    device: &vulk::Device,
-) -> Result<TimestampCalibration> {
-    // Check support.
-    let time_domains = vulk::read_to_vec(
-        |count, ptr| {
-            instance.get_physical_device_calibrateable_time_domains_ext(
-                physical_device.handle,
-                count,
-                ptr,
-            )
-        },
-        None,
-    )?;
-    let supports_host_domain = time_domains.iter().any(|td| {
-        matches!(
-            *td,
-            vk::TimeDomainEXT::ClockMonotonicEXT | vk::TimeDomainEXT::QueryPerformanceCounterEXT
-        )
-    });
-    let supports_device_domain = time_domains
-        .iter()
-        .any(|td| matches!(*td, vk::TimeDomainEXT::DeviceEXT));
-    ensure!(supports_host_domain);
-    ensure!(supports_device_domain);
-
-    // Get timestamps.
-    let calibrated_timestamp_info_ext = [
-        vk::CalibratedTimestampInfoEXT {
-            s_type: vk::StructureType::CalibratedTimestampInfoEXT,
-            p_next: null(),
-            time_domain: vk::TimeDomainEXT::ClockMonotonicEXT,
-        },
-        vk::CalibratedTimestampInfoEXT {
-            s_type: vk::StructureType::CalibratedTimestampInfoEXT,
-            p_next: null(),
-            time_domain: vk::TimeDomainEXT::DeviceEXT,
-        },
-    ];
-    let mut timestamps = [0_u64; 2];
-    let mut max_deviation = 0;
-    device.get_calibrated_timestamps_ext(
-        calibrated_timestamp_info_ext.len() as _,
-        calibrated_timestamp_info_ext.as_ptr(),
-        timestamps.as_mut_ptr(),
-        &mut max_deviation,
-    )?;
-    let host_domain = timestamps[0];
-    let device_domain = timestamps[1];
-    info!(
-        "\
-        host_domain={host_domain}, \
-        device_domain={device_domain}, \
-        max_deviation={max_deviation}"
-    );
-
-    Ok(TimestampCalibration {
-        host_domain,
-        device_domain,
-        max_deviation,
-    })
-}
+//
+// Instance
+//
 
 unsafe fn create_instance(init: &vulk::Init) -> Result<vulk::Instance> {
     // Instance-specific debug messenger.
@@ -181,6 +102,20 @@ unsafe fn create_instance(init: &vulk::Init) -> Result<vulk::Instance> {
     Ok(instance)
 }
 
+//
+// Physical device
+//
+
+pub struct PhysicalDevice {
+    pub handle: vk::PhysicalDevice,
+    pub properties: vk::PhysicalDeviceProperties,
+    pub queue_family_properties: Vec<vk::QueueFamilyProperties>,
+    pub memory_properties: vk::PhysicalDeviceMemoryProperties,
+    pub descriptor_buffer_properties_ext: vk::PhysicalDeviceDescriptorBufferPropertiesEXT,
+    pub mesh_shader_properties_ext: vk::PhysicalDeviceMeshShaderPropertiesEXT,
+    pub subgroup_properties: vk::PhysicalDeviceSubgroupProperties,
+}
+
 unsafe fn create_physical_device(instance: &vulk::Instance) -> Result<PhysicalDevice> {
     // Find physical devices.
     let physical_devices = vulk::read_to_vec(
@@ -193,61 +128,63 @@ unsafe fn create_physical_device(instance: &vulk::Instance) -> Result<PhysicalDe
     let physical_device = physical_devices[0];
 
     // Device properties.
-    let mut subgroup_properties: vk::PhysicalDeviceSubgroupProperties = zeroed();
-    subgroup_properties.s_type = vk::StructureType::PhysicalDeviceSubgroupProperties;
-
-    let mut mesh_shader_properties: vk::PhysicalDeviceMeshShaderPropertiesEXT = zeroed();
-    mesh_shader_properties.s_type = vk::StructureType::PhysicalDeviceMeshShaderPropertiesEXT;
-    mesh_shader_properties.p_next = addr_of_mut!(subgroup_properties).cast();
-
-    let mut descriptor_buffer_properties: vk::PhysicalDeviceDescriptorBufferPropertiesEXT =
-        zeroed();
-    descriptor_buffer_properties.s_type =
-        vk::StructureType::PhysicalDeviceDescriptorBufferPropertiesEXT;
-    descriptor_buffer_properties.p_next = addr_of_mut!(mesh_shader_properties).cast();
-
-    let mut properties2 = vk::PhysicalDeviceProperties2 {
+    let mut sg_props: vk::PhysicalDeviceSubgroupProperties = zeroed();
+    sg_props.s_type = vk::StructureType::PhysicalDeviceSubgroupProperties;
+    let mut ms_props: vk::PhysicalDeviceMeshShaderPropertiesEXT = zeroed();
+    ms_props.s_type = vk::StructureType::PhysicalDeviceMeshShaderPropertiesEXT;
+    ms_props.p_next = addr_of_mut!(sg_props).cast();
+    let mut db_props: vk::PhysicalDeviceDescriptorBufferPropertiesEXT = zeroed();
+    db_props.s_type = vk::StructureType::PhysicalDeviceDescriptorBufferPropertiesEXT;
+    db_props.p_next = addr_of_mut!(ms_props).cast();
+    let mut props2 = vk::PhysicalDeviceProperties2 {
         s_type: vk::StructureType::PhysicalDeviceProperties2,
-        p_next: addr_of_mut!(descriptor_buffer_properties).cast(),
+        p_next: addr_of_mut!(db_props).cast(),
         properties: zeroed(),
     };
-    instance.get_physical_device_properties2(physical_device, &mut properties2);
+    instance.get_physical_device_properties2(physical_device, &mut props2);
 
     // Assert that our descriptor type can fit any kind of descriptor.
-    descriptor::assert_descriptor_sizes(&descriptor_buffer_properties);
+    descriptor::validate_descriptor_sizes(&db_props)?;
 
     // Queue family properties.
-    let queue_family_properties = vulk::read_to_vec(
+    let qf_props2 = vulk::read_to_vec(
         |a, b| {
             instance.get_physical_device_queue_family_properties2(physical_device, a, b);
             Ok(())
         },
         Some(vk::StructureType::QueueFamilyProperties2),
     )?;
+    let qf_props = qf_props2
+        .into_iter()
+        .map(|qf_prop| qf_prop.queue_family_properties)
+        .collect();
 
     // Memory properties.
-    let mut physical_device_memory_properties2 = vk::PhysicalDeviceMemoryProperties2 {
+    let mut mem_props2 = vk::PhysicalDeviceMemoryProperties2 {
         s_type: vk::StructureType::PhysicalDeviceMemoryProperties2,
         p_next: null_mut(),
         memory_properties: zeroed(),
     };
-    instance.get_physical_device_memory_properties2(
-        physical_device,
-        &mut physical_device_memory_properties2,
-    );
+    instance.get_physical_device_memory_properties2(physical_device, &mut mem_props2);
 
     Ok(PhysicalDevice {
         handle: physical_device,
-        properties: properties2.properties,
-        queue_family_properties: queue_family_properties
-            .into_iter()
-            .map(|queue_family_property| queue_family_property.queue_family_properties)
-            .collect(),
-        memory_properties: physical_device_memory_properties2.memory_properties,
-        descriptor_buffer_properties_ext: descriptor_buffer_properties,
-        mesh_shader_properties_ext: mesh_shader_properties,
-        subgroup_properties,
+        properties: props2.properties,
+        queue_family_properties: qf_props,
+        memory_properties: mem_props2.memory_properties,
+        descriptor_buffer_properties_ext: db_props,
+        mesh_shader_properties_ext: ms_props,
+        subgroup_properties: sg_props,
     })
+}
+
+//
+// Queue family
+//
+
+pub struct QueueFamily {
+    pub index: u32,
+    pub properties: vk::QueueFamilyProperties,
 }
 
 unsafe fn find_queue_family(physical_device: &PhysicalDevice) -> Result<QueueFamily> {
@@ -272,7 +209,11 @@ unsafe fn find_queue_family(physical_device: &PhysicalDevice) -> Result<QueueFam
         .context("Finding compatible queue families")
 }
 
-unsafe fn create_device(
+//
+// Logical device
+//
+
+unsafe fn create_logical_device(
     instance: &vulk::Instance,
     physical_device: &PhysicalDevice,
     queue_family: &QueueFamily,
@@ -487,7 +428,11 @@ unsafe fn create_device(
     Ok(device)
 }
 
-unsafe fn create_queue(device: &vulk::Device, queue_family: &QueueFamily) -> vk::Queue {
+//
+// Queue
+//
+
+unsafe fn get_queue(device: &vulk::Device, queue_family: &QueueFamily) -> vk::Queue {
     device.get_device_queue2(
         &(vk::DeviceQueueInfo2 {
             s_type: vk::StructureType::DeviceQueueInfo2,
@@ -497,4 +442,83 @@ unsafe fn create_queue(device: &vulk::Device, queue_family: &QueueFamily) -> vk:
             queue_index: 0,
         }),
     )
+}
+
+//
+// Timestamp calibration
+//
+
+pub struct TimestampCalibration {
+    // On Posix, host_domain seems to match machine uptime.
+    pub host_domain: u64,
+    pub device_domain: u64,
+    pub max_deviation: u64,
+}
+
+unsafe fn get_timestamp_calibration(
+    instance: &vulk::Instance,
+    physical_device: &PhysicalDevice,
+    device: &vulk::Device,
+) -> Result<TimestampCalibration> {
+    // Check support.
+    {
+        let time_domains = vulk::read_to_vec(
+            |count, ptr| {
+                instance.get_physical_device_calibrateable_time_domains_ext(
+                    physical_device.handle,
+                    count,
+                    ptr,
+                )
+            },
+            None,
+        )?;
+        let supports_host_domain = time_domains.iter().any(|td| {
+            matches!(
+                *td,
+                vk::TimeDomainEXT::ClockMonotonicEXT
+                    | vk::TimeDomainEXT::QueryPerformanceCounterEXT
+            )
+        });
+        let supports_device_domain = time_domains
+            .iter()
+            .any(|td| matches!(*td, vk::TimeDomainEXT::DeviceEXT));
+        ensure!(supports_host_domain);
+        ensure!(supports_device_domain);
+    }
+
+    // Get timestamps.
+    let calibrated_timestamp_info_ext = [
+        vk::CalibratedTimestampInfoEXT {
+            s_type: vk::StructureType::CalibratedTimestampInfoEXT,
+            p_next: null(),
+            time_domain: vk::TimeDomainEXT::ClockMonotonicEXT,
+        },
+        vk::CalibratedTimestampInfoEXT {
+            s_type: vk::StructureType::CalibratedTimestampInfoEXT,
+            p_next: null(),
+            time_domain: vk::TimeDomainEXT::DeviceEXT,
+        },
+    ];
+    let mut timestamps = [0_u64; 2];
+    let mut max_deviation = 0;
+    device.get_calibrated_timestamps_ext(
+        calibrated_timestamp_info_ext.len() as _,
+        calibrated_timestamp_info_ext.as_ptr(),
+        timestamps.as_mut_ptr(),
+        &mut max_deviation,
+    )?;
+    let host_domain = timestamps[0];
+    let device_domain = timestamps[1];
+    debug!(
+        "Timestamp calibration: \
+        host_domain={host_domain}, \
+        device_domain={device_domain}, \
+        max_deviation={max_deviation}"
+    );
+
+    Ok(TimestampCalibration {
+        host_domain,
+        device_domain,
+        max_deviation,
+    })
 }

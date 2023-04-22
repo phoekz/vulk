@@ -272,29 +272,32 @@ impl DescriptorStorage {
 // Utilities
 //
 
-pub fn assert_descriptor_sizes(properties: &vk::PhysicalDeviceDescriptorBufferPropertiesEXT) {
-    assert!(MAX_DESCRIPTOR_SIZE >= properties.buffer_capture_replay_descriptor_data_size);
-    assert!(MAX_DESCRIPTOR_SIZE >= properties.image_capture_replay_descriptor_data_size);
-    assert!(MAX_DESCRIPTOR_SIZE >= properties.image_view_capture_replay_descriptor_data_size);
-    assert!(MAX_DESCRIPTOR_SIZE >= properties.sampler_capture_replay_descriptor_data_size);
-    assert!(
+pub fn validate_descriptor_sizes(
+    properties: &vk::PhysicalDeviceDescriptorBufferPropertiesEXT,
+) -> Result<()> {
+    ensure!(MAX_DESCRIPTOR_SIZE >= properties.buffer_capture_replay_descriptor_data_size);
+    ensure!(MAX_DESCRIPTOR_SIZE >= properties.image_capture_replay_descriptor_data_size);
+    ensure!(MAX_DESCRIPTOR_SIZE >= properties.image_view_capture_replay_descriptor_data_size);
+    ensure!(MAX_DESCRIPTOR_SIZE >= properties.sampler_capture_replay_descriptor_data_size);
+    ensure!(
         MAX_DESCRIPTOR_SIZE
             >= properties.acceleration_structure_capture_replay_descriptor_data_size
     );
-    assert!(MAX_DESCRIPTOR_SIZE >= properties.sampler_descriptor_size);
-    assert!(MAX_DESCRIPTOR_SIZE >= properties.combined_image_sampler_descriptor_size);
-    assert!(MAX_DESCRIPTOR_SIZE >= properties.sampled_image_descriptor_size);
-    assert!(MAX_DESCRIPTOR_SIZE >= properties.storage_image_descriptor_size);
-    assert!(MAX_DESCRIPTOR_SIZE >= properties.uniform_texel_buffer_descriptor_size);
-    assert!(MAX_DESCRIPTOR_SIZE >= properties.robust_uniform_texel_buffer_descriptor_size);
-    assert!(MAX_DESCRIPTOR_SIZE >= properties.storage_texel_buffer_descriptor_size);
-    assert!(MAX_DESCRIPTOR_SIZE >= properties.robust_storage_texel_buffer_descriptor_size);
-    assert!(MAX_DESCRIPTOR_SIZE >= properties.uniform_buffer_descriptor_size);
-    assert!(MAX_DESCRIPTOR_SIZE >= properties.robust_uniform_buffer_descriptor_size);
-    assert!(MAX_DESCRIPTOR_SIZE >= properties.storage_buffer_descriptor_size);
-    assert!(MAX_DESCRIPTOR_SIZE >= properties.robust_storage_buffer_descriptor_size);
-    assert!(MAX_DESCRIPTOR_SIZE >= properties.input_attachment_descriptor_size);
-    assert!(MAX_DESCRIPTOR_SIZE >= properties.acceleration_structure_descriptor_size);
+    ensure!(MAX_DESCRIPTOR_SIZE >= properties.sampler_descriptor_size);
+    ensure!(MAX_DESCRIPTOR_SIZE >= properties.combined_image_sampler_descriptor_size);
+    ensure!(MAX_DESCRIPTOR_SIZE >= properties.sampled_image_descriptor_size);
+    ensure!(MAX_DESCRIPTOR_SIZE >= properties.storage_image_descriptor_size);
+    ensure!(MAX_DESCRIPTOR_SIZE >= properties.uniform_texel_buffer_descriptor_size);
+    ensure!(MAX_DESCRIPTOR_SIZE >= properties.robust_uniform_texel_buffer_descriptor_size);
+    ensure!(MAX_DESCRIPTOR_SIZE >= properties.storage_texel_buffer_descriptor_size);
+    ensure!(MAX_DESCRIPTOR_SIZE >= properties.robust_storage_texel_buffer_descriptor_size);
+    ensure!(MAX_DESCRIPTOR_SIZE >= properties.uniform_buffer_descriptor_size);
+    ensure!(MAX_DESCRIPTOR_SIZE >= properties.robust_uniform_buffer_descriptor_size);
+    ensure!(MAX_DESCRIPTOR_SIZE >= properties.storage_buffer_descriptor_size);
+    ensure!(MAX_DESCRIPTOR_SIZE >= properties.robust_storage_buffer_descriptor_size);
+    ensure!(MAX_DESCRIPTOR_SIZE >= properties.input_attachment_descriptor_size);
+    ensure!(MAX_DESCRIPTOR_SIZE >= properties.acceleration_structure_descriptor_size);
+    Ok(())
 }
 
 fn descriptor_size(
