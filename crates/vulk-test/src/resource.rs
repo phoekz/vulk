@@ -124,19 +124,26 @@ impl<T> GpuResource for Buffer<T> {
         );
 
         // Memory map.
-        let ptr = device
-            .map_memory2_khr(
-                &(vk::MemoryMapInfoKHR {
-                    s_type: vk::StructureType::MemoryMapInfoKHR,
-                    p_next: null(),
-                    flags: vk::MemoryMapFlags::empty(),
-                    memory: device_memory,
-                    offset: 0,
-                    size: size as _,
-                }),
-            )
-            .context("Mapping device memory")?
-            .cast();
+        let ptr = if create_info
+            .property_flags
+            .contains(vk::MemoryPropertyFlagBits::HostVisible.into())
+        {
+            device
+                .map_memory2_khr(
+                    &(vk::MemoryMapInfoKHR {
+                        s_type: vk::StructureType::MemoryMapInfoKHR,
+                        p_next: null(),
+                        flags: vk::MemoryMapFlags::empty(),
+                        memory: device_memory,
+                        offset: 0,
+                        size: size as _,
+                    }),
+                )
+                .context("Mapping device memory")?
+                .cast()
+        } else {
+            null_mut()
+        };
 
         // Descriptor.
         let descriptor = descriptor::Descriptor::create_storage_buffer(gpu, device_address, size);
