@@ -8,12 +8,14 @@ pub mod clear;
 pub mod compute;
 pub mod cube;
 pub mod gui;
+pub mod raytracing;
 pub mod triangle;
 
 pub use clear::Demo as ClearDemo;
 pub use compute::Demo as ComputeDemo;
 pub use cube::Demo as CubeDemo;
 pub use gui::Demo as GuiDemo;
+pub use raytracing::Demo as RaytracingDemo;
 pub use triangle::Demo as TriangleDemo;
 
 pub const DEFAULT_RENDER_TARGET_WIDTH: u32 = 256;

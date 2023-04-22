@@ -114,6 +114,8 @@ pub struct PhysicalDevice {
     pub descriptor_buffer_properties_ext: vk::PhysicalDeviceDescriptorBufferPropertiesEXT,
     pub mesh_shader_properties_ext: vk::PhysicalDeviceMeshShaderPropertiesEXT,
     pub subgroup_properties: vk::PhysicalDeviceSubgroupProperties,
+    pub acceleration_structure_properties: vk::PhysicalDeviceAccelerationStructurePropertiesKHR,
+    pub raytracing_pipeline_properties: vk::PhysicalDeviceRayTracingPipelinePropertiesKHR,
 }
 
 unsafe fn create_physical_device(instance: &vulk::Instance) -> Result<PhysicalDevice> {
@@ -128,8 +130,14 @@ unsafe fn create_physical_device(instance: &vulk::Instance) -> Result<PhysicalDe
     let physical_device = physical_devices[0];
 
     // Device properties.
+    let mut as_props: vk::PhysicalDeviceAccelerationStructurePropertiesKHR = zeroed();
+    as_props.s_type = vk::StructureType::PhysicalDeviceAccelerationStructurePropertiesKHR;
+    let mut rtp_props: vk::PhysicalDeviceRayTracingPipelinePropertiesKHR = zeroed();
+    rtp_props.s_type = vk::StructureType::PhysicalDeviceRayTracingPipelinePropertiesKHR;
+    rtp_props.p_next = addr_of_mut!(as_props).cast();
     let mut sg_props: vk::PhysicalDeviceSubgroupProperties = zeroed();
     sg_props.s_type = vk::StructureType::PhysicalDeviceSubgroupProperties;
+    sg_props.p_next = addr_of_mut!(rtp_props).cast();
     let mut ms_props: vk::PhysicalDeviceMeshShaderPropertiesEXT = zeroed();
     ms_props.s_type = vk::StructureType::PhysicalDeviceMeshShaderPropertiesEXT;
     ms_props.p_next = addr_of_mut!(sg_props).cast();
@@ -147,34 +155,41 @@ unsafe fn create_physical_device(instance: &vulk::Instance) -> Result<PhysicalDe
     descriptor::validate_descriptor_sizes(&db_props)?;
 
     // Queue family properties.
-    let qf_props2 = vulk::read_to_vec(
-        |a, b| {
-            instance.get_physical_device_queue_family_properties2(physical_device, a, b);
-            Ok(())
-        },
-        Some(vk::StructureType::QueueFamilyProperties2),
-    )?;
-    let qf_props = qf_props2
-        .into_iter()
-        .map(|qf_prop| qf_prop.queue_family_properties)
-        .collect();
+    let qf_props = {
+        let qf_props2 = vulk::read_to_vec(
+            |a, b| {
+                instance.get_physical_device_queue_family_properties2(physical_device, a, b);
+                Ok(())
+            },
+            Some(vk::StructureType::QueueFamilyProperties2),
+        )?;
+        qf_props2
+            .into_iter()
+            .map(|qf_prop| qf_prop.queue_family_properties)
+            .collect()
+    };
 
     // Memory properties.
-    let mut mem_props2 = vk::PhysicalDeviceMemoryProperties2 {
-        s_type: vk::StructureType::PhysicalDeviceMemoryProperties2,
-        p_next: null_mut(),
-        memory_properties: zeroed(),
+    let mem_props = {
+        let mut mem_props2 = vk::PhysicalDeviceMemoryProperties2 {
+            s_type: vk::StructureType::PhysicalDeviceMemoryProperties2,
+            p_next: null_mut(),
+            memory_properties: zeroed(),
+        };
+        instance.get_physical_device_memory_properties2(physical_device, &mut mem_props2);
+        mem_props2.memory_properties
     };
-    instance.get_physical_device_memory_properties2(physical_device, &mut mem_props2);
 
     Ok(PhysicalDevice {
         handle: physical_device,
         properties: props2.properties,
         queue_family_properties: qf_props,
-        memory_properties: mem_props2.memory_properties,
+        memory_properties: mem_props,
         descriptor_buffer_properties_ext: db_props,
         mesh_shader_properties_ext: ms_props,
         subgroup_properties: sg_props,
+        acceleration_structure_properties: as_props,
+        raytracing_pipeline_properties: rtp_props,
     })
 }
 
@@ -219,9 +234,41 @@ unsafe fn create_logical_device(
     queue_family: &QueueFamily,
 ) -> Result<vulk::Device> {
     // Features.
+    let mut physical_device_ray_tracing_maintenance1_features_khr =
+        vk::PhysicalDeviceRayTracingMaintenance1FeaturesKHR {
+            s_type: vk::StructureType::PhysicalDeviceRayTracingMaintenance1FeaturesKHR,
+            p_next: null_mut(),
+            ray_tracing_maintenance1: vk::TRUE,
+            ray_tracing_pipeline_trace_rays_indirect2: vk::TRUE,
+        };
+    let mut physical_device_acceleration_structure_features_khr =
+        vk::PhysicalDeviceAccelerationStructureFeaturesKHR {
+            s_type: vk::StructureType::PhysicalDeviceAccelerationStructureFeaturesKHR,
+            p_next: addr_of_mut!(physical_device_ray_tracing_maintenance1_features_khr).cast(),
+            acceleration_structure: vk::TRUE,
+            acceleration_structure_capture_replay: vk::FALSE,
+            acceleration_structure_indirect_build: vk::FALSE,
+            acceleration_structure_host_commands: vk::FALSE,
+            descriptor_binding_acceleration_structure_update_after_bind: vk::FALSE,
+        };
+    let mut physical_device_ray_tracing_pipeline_features_khr =
+        vk::PhysicalDeviceRayTracingPipelineFeaturesKHR {
+            s_type: vk::StructureType::PhysicalDeviceRayTracingPipelineFeaturesKHR,
+            p_next: addr_of_mut!(physical_device_acceleration_structure_features_khr).cast(),
+            ray_tracing_pipeline: vk::TRUE,
+            ray_tracing_pipeline_shader_group_handle_capture_replay: vk::FALSE,
+            ray_tracing_pipeline_shader_group_handle_capture_replay_mixed: vk::FALSE,
+            ray_tracing_pipeline_trace_rays_indirect: vk::TRUE,
+            ray_traversal_primitive_culling: vk::TRUE,
+        };
+    let mut physical_device_ray_query_features_khr = vk::PhysicalDeviceRayQueryFeaturesKHR {
+        s_type: vk::StructureType::PhysicalDeviceRayQueryFeaturesKHR,
+        p_next: addr_of_mut!(physical_device_ray_tracing_pipeline_features_khr).cast(),
+        ray_query: vk::TRUE,
+    };
     let mut physical_device_mesh_shader_features_ext = vk::PhysicalDeviceMeshShaderFeaturesEXT {
         s_type: vk::StructureType::PhysicalDeviceMeshShaderFeaturesEXT,
-        p_next: null_mut(),
+        p_next: addr_of_mut!(physical_device_ray_query_features_khr).cast(),
         task_shader: vk::TRUE,
         mesh_shader: vk::TRUE,
         multiview_mesh_shader: vk::FALSE,
@@ -274,7 +321,7 @@ unsafe fn create_logical_device(
         shader_shared_int64_atomics: vk::FALSE,
         shader_float16: vk::FALSE,
         shader_int8: vk::FALSE,
-        descriptor_indexing: vk::FALSE,
+        descriptor_indexing: vk::TRUE,
         shader_input_attachment_array_dynamic_indexing: vk::FALSE,
         shader_uniform_texel_buffer_array_dynamic_indexing: vk::FALSE,
         shader_storage_texel_buffer_array_dynamic_indexing: vk::FALSE,
@@ -394,6 +441,12 @@ unsafe fn create_logical_device(
     // Extensions.
     let enabled_extension_names = [
         b"VK_KHR_map_memory2\0".as_ptr().cast(),
+        b"VK_KHR_acceleration_structure\0".as_ptr().cast(),
+        b"VK_KHR_ray_tracing_pipeline\0".as_ptr().cast(),
+        b"VK_KHR_ray_query\0".as_ptr().cast(),
+        b"VK_KHR_pipeline_library\0".as_ptr().cast(),
+        b"VK_KHR_deferred_host_operations\0".as_ptr().cast(),
+        b"VK_KHR_ray_tracing_maintenance1\0".as_ptr().cast(),
         b"VK_EXT_descriptor_buffer\0".as_ptr().cast(),
         b"VK_EXT_shader_object\0".as_ptr().cast(),
         b"VK_EXT_calibrated_timestamps\0".as_ptr().cast(),

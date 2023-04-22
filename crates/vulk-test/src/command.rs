@@ -95,4 +95,55 @@ impl Commands {
         device.end_command_buffer(self.command_buffer)?;
         Ok(())
     }
+
+    pub unsafe fn submit_and_wait(
+        &self,
+        Gpu { device, queue, .. }: &Gpu,
+        signal_stage_mask: vk::PipelineStageFlags2,
+    ) -> Result<()> {
+        device.queue_submit2(
+            *queue,
+            1,
+            &(vk::SubmitInfo2 {
+                s_type: vk::StructureType::SubmitInfo2,
+                p_next: null(),
+                flags: vk::SubmitFlags::empty(),
+                wait_semaphore_info_count: 0,
+                p_wait_semaphore_infos: null(),
+                command_buffer_info_count: 1,
+                p_command_buffer_infos: &(vk::CommandBufferSubmitInfo {
+                    s_type: vk::StructureType::CommandBufferSubmitInfo,
+                    p_next: null(),
+                    command_buffer: self.command_buffer,
+                    device_mask: 0,
+                }),
+                signal_semaphore_info_count: 1,
+                p_signal_semaphore_infos: &(vk::SemaphoreSubmitInfo {
+                    s_type: vk::StructureType::SemaphoreSubmitInfo,
+                    p_next: null(),
+                    semaphore: self.semaphore,
+                    value: 1,
+                    stage_mask: signal_stage_mask,
+                    device_index: 0,
+                }),
+            }),
+            vk::Fence::null(),
+        )?;
+
+        let semaphores = [self.semaphore];
+        let values = [1];
+        device.wait_semaphores(
+            &(vk::SemaphoreWaitInfo {
+                s_type: vk::StructureType::SemaphoreWaitInfo,
+                p_next: null(),
+                flags: vk::SemaphoreWaitFlagBits::Any.into(),
+                semaphore_count: semaphores.len() as _,
+                p_semaphores: semaphores.as_ptr(),
+                p_values: values.as_ptr(),
+            }),
+            u64::MAX,
+        )?;
+
+        Ok(())
+    }
 }

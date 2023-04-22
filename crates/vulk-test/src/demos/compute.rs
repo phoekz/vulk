@@ -68,18 +68,10 @@ impl DemoCallbacks for Demo {
 // Indirect buffer
 //
 
-#[repr(C)]
-#[derive(Debug, serde::Serialize)]
-struct IndirectDispatch {
-    x: u32,
-    y: u32,
-    z: u32,
-}
-
 struct IndirectBufferCreateInfo {}
 
 struct IndirectBuffer {
-    buffer: resource::Buffer<IndirectDispatch>,
+    buffer: resource::Buffer<vk::DispatchIndirectCommand>,
 }
 
 impl GpuResource for IndirectBuffer {
@@ -561,13 +553,21 @@ unsafe fn dispatch(
 
     // Write output.
     {
+        #[repr(C)]
+        #[derive(Debug, serde::Serialize)]
+        struct DispatchIndirectCommand {
+            x: u32,
+            y: u32,
+            z: u32,
+        }
+
         #[derive(serde::Serialize)]
         struct Output<'a> {
-            indirect: &'a [IndirectDispatch],
+            indirect: &'a [DispatchIndirectCommand],
         }
         #[allow(clippy::cast_ptr_alignment)]
         let indirect = std::slice::from_raw_parts(
-            indirect_buffer.buffer.ptr,
+            indirect_buffer.buffer.ptr.cast::<DispatchIndirectCommand>(),
             indirect_buffer.buffer.element_count,
         );
 

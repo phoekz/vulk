@@ -120,6 +120,19 @@ impl Descriptor {
         )
     }
 
+    pub unsafe fn create_acceleration_structure(
+        gpu: &Gpu,
+        acceleration_structure: vk::DeviceAddress,
+    ) -> Self {
+        Self::create(
+            gpu,
+            vk::DescriptorType::AccelerationStructureKHR,
+            &vk::DescriptorDataEXT {
+                acceleration_structure,
+            },
+        )
+    }
+
     pub fn as_ptr(&self) -> *const u8 {
         self.data.as_ptr()
     }
@@ -328,6 +341,9 @@ fn descriptor_size(
         vk::DescriptorType::SampledImage => properties.sampled_image_descriptor_size,
         vk::DescriptorType::StorageImage => properties.storage_image_descriptor_size,
         vk::DescriptorType::StorageBuffer => properties.storage_buffer_descriptor_size,
+        vk::DescriptorType::AccelerationStructureKHR => {
+            properties.acceleration_structure_descriptor_size
+        }
         _ => {
             panic!("Unsupported descriptor type={ty:?}");
         }

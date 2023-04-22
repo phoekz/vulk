@@ -77,6 +77,8 @@
         "vkCmdSetViewportWithCount",
 
         "vkCmdDrawMeshTasksEXT",
+        "vkCmdDrawMeshTasksIndirectEXT",
+        "vkCmdDrawMeshTasksIndirectCountEXT",
 
         "vkCmdPushConstants",
         "vkCmdSetRasterizationSamplesEXT",
@@ -90,6 +92,21 @@
         "vkCmdSetColorWriteMaskEXT",
 
         "vkGetDescriptorSetLayoutBindingOffsetEXT",
+
+        "vkCreateShaderModule",
+        "vkDestroyShaderModule",
+
+        "vkGetAccelerationStructureBuildSizesKHR",
+        "vkCreateAccelerationStructureKHR",
+        "vkDestroyAccelerationStructureKHR",
+        "vkCmdBuildAccelerationStructuresKHR",
+        "vkGetAccelerationStructureDeviceAddressKHR",
+        "vkCreateRayTracingPipelinesKHR",
+        "vkDestroyPipeline",
+        "vkGetRayTracingShaderGroupHandlesKHR",
+        "vkCmdBindPipeline",
+        "vkCmdTraceRaysKHR",
+        "vkCmdTraceRaysIndirect2KHR",
     ],
     structures: [
         "VkMemoryAllocateFlagsInfo",
@@ -105,6 +122,17 @@
         "VkPhysicalDeviceVulkan13Features",
         "VkSemaphoreTypeCreateInfo",
         "VkValidationFeaturesEXT",
+        "VkPhysicalDeviceAccelerationStructureFeaturesKHR",
+        "VkPhysicalDeviceRayTracingPipelineFeaturesKHR",
+        "VkPhysicalDeviceRayQueryFeaturesKHR",
+        "VkPhysicalDeviceAccelerationStructurePropertiesKHR",
+        "VkPhysicalDeviceRayTracingPipelinePropertiesKHR",
+        "VkPhysicalDeviceRayTracingMaintenance1FeaturesKHR",
+        "VkTransformMatrixKHR",
+        "VkAccelerationStructureInstanceKHR",
+        "VkTraceRaysIndirectCommand2KHR",
+        "VkDrawMeshTasksIndirectCommandEXT",
+        "VkDispatchIndirectCommand",
     ],
     extensions: [
         "VK_EXT_calibrated_timestamps",
@@ -114,5 +142,12 @@
         "VK_EXT_shader_object",
         "VK_EXT_validation_features",
         "VK_KHR_map_memory2",
+        "VK_KHR_synchronization2",
+        "VK_KHR_acceleration_structure",
+        "VK_KHR_ray_tracing_pipeline",
+        "VK_KHR_ray_query",
+        "VK_KHR_pipeline_library",
+        "VK_KHR_deferred_host_operations",
+        "VK_KHR_ray_tracing_maintenance1",
     ],
 )

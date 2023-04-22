@@ -626,6 +626,96 @@ impl std::fmt::Debug for ShaderEXT {
 
 #[repr(transparent)]
 #[derive(Clone, Copy)]
+#[doc = "**Chapter**: Shaders"]
+#[doc = "<br>"]
+#[doc = "**Description**: Opaque handle to a shader module object"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkShaderModule`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkShaderModule.html)"]
+pub struct ShaderModule(u64);
+
+impl ShaderModule {
+    #[must_use]
+    pub const fn null() -> Self {
+        Self(0)
+    }
+}
+
+impl std::fmt::Display for ShaderModule {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "0x{:016x}", self.0)
+    }
+}
+
+impl std::fmt::Debug for ShaderModule {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("ShaderModule").field(&format_args!("{self}")).finish()
+    }
+}
+
+#[repr(transparent)]
+#[derive(Clone, Copy)]
+#[doc = "**Chapter**: Pipelines"]
+#[doc = "<br>"]
+#[doc = "**Description**: Opaque handle to a pipeline object"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkPipeline`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPipeline.html)"]
+pub struct Pipeline(u64);
+
+impl Pipeline {
+    #[must_use]
+    pub const fn null() -> Self {
+        Self(0)
+    }
+}
+
+impl std::fmt::Display for Pipeline {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "0x{:016x}", self.0)
+    }
+}
+
+impl std::fmt::Debug for Pipeline {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("Pipeline").field(&format_args!("{self}")).finish()
+    }
+}
+
+#[repr(transparent)]
+#[derive(Clone, Copy)]
+#[doc = "**Chapter**: Pipelines"]
+#[doc = "<br>"]
+#[doc = "**Description**: Opaque handle to a pipeline cache object"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkPipelineCache`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPipelineCache.html)"]
+pub struct PipelineCache(u64);
+
+impl PipelineCache {
+    #[must_use]
+    pub const fn null() -> Self {
+        Self(0)
+    }
+}
+
+impl std::fmt::Display for PipelineCache {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "0x{:016x}", self.0)
+    }
+}
+
+impl std::fmt::Debug for PipelineCache {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("PipelineCache").field(&format_args!("{self}")).finish()
+    }
+}
+
+#[repr(transparent)]
+#[derive(Clone, Copy)]
 #[doc = "**Chapter**: Memory Allocation"]
 #[doc = "<br>"]
 #[doc = "**Description**: Opaque handle to a device memory object"]
@@ -741,6 +831,36 @@ impl std::fmt::Display for ImageView {
 impl std::fmt::Debug for ImageView {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_tuple("ImageView").field(&format_args!("{self}")).finish()
+    }
+}
+
+#[repr(transparent)]
+#[derive(Clone, Copy)]
+#[doc = "**Chapter**: Resource Creation"]
+#[doc = "<br>"]
+#[doc = "**Description**: Opaque handle to an acceleration structure object"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_acceleration_structure`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_acceleration_structure.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkAccelerationStructureKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkAccelerationStructureKHR.html)"]
+pub struct AccelerationStructureKHR(u64);
+
+impl AccelerationStructureKHR {
+    #[must_use]
+    pub const fn null() -> Self {
+        Self(0)
+    }
+}
+
+impl std::fmt::Display for AccelerationStructureKHR {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "0x{:016x}", self.0)
+    }
+}
+
+impl std::fmt::Debug for AccelerationStructureKHR {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("AccelerationStructureKHR").field(&format_args!("{self}")).finish()
     }
 }
 
@@ -866,6 +986,36 @@ impl std::fmt::Debug for QueryPool {
 
 #[repr(transparent)]
 #[derive(Clone, Copy)]
+#[doc = "**Chapter**: Deferred Host Operations"]
+#[doc = "<br>"]
+#[doc = "**Description**: A deferred operation"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_deferred_host_operations`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_deferred_host_operations.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkDeferredOperationKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDeferredOperationKHR.html)"]
+pub struct DeferredOperationKHR(u64);
+
+impl DeferredOperationKHR {
+    #[must_use]
+    pub const fn null() -> Self {
+        Self(0)
+    }
+}
+
+impl std::fmt::Display for DeferredOperationKHR {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "0x{:016x}", self.0)
+    }
+}
+
+impl std::fmt::Debug for DeferredOperationKHR {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("DeferredOperationKHR").field(&format_args!("{self}")).finish()
+    }
+}
+
+#[repr(transparent)]
+#[derive(Clone, Copy)]
 #[doc = "**Chapter**: Debugging"]
 #[doc = "<br>"]
 #[doc = "**Description**: Opaque handle to a debug messenger object"]
@@ -956,6 +1106,14 @@ pub enum Result {
     ErrorInvalidOpaqueCaptureAddress = -1000257000,
     #[doc = "**Translated from**: `VK_PIPELINE_COMPILE_REQUIRED`"]
     PipelineCompileRequired = 1000297000,
+    #[doc = "**Translated from**: `VK_THREAD_IDLE_KHR`"]
+    ThreadIdleKHR = 1000268000,
+    #[doc = "**Translated from**: `VK_THREAD_DONE_KHR`"]
+    ThreadDoneKHR = 1000268001,
+    #[doc = "**Translated from**: `VK_OPERATION_DEFERRED_KHR`"]
+    OperationDeferredKHR = 1000268002,
+    #[doc = "**Translated from**: `VK_OPERATION_NOT_DEFERRED_KHR`"]
+    OperationNotDeferredKHR = 1000268003,
     #[doc = "**Translated from**: `VK_ERROR_INCOMPATIBLE_SHADER_BINARY_EXT`"]
     ErrorIncompatibleShaderBinaryEXT = 1000482000,
 }
@@ -1418,6 +1576,48 @@ pub enum StructureType {
     DebugUtilsMessengerCallbackDataEXT = 1000128003,
     #[doc = "**Translated from**: `VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT`"]
     DebugUtilsMessengerCreateInfoEXT = 1000128004,
+    #[doc = "**Translated from**: `VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET_ACCELERATION_STRUCTURE_KHR`"]
+    WriteDescriptorSetAccelerationStructureKHR = 1000150007,
+    #[doc = "**Translated from**: `VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_GEOMETRY_INFO_KHR`"]
+    AccelerationStructureBuildGeometryInfoKHR = 1000150000,
+    #[doc = "**Translated from**: `VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_DEVICE_ADDRESS_INFO_KHR`"]
+    AccelerationStructureDeviceAddressInfoKHR = 1000150002,
+    #[doc = "**Translated from**: `VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_AABBS_DATA_KHR`"]
+    AccelerationStructureGeometryAabbsDataKHR = 1000150003,
+    #[doc = "**Translated from**: `VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_INSTANCES_DATA_KHR`"]
+    AccelerationStructureGeometryInstancesDataKHR = 1000150004,
+    #[doc = "**Translated from**: `VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_TRIANGLES_DATA_KHR`"]
+    AccelerationStructureGeometryTrianglesDataKHR = 1000150005,
+    #[doc = "**Translated from**: `VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_GEOMETRY_KHR`"]
+    AccelerationStructureGeometryKHR = 1000150006,
+    #[doc = "**Translated from**: `VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_VERSION_INFO_KHR`"]
+    AccelerationStructureVersionInfoKHR = 1000150009,
+    #[doc = "**Translated from**: `VK_STRUCTURE_TYPE_COPY_ACCELERATION_STRUCTURE_INFO_KHR`"]
+    CopyAccelerationStructureInfoKHR = 1000150010,
+    #[doc = "**Translated from**: `VK_STRUCTURE_TYPE_COPY_ACCELERATION_STRUCTURE_TO_MEMORY_INFO_KHR`"]
+    CopyAccelerationStructureToMemoryInfoKHR = 1000150011,
+    #[doc = "**Translated from**: `VK_STRUCTURE_TYPE_COPY_MEMORY_TO_ACCELERATION_STRUCTURE_INFO_KHR`"]
+    CopyMemoryToAccelerationStructureInfoKHR = 1000150012,
+    #[doc = "**Translated from**: `VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR`"]
+    PhysicalDeviceAccelerationStructureFeaturesKHR = 1000150013,
+    #[doc = "**Translated from**: `VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_PROPERTIES_KHR`"]
+    PhysicalDeviceAccelerationStructurePropertiesKHR = 1000150014,
+    #[doc = "**Translated from**: `VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_CREATE_INFO_KHR`"]
+    AccelerationStructureCreateInfoKHR = 1000150017,
+    #[doc = "**Translated from**: `VK_STRUCTURE_TYPE_ACCELERATION_STRUCTURE_BUILD_SIZES_INFO_KHR`"]
+    AccelerationStructureBuildSizesInfoKHR = 1000150020,
+    #[doc = "**Translated from**: `VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR`"]
+    PhysicalDeviceRayTracingPipelineFeaturesKHR = 1000347000,
+    #[doc = "**Translated from**: `VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_PROPERTIES_KHR`"]
+    PhysicalDeviceRayTracingPipelinePropertiesKHR = 1000347001,
+    #[doc = "**Translated from**: `VK_STRUCTURE_TYPE_RAY_TRACING_PIPELINE_CREATE_INFO_KHR`"]
+    RayTracingPipelineCreateInfoKHR = 1000150015,
+    #[doc = "**Translated from**: `VK_STRUCTURE_TYPE_RAY_TRACING_SHADER_GROUP_CREATE_INFO_KHR`"]
+    RayTracingShaderGroupCreateInfoKHR = 1000150016,
+    #[doc = "**Translated from**: `VK_STRUCTURE_TYPE_RAY_TRACING_PIPELINE_INTERFACE_CREATE_INFO_KHR`"]
+    RayTracingPipelineInterfaceCreateInfoKHR = 1000150018,
+    #[doc = "**Translated from**: `VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_QUERY_FEATURES_KHR`"]
+    PhysicalDeviceRayQueryFeaturesKHR = 1000348013,
     #[doc = "**Translated from**: `VK_STRUCTURE_TYPE_CALIBRATED_TIMESTAMP_INFO_EXT`"]
     CalibratedTimestampInfoEXT = 1000184000,
     #[doc = "**Translated from**: `VK_STRUCTURE_TYPE_VALIDATION_FEATURES_EXT`"]
@@ -1426,6 +1626,12 @@ pub enum StructureType {
     MemoryMapInfoKHR = 1000271000,
     #[doc = "**Translated from**: `VK_STRUCTURE_TYPE_MEMORY_UNMAP_INFO_KHR`"]
     MemoryUnmapInfoKHR = 1000271001,
+    #[doc = "**Translated from**: `VK_STRUCTURE_TYPE_PIPELINE_LIBRARY_CREATE_INFO_KHR`"]
+    PipelineLibraryCreateInfoKHR = 1000290000,
+    #[doc = "**Translated from**: `VK_STRUCTURE_TYPE_QUEUE_FAMILY_CHECKPOINT_PROPERTIES_2_NV`"]
+    QueueFamilyCheckpointProperties2Nv = 1000314008,
+    #[doc = "**Translated from**: `VK_STRUCTURE_TYPE_CHECKPOINT_DATA_2_NV`"]
+    CheckpointData2Nv = 1000314009,
     #[doc = "**Translated from**: `VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_BUFFER_PROPERTIES_EXT`"]
     PhysicalDeviceDescriptorBufferPropertiesEXT = 1000316000,
     #[doc = "**Translated from**: `VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_BUFFER_DENSITY_MAP_PROPERTIES_EXT`"]
@@ -1456,6 +1662,8 @@ pub enum StructureType {
     PhysicalDeviceMeshShaderFeaturesEXT = 1000328000,
     #[doc = "**Translated from**: `VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MESH_SHADER_PROPERTIES_EXT`"]
     PhysicalDeviceMeshShaderPropertiesEXT = 1000328001,
+    #[doc = "**Translated from**: `VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_MAINTENANCE_1_FEATURES_KHR`"]
+    PhysicalDeviceRayTracingMaintenance1FeaturesKHR = 1000386000,
     #[doc = "**Translated from**: `VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_OBJECT_FEATURES_EXT`"]
     PhysicalDeviceShaderObjectFeaturesEXT = 1000482000,
     #[doc = "**Translated from**: `VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_OBJECT_PROPERTIES_EXT`"]
@@ -1708,6 +1916,98 @@ impl std::fmt::Display for ShaderCodeTypeEXT {
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Pipelines"]
 #[doc = "<br>"]
+#[doc = "**Description**: Indicate which dynamic state is taken from dynamic state commands"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkDynamicState`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDynamicState.html)"]
+pub enum DynamicState {
+    #[doc = "**Translated from**: `VK_DYNAMIC_STATE_VIEWPORT`"]
+    Viewport = 0,
+    #[doc = "**Translated from**: `VK_DYNAMIC_STATE_SCISSOR`"]
+    Scissor = 1,
+    #[doc = "**Translated from**: `VK_DYNAMIC_STATE_LINE_WIDTH`"]
+    LineWidth = 2,
+    #[doc = "**Translated from**: `VK_DYNAMIC_STATE_DEPTH_BIAS`"]
+    DepthBias = 3,
+    #[doc = "**Translated from**: `VK_DYNAMIC_STATE_BLEND_CONSTANTS`"]
+    BlendConstants = 4,
+    #[doc = "**Translated from**: `VK_DYNAMIC_STATE_DEPTH_BOUNDS`"]
+    DepthBounds = 5,
+    #[doc = "**Translated from**: `VK_DYNAMIC_STATE_STENCIL_COMPARE_MASK`"]
+    StencilCompareMask = 6,
+    #[doc = "**Translated from**: `VK_DYNAMIC_STATE_STENCIL_WRITE_MASK`"]
+    StencilWriteMask = 7,
+    #[doc = "**Translated from**: `VK_DYNAMIC_STATE_STENCIL_REFERENCE`"]
+    StencilReference = 8,
+    #[doc = "**Translated from**: `VK_DYNAMIC_STATE_CULL_MODE`"]
+    CullMode = 1000267000,
+    #[doc = "**Translated from**: `VK_DYNAMIC_STATE_FRONT_FACE`"]
+    FrontFace = 1000267001,
+    #[doc = "**Translated from**: `VK_DYNAMIC_STATE_PRIMITIVE_TOPOLOGY`"]
+    PrimitiveTopology = 1000267002,
+    #[doc = "**Translated from**: `VK_DYNAMIC_STATE_VIEWPORT_WITH_COUNT`"]
+    ViewportWithCount = 1000267003,
+    #[doc = "**Translated from**: `VK_DYNAMIC_STATE_SCISSOR_WITH_COUNT`"]
+    ScissorWithCount = 1000267004,
+    #[doc = "**Translated from**: `VK_DYNAMIC_STATE_VERTEX_INPUT_BINDING_STRIDE`"]
+    VertexInputBindingStride = 1000267005,
+    #[doc = "**Translated from**: `VK_DYNAMIC_STATE_DEPTH_TEST_ENABLE`"]
+    DepthTestEnable = 1000267006,
+    #[doc = "**Translated from**: `VK_DYNAMIC_STATE_DEPTH_WRITE_ENABLE`"]
+    DepthWriteEnable = 1000267007,
+    #[doc = "**Translated from**: `VK_DYNAMIC_STATE_DEPTH_COMPARE_OP`"]
+    DepthCompareOp = 1000267008,
+    #[doc = "**Translated from**: `VK_DYNAMIC_STATE_DEPTH_BOUNDS_TEST_ENABLE`"]
+    DepthBoundsTestEnable = 1000267009,
+    #[doc = "**Translated from**: `VK_DYNAMIC_STATE_STENCIL_TEST_ENABLE`"]
+    StencilTestEnable = 1000267010,
+    #[doc = "**Translated from**: `VK_DYNAMIC_STATE_STENCIL_OP`"]
+    StencilOp = 1000267011,
+    #[doc = "**Translated from**: `VK_DYNAMIC_STATE_RASTERIZER_DISCARD_ENABLE`"]
+    RasterizerDiscardEnable = 1000377001,
+    #[doc = "**Translated from**: `VK_DYNAMIC_STATE_DEPTH_BIAS_ENABLE`"]
+    DepthBiasEnable = 1000377002,
+    #[doc = "**Translated from**: `VK_DYNAMIC_STATE_PRIMITIVE_RESTART_ENABLE`"]
+    PrimitiveRestartEnable = 1000377004,
+    #[doc = "**Translated from**: `VK_DYNAMIC_STATE_RAY_TRACING_PIPELINE_STACK_SIZE_KHR`"]
+    RayTracingPipelineStackSizeKHR = 1000347000,
+}
+
+impl std::fmt::Display for DynamicState {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[repr(i32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[doc = "**Chapter**: Pipelines"]
+#[doc = "<br>"]
+#[doc = "**Description**: Shader group types"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_ray_tracing_pipeline`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_ray_tracing_pipeline.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkRayTracingShaderGroupTypeKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkRayTracingShaderGroupTypeKHR.html)"]
+pub enum RayTracingShaderGroupTypeKHR {
+    #[doc = "**Translated from**: `VK_RAY_TRACING_SHADER_GROUP_TYPE_GENERAL_KHR`"]
+    GeneralKHR = 0,
+    #[doc = "**Translated from**: `VK_RAY_TRACING_SHADER_GROUP_TYPE_TRIANGLES_HIT_GROUP_KHR`"]
+    TrianglesHitGroupKHR = 1,
+    #[doc = "**Translated from**: `VK_RAY_TRACING_SHADER_GROUP_TYPE_PROCEDURAL_HIT_GROUP_KHR`"]
+    ProceduralHitGroupKHR = 2,
+}
+
+impl std::fmt::Display for RayTracingShaderGroupTypeKHR {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[repr(i32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[doc = "**Chapter**: Pipelines"]
+#[doc = "<br>"]
 #[doc = "**Description**: Specify the bind point of a pipeline object to a command buffer"]
 #[doc = "<br>"]
 #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
@@ -1718,6 +2018,8 @@ pub enum PipelineBindPoint {
     Graphics = 0,
     #[doc = "**Translated from**: `VK_PIPELINE_BIND_POINT_COMPUTE`"]
     Compute = 1,
+    #[doc = "**Translated from**: `VK_PIPELINE_BIND_POINT_RAY_TRACING_KHR`"]
+    RayTracingKHR = 1000165000,
 }
 
 impl std::fmt::Display for PipelineBindPoint {
@@ -1940,6 +2242,78 @@ impl std::fmt::Display for ComponentSwizzle {
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 #[doc = "**Chapter**: Resource Creation"]
 #[doc = "<br>"]
+#[doc = "**Description**: Type of acceleration structure"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_acceleration_structure`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_acceleration_structure.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkAccelerationStructureTypeKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkAccelerationStructureTypeKHR.html)"]
+pub enum AccelerationStructureTypeKHR {
+    #[doc = "**Translated from**: `VK_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL_KHR`"]
+    TopLevelKHR = 0,
+    #[doc = "**Translated from**: `VK_ACCELERATION_STRUCTURE_TYPE_BOTTOM_LEVEL_KHR`"]
+    BottomLevelKHR = 1,
+    #[doc = "**Translated from**: `VK_ACCELERATION_STRUCTURE_TYPE_GENERIC_KHR`"]
+    GenericKHR = 2,
+}
+
+impl std::fmt::Display for AccelerationStructureTypeKHR {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[repr(i32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[doc = "**Chapter**: Resource Creation"]
+#[doc = "<br>"]
+#[doc = "**Description**: Enum specifying which type of geometry is provided"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_acceleration_structure`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_acceleration_structure.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkGeometryTypeKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkGeometryTypeKHR.html)"]
+pub enum GeometryTypeKHR {
+    #[doc = "**Translated from**: `VK_GEOMETRY_TYPE_TRIANGLES_KHR`"]
+    TrianglesKHR = 0,
+    #[doc = "**Translated from**: `VK_GEOMETRY_TYPE_AABBS_KHR`"]
+    AabbsKHR = 1,
+    #[doc = "**Translated from**: `VK_GEOMETRY_TYPE_INSTANCES_KHR`"]
+    InstancesKHR = 2,
+}
+
+impl std::fmt::Display for GeometryTypeKHR {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[repr(i32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[doc = "**Chapter**: Resource Creation"]
+#[doc = "<br>"]
+#[doc = "**Description**: Acceleration structure build type"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_acceleration_structure`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_acceleration_structure.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkAccelerationStructureBuildTypeKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkAccelerationStructureBuildTypeKHR.html)"]
+pub enum AccelerationStructureBuildTypeKHR {
+    #[doc = "**Translated from**: `VK_ACCELERATION_STRUCTURE_BUILD_TYPE_HOST_KHR`"]
+    HostKHR = 0,
+    #[doc = "**Translated from**: `VK_ACCELERATION_STRUCTURE_BUILD_TYPE_DEVICE_KHR`"]
+    DeviceKHR = 1,
+    #[doc = "**Translated from**: `VK_ACCELERATION_STRUCTURE_BUILD_TYPE_HOST_OR_DEVICE_KHR`"]
+    HostOrDeviceKHR = 2,
+}
+
+impl std::fmt::Display for AccelerationStructureBuildTypeKHR {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[repr(i32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[doc = "**Chapter**: Resource Creation"]
+#[doc = "<br>"]
 #[doc = "**Description**: Buffer and image sharing modes"]
 #[doc = "<br>"]
 #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
@@ -2128,6 +2502,8 @@ pub enum DescriptorType {
     InputAttachment = 10,
     #[doc = "**Translated from**: `VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK`"]
     InlineUniformBlock = 1000138000,
+    #[doc = "**Translated from**: `VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR`"]
+    AccelerationStructureKHR = 1000150000,
 }
 
 impl std::fmt::Display for DescriptorType {
@@ -2152,11 +2528,43 @@ pub enum QueryType {
     PipelineStatistics = 1,
     #[doc = "**Translated from**: `VK_QUERY_TYPE_TIMESTAMP`"]
     Timestamp = 2,
+    #[doc = "**Translated from**: `VK_QUERY_TYPE_ACCELERATION_STRUCTURE_COMPACTED_SIZE_KHR`"]
+    AccelerationStructureCompactedSizeKHR = 1000150000,
+    #[doc = "**Translated from**: `VK_QUERY_TYPE_ACCELERATION_STRUCTURE_SERIALIZATION_SIZE_KHR`"]
+    AccelerationStructureSerializationSizeKHR = 1000150001,
     #[doc = "**Translated from**: `VK_QUERY_TYPE_MESH_PRIMITIVES_GENERATED_EXT`"]
     MeshPrimitivesGeneratedEXT = 1000328000,
+    #[doc = "**Translated from**: `VK_QUERY_TYPE_ACCELERATION_STRUCTURE_SERIALIZATION_BOTTOM_LEVEL_POINTERS_KHR`"]
+    AccelerationStructureSerializationBottomLevelPointersKHR = 1000386000,
+    #[doc = "**Translated from**: `VK_QUERY_TYPE_ACCELERATION_STRUCTURE_SIZE_KHR`"]
+    AccelerationStructureSizeKHR = 1000386001,
 }
 
 impl std::fmt::Display for QueryType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[repr(i32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[doc = "**Chapter**: Drawing Commands"]
+#[doc = "<br>"]
+#[doc = "**Description**: Type of index buffer indices"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkIndexType`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkIndexType.html)"]
+pub enum IndexType {
+    #[doc = "**Translated from**: `VK_INDEX_TYPE_UINT16`"]
+    Uint16 = 0,
+    #[doc = "**Translated from**: `VK_INDEX_TYPE_UINT32`"]
+    Uint32 = 1,
+    #[doc = "**Translated from**: `VK_INDEX_TYPE_NONE_KHR`"]
+    NoneKHR = 1000165000,
+}
+
+impl std::fmt::Display for IndexType {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{self:?}")
     }
@@ -2263,6 +2671,28 @@ pub enum BlendOp {
 }
 
 impl std::fmt::Display for BlendOp {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[repr(i32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[doc = "**Chapter**: Acceleration Structures"]
+#[doc = "<br>"]
+#[doc = "**Description**: Enum specifying the type of build operation to perform"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_acceleration_structure`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_acceleration_structure.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkBuildAccelerationStructureModeKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkBuildAccelerationStructureModeKHR.html)"]
+pub enum BuildAccelerationStructureModeKHR {
+    #[doc = "**Translated from**: `VK_BUILD_ACCELERATION_STRUCTURE_MODE_BUILD_KHR`"]
+    BuildKHR = 0,
+    #[doc = "**Translated from**: `VK_BUILD_ACCELERATION_STRUCTURE_MODE_UPDATE_KHR`"]
+    UpdateKHR = 1,
+}
+
+impl std::fmt::Display for BuildAccelerationStructureModeKHR {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{self:?}")
     }
@@ -3328,6 +3758,10 @@ pub enum ObjectType {
     PrivateDataSlot = 1000295000,
     #[doc = "**Translated from**: `VK_OBJECT_TYPE_DEBUG_UTILS_MESSENGER_EXT`"]
     DebugUtilsMessengerEXT = 1000128000,
+    #[doc = "**Translated from**: `VK_OBJECT_TYPE_ACCELERATION_STRUCTURE_KHR`"]
+    AccelerationStructureKHR = 1000150000,
+    #[doc = "**Translated from**: `VK_OBJECT_TYPE_DEFERRED_OPERATION_KHR`"]
+    DeferredOperationKHR = 1000268000,
     #[doc = "**Translated from**: `VK_OBJECT_TYPE_SHADER_EXT`"]
     ShaderEXT = 1000482000,
 }
@@ -4164,6 +4598,16 @@ impl std::fmt::Display for PipelineStageFlags2 {
                 PipelineStageFlagBits2::IndexInput,
                 PipelineStageFlagBits2::VertexAttributeInput,
                 PipelineStageFlagBits2::PreRasterizationShaders,
+                PipelineStageFlagBits2::TransformFeedbackEXT,
+                PipelineStageFlagBits2::ConditionalRenderingEXT,
+                PipelineStageFlagBits2::CommandPreprocessNv,
+                PipelineStageFlagBits2::FragmentShadingRateAttachmentKHR,
+                PipelineStageFlagBits2::AccelerationStructureBuildKHR,
+                PipelineStageFlagBits2::RayTracingShaderKHR,
+                PipelineStageFlagBits2::FragmentDensityProcessEXT,
+                PipelineStageFlagBits2::TaskShaderEXT,
+                PipelineStageFlagBits2::MeshShaderEXT,
+                PipelineStageFlagBits2::AccelerationStructureCopyKHR,
             ],
         )
     }
@@ -4237,6 +4681,26 @@ pub enum PipelineStageFlagBits2 {
     VertexAttributeInput = 0b10000000000000000000000000000000000000,
     #[doc = "Translated from: `VK_PIPELINE_STAGE_2_PRE_RASTERIZATION_SHADERS_BIT`"]
     PreRasterizationShaders = 0b100000000000000000000000000000000000000,
+    #[doc = "Translated from: `VK_PIPELINE_STAGE_2_TRANSFORM_FEEDBACK_BIT_EXT`"]
+    TransformFeedbackEXT = 0b1000000000000000000000000,
+    #[doc = "Translated from: `VK_PIPELINE_STAGE_2_CONDITIONAL_RENDERING_BIT_EXT`"]
+    ConditionalRenderingEXT = 0b1000000000000000000,
+    #[doc = "Translated from: `VK_PIPELINE_STAGE_2_COMMAND_PREPROCESS_BIT_NV`"]
+    CommandPreprocessNv = 0b100000000000000000,
+    #[doc = "Translated from: `VK_PIPELINE_STAGE_2_FRAGMENT_SHADING_RATE_ATTACHMENT_BIT_KHR`"]
+    FragmentShadingRateAttachmentKHR = 0b10000000000000000000000,
+    #[doc = "Translated from: `VK_PIPELINE_STAGE_2_ACCELERATION_STRUCTURE_BUILD_BIT_KHR`"]
+    AccelerationStructureBuildKHR = 0b10000000000000000000000000,
+    #[doc = "Translated from: `VK_PIPELINE_STAGE_2_RAY_TRACING_SHADER_BIT_KHR`"]
+    RayTracingShaderKHR = 0b1000000000000000000000,
+    #[doc = "Translated from: `VK_PIPELINE_STAGE_2_FRAGMENT_DENSITY_PROCESS_BIT_EXT`"]
+    FragmentDensityProcessEXT = 0b100000000000000000000000,
+    #[doc = "Translated from: `VK_PIPELINE_STAGE_2_TASK_SHADER_BIT_EXT`"]
+    TaskShaderEXT = 0b10000000000000000000,
+    #[doc = "Translated from: `VK_PIPELINE_STAGE_2_MESH_SHADER_BIT_EXT`"]
+    MeshShaderEXT = 0b100000000000000000000,
+    #[doc = "Translated from: `VK_PIPELINE_STAGE_2_ACCELERATION_STRUCTURE_COPY_BIT_KHR`"]
+    AccelerationStructureCopyKHR = 0b10000000000000000000000000000,
 }
 
 impl From<PipelineStageFlagBits2> for u64 {
@@ -4338,7 +4802,19 @@ impl std::fmt::Display for AccessFlags2 {
                 AccessFlagBits2::ShaderSampledRead,
                 AccessFlagBits2::ShaderStorageRead,
                 AccessFlagBits2::ShaderStorageWrite,
+                AccessFlagBits2::TransformFeedbackWriteEXT,
+                AccessFlagBits2::TransformFeedbackCounterReadEXT,
+                AccessFlagBits2::TransformFeedbackCounterWriteEXT,
+                AccessFlagBits2::ConditionalRenderingReadEXT,
+                AccessFlagBits2::CommandPreprocessReadNv,
+                AccessFlagBits2::CommandPreprocessWriteNv,
+                AccessFlagBits2::FragmentShadingRateAttachmentReadKHR,
+                AccessFlagBits2::AccelerationStructureReadKHR,
+                AccessFlagBits2::AccelerationStructureWriteKHR,
+                AccessFlagBits2::FragmentDensityMapReadEXT,
+                AccessFlagBits2::ColorAttachmentReadNoncoherentEXT,
                 AccessFlagBits2::DescriptorBufferReadEXT,
+                AccessFlagBits2::ShaderBindingTableReadKHR,
             ],
         )
     }
@@ -4402,8 +4878,32 @@ pub enum AccessFlagBits2 {
     ShaderStorageRead = 0b1000000000000000000000000000000000,
     #[doc = "Translated from: `VK_ACCESS_2_SHADER_STORAGE_WRITE_BIT`"]
     ShaderStorageWrite = 0b10000000000000000000000000000000000,
+    #[doc = "Translated from: `VK_ACCESS_2_TRANSFORM_FEEDBACK_WRITE_BIT_EXT`"]
+    TransformFeedbackWriteEXT = 0b10000000000000000000000000,
+    #[doc = "Translated from: `VK_ACCESS_2_TRANSFORM_FEEDBACK_COUNTER_READ_BIT_EXT`"]
+    TransformFeedbackCounterReadEXT = 0b100000000000000000000000000,
+    #[doc = "Translated from: `VK_ACCESS_2_TRANSFORM_FEEDBACK_COUNTER_WRITE_BIT_EXT`"]
+    TransformFeedbackCounterWriteEXT = 0b1000000000000000000000000000,
+    #[doc = "Translated from: `VK_ACCESS_2_CONDITIONAL_RENDERING_READ_BIT_EXT`"]
+    ConditionalRenderingReadEXT = 0b100000000000000000000,
+    #[doc = "Translated from: `VK_ACCESS_2_COMMAND_PREPROCESS_READ_BIT_NV`"]
+    CommandPreprocessReadNv = 0b100000000000000000,
+    #[doc = "Translated from: `VK_ACCESS_2_COMMAND_PREPROCESS_WRITE_BIT_NV`"]
+    CommandPreprocessWriteNv = 0b1000000000000000000,
+    #[doc = "Translated from: `VK_ACCESS_2_FRAGMENT_SHADING_RATE_ATTACHMENT_READ_BIT_KHR`"]
+    FragmentShadingRateAttachmentReadKHR = 0b100000000000000000000000,
+    #[doc = "Translated from: `VK_ACCESS_2_ACCELERATION_STRUCTURE_READ_BIT_KHR`"]
+    AccelerationStructureReadKHR = 0b1000000000000000000000,
+    #[doc = "Translated from: `VK_ACCESS_2_ACCELERATION_STRUCTURE_WRITE_BIT_KHR`"]
+    AccelerationStructureWriteKHR = 0b10000000000000000000000,
+    #[doc = "Translated from: `VK_ACCESS_2_FRAGMENT_DENSITY_MAP_READ_BIT_EXT`"]
+    FragmentDensityMapReadEXT = 0b1000000000000000000000000,
+    #[doc = "Translated from: `VK_ACCESS_2_COLOR_ATTACHMENT_READ_NONCOHERENT_BIT_EXT`"]
+    ColorAttachmentReadNoncoherentEXT = 0b10000000000000000000,
     #[doc = "Translated from: `VK_ACCESS_2_DESCRIPTOR_BUFFER_READ_BIT_EXT`"]
     DescriptorBufferReadEXT = 0b100000000000000000000000000000000000000000,
+    #[doc = "Translated from: `VK_ACCESS_2_SHADER_BINDING_TABLE_READ_BIT_KHR`"]
+    ShaderBindingTableReadKHR = 0b10000000000000000000000000000000000000000,
 }
 
 impl From<AccessFlagBits2> for u64 {
@@ -4995,6 +5495,128 @@ impl std::fmt::Display for ShaderCreateFlagBitsEXT {
 }
 
 #[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[doc = "**Chapter**: Shaders"]
+#[doc = "<br>"]
+#[doc = "**Description**: Reserved for future use"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkShaderModuleCreateFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkShaderModuleCreateFlags.html)"]
+pub struct ShaderModuleCreateFlags(u32);
+
+impl ShaderModuleCreateFlags {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq)]
+#[doc = "**Chapter**: Pipelines"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask of VkPipelineShaderStageCreateFlagBits"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkPipelineShaderStageCreateFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPipelineShaderStageCreateFlags.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkPipelineShaderStageCreateFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPipelineShaderStageCreateFlagBits.html)"]
+pub struct PipelineShaderStageCreateFlags(u32);
+
+impl PipelineShaderStageCreateFlags {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
+    }
+
+    #[must_use]
+    pub fn contains(self, rhs: Self) -> bool {
+        self.0 & rhs.0 == rhs.0
+    }
+}
+
+impl std::ops::BitAnd for PipelineShaderStageCreateFlags {
+    type Output = Self;
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Self(self.0 & rhs.0)
+    }
+}
+
+impl From<PipelineShaderStageCreateFlagBits> for PipelineShaderStageCreateFlags {
+    fn from(flag_bits: PipelineShaderStageCreateFlagBits) -> Self {
+        Self(flag_bits as u32)
+    }
+}
+
+impl std::ops::BitOr<PipelineShaderStageCreateFlagBits> for PipelineShaderStageCreateFlags {
+    type Output = PipelineShaderStageCreateFlags;
+    fn bitor(self, rhs: PipelineShaderStageCreateFlagBits) -> Self::Output {
+        Self(self.0 | rhs as u32)
+    }
+}
+
+impl std::fmt::Display for PipelineShaderStageCreateFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        #[allow(deprecated)]
+        display_flag_bits_u32(
+            f,
+            self.0,
+            &[PipelineShaderStageCreateFlagBits::AllowVaryingSubgroupSize, PipelineShaderStageCreateFlagBits::RequireFullSubgroups],
+        )
+    }
+}
+
+impl std::fmt::Debug for PipelineShaderStageCreateFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("PipelineShaderStageCreateFlags").field(&format!("{self}")).finish()
+    }
+}
+
+#[repr(u32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[doc = "**Chapter**: Pipelines"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask controlling how a pipeline shader stage is created"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkPipelineShaderStageCreateFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPipelineShaderStageCreateFlagBits.html)"]
+pub enum PipelineShaderStageCreateFlagBits {
+    #[doc = "Translated from: `VK_PIPELINE_SHADER_STAGE_CREATE_ALLOW_VARYING_SUBGROUP_SIZE_BIT`"]
+    AllowVaryingSubgroupSize = 0b1,
+    #[doc = "Translated from: `VK_PIPELINE_SHADER_STAGE_CREATE_REQUIRE_FULL_SUBGROUPS_BIT`"]
+    RequireFullSubgroups = 0b10,
+}
+
+impl From<PipelineShaderStageCreateFlagBits> for u32 {
+    fn from(flag_bits: PipelineShaderStageCreateFlagBits) -> Self {
+        flag_bits as u32
+    }
+}
+
+impl std::ops::BitOr for PipelineShaderStageCreateFlagBits {
+    type Output = PipelineShaderStageCreateFlags;
+    fn bitor(self, rhs: Self) -> Self::Output {
+        PipelineShaderStageCreateFlags(self as u32 | rhs as u32)
+    }
+}
+
+impl std::ops::BitOr<PipelineShaderStageCreateFlags> for PipelineShaderStageCreateFlagBits {
+    type Output = PipelineShaderStageCreateFlags;
+    fn bitor(self, rhs: PipelineShaderStageCreateFlags) -> Self::Output {
+        PipelineShaderStageCreateFlags(self as u32 | rhs.0)
+    }
+}
+
+impl std::fmt::Display for PipelineShaderStageCreateFlagBits {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[repr(C)]
 #[derive(Clone, Copy, PartialEq, Eq)]
 #[doc = "**Chapter**: Pipelines"]
 #[doc = "<br>"]
@@ -5054,6 +5676,12 @@ impl std::fmt::Display for ShaderStageFlags {
                 ShaderStageFlagBits::Compute,
                 ShaderStageFlagBits::AllGraphics,
                 ShaderStageFlagBits::All,
+                ShaderStageFlagBits::RaygenKHR,
+                ShaderStageFlagBits::AnyHitKHR,
+                ShaderStageFlagBits::ClosestHitKHR,
+                ShaderStageFlagBits::MissKHR,
+                ShaderStageFlagBits::IntersectionKHR,
+                ShaderStageFlagBits::CallableKHR,
                 ShaderStageFlagBits::TaskEXT,
                 ShaderStageFlagBits::MeshEXT,
             ],
@@ -5093,6 +5721,18 @@ pub enum ShaderStageFlagBits {
     AllGraphics = 0x1f,
     #[doc = "Translated from: `VK_SHADER_STAGE_ALL`"]
     All = 0x7fffffff,
+    #[doc = "Translated from: `VK_SHADER_STAGE_RAYGEN_BIT_KHR`"]
+    RaygenKHR = 0b100000000,
+    #[doc = "Translated from: `VK_SHADER_STAGE_ANY_HIT_BIT_KHR`"]
+    AnyHitKHR = 0b1000000000,
+    #[doc = "Translated from: `VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR`"]
+    ClosestHitKHR = 0b10000000000,
+    #[doc = "Translated from: `VK_SHADER_STAGE_MISS_BIT_KHR`"]
+    MissKHR = 0b100000000000,
+    #[doc = "Translated from: `VK_SHADER_STAGE_INTERSECTION_BIT_KHR`"]
+    IntersectionKHR = 0b1000000000000,
+    #[doc = "Translated from: `VK_SHADER_STAGE_CALLABLE_BIT_KHR`"]
+    CallableKHR = 0b10000000000000,
     #[doc = "Translated from: `VK_SHADER_STAGE_TASK_BIT_EXT`"]
     TaskEXT = 0b1000000,
     #[doc = "Translated from: `VK_SHADER_STAGE_MESH_BIT_EXT`"]
@@ -5122,6 +5762,173 @@ impl std::ops::BitOr<ShaderStageFlags> for ShaderStageFlagBits {
 impl std::fmt::Display for ShaderStageFlagBits {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{self:?}")
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq)]
+#[doc = "**Chapter**: Pipelines"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask of VkPipelineCreateFlagBits"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkPipelineCreateFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPipelineCreateFlags.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkPipelineCreateFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPipelineCreateFlagBits.html)"]
+pub struct PipelineCreateFlags(u32);
+
+impl PipelineCreateFlags {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
+    }
+
+    #[must_use]
+    pub fn contains(self, rhs: Self) -> bool {
+        self.0 & rhs.0 == rhs.0
+    }
+}
+
+impl std::ops::BitAnd for PipelineCreateFlags {
+    type Output = Self;
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Self(self.0 & rhs.0)
+    }
+}
+
+impl From<PipelineCreateFlagBits> for PipelineCreateFlags {
+    fn from(flag_bits: PipelineCreateFlagBits) -> Self {
+        Self(flag_bits as u32)
+    }
+}
+
+impl std::ops::BitOr<PipelineCreateFlagBits> for PipelineCreateFlags {
+    type Output = PipelineCreateFlags;
+    fn bitor(self, rhs: PipelineCreateFlagBits) -> Self::Output {
+        Self(self.0 | rhs as u32)
+    }
+}
+
+impl std::fmt::Display for PipelineCreateFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        #[allow(deprecated)]
+        display_flag_bits_u32(
+            f,
+            self.0,
+            &[
+                PipelineCreateFlagBits::DisableOptimization,
+                PipelineCreateFlagBits::AllowDerivatives,
+                PipelineCreateFlagBits::Derivative,
+                PipelineCreateFlagBits::ViewIndexFromDeviceIndex,
+                PipelineCreateFlagBits::DispatchBase,
+                PipelineCreateFlagBits::FailOnPipelineCompileRequired,
+                PipelineCreateFlagBits::EarlyReturnOnFailure,
+                PipelineCreateFlagBits::RayTracingNoNullAnyHitShadersKHR,
+                PipelineCreateFlagBits::RayTracingNoNullClosestHitShadersKHR,
+                PipelineCreateFlagBits::RayTracingNoNullMissShadersKHR,
+                PipelineCreateFlagBits::RayTracingNoNullIntersectionShadersKHR,
+                PipelineCreateFlagBits::RayTracingSkipTrianglesKHR,
+                PipelineCreateFlagBits::RayTracingSkipAabbsKHR,
+                PipelineCreateFlagBits::RayTracingShaderGroupHandleCaptureReplayKHR,
+                PipelineCreateFlagBits::LibraryKHR,
+                PipelineCreateFlagBits::DescriptorBufferEXT,
+            ],
+        )
+    }
+}
+
+impl std::fmt::Debug for PipelineCreateFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("PipelineCreateFlags").field(&format!("{self}")).finish()
+    }
+}
+
+#[repr(u32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[doc = "**Chapter**: Pipelines"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask controlling how a pipeline is created"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkPipelineCreateFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPipelineCreateFlagBits.html)"]
+pub enum PipelineCreateFlagBits {
+    #[doc = "Translated from: `VK_PIPELINE_CREATE_DISABLE_OPTIMIZATION_BIT`"]
+    DisableOptimization = 0b1,
+    #[doc = "Translated from: `VK_PIPELINE_CREATE_ALLOW_DERIVATIVES_BIT`"]
+    AllowDerivatives = 0b10,
+    #[doc = "Translated from: `VK_PIPELINE_CREATE_DERIVATIVE_BIT`"]
+    Derivative = 0b100,
+    #[doc = "Translated from: `VK_PIPELINE_CREATE_VIEW_INDEX_FROM_DEVICE_INDEX_BIT`"]
+    ViewIndexFromDeviceIndex = 0b1000,
+    #[doc = "Translated from: `VK_PIPELINE_CREATE_DISPATCH_BASE_BIT`"]
+    DispatchBase = 0b10000,
+    #[doc = "Translated from: `VK_PIPELINE_CREATE_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT`"]
+    FailOnPipelineCompileRequired = 0b100000000,
+    #[doc = "Translated from: `VK_PIPELINE_CREATE_EARLY_RETURN_ON_FAILURE_BIT`"]
+    EarlyReturnOnFailure = 0b1000000000,
+    #[doc = "Translated from: `VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_ANY_HIT_SHADERS_BIT_KHR`"]
+    RayTracingNoNullAnyHitShadersKHR = 0b100000000000000,
+    #[doc = "Translated from: `VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_CLOSEST_HIT_SHADERS_BIT_KHR`"]
+    RayTracingNoNullClosestHitShadersKHR = 0b1000000000000000,
+    #[doc = "Translated from: `VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_MISS_SHADERS_BIT_KHR`"]
+    RayTracingNoNullMissShadersKHR = 0b10000000000000000,
+    #[doc = "Translated from: `VK_PIPELINE_CREATE_RAY_TRACING_NO_NULL_INTERSECTION_SHADERS_BIT_KHR`"]
+    RayTracingNoNullIntersectionShadersKHR = 0b100000000000000000,
+    #[doc = "Translated from: `VK_PIPELINE_CREATE_RAY_TRACING_SKIP_TRIANGLES_BIT_KHR`"]
+    RayTracingSkipTrianglesKHR = 0b1000000000000,
+    #[doc = "Translated from: `VK_PIPELINE_CREATE_RAY_TRACING_SKIP_AABBS_BIT_KHR`"]
+    RayTracingSkipAabbsKHR = 0b10000000000000,
+    #[doc = "Translated from: `VK_PIPELINE_CREATE_RAY_TRACING_SHADER_GROUP_HANDLE_CAPTURE_REPLAY_BIT_KHR`"]
+    RayTracingShaderGroupHandleCaptureReplayKHR = 0b10000000000000000000,
+    #[doc = "Translated from: `VK_PIPELINE_CREATE_LIBRARY_BIT_KHR`"]
+    LibraryKHR = 0b100000000000,
+    #[doc = "Translated from: `VK_PIPELINE_CREATE_DESCRIPTOR_BUFFER_BIT_EXT`"]
+    DescriptorBufferEXT = 0b100000000000000000000000000000,
+}
+
+impl From<PipelineCreateFlagBits> for u32 {
+    fn from(flag_bits: PipelineCreateFlagBits) -> Self {
+        flag_bits as u32
+    }
+}
+
+impl std::ops::BitOr for PipelineCreateFlagBits {
+    type Output = PipelineCreateFlags;
+    fn bitor(self, rhs: Self) -> Self::Output {
+        PipelineCreateFlags(self as u32 | rhs as u32)
+    }
+}
+
+impl std::ops::BitOr<PipelineCreateFlags> for PipelineCreateFlagBits {
+    type Output = PipelineCreateFlags;
+    fn bitor(self, rhs: PipelineCreateFlags) -> Self::Output {
+        PipelineCreateFlags(self as u32 | rhs.0)
+    }
+}
+
+impl std::fmt::Display for PipelineCreateFlagBits {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[doc = "**Chapter**: Pipelines"]
+#[doc = "<br>"]
+#[doc = "**Description**: Reserved for future use"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkPipelineDynamicStateCreateFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPipelineDynamicStateCreateFlags.html)"]
+pub struct PipelineDynamicStateCreateFlags(u32);
+
+impl PipelineDynamicStateCreateFlags {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
     }
 }
 
@@ -5552,6 +6359,9 @@ impl std::fmt::Display for BufferUsageFlags {
                 BufferUsageFlagBits::VertexBuffer,
                 BufferUsageFlagBits::IndirectBuffer,
                 BufferUsageFlagBits::ShaderDeviceAddress,
+                BufferUsageFlagBits::AccelerationStructureBuildInputReadOnlyKHR,
+                BufferUsageFlagBits::AccelerationStructureStorageKHR,
+                BufferUsageFlagBits::ShaderBindingTableKHR,
                 BufferUsageFlagBits::SamplerDescriptorBufferEXT,
                 BufferUsageFlagBits::ResourceDescriptorBufferEXT,
                 BufferUsageFlagBits::PushDescriptorsDescriptorBufferEXT,
@@ -5596,6 +6406,12 @@ pub enum BufferUsageFlagBits {
     IndirectBuffer = 0b100000000,
     #[doc = "Translated from: `VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT`"]
     ShaderDeviceAddress = 0b100000000000000000,
+    #[doc = "Translated from: `VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_BUILD_INPUT_READ_ONLY_BIT_KHR`"]
+    AccelerationStructureBuildInputReadOnlyKHR = 0b10000000000000000000,
+    #[doc = "Translated from: `VK_BUFFER_USAGE_ACCELERATION_STRUCTURE_STORAGE_BIT_KHR`"]
+    AccelerationStructureStorageKHR = 0b100000000000000000000,
+    #[doc = "Translated from: `VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR`"]
+    ShaderBindingTableKHR = 0b10000000000,
     #[doc = "Translated from: `VK_BUFFER_USAGE_SAMPLER_DESCRIPTOR_BUFFER_BIT_EXT`"]
     SamplerDescriptorBufferEXT = 0b1000000000000000000000,
     #[doc = "Translated from: `VK_BUFFER_USAGE_RESOURCE_DESCRIPTOR_BUFFER_BIT_EXT`"]
@@ -6232,6 +7048,329 @@ impl std::ops::BitOr<ImageAspectFlags> for ImageAspectFlagBits {
 }
 
 impl std::fmt::Display for ImageAspectFlagBits {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq)]
+#[doc = "**Chapter**: Resource Creation"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask of VkAccelerationStructureCreateFlagBitsKHR"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_acceleration_structure`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_acceleration_structure.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkAccelerationStructureCreateFlagsKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkAccelerationStructureCreateFlagsKHR.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkAccelerationStructureCreateFlagBitsKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkAccelerationStructureCreateFlagBitsKHR.html)"]
+pub struct AccelerationStructureCreateFlagsKHR(u32);
+
+impl AccelerationStructureCreateFlagsKHR {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
+    }
+
+    #[must_use]
+    pub fn contains(self, rhs: Self) -> bool {
+        self.0 & rhs.0 == rhs.0
+    }
+}
+
+impl std::ops::BitAnd for AccelerationStructureCreateFlagsKHR {
+    type Output = Self;
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Self(self.0 & rhs.0)
+    }
+}
+
+impl From<AccelerationStructureCreateFlagBitsKHR> for AccelerationStructureCreateFlagsKHR {
+    fn from(flag_bits: AccelerationStructureCreateFlagBitsKHR) -> Self {
+        Self(flag_bits as u32)
+    }
+}
+
+impl std::ops::BitOr<AccelerationStructureCreateFlagBitsKHR> for AccelerationStructureCreateFlagsKHR {
+    type Output = AccelerationStructureCreateFlagsKHR;
+    fn bitor(self, rhs: AccelerationStructureCreateFlagBitsKHR) -> Self::Output {
+        Self(self.0 | rhs as u32)
+    }
+}
+
+impl std::fmt::Display for AccelerationStructureCreateFlagsKHR {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        #[allow(deprecated)]
+        display_flag_bits_u32(
+            f,
+            self.0,
+            &[
+                AccelerationStructureCreateFlagBitsKHR::DeviceAddressCaptureReplayKHR,
+                AccelerationStructureCreateFlagBitsKHR::DescriptorBufferCaptureReplayEXT,
+            ],
+        )
+    }
+}
+
+impl std::fmt::Debug for AccelerationStructureCreateFlagsKHR {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("AccelerationStructureCreateFlagsKHR").field(&format!("{self}")).finish()
+    }
+}
+
+#[repr(u32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[doc = "**Chapter**: Resource Creation"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask specifying additional creation parameters for acceleration structure"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_acceleration_structure`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_acceleration_structure.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkAccelerationStructureCreateFlagBitsKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkAccelerationStructureCreateFlagBitsKHR.html)"]
+pub enum AccelerationStructureCreateFlagBitsKHR {
+    #[doc = "Translated from: `VK_ACCELERATION_STRUCTURE_CREATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT_KHR`"]
+    DeviceAddressCaptureReplayKHR = 0b1,
+    #[doc = "Translated from: `VK_ACCELERATION_STRUCTURE_CREATE_DESCRIPTOR_BUFFER_CAPTURE_REPLAY_BIT_EXT`"]
+    DescriptorBufferCaptureReplayEXT = 0b1000,
+}
+
+impl From<AccelerationStructureCreateFlagBitsKHR> for u32 {
+    fn from(flag_bits: AccelerationStructureCreateFlagBitsKHR) -> Self {
+        flag_bits as u32
+    }
+}
+
+impl std::ops::BitOr for AccelerationStructureCreateFlagBitsKHR {
+    type Output = AccelerationStructureCreateFlagsKHR;
+    fn bitor(self, rhs: Self) -> Self::Output {
+        AccelerationStructureCreateFlagsKHR(self as u32 | rhs as u32)
+    }
+}
+
+impl std::ops::BitOr<AccelerationStructureCreateFlagsKHR> for AccelerationStructureCreateFlagBitsKHR {
+    type Output = AccelerationStructureCreateFlagsKHR;
+    fn bitor(self, rhs: AccelerationStructureCreateFlagsKHR) -> Self::Output {
+        AccelerationStructureCreateFlagsKHR(self as u32 | rhs.0)
+    }
+}
+
+impl std::fmt::Display for AccelerationStructureCreateFlagBitsKHR {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq)]
+#[doc = "**Chapter**: Resource Creation"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask of VkBuildAccelerationStructureFlagBitsKHR"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_acceleration_structure`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_acceleration_structure.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkBuildAccelerationStructureFlagsKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkBuildAccelerationStructureFlagsKHR.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkBuildAccelerationStructureFlagBitsKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkBuildAccelerationStructureFlagBitsKHR.html)"]
+pub struct BuildAccelerationStructureFlagsKHR(u32);
+
+impl BuildAccelerationStructureFlagsKHR {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
+    }
+
+    #[must_use]
+    pub fn contains(self, rhs: Self) -> bool {
+        self.0 & rhs.0 == rhs.0
+    }
+}
+
+impl std::ops::BitAnd for BuildAccelerationStructureFlagsKHR {
+    type Output = Self;
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Self(self.0 & rhs.0)
+    }
+}
+
+impl From<BuildAccelerationStructureFlagBitsKHR> for BuildAccelerationStructureFlagsKHR {
+    fn from(flag_bits: BuildAccelerationStructureFlagBitsKHR) -> Self {
+        Self(flag_bits as u32)
+    }
+}
+
+impl std::ops::BitOr<BuildAccelerationStructureFlagBitsKHR> for BuildAccelerationStructureFlagsKHR {
+    type Output = BuildAccelerationStructureFlagsKHR;
+    fn bitor(self, rhs: BuildAccelerationStructureFlagBitsKHR) -> Self::Output {
+        Self(self.0 | rhs as u32)
+    }
+}
+
+impl std::fmt::Display for BuildAccelerationStructureFlagsKHR {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        #[allow(deprecated)]
+        display_flag_bits_u32(
+            f,
+            self.0,
+            &[
+                BuildAccelerationStructureFlagBitsKHR::AllowUpdateKHR,
+                BuildAccelerationStructureFlagBitsKHR::AllowCompactionKHR,
+                BuildAccelerationStructureFlagBitsKHR::PreferFastTraceKHR,
+                BuildAccelerationStructureFlagBitsKHR::PreferFastBuildKHR,
+                BuildAccelerationStructureFlagBitsKHR::LowMemoryKHR,
+            ],
+        )
+    }
+}
+
+impl std::fmt::Debug for BuildAccelerationStructureFlagsKHR {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("BuildAccelerationStructureFlagsKHR").field(&format!("{self}")).finish()
+    }
+}
+
+#[repr(u32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[doc = "**Chapter**: Resource Creation"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask specifying additional parameters for acceleration structure builds"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_acceleration_structure`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_acceleration_structure.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkBuildAccelerationStructureFlagBitsKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkBuildAccelerationStructureFlagBitsKHR.html)"]
+pub enum BuildAccelerationStructureFlagBitsKHR {
+    #[doc = "Translated from: `VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_UPDATE_BIT_KHR`"]
+    AllowUpdateKHR = 0b1,
+    #[doc = "Translated from: `VK_BUILD_ACCELERATION_STRUCTURE_ALLOW_COMPACTION_BIT_KHR`"]
+    AllowCompactionKHR = 0b10,
+    #[doc = "Translated from: `VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_TRACE_BIT_KHR`"]
+    PreferFastTraceKHR = 0b100,
+    #[doc = "Translated from: `VK_BUILD_ACCELERATION_STRUCTURE_PREFER_FAST_BUILD_BIT_KHR`"]
+    PreferFastBuildKHR = 0b1000,
+    #[doc = "Translated from: `VK_BUILD_ACCELERATION_STRUCTURE_LOW_MEMORY_BIT_KHR`"]
+    LowMemoryKHR = 0b10000,
+}
+
+impl From<BuildAccelerationStructureFlagBitsKHR> for u32 {
+    fn from(flag_bits: BuildAccelerationStructureFlagBitsKHR) -> Self {
+        flag_bits as u32
+    }
+}
+
+impl std::ops::BitOr for BuildAccelerationStructureFlagBitsKHR {
+    type Output = BuildAccelerationStructureFlagsKHR;
+    fn bitor(self, rhs: Self) -> Self::Output {
+        BuildAccelerationStructureFlagsKHR(self as u32 | rhs as u32)
+    }
+}
+
+impl std::ops::BitOr<BuildAccelerationStructureFlagsKHR> for BuildAccelerationStructureFlagBitsKHR {
+    type Output = BuildAccelerationStructureFlagsKHR;
+    fn bitor(self, rhs: BuildAccelerationStructureFlagsKHR) -> Self::Output {
+        BuildAccelerationStructureFlagsKHR(self as u32 | rhs.0)
+    }
+}
+
+impl std::fmt::Display for BuildAccelerationStructureFlagBitsKHR {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq)]
+#[doc = "**Chapter**: Resource Creation"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask of VkGeometryFlagBitsKHR"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_acceleration_structure`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_acceleration_structure.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkGeometryFlagsKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkGeometryFlagsKHR.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkGeometryFlagBitsKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkGeometryFlagBitsKHR.html)"]
+pub struct GeometryFlagsKHR(u32);
+
+impl GeometryFlagsKHR {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
+    }
+
+    #[must_use]
+    pub fn contains(self, rhs: Self) -> bool {
+        self.0 & rhs.0 == rhs.0
+    }
+}
+
+impl std::ops::BitAnd for GeometryFlagsKHR {
+    type Output = Self;
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Self(self.0 & rhs.0)
+    }
+}
+
+impl From<GeometryFlagBitsKHR> for GeometryFlagsKHR {
+    fn from(flag_bits: GeometryFlagBitsKHR) -> Self {
+        Self(flag_bits as u32)
+    }
+}
+
+impl std::ops::BitOr<GeometryFlagBitsKHR> for GeometryFlagsKHR {
+    type Output = GeometryFlagsKHR;
+    fn bitor(self, rhs: GeometryFlagBitsKHR) -> Self::Output {
+        Self(self.0 | rhs as u32)
+    }
+}
+
+impl std::fmt::Display for GeometryFlagsKHR {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        #[allow(deprecated)]
+        display_flag_bits_u32(f, self.0, &[GeometryFlagBitsKHR::OpaqueKHR, GeometryFlagBitsKHR::NoDuplicateAnyHitInvocationKHR])
+    }
+}
+
+impl std::fmt::Debug for GeometryFlagsKHR {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("GeometryFlagsKHR").field(&format!("{self}")).finish()
+    }
+}
+
+#[repr(u32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[doc = "**Chapter**: Resource Creation"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask specifying additional parameters for a geometry"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_acceleration_structure`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_acceleration_structure.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkGeometryFlagBitsKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkGeometryFlagBitsKHR.html)"]
+pub enum GeometryFlagBitsKHR {
+    #[doc = "Translated from: `VK_GEOMETRY_OPAQUE_BIT_KHR`"]
+    OpaqueKHR = 0b1,
+    #[doc = "Translated from: `VK_GEOMETRY_NO_DUPLICATE_ANY_HIT_INVOCATION_BIT_KHR`"]
+    NoDuplicateAnyHitInvocationKHR = 0b10,
+}
+
+impl From<GeometryFlagBitsKHR> for u32 {
+    fn from(flag_bits: GeometryFlagBitsKHR) -> Self {
+        flag_bits as u32
+    }
+}
+
+impl std::ops::BitOr for GeometryFlagBitsKHR {
+    type Output = GeometryFlagsKHR;
+    fn bitor(self, rhs: Self) -> Self::Output {
+        GeometryFlagsKHR(self as u32 | rhs as u32)
+    }
+}
+
+impl std::ops::BitOr<GeometryFlagsKHR> for GeometryFlagBitsKHR {
+    type Output = GeometryFlagsKHR;
+    fn bitor(self, rhs: GeometryFlagsKHR) -> Self::Output {
+        GeometryFlagsKHR(self as u32 | rhs.0)
+    }
+}
+
+impl std::fmt::Display for GeometryFlagBitsKHR {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{self:?}")
     }
@@ -7121,6 +8260,119 @@ impl std::fmt::Display for ColorComponentFlagBits {
 
 #[repr(C)]
 #[derive(Clone, Copy, PartialEq, Eq)]
+#[doc = "**Chapter**: Acceleration Structures"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask of VkGeometryInstanceFlagBitsKHR"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_acceleration_structure`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_acceleration_structure.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkGeometryInstanceFlagsKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkGeometryInstanceFlagsKHR.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkGeometryInstanceFlagBitsKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkGeometryInstanceFlagBitsKHR.html)"]
+pub struct GeometryInstanceFlagsKHR(u32);
+
+impl GeometryInstanceFlagsKHR {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
+    }
+
+    #[must_use]
+    pub fn contains(self, rhs: Self) -> bool {
+        self.0 & rhs.0 == rhs.0
+    }
+}
+
+impl std::ops::BitAnd for GeometryInstanceFlagsKHR {
+    type Output = Self;
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Self(self.0 & rhs.0)
+    }
+}
+
+impl From<GeometryInstanceFlagBitsKHR> for GeometryInstanceFlagsKHR {
+    fn from(flag_bits: GeometryInstanceFlagBitsKHR) -> Self {
+        Self(flag_bits as u32)
+    }
+}
+
+impl std::ops::BitOr<GeometryInstanceFlagBitsKHR> for GeometryInstanceFlagsKHR {
+    type Output = GeometryInstanceFlagsKHR;
+    fn bitor(self, rhs: GeometryInstanceFlagBitsKHR) -> Self::Output {
+        Self(self.0 | rhs as u32)
+    }
+}
+
+impl std::fmt::Display for GeometryInstanceFlagsKHR {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        #[allow(deprecated)]
+        display_flag_bits_u32(
+            f,
+            self.0,
+            &[
+                GeometryInstanceFlagBitsKHR::TriangleFacingCullDisableKHR,
+                GeometryInstanceFlagBitsKHR::TriangleFlipFacingKHR,
+                GeometryInstanceFlagBitsKHR::ForceOpaqueKHR,
+                GeometryInstanceFlagBitsKHR::ForceNoOpaqueKHR,
+            ],
+        )
+    }
+}
+
+impl std::fmt::Debug for GeometryInstanceFlagsKHR {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("GeometryInstanceFlagsKHR").field(&format!("{self}")).finish()
+    }
+}
+
+#[repr(u32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[doc = "**Chapter**: Acceleration Structures"]
+#[doc = "<br>"]
+#[doc = "**Description**: Instance flag bits"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_acceleration_structure`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_acceleration_structure.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkGeometryInstanceFlagBitsKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkGeometryInstanceFlagBitsKHR.html)"]
+pub enum GeometryInstanceFlagBitsKHR {
+    #[doc = "Translated from: `VK_GEOMETRY_INSTANCE_TRIANGLE_FACING_CULL_DISABLE_BIT_KHR`"]
+    TriangleFacingCullDisableKHR = 0b1,
+    #[doc = "Translated from: `VK_GEOMETRY_INSTANCE_TRIANGLE_FLIP_FACING_BIT_KHR`"]
+    TriangleFlipFacingKHR = 0b10,
+    #[doc = "Translated from: `VK_GEOMETRY_INSTANCE_FORCE_OPAQUE_BIT_KHR`"]
+    ForceOpaqueKHR = 0b100,
+    #[doc = "Translated from: `VK_GEOMETRY_INSTANCE_FORCE_NO_OPAQUE_BIT_KHR`"]
+    ForceNoOpaqueKHR = 0b1000,
+}
+
+impl From<GeometryInstanceFlagBitsKHR> for u32 {
+    fn from(flag_bits: GeometryInstanceFlagBitsKHR) -> Self {
+        flag_bits as u32
+    }
+}
+
+impl std::ops::BitOr for GeometryInstanceFlagBitsKHR {
+    type Output = GeometryInstanceFlagsKHR;
+    fn bitor(self, rhs: Self) -> Self::Output {
+        GeometryInstanceFlagsKHR(self as u32 | rhs as u32)
+    }
+}
+
+impl std::ops::BitOr<GeometryInstanceFlagsKHR> for GeometryInstanceFlagBitsKHR {
+    type Output = GeometryInstanceFlagsKHR;
+    fn bitor(self, rhs: GeometryInstanceFlagsKHR) -> Self::Output {
+        GeometryInstanceFlagsKHR(self as u32 | rhs.0)
+    }
+}
+
+impl std::fmt::Display for GeometryInstanceFlagBitsKHR {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq)]
 #[doc = "**Chapter**: Limits"]
 #[doc = "<br>"]
 #[doc = "**Description**: Bitmask of VkSampleCountFlagBits"]
@@ -7911,6 +9163,10 @@ pub struct PhysicalDeviceProperties {
 #[doc = "<br>"]
 #[doc = "**Extendable by**: [`VkPhysicalDeviceMeshShaderPropertiesEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceMeshShaderPropertiesEXT.html)"]
 #[doc = "<br>"]
+#[doc = "**Extendable by**: [`VkPhysicalDeviceAccelerationStructurePropertiesKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceAccelerationStructurePropertiesKHR.html)"]
+#[doc = "<br>"]
+#[doc = "**Extendable by**: [`VkPhysicalDeviceRayTracingPipelinePropertiesKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceRayTracingPipelinePropertiesKHR.html)"]
+#[doc = "<br>"]
 #[doc = "**Extendable by**: [`VkPhysicalDeviceDescriptorBufferPropertiesEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceDescriptorBufferPropertiesEXT.html)"]
 #[doc = "<br>"]
 #[doc = "**Initialization template**:"]
@@ -8002,6 +9258,14 @@ pub struct QueueFamilyProperties2 {
 #[doc = "**Extendable by**: [`VkPhysicalDeviceVulkan13Features`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceVulkan13Features.html)"]
 #[doc = "<br>"]
 #[doc = "**Extendable by**: [`VkPhysicalDeviceMeshShaderFeaturesEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceMeshShaderFeaturesEXT.html)"]
+#[doc = "<br>"]
+#[doc = "**Extendable by**: [`VkPhysicalDeviceAccelerationStructureFeaturesKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceAccelerationStructureFeaturesKHR.html)"]
+#[doc = "<br>"]
+#[doc = "**Extendable by**: [`VkPhysicalDeviceRayTracingPipelineFeaturesKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceRayTracingPipelineFeaturesKHR.html)"]
+#[doc = "<br>"]
+#[doc = "**Extendable by**: [`VkPhysicalDeviceRayQueryFeaturesKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceRayQueryFeaturesKHR.html)"]
+#[doc = "<br>"]
+#[doc = "**Extendable by**: [`VkPhysicalDeviceRayTracingMaintenance1FeaturesKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceRayTracingMaintenance1FeaturesKHR.html)"]
 #[doc = "<br>"]
 #[doc = "**Extendable by**: [`VkPhysicalDeviceDescriptorBufferFeaturesEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceDescriptorBufferFeaturesEXT.html)"]
 #[doc = "<br>"]
@@ -8719,6 +9983,216 @@ pub struct ShaderCreateInfoEXT {
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Shaders"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure specifying parameters of a newly created shader module"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkShaderModuleCreateInfo`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkShaderModuleCreateInfo.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
+let shader_module_create_info = vk::ShaderModuleCreateInfo {
+    s_type: vk::StructureType::ShaderModuleCreateInfo,
+    p_next: null(),
+    flags: todo!("vk::ShaderModuleCreateFlagBits"),
+    code_size: todo!("usize"),
+    p_code: todo!("*const u32"),
+};
+```"#]
+pub struct ShaderModuleCreateInfo {
+    pub s_type: StructureType,
+    pub p_next: *const c_void,
+    pub flags: ShaderModuleCreateFlags,
+    pub code_size: usize,
+    pub p_code: *const u32,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Pipelines"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure specifying parameters of a newly created pipeline shader stage"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkPipelineShaderStageCreateInfo`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPipelineShaderStageCreateInfo.html)"]
+#[doc = "<br>"]
+#[doc = "**Extendable by**: [`VkShaderModuleCreateInfo`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkShaderModuleCreateInfo.html)"]
+#[doc = "<br>"]
+#[doc = "**Extendable by**: [`VkDebugUtilsObjectNameInfoEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDebugUtilsObjectNameInfoEXT.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
+let pipeline_shader_stage_create_info = vk::PipelineShaderStageCreateInfo {
+    s_type: vk::StructureType::PipelineShaderStageCreateInfo,
+    p_next: null(),
+    flags: todo!("vk::PipelineShaderStageCreateFlagBits"),
+    stage: todo!("vk::ShaderStageFlagBits"),
+    module: todo!("vk::ShaderModule"),
+    p_name: todo!("*const c_char"),
+    p_specialization_info: todo!("*const vk::SpecializationInfo"),
+};
+```"#]
+pub struct PipelineShaderStageCreateInfo {
+    pub s_type: StructureType,
+    pub p_next: *const c_void,
+    pub flags: PipelineShaderStageCreateFlags,
+    pub stage: ShaderStageFlagBits,
+    pub module: ShaderModule,
+    pub p_name: *const c_char,
+    pub p_specialization_info: *const SpecializationInfo,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Pipelines"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure specifying parameters of a newly created pipeline dynamic state"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkPipelineDynamicStateCreateInfo`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPipelineDynamicStateCreateInfo.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
+let pipeline_dynamic_state_create_info = vk::PipelineDynamicStateCreateInfo {
+    s_type: vk::StructureType::PipelineDynamicStateCreateInfo,
+    p_next: null(),
+    flags: todo!("vk::PipelineDynamicStateCreateFlagBits"),
+    dynamic_state_count: todo!("u32"),
+    p_dynamic_states: todo!("*const vk::DynamicState"),
+};
+```"#]
+pub struct PipelineDynamicStateCreateInfo {
+    pub s_type: StructureType,
+    pub p_next: *const c_void,
+    pub flags: PipelineDynamicStateCreateFlags,
+    pub dynamic_state_count: u32,
+    pub p_dynamic_states: *const DynamicState,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Pipelines"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure specifying parameters of a newly created ray tracing pipeline"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_ray_tracing_pipeline`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_ray_tracing_pipeline.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkRayTracingPipelineCreateInfoKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkRayTracingPipelineCreateInfoKHR.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
+let ray_tracing_pipeline_create_info_khr = vk::RayTracingPipelineCreateInfoKHR {
+    s_type: vk::StructureType::RayTracingPipelineCreateInfoKHR,
+    p_next: null(),
+    flags: todo!("vk::PipelineCreateFlagBits"),
+    stage_count: todo!("u32"),
+    p_stages: todo!("*const vk::PipelineShaderStageCreateInfo"),
+    group_count: todo!("u32"),
+    p_groups: todo!("*const vk::RayTracingShaderGroupCreateInfoKHR"),
+    max_pipeline_ray_recursion_depth: todo!("u32"),
+    p_library_info: todo!("*const vk::PipelineLibraryCreateInfoKHR"),
+    p_library_interface: todo!("*const vk::RayTracingPipelineInterfaceCreateInfoKHR"),
+    p_dynamic_state: todo!("*const vk::PipelineDynamicStateCreateInfo"),
+    layout: todo!("vk::PipelineLayout"),
+    base_pipeline_handle: todo!("vk::Pipeline"),
+    base_pipeline_index: todo!("i32"),
+};
+```"#]
+pub struct RayTracingPipelineCreateInfoKHR {
+    pub s_type: StructureType,
+    pub p_next: *const c_void,
+    pub flags: PipelineCreateFlags,
+    pub stage_count: u32,
+    pub p_stages: *const PipelineShaderStageCreateInfo,
+    pub group_count: u32,
+    pub p_groups: *const RayTracingShaderGroupCreateInfoKHR,
+    pub max_pipeline_ray_recursion_depth: u32,
+    pub p_library_info: *const PipelineLibraryCreateInfoKHR,
+    pub p_library_interface: *const RayTracingPipelineInterfaceCreateInfoKHR,
+    pub p_dynamic_state: *const PipelineDynamicStateCreateInfo,
+    pub layout: PipelineLayout,
+    pub base_pipeline_handle: Pipeline,
+    pub base_pipeline_index: i32,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Pipelines"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure specifying shaders in a shader group"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_ray_tracing_pipeline`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_ray_tracing_pipeline.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkRayTracingShaderGroupCreateInfoKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkRayTracingShaderGroupCreateInfoKHR.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
+let ray_tracing_shader_group_create_info_khr = vk::RayTracingShaderGroupCreateInfoKHR {
+    s_type: vk::StructureType::RayTracingShaderGroupCreateInfoKHR,
+    p_next: null(),
+    ty: todo!("vk::RayTracingShaderGroupTypeKHR"),
+    general_shader: todo!("u32"),
+    closest_hit_shader: todo!("u32"),
+    any_hit_shader: todo!("u32"),
+    intersection_shader: todo!("u32"),
+    p_shader_group_capture_replay_handle: todo!("*const c_void"),
+};
+```"#]
+pub struct RayTracingShaderGroupCreateInfoKHR {
+    pub s_type: StructureType,
+    pub p_next: *const c_void,
+    pub ty: RayTracingShaderGroupTypeKHR,
+    pub general_shader: u32,
+    pub closest_hit_shader: u32,
+    pub any_hit_shader: u32,
+    pub intersection_shader: u32,
+    pub p_shader_group_capture_replay_handle: *const c_void,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Pipelines"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure specifying additional interface information when using libraries"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_ray_tracing_pipeline`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_ray_tracing_pipeline.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkRayTracingPipelineInterfaceCreateInfoKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkRayTracingPipelineInterfaceCreateInfoKHR.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
+let ray_tracing_pipeline_interface_create_info_khr = vk::RayTracingPipelineInterfaceCreateInfoKHR {
+    s_type: vk::StructureType::RayTracingPipelineInterfaceCreateInfoKHR,
+    p_next: null(),
+    max_pipeline_ray_payload_size: todo!("u32"),
+    max_pipeline_ray_hit_attribute_size: todo!("u32"),
+};
+```"#]
+pub struct RayTracingPipelineInterfaceCreateInfoKHR {
+    pub s_type: StructureType,
+    pub p_next: *const c_void,
+    pub max_pipeline_ray_payload_size: u32,
+    pub max_pipeline_ray_hit_attribute_size: u32,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
 #[doc = "**Chapter**: Pipelines"]
 #[doc = "<br>"]
 #[doc = "**Description**: Structure specifying specialization information"]
@@ -8769,6 +10243,34 @@ pub struct SpecializationMapEntry {
     pub constant_id: u32,
     pub offset: u32,
     pub size: usize,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Pipelines"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure specifying pipeline libraries to use when creating a pipeline"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_pipeline_library`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_pipeline_library.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkPipelineLibraryCreateInfoKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPipelineLibraryCreateInfoKHR.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
+let pipeline_library_create_info_khr = vk::PipelineLibraryCreateInfoKHR {
+    s_type: vk::StructureType::PipelineLibraryCreateInfoKHR,
+    p_next: null(),
+    library_count: todo!("u32"),
+    p_libraries: todo!("*const vk::Pipeline"),
+};
+```"#]
+pub struct PipelineLibraryCreateInfoKHR {
+    pub s_type: StructureType,
+    pub p_next: *const c_void,
+    pub library_count: u32,
+    pub p_libraries: *const Pipeline,
 }
 
 #[repr(C)]
@@ -9201,6 +10703,98 @@ pub struct ComponentMapping {
     pub g: ComponentSwizzle,
     pub b: ComponentSwizzle,
     pub a: ComponentSwizzle,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Resource Creation"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure specifying the parameters of a newly created acceleration structure object"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_acceleration_structure`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_acceleration_structure.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkAccelerationStructureCreateInfoKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkAccelerationStructureCreateInfoKHR.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
+let acceleration_structure_create_info_khr = vk::AccelerationStructureCreateInfoKHR {
+    s_type: vk::StructureType::AccelerationStructureCreateInfoKHR,
+    p_next: null(),
+    create_flags: todo!("vk::AccelerationStructureCreateFlagBitsKHR"),
+    buffer: todo!("vk::Buffer"),
+    offset: todo!("vk::DeviceSize"),
+    size: todo!("vk::DeviceSize"),
+    ty: todo!("vk::AccelerationStructureTypeKHR"),
+    device_address: todo!("vk::DeviceAddress"),
+};
+```"#]
+pub struct AccelerationStructureCreateInfoKHR {
+    pub s_type: StructureType,
+    pub p_next: *const c_void,
+    pub create_flags: AccelerationStructureCreateFlagsKHR,
+    pub buffer: Buffer,
+    pub offset: DeviceSize,
+    pub size: DeviceSize,
+    pub ty: AccelerationStructureTypeKHR,
+    pub device_address: DeviceAddress,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Resource Creation"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure specifying build sizes for an acceleration structure"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_acceleration_structure`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_acceleration_structure.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkAccelerationStructureBuildSizesInfoKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkAccelerationStructureBuildSizesInfoKHR.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
+let acceleration_structure_build_sizes_info_khr = vk::AccelerationStructureBuildSizesInfoKHR {
+    s_type: vk::StructureType::AccelerationStructureBuildSizesInfoKHR,
+    p_next: null(),
+    acceleration_structure_size: todo!("vk::DeviceSize"),
+    update_scratch_size: todo!("vk::DeviceSize"),
+    build_scratch_size: todo!("vk::DeviceSize"),
+};
+```"#]
+pub struct AccelerationStructureBuildSizesInfoKHR {
+    pub s_type: StructureType,
+    pub p_next: *const c_void,
+    pub acceleration_structure_size: DeviceSize,
+    pub update_scratch_size: DeviceSize,
+    pub build_scratch_size: DeviceSize,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Resource Creation"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure specifying the acceleration structure to query an address for"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_acceleration_structure`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_acceleration_structure.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkAccelerationStructureDeviceAddressInfoKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkAccelerationStructureDeviceAddressInfoKHR.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
+let acceleration_structure_device_address_info_khr = vk::AccelerationStructureDeviceAddressInfoKHR {
+    s_type: vk::StructureType::AccelerationStructureDeviceAddressInfoKHR,
+    p_next: null(),
+    acceleration_structure: todo!("vk::AccelerationStructureKHR"),
+};
+```"#]
+pub struct AccelerationStructureDeviceAddressInfoKHR {
+    pub s_type: StructureType,
+    pub p_next: *const c_void,
+    pub acceleration_structure: AccelerationStructureKHR,
 }
 
 #[repr(C)]
@@ -9873,6 +11467,32 @@ pub struct BufferImageCopy2 {
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Drawing Commands"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure specifying a mesh tasks draw indirect command"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_EXT_mesh_shader`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_mesh_shader.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkDrawMeshTasksIndirectCommandEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDrawMeshTasksIndirectCommandEXT.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
+let draw_mesh_tasks_indirect_command_ext = vk::DrawMeshTasksIndirectCommandEXT {
+    group_count_x: todo!("u32"),
+    group_count_y: todo!("u32"),
+    group_count_z: todo!("u32"),
+};
+```"#]
+pub struct DrawMeshTasksIndirectCommandEXT {
+    pub group_count_x: u32,
+    pub group_count_y: u32,
+    pub group_count_z: u32,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
 #[doc = "**Chapter**: Fixed-Function Vertex Post-Processing"]
 #[doc = "<br>"]
 #[doc = "**Description**: Structure specifying a viewport"]
@@ -9937,6 +11557,32 @@ pub struct ColorBlendEquationEXT {
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Dispatching Commands"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure specifying a indirect dispatching command"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkDispatchIndirectCommand`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDispatchIndirectCommand.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
+let dispatch_indirect_command = vk::DispatchIndirectCommand {
+    x: todo!("u32"),
+    y: todo!("u32"),
+    z: todo!("u32"),
+};
+```"#]
+pub struct DispatchIndirectCommand {
+    pub x: u32,
+    pub y: u32,
+    pub z: u32,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
 #[doc = "**Chapter**: Sparse Resources"]
 #[doc = "<br>"]
 #[doc = "**Description**: Structure specifying physical device sparse memory properties"]
@@ -9967,6 +11613,326 @@ pub struct PhysicalDeviceSparseProperties {
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Acceleration Structures"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure specifying the geometry data used to build an acceleration structure"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_acceleration_structure`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_acceleration_structure.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkAccelerationStructureBuildGeometryInfoKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkAccelerationStructureBuildGeometryInfoKHR.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
+let acceleration_structure_build_geometry_info_khr = vk::AccelerationStructureBuildGeometryInfoKHR {
+    s_type: vk::StructureType::AccelerationStructureBuildGeometryInfoKHR,
+    p_next: null(),
+    ty: todo!("vk::AccelerationStructureTypeKHR"),
+    flags: todo!("vk::BuildAccelerationStructureFlagBitsKHR"),
+    mode: todo!("vk::BuildAccelerationStructureModeKHR"),
+    src_acceleration_structure: todo!("vk::AccelerationStructureKHR"),
+    dst_acceleration_structure: todo!("vk::AccelerationStructureKHR"),
+    geometry_count: todo!("u32"),
+    p_geometries: todo!("*const vk::AccelerationStructureGeometryKHR"),
+    pp_geometries: todo!("*const *const vk::AccelerationStructureGeometryKHR"),
+    scratch_data: todo!("vk::DeviceOrHostAddressKHR"),
+};
+```"#]
+pub struct AccelerationStructureBuildGeometryInfoKHR {
+    pub s_type: StructureType,
+    pub p_next: *const c_void,
+    pub ty: AccelerationStructureTypeKHR,
+    pub flags: BuildAccelerationStructureFlagsKHR,
+    pub mode: BuildAccelerationStructureModeKHR,
+    pub src_acceleration_structure: AccelerationStructureKHR,
+    pub dst_acceleration_structure: AccelerationStructureKHR,
+    pub geometry_count: u32,
+    pub p_geometries: *const AccelerationStructureGeometryKHR,
+    pub pp_geometries: *const *const AccelerationStructureGeometryKHR,
+    pub scratch_data: DeviceOrHostAddressKHR,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Acceleration Structures"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure specifying geometries to be built into an acceleration structure"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_acceleration_structure`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_acceleration_structure.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkAccelerationStructureGeometryKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkAccelerationStructureGeometryKHR.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
+let acceleration_structure_geometry_khr = vk::AccelerationStructureGeometryKHR {
+    s_type: vk::StructureType::AccelerationStructureGeometryKHR,
+    p_next: null(),
+    geometry_type: todo!("vk::GeometryTypeKHR"),
+    geometry: todo!("vk::AccelerationStructureGeometryDataKHR"),
+    flags: todo!("vk::GeometryFlagBitsKHR"),
+};
+```"#]
+pub struct AccelerationStructureGeometryKHR {
+    pub s_type: StructureType,
+    pub p_next: *const c_void,
+    pub geometry_type: GeometryTypeKHR,
+    pub geometry: AccelerationStructureGeometryDataKHR,
+    pub flags: GeometryFlagsKHR,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Acceleration Structures"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure specifying a triangle geometry in a bottom-level acceleration structure"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_acceleration_structure`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_acceleration_structure.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkAccelerationStructureGeometryTrianglesDataKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkAccelerationStructureGeometryTrianglesDataKHR.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
+let acceleration_structure_geometry_triangles_data_khr = vk::AccelerationStructureGeometryTrianglesDataKHR {
+    s_type: vk::StructureType::AccelerationStructureGeometryTrianglesDataKHR,
+    p_next: null(),
+    vertex_format: todo!("vk::Format"),
+    vertex_data: todo!("vk::DeviceOrHostAddressConstKHR"),
+    vertex_stride: todo!("vk::DeviceSize"),
+    max_vertex: todo!("u32"),
+    index_type: todo!("vk::IndexType"),
+    index_data: todo!("vk::DeviceOrHostAddressConstKHR"),
+    transform_data: todo!("vk::DeviceOrHostAddressConstKHR"),
+};
+```"#]
+pub struct AccelerationStructureGeometryTrianglesDataKHR {
+    pub s_type: StructureType,
+    pub p_next: *const c_void,
+    pub vertex_format: Format,
+    pub vertex_data: DeviceOrHostAddressConstKHR,
+    pub vertex_stride: DeviceSize,
+    pub max_vertex: u32,
+    pub index_type: IndexType,
+    pub index_data: DeviceOrHostAddressConstKHR,
+    pub transform_data: DeviceOrHostAddressConstKHR,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Acceleration Structures"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure specifying a 3x4 affine transformation matrix"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_acceleration_structure`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_acceleration_structure.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkTransformMatrixKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkTransformMatrixKHR.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
+let transform_matrix_khr = vk::TransformMatrixKHR {
+    matrix: todo!("[[f32; 4]; 3]"),
+};
+```"#]
+pub struct TransformMatrixKHR {
+    pub matrix: [[f32; 4]; 3],
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Acceleration Structures"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure specifying axis-aligned bounding box geometry in a bottom-level acceleration structure"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_acceleration_structure`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_acceleration_structure.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkAccelerationStructureGeometryAabbsDataKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkAccelerationStructureGeometryAabbsDataKHR.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
+let acceleration_structure_geometry_aabbs_data_khr = vk::AccelerationStructureGeometryAabbsDataKHR {
+    s_type: vk::StructureType::AccelerationStructureGeometryAabbsDataKHR,
+    p_next: null(),
+    data: todo!("vk::DeviceOrHostAddressConstKHR"),
+    stride: todo!("vk::DeviceSize"),
+};
+```"#]
+pub struct AccelerationStructureGeometryAabbsDataKHR {
+    pub s_type: StructureType,
+    pub p_next: *const c_void,
+    pub data: DeviceOrHostAddressConstKHR,
+    pub stride: DeviceSize,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Acceleration Structures"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure specifying a geometry consisting of instances of other acceleration structures"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_acceleration_structure`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_acceleration_structure.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkAccelerationStructureGeometryInstancesDataKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkAccelerationStructureGeometryInstancesDataKHR.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
+let acceleration_structure_geometry_instances_data_khr = vk::AccelerationStructureGeometryInstancesDataKHR {
+    s_type: vk::StructureType::AccelerationStructureGeometryInstancesDataKHR,
+    p_next: null(),
+    array_of_pointers: todo!("vk::Bool32"),
+    data: todo!("vk::DeviceOrHostAddressConstKHR"),
+};
+```"#]
+pub struct AccelerationStructureGeometryInstancesDataKHR {
+    pub s_type: StructureType,
+    pub p_next: *const c_void,
+    pub array_of_pointers: Bool32,
+    pub data: DeviceOrHostAddressConstKHR,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Acceleration Structures"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure specifying a single acceleration structure instance for building into an acceleration structure geometry"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_acceleration_structure`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_acceleration_structure.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkAccelerationStructureInstanceKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkAccelerationStructureInstanceKHR.html)"]
+#[doc = "<br>"]
+#[doc = "**Note**: The original type contained **4** bitfields which were collapsed by the generator."]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
+let acceleration_structure_instance_khr = vk::AccelerationStructureInstanceKHR {
+    transform: todo!("vk::TransformMatrixKHR"),
+    instance_custom_index24_and_mask8: todo!("u32"),
+    instance_shader_binding_table_record_offset24_and_flags8: todo!("u32"),
+    acceleration_structure_reference: todo!("u64"),
+};
+```"#]
+pub struct AccelerationStructureInstanceKHR {
+    pub transform: TransformMatrixKHR,
+    pub instance_custom_index24_and_mask8: u32,
+    pub instance_shader_binding_table_record_offset24_and_flags8: u32,
+    pub acceleration_structure_reference: u64,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Acceleration Structures"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure specifying build offsets and counts for acceleration structure builds"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_acceleration_structure`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_acceleration_structure.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkAccelerationStructureBuildRangeInfoKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkAccelerationStructureBuildRangeInfoKHR.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
+let acceleration_structure_build_range_info_khr = vk::AccelerationStructureBuildRangeInfoKHR {
+    primitive_count: todo!("u32"),
+    primitive_offset: todo!("u32"),
+    first_vertex: todo!("u32"),
+    transform_offset: todo!("u32"),
+};
+```"#]
+pub struct AccelerationStructureBuildRangeInfoKHR {
+    pub primitive_count: u32,
+    pub primitive_offset: u32,
+    pub first_vertex: u32,
+    pub transform_offset: u32,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Ray Tracing"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure specifying a region of device addresses with a stride"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_ray_tracing_pipeline`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_ray_tracing_pipeline.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkStridedDeviceAddressRegionKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkStridedDeviceAddressRegionKHR.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
+let strided_device_address_region_khr = vk::StridedDeviceAddressRegionKHR {
+    device_address: todo!("vk::DeviceAddress"),
+    stride: todo!("vk::DeviceSize"),
+    size: todo!("vk::DeviceSize"),
+};
+```"#]
+pub struct StridedDeviceAddressRegionKHR {
+    pub device_address: DeviceAddress,
+    pub stride: DeviceSize,
+    pub size: DeviceSize,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Ray Tracing"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure specifying the parameters of an indirect trace ray command with indirect shader binding tables"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_ray_tracing_maintenance1`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_ray_tracing_maintenance1.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkTraceRaysIndirectCommand2KHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkTraceRaysIndirectCommand2KHR.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
+let trace_rays_indirect_command2_khr = vk::TraceRaysIndirectCommand2KHR {
+    raygen_shader_record_address: todo!("vk::DeviceAddress"),
+    raygen_shader_record_size: todo!("vk::DeviceSize"),
+    miss_shader_binding_table_address: todo!("vk::DeviceAddress"),
+    miss_shader_binding_table_size: todo!("vk::DeviceSize"),
+    miss_shader_binding_table_stride: todo!("vk::DeviceSize"),
+    hit_shader_binding_table_address: todo!("vk::DeviceAddress"),
+    hit_shader_binding_table_size: todo!("vk::DeviceSize"),
+    hit_shader_binding_table_stride: todo!("vk::DeviceSize"),
+    callable_shader_binding_table_address: todo!("vk::DeviceAddress"),
+    callable_shader_binding_table_size: todo!("vk::DeviceSize"),
+    callable_shader_binding_table_stride: todo!("vk::DeviceSize"),
+    width: todo!("u32"),
+    height: todo!("u32"),
+    depth: todo!("u32"),
+};
+```"#]
+pub struct TraceRaysIndirectCommand2KHR {
+    pub raygen_shader_record_address: DeviceAddress,
+    pub raygen_shader_record_size: DeviceSize,
+    pub miss_shader_binding_table_address: DeviceAddress,
+    pub miss_shader_binding_table_size: DeviceSize,
+    pub miss_shader_binding_table_stride: DeviceSize,
+    pub hit_shader_binding_table_address: DeviceAddress,
+    pub hit_shader_binding_table_size: DeviceSize,
+    pub hit_shader_binding_table_stride: DeviceSize,
+    pub callable_shader_binding_table_address: DeviceAddress,
+    pub callable_shader_binding_table_size: DeviceSize,
+    pub callable_shader_binding_table_stride: DeviceSize,
+    pub width: u32,
+    pub height: u32,
+    pub depth: u32,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
 #[doc = "**Chapter**: Features"]
 #[doc = "<br>"]
 #[doc = "**Description**: Structure describing the fine-grained features that can be supported by an implementation"]
@@ -9982,6 +11948,14 @@ pub struct PhysicalDeviceSparseProperties {
 #[doc = "**Extendable by**: [`VkPhysicalDeviceVulkan13Features`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceVulkan13Features.html)"]
 #[doc = "<br>"]
 #[doc = "**Extendable by**: [`VkPhysicalDeviceMeshShaderFeaturesEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceMeshShaderFeaturesEXT.html)"]
+#[doc = "<br>"]
+#[doc = "**Extendable by**: [`VkPhysicalDeviceAccelerationStructureFeaturesKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceAccelerationStructureFeaturesKHR.html)"]
+#[doc = "<br>"]
+#[doc = "**Extendable by**: [`VkPhysicalDeviceRayTracingPipelineFeaturesKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceRayTracingPipelineFeaturesKHR.html)"]
+#[doc = "<br>"]
+#[doc = "**Extendable by**: [`VkPhysicalDeviceRayQueryFeaturesKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceRayQueryFeaturesKHR.html)"]
+#[doc = "<br>"]
+#[doc = "**Extendable by**: [`VkPhysicalDeviceRayTracingMaintenance1FeaturesKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceRayTracingMaintenance1FeaturesKHR.html)"]
 #[doc = "<br>"]
 #[doc = "**Extendable by**: [`VkPhysicalDeviceDescriptorBufferFeaturesEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceDescriptorBufferFeaturesEXT.html)"]
 #[doc = "<br>"]
@@ -10391,6 +12365,128 @@ pub struct PhysicalDeviceMeshShaderFeaturesEXT {
 #[derive(Clone, Copy, Debug)]
 #[doc = "**Chapter**: Features"]
 #[doc = "<br>"]
+#[doc = "**Description**: Structure describing the acceleration structure features that can be supported by an implementation"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_acceleration_structure`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_acceleration_structure.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkPhysicalDeviceAccelerationStructureFeaturesKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceAccelerationStructureFeaturesKHR.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
+let physical_device_acceleration_structure_features_khr = vk::PhysicalDeviceAccelerationStructureFeaturesKHR {
+    s_type: vk::StructureType::PhysicalDeviceAccelerationStructureFeaturesKHR,
+    p_next: null_mut(),
+    acceleration_structure: todo!("vk::Bool32"),
+    acceleration_structure_capture_replay: todo!("vk::Bool32"),
+    acceleration_structure_indirect_build: todo!("vk::Bool32"),
+    acceleration_structure_host_commands: todo!("vk::Bool32"),
+    descriptor_binding_acceleration_structure_update_after_bind: todo!("vk::Bool32"),
+};
+```"#]
+pub struct PhysicalDeviceAccelerationStructureFeaturesKHR {
+    pub s_type: StructureType,
+    pub p_next: *mut c_void,
+    pub acceleration_structure: Bool32,
+    pub acceleration_structure_capture_replay: Bool32,
+    pub acceleration_structure_indirect_build: Bool32,
+    pub acceleration_structure_host_commands: Bool32,
+    pub descriptor_binding_acceleration_structure_update_after_bind: Bool32,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Features"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure describing the ray tracing features that can be supported by an implementation"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_ray_tracing_pipeline`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_ray_tracing_pipeline.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkPhysicalDeviceRayTracingPipelineFeaturesKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceRayTracingPipelineFeaturesKHR.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
+let physical_device_ray_tracing_pipeline_features_khr = vk::PhysicalDeviceRayTracingPipelineFeaturesKHR {
+    s_type: vk::StructureType::PhysicalDeviceRayTracingPipelineFeaturesKHR,
+    p_next: null_mut(),
+    ray_tracing_pipeline: todo!("vk::Bool32"),
+    ray_tracing_pipeline_shader_group_handle_capture_replay: todo!("vk::Bool32"),
+    ray_tracing_pipeline_shader_group_handle_capture_replay_mixed: todo!("vk::Bool32"),
+    ray_tracing_pipeline_trace_rays_indirect: todo!("vk::Bool32"),
+    ray_traversal_primitive_culling: todo!("vk::Bool32"),
+};
+```"#]
+pub struct PhysicalDeviceRayTracingPipelineFeaturesKHR {
+    pub s_type: StructureType,
+    pub p_next: *mut c_void,
+    pub ray_tracing_pipeline: Bool32,
+    pub ray_tracing_pipeline_shader_group_handle_capture_replay: Bool32,
+    pub ray_tracing_pipeline_shader_group_handle_capture_replay_mixed: Bool32,
+    pub ray_tracing_pipeline_trace_rays_indirect: Bool32,
+    pub ray_traversal_primitive_culling: Bool32,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Features"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure describing the ray query features that can be supported by an implementation"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_ray_query`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_ray_query.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkPhysicalDeviceRayQueryFeaturesKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceRayQueryFeaturesKHR.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
+let physical_device_ray_query_features_khr = vk::PhysicalDeviceRayQueryFeaturesKHR {
+    s_type: vk::StructureType::PhysicalDeviceRayQueryFeaturesKHR,
+    p_next: null_mut(),
+    ray_query: todo!("vk::Bool32"),
+};
+```"#]
+pub struct PhysicalDeviceRayQueryFeaturesKHR {
+    pub s_type: StructureType,
+    pub p_next: *mut c_void,
+    pub ray_query: Bool32,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Features"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure describing the ray tracing maintenance features that can be supported by an implementation"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_ray_tracing_maintenance1`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_ray_tracing_maintenance1.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkPhysicalDeviceRayTracingMaintenance1FeaturesKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceRayTracingMaintenance1FeaturesKHR.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
+let physical_device_ray_tracing_maintenance1_features_khr = vk::PhysicalDeviceRayTracingMaintenance1FeaturesKHR {
+    s_type: vk::StructureType::PhysicalDeviceRayTracingMaintenance1FeaturesKHR,
+    p_next: null_mut(),
+    ray_tracing_maintenance1: todo!("vk::Bool32"),
+    ray_tracing_pipeline_trace_rays_indirect2: todo!("vk::Bool32"),
+};
+```"#]
+pub struct PhysicalDeviceRayTracingMaintenance1FeaturesKHR {
+    pub s_type: StructureType,
+    pub p_next: *mut c_void,
+    pub ray_tracing_maintenance1: Bool32,
+    pub ray_tracing_pipeline_trace_rays_indirect2: Bool32,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Features"]
+#[doc = "<br>"]
 #[doc = "**Description**: Structure describing the descriptor buffer features that can be supported by an implementation"]
 #[doc = "<br>"]
 #[doc = "**Provided by**: [`VK_EXT_descriptor_buffer`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_descriptor_buffer.html)"]
@@ -10793,6 +12889,86 @@ pub struct PhysicalDeviceMeshShaderPropertiesEXT {
 #[derive(Clone, Copy, Debug)]
 #[doc = "**Chapter**: Limits"]
 #[doc = "<br>"]
+#[doc = "**Description**: Properties of the physical device for acceleration structure"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_acceleration_structure`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_acceleration_structure.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkPhysicalDeviceAccelerationStructurePropertiesKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceAccelerationStructurePropertiesKHR.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
+let physical_device_acceleration_structure_properties_khr = vk::PhysicalDeviceAccelerationStructurePropertiesKHR {
+    s_type: vk::StructureType::PhysicalDeviceAccelerationStructurePropertiesKHR,
+    p_next: null_mut(),
+    max_geometry_count: todo!("u64"),
+    max_instance_count: todo!("u64"),
+    max_primitive_count: todo!("u64"),
+    max_per_stage_descriptor_acceleration_structures: todo!("u32"),
+    max_per_stage_descriptor_update_after_bind_acceleration_structures: todo!("u32"),
+    max_descriptor_set_acceleration_structures: todo!("u32"),
+    max_descriptor_set_update_after_bind_acceleration_structures: todo!("u32"),
+    min_acceleration_structure_scratch_offset_alignment: todo!("u32"),
+};
+```"#]
+pub struct PhysicalDeviceAccelerationStructurePropertiesKHR {
+    pub s_type: StructureType,
+    pub p_next: *mut c_void,
+    pub max_geometry_count: u64,
+    pub max_instance_count: u64,
+    pub max_primitive_count: u64,
+    pub max_per_stage_descriptor_acceleration_structures: u32,
+    pub max_per_stage_descriptor_update_after_bind_acceleration_structures: u32,
+    pub max_descriptor_set_acceleration_structures: u32,
+    pub max_descriptor_set_update_after_bind_acceleration_structures: u32,
+    pub min_acceleration_structure_scratch_offset_alignment: u32,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Limits"]
+#[doc = "<br>"]
+#[doc = "**Description**: Properties of the physical device for ray tracing"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_ray_tracing_pipeline`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_ray_tracing_pipeline.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkPhysicalDeviceRayTracingPipelinePropertiesKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPhysicalDeviceRayTracingPipelinePropertiesKHR.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
+let physical_device_ray_tracing_pipeline_properties_khr = vk::PhysicalDeviceRayTracingPipelinePropertiesKHR {
+    s_type: vk::StructureType::PhysicalDeviceRayTracingPipelinePropertiesKHR,
+    p_next: null_mut(),
+    shader_group_handle_size: todo!("u32"),
+    max_ray_recursion_depth: todo!("u32"),
+    max_shader_group_stride: todo!("u32"),
+    shader_group_base_alignment: todo!("u32"),
+    shader_group_handle_capture_replay_size: todo!("u32"),
+    max_ray_dispatch_invocation_count: todo!("u32"),
+    shader_group_handle_alignment: todo!("u32"),
+    max_ray_hit_attribute_size: todo!("u32"),
+};
+```"#]
+pub struct PhysicalDeviceRayTracingPipelinePropertiesKHR {
+    pub s_type: StructureType,
+    pub p_next: *mut c_void,
+    pub shader_group_handle_size: u32,
+    pub max_ray_recursion_depth: u32,
+    pub max_shader_group_stride: u32,
+    pub shader_group_base_alignment: u32,
+    pub shader_group_handle_capture_replay_size: u32,
+    pub max_ray_dispatch_invocation_count: u32,
+    pub shader_group_handle_alignment: u32,
+    pub max_ray_hit_attribute_size: u32,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Limits"]
+#[doc = "<br>"]
 #[doc = "**Description**: Structure describing descriptor buffer properties supported by an implementation"]
 #[doc = "<br>"]
 #[doc = "**Provided by**: [`VK_EXT_descriptor_buffer`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_descriptor_buffer.html)"]
@@ -11085,6 +13261,67 @@ pub union ClearValue {
 impl std::fmt::Debug for ClearValue {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("ClearValue").finish()
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy)]
+#[doc = "**Chapter**: Acceleration Structures"]
+#[doc = "<br>"]
+#[doc = "**Description**: Union specifying a device or host address"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_acceleration_structure`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_acceleration_structure.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkDeviceOrHostAddressKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDeviceOrHostAddressKHR.html)"]
+pub union DeviceOrHostAddressKHR {
+    pub device_address: DeviceAddress,
+    pub host_address: *mut c_void,
+}
+
+impl std::fmt::Debug for DeviceOrHostAddressKHR {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("DeviceOrHostAddressKHR").finish()
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy)]
+#[doc = "**Chapter**: Acceleration Structures"]
+#[doc = "<br>"]
+#[doc = "**Description**: Union specifying a const device or host address"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_acceleration_structure`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_acceleration_structure.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkDeviceOrHostAddressConstKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkDeviceOrHostAddressConstKHR.html)"]
+pub union DeviceOrHostAddressConstKHR {
+    pub device_address: DeviceAddress,
+    pub host_address: *const c_void,
+}
+
+impl std::fmt::Debug for DeviceOrHostAddressConstKHR {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("DeviceOrHostAddressConstKHR").finish()
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy)]
+#[doc = "**Chapter**: Acceleration Structures"]
+#[doc = "<br>"]
+#[doc = "**Description**: Union specifying acceleration structure geometry data"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_acceleration_structure`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_acceleration_structure.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkAccelerationStructureGeometryDataKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkAccelerationStructureGeometryDataKHR.html)"]
+pub union AccelerationStructureGeometryDataKHR {
+    pub triangles: AccelerationStructureGeometryTrianglesDataKHR,
+    pub aabbs: AccelerationStructureGeometryAabbsDataKHR,
+    pub instances: AccelerationStructureGeometryInstancesDataKHR,
+}
+
+impl std::fmt::Debug for AccelerationStructureGeometryDataKHR {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("AccelerationStructureGeometryDataKHR").finish()
     }
 }
 
@@ -11476,6 +13713,92 @@ pub type DestroyShaderEXT = unsafe extern "C" fn(
     p_allocator: *const AllocationCallbacks, //
 );
 
+#[doc = "**Chapter**: Shaders"]
+#[doc = "<br>"]
+#[doc = "**Description**: Creates a new shader module object"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkCreateShaderModule`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateShaderModule.html)"]
+pub type CreateShaderModule = unsafe extern "C" fn(
+    device: Device,                               //
+    p_create_info: *const ShaderModuleCreateInfo, //
+    p_allocator: *const AllocationCallbacks,      //
+    p_shader_module: *mut ShaderModule,           //
+) -> Result;
+
+#[doc = "**Chapter**: Shaders"]
+#[doc = "<br>"]
+#[doc = "**Description**: Destroy a shader module"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkDestroyShaderModule`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroyShaderModule.html)"]
+pub type DestroyShaderModule = unsafe extern "C" fn(
+    device: Device,                          //
+    shader_module: ShaderModule,             //
+    p_allocator: *const AllocationCallbacks, //
+);
+
+#[doc = "**Chapter**: Pipelines"]
+#[doc = "<br>"]
+#[doc = "**Description**: Creates a new ray tracing pipeline object"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_ray_tracing_pipeline`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_ray_tracing_pipeline.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkCreateRayTracingPipelinesKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateRayTracingPipelinesKHR.html)"]
+pub type CreateRayTracingPipelinesKHR = unsafe extern "C" fn(
+    device: Device,                                         //
+    deferred_operation: DeferredOperationKHR,               //
+    pipeline_cache: PipelineCache,                          //
+    create_info_count: u32,                                 //
+    p_create_infos: *const RayTracingPipelineCreateInfoKHR, //
+    p_allocator: *const AllocationCallbacks,                //
+    p_pipelines: *mut Pipeline,                             //
+) -> Result;
+
+#[doc = "**Chapter**: Pipelines"]
+#[doc = "<br>"]
+#[doc = "**Description**: Query ray tracing pipeline shader group handles"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_ray_tracing_pipeline`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_ray_tracing_pipeline.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkGetRayTracingShaderGroupHandlesKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetRayTracingShaderGroupHandlesKHR.html)"]
+pub type GetRayTracingShaderGroupHandlesKHR = unsafe extern "C" fn(
+    device: Device,      //
+    pipeline: Pipeline,  //
+    first_group: u32,    //
+    group_count: u32,    //
+    data_size: usize,    //
+    p_data: *mut c_void, //
+) -> Result;
+
+#[doc = "**Chapter**: Pipelines"]
+#[doc = "<br>"]
+#[doc = "**Description**: Destroy a pipeline object"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkDestroyPipeline`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroyPipeline.html)"]
+pub type DestroyPipeline = unsafe extern "C" fn(
+    device: Device,                          //
+    pipeline: Pipeline,                      //
+    p_allocator: *const AllocationCallbacks, //
+);
+
+#[doc = "**Chapter**: Pipelines"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bind a pipeline object to a command buffer"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkCmdBindPipeline`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdBindPipeline.html)"]
+pub type CmdBindPipeline = unsafe extern "C" fn(
+    command_buffer: CommandBuffer,          //
+    pipeline_bind_point: PipelineBindPoint, //
+    pipeline: Pipeline,                     //
+);
+
 #[doc = "**Chapter**: Memory Allocation"]
 #[doc = "<br>"]
 #[doc = "**Description**: Reports memory information for the specified physical device"]
@@ -11620,6 +13943,60 @@ pub type DestroyImageView = unsafe extern "C" fn(
     image_view: ImageView,                   //
     p_allocator: *const AllocationCallbacks, //
 );
+
+#[doc = "**Chapter**: Resource Creation"]
+#[doc = "<br>"]
+#[doc = "**Description**: Create a new acceleration structure object"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_acceleration_structure`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_acceleration_structure.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkCreateAccelerationStructureKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateAccelerationStructureKHR.html)"]
+pub type CreateAccelerationStructureKHR = unsafe extern "C" fn(
+    device: Device,                                           //
+    p_create_info: *const AccelerationStructureCreateInfoKHR, //
+    p_allocator: *const AllocationCallbacks,                  //
+    p_acceleration_structure: *mut AccelerationStructureKHR,  //
+) -> Result;
+
+#[doc = "**Chapter**: Resource Creation"]
+#[doc = "<br>"]
+#[doc = "**Description**: Retrieve the required size for an acceleration structure"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_acceleration_structure`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_acceleration_structure.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkGetAccelerationStructureBuildSizesKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetAccelerationStructureBuildSizesKHR.html)"]
+pub type GetAccelerationStructureBuildSizesKHR = unsafe extern "C" fn(
+    device: Device,                                                 //
+    build_type: AccelerationStructureBuildTypeKHR,                  //
+    p_build_info: *const AccelerationStructureBuildGeometryInfoKHR, //
+    p_max_primitive_counts: *const u32,                             //
+    p_size_info: *mut AccelerationStructureBuildSizesInfoKHR,       //
+);
+
+#[doc = "**Chapter**: Resource Creation"]
+#[doc = "<br>"]
+#[doc = "**Description**: Destroy an acceleration structure object"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_acceleration_structure`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_acceleration_structure.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkDestroyAccelerationStructureKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroyAccelerationStructureKHR.html)"]
+pub type DestroyAccelerationStructureKHR = unsafe extern "C" fn(
+    device: Device,                                   //
+    acceleration_structure: AccelerationStructureKHR, //
+    p_allocator: *const AllocationCallbacks,          //
+);
+
+#[doc = "**Chapter**: Resource Creation"]
+#[doc = "<br>"]
+#[doc = "**Description**: Query an address of a acceleration structure"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_acceleration_structure`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_acceleration_structure.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkGetAccelerationStructureDeviceAddressKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetAccelerationStructureDeviceAddressKHR.html)"]
+pub type GetAccelerationStructureDeviceAddressKHR = unsafe extern "C" fn(
+    device: Device,                                           //
+    p_info: *const AccelerationStructureDeviceAddressInfoKHR, //
+) -> DeviceAddress;
 
 #[doc = "**Chapter**: Resource Creation"]
 #[doc = "<br>"]
@@ -11991,6 +14368,38 @@ pub type CmdDrawMeshTasksEXT = unsafe extern "C" fn(
     group_count_z: u32,            //
 );
 
+#[doc = "**Chapter**: Drawing Commands"]
+#[doc = "<br>"]
+#[doc = "**Description**: Issue an indirect mesh tasks draw into a command buffer"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_EXT_mesh_shader`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_mesh_shader.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkCmdDrawMeshTasksIndirectEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdDrawMeshTasksIndirectEXT.html)"]
+pub type CmdDrawMeshTasksIndirectEXT = unsafe extern "C" fn(
+    command_buffer: CommandBuffer, //
+    buffer: Buffer,                //
+    offset: DeviceSize,            //
+    draw_count: u32,               //
+    stride: u32,                   //
+);
+
+#[doc = "**Chapter**: Drawing Commands"]
+#[doc = "<br>"]
+#[doc = "**Description**: Perform an indirect mesh tasks draw with the draw count sourced from a buffer"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_EXT_mesh_shader`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_mesh_shader.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkCmdDrawMeshTasksIndirectCountEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdDrawMeshTasksIndirectCountEXT.html)"]
+pub type CmdDrawMeshTasksIndirectCountEXT = unsafe extern "C" fn(
+    command_buffer: CommandBuffer,   //
+    buffer: Buffer,                  //
+    offset: DeviceSize,              //
+    count_buffer: Buffer,            //
+    count_buffer_offset: DeviceSize, //
+    max_draw_count: u32,             //
+    stride: u32,                     //
+);
+
 #[doc = "**Chapter**: Fixed-Function Vertex Post-Processing"]
 #[doc = "<br>"]
 #[doc = "**Description**: Set the viewport count and viewports dynamically for a command buffer"]
@@ -12156,6 +14565,50 @@ pub type CmdDispatchIndirect = unsafe extern "C" fn(
     command_buffer: CommandBuffer, //
     buffer: Buffer,                //
     offset: DeviceSize,            //
+);
+
+#[doc = "**Chapter**: Acceleration Structures"]
+#[doc = "<br>"]
+#[doc = "**Description**: Build an acceleration structure"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_acceleration_structure`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_acceleration_structure.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkCmdBuildAccelerationStructuresKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdBuildAccelerationStructuresKHR.html)"]
+pub type CmdBuildAccelerationStructuresKHR = unsafe extern "C" fn(
+    command_buffer: CommandBuffer,                                              //
+    info_count: u32,                                                            //
+    p_infos: *const AccelerationStructureBuildGeometryInfoKHR,                  //
+    pp_build_range_infos: *const *const AccelerationStructureBuildRangeInfoKHR, //
+);
+
+#[doc = "**Chapter**: Ray Tracing"]
+#[doc = "<br>"]
+#[doc = "**Description**: Initialize a ray tracing dispatch"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_ray_tracing_pipeline`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_ray_tracing_pipeline.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkCmdTraceRaysKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdTraceRaysKHR.html)"]
+pub type CmdTraceRaysKHR = unsafe extern "C" fn(
+    command_buffer: CommandBuffer,                                         //
+    p_raygen_shader_binding_table: *const StridedDeviceAddressRegionKHR,   //
+    p_miss_shader_binding_table: *const StridedDeviceAddressRegionKHR,     //
+    p_hit_shader_binding_table: *const StridedDeviceAddressRegionKHR,      //
+    p_callable_shader_binding_table: *const StridedDeviceAddressRegionKHR, //
+    width: u32,                                                            //
+    height: u32,                                                           //
+    depth: u32,                                                            //
+);
+
+#[doc = "**Chapter**: Ray Tracing"]
+#[doc = "<br>"]
+#[doc = "**Description**: Initialize an indirect ray tracing dispatch with indirect shader binding tables"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_ray_tracing_maintenance1`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_ray_tracing_maintenance1.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkCmdTraceRaysIndirect2KHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdTraceRaysIndirect2KHR.html)"]
+pub type CmdTraceRaysIndirect2KHR = unsafe extern "C" fn(
+    command_buffer: CommandBuffer,          //
+    indirect_device_address: DeviceAddress, //
 );
 
 #[doc = "**Chapter**: Additional Capabilities"]

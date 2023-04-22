@@ -27,7 +27,7 @@ use std::{
     borrow::Cow,
     collections::HashMap,
     ffi::CStr,
-    mem::{size_of, zeroed, MaybeUninit},
+    mem::{size_of, transmute, zeroed, MaybeUninit},
     path::PathBuf,
     ptr::{addr_of, addr_of_mut, null, null_mut},
     time::{Duration, Instant, SystemTime},
@@ -69,6 +69,7 @@ fn main() -> Result<()> {
         run_demo::<demos::TriangleDemo>(&gpu)?;
         run_demo::<demos::CubeDemo>(&gpu)?;
         run_demo::<demos::GuiDemo>(&gpu)?;
+        run_demo::<demos::RaytracingDemo>(&gpu)?;
         gpu.destroy();
     };
 

@@ -321,6 +321,12 @@ pub struct DeviceFunctions {
     pub create_shaders_ext: vk::CreateShadersEXT,
     pub cmd_bind_shaders_ext: vk::CmdBindShadersEXT,
     pub destroy_shader_ext: vk::DestroyShaderEXT,
+    pub create_shader_module: vk::CreateShaderModule,
+    pub destroy_shader_module: vk::DestroyShaderModule,
+    pub create_ray_tracing_pipelines_khr: vk::CreateRayTracingPipelinesKHR,
+    pub get_ray_tracing_shader_group_handles_khr: vk::GetRayTracingShaderGroupHandlesKHR,
+    pub destroy_pipeline: vk::DestroyPipeline,
+    pub cmd_bind_pipeline: vk::CmdBindPipeline,
     pub allocate_memory: vk::AllocateMemory,
     pub free_memory: vk::FreeMemory,
     pub map_memory2_khr: vk::MapMemory2KHR,
@@ -331,6 +337,10 @@ pub struct DeviceFunctions {
     pub destroy_image: vk::DestroyImage,
     pub create_image_view: vk::CreateImageView,
     pub destroy_image_view: vk::DestroyImageView,
+    pub create_acceleration_structure_khr: vk::CreateAccelerationStructureKHR,
+    pub get_acceleration_structure_build_sizes_khr: vk::GetAccelerationStructureBuildSizesKHR,
+    pub destroy_acceleration_structure_khr: vk::DestroyAccelerationStructureKHR,
+    pub get_acceleration_structure_device_address_khr: vk::GetAccelerationStructureDeviceAddressKHR,
     pub get_device_buffer_memory_requirements: vk::GetDeviceBufferMemoryRequirements,
     pub get_device_image_memory_requirements: vk::GetDeviceImageMemoryRequirements,
     pub bind_buffer_memory2: vk::BindBufferMemory2,
@@ -358,6 +368,8 @@ pub struct DeviceFunctions {
     pub cmd_copy_buffer_to_image2: vk::CmdCopyBufferToImage2,
     pub cmd_copy_image_to_buffer2: vk::CmdCopyImageToBuffer2,
     pub cmd_draw_mesh_tasks_ext: vk::CmdDrawMeshTasksEXT,
+    pub cmd_draw_mesh_tasks_indirect_ext: vk::CmdDrawMeshTasksIndirectEXT,
+    pub cmd_draw_mesh_tasks_indirect_count_ext: vk::CmdDrawMeshTasksIndirectCountEXT,
     pub cmd_set_viewport_with_count: vk::CmdSetViewportWithCount,
     pub cmd_set_scissor_with_count: vk::CmdSetScissorWithCount,
     pub cmd_set_rasterization_samples_ext: vk::CmdSetRasterizationSamplesEXT,
@@ -371,6 +383,9 @@ pub struct DeviceFunctions {
     pub cmd_set_color_write_mask_ext: vk::CmdSetColorWriteMaskEXT,
     pub cmd_dispatch: vk::CmdDispatch,
     pub cmd_dispatch_indirect: vk::CmdDispatchIndirect,
+    pub cmd_build_acceleration_structures_khr: vk::CmdBuildAccelerationStructuresKHR,
+    pub cmd_trace_rays_khr: vk::CmdTraceRaysKHR,
+    pub cmd_trace_rays_indirect2_khr: vk::CmdTraceRaysIndirect2KHR,
 }
 
 pub struct Device {
@@ -412,6 +427,12 @@ impl Device {
                 create_shaders_ext: std::mem::transmute(load(b"vkCreateShadersEXT\0")?),
                 cmd_bind_shaders_ext: std::mem::transmute(load(b"vkCmdBindShadersEXT\0")?),
                 destroy_shader_ext: std::mem::transmute(load(b"vkDestroyShaderEXT\0")?),
+                create_shader_module: std::mem::transmute(load(b"vkCreateShaderModule\0")?),
+                destroy_shader_module: std::mem::transmute(load(b"vkDestroyShaderModule\0")?),
+                create_ray_tracing_pipelines_khr: std::mem::transmute(load(b"vkCreateRayTracingPipelinesKHR\0")?),
+                get_ray_tracing_shader_group_handles_khr: std::mem::transmute(load(b"vkGetRayTracingShaderGroupHandlesKHR\0")?),
+                destroy_pipeline: std::mem::transmute(load(b"vkDestroyPipeline\0")?),
+                cmd_bind_pipeline: std::mem::transmute(load(b"vkCmdBindPipeline\0")?),
                 allocate_memory: std::mem::transmute(load(b"vkAllocateMemory\0")?),
                 free_memory: std::mem::transmute(load(b"vkFreeMemory\0")?),
                 map_memory2_khr: std::mem::transmute(load(b"vkMapMemory2KHR\0")?),
@@ -422,6 +443,10 @@ impl Device {
                 destroy_image: std::mem::transmute(load(b"vkDestroyImage\0")?),
                 create_image_view: std::mem::transmute(load(b"vkCreateImageView\0")?),
                 destroy_image_view: std::mem::transmute(load(b"vkDestroyImageView\0")?),
+                create_acceleration_structure_khr: std::mem::transmute(load(b"vkCreateAccelerationStructureKHR\0")?),
+                get_acceleration_structure_build_sizes_khr: std::mem::transmute(load(b"vkGetAccelerationStructureBuildSizesKHR\0")?),
+                destroy_acceleration_structure_khr: std::mem::transmute(load(b"vkDestroyAccelerationStructureKHR\0")?),
+                get_acceleration_structure_device_address_khr: std::mem::transmute(load(b"vkGetAccelerationStructureDeviceAddressKHR\0")?),
                 get_device_buffer_memory_requirements: std::mem::transmute(load(b"vkGetDeviceBufferMemoryRequirements\0")?),
                 get_device_image_memory_requirements: std::mem::transmute(load(b"vkGetDeviceImageMemoryRequirements\0")?),
                 bind_buffer_memory2: std::mem::transmute(load(b"vkBindBufferMemory2\0")?),
@@ -449,6 +474,8 @@ impl Device {
                 cmd_copy_buffer_to_image2: std::mem::transmute(load(b"vkCmdCopyBufferToImage2\0")?),
                 cmd_copy_image_to_buffer2: std::mem::transmute(load(b"vkCmdCopyImageToBuffer2\0")?),
                 cmd_draw_mesh_tasks_ext: std::mem::transmute(load(b"vkCmdDrawMeshTasksEXT\0")?),
+                cmd_draw_mesh_tasks_indirect_ext: std::mem::transmute(load(b"vkCmdDrawMeshTasksIndirectEXT\0")?),
+                cmd_draw_mesh_tasks_indirect_count_ext: std::mem::transmute(load(b"vkCmdDrawMeshTasksIndirectCountEXT\0")?),
                 cmd_set_viewport_with_count: std::mem::transmute(load(b"vkCmdSetViewportWithCount\0")?),
                 cmd_set_scissor_with_count: std::mem::transmute(load(b"vkCmdSetScissorWithCount\0")?),
                 cmd_set_rasterization_samples_ext: std::mem::transmute(load(b"vkCmdSetRasterizationSamplesEXT\0")?),
@@ -462,6 +489,9 @@ impl Device {
                 cmd_set_color_write_mask_ext: std::mem::transmute(load(b"vkCmdSetColorWriteMaskEXT\0")?),
                 cmd_dispatch: std::mem::transmute(load(b"vkCmdDispatch\0")?),
                 cmd_dispatch_indirect: std::mem::transmute(load(b"vkCmdDispatchIndirect\0")?),
+                cmd_build_acceleration_structures_khr: std::mem::transmute(load(b"vkCmdBuildAccelerationStructuresKHR\0")?),
+                cmd_trace_rays_khr: std::mem::transmute(load(b"vkCmdTraceRaysKHR\0")?),
+                cmd_trace_rays_indirect2_khr: std::mem::transmute(load(b"vkCmdTraceRaysIndirect2KHR\0")?),
             },
             handle: device,
         })
@@ -789,6 +819,95 @@ impl Device {
     }
 
     #[inline]
+    #[doc = "**Chapter**: Shaders"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Creates a new shader module object"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkCreateShaderModule`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateShaderModule.html)"]
+    pub unsafe fn create_shader_module(&self, p_create_info: *const vk::ShaderModuleCreateInfo) -> Result<vk::ShaderModule, Error> {
+        let mut p_shader_module = std::mem::MaybeUninit::uninit();
+        match (self.fns.create_shader_module)(self.handle, p_create_info, std::ptr::null(), p_shader_module.as_mut_ptr()) {
+            vk::Result::Success => Ok(p_shader_module.assume_init()),
+            result => Err(Error::Vulkan(result)),
+        }
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Shaders"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Destroy a shader module"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkDestroyShaderModule`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroyShaderModule.html)"]
+    pub unsafe fn destroy_shader_module(&self, shader_module: vk::ShaderModule) {
+        (self.fns.destroy_shader_module)(self.handle, shader_module, std::ptr::null());
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Pipelines"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Creates a new ray tracing pipeline object"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_KHR_ray_tracing_pipeline`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_ray_tracing_pipeline.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkCreateRayTracingPipelinesKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateRayTracingPipelinesKHR.html)"]
+    pub unsafe fn create_ray_tracing_pipelines_khr(
+        &self,
+        deferred_operation: vk::DeferredOperationKHR,
+        pipeline_cache: vk::PipelineCache,
+        create_info_count: u32,
+        p_create_infos: *const vk::RayTracingPipelineCreateInfoKHR,
+        p_pipelines: *mut vk::Pipeline,
+    ) -> Result<(), Error> {
+        match (self.fns.create_ray_tracing_pipelines_khr)(self.handle, deferred_operation, pipeline_cache, create_info_count, p_create_infos, std::ptr::null(), p_pipelines) {
+            vk::Result::Success => Ok(()),
+            result => Err(Error::Vulkan(result)),
+        }
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Pipelines"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Query ray tracing pipeline shader group handles"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_KHR_ray_tracing_pipeline`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_ray_tracing_pipeline.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkGetRayTracingShaderGroupHandlesKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetRayTracingShaderGroupHandlesKHR.html)"]
+    pub unsafe fn get_ray_tracing_shader_group_handles_khr(&self, pipeline: vk::Pipeline, first_group: u32, group_count: u32, data_size: usize, p_data: *mut c_void) -> Result<(), Error> {
+        match (self.fns.get_ray_tracing_shader_group_handles_khr)(self.handle, pipeline, first_group, group_count, data_size, p_data) {
+            vk::Result::Success => Ok(()),
+            result => Err(Error::Vulkan(result)),
+        }
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Pipelines"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Destroy a pipeline object"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkDestroyPipeline`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroyPipeline.html)"]
+    pub unsafe fn destroy_pipeline(&self, pipeline: vk::Pipeline) {
+        (self.fns.destroy_pipeline)(self.handle, pipeline, std::ptr::null());
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Pipelines"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Bind a pipeline object to a command buffer"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkCmdBindPipeline`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdBindPipeline.html)"]
+    pub unsafe fn cmd_bind_pipeline(&self, command_buffer: vk::CommandBuffer, pipeline_bind_point: vk::PipelineBindPoint, pipeline: vk::Pipeline) {
+        (self.fns.cmd_bind_pipeline)(command_buffer, pipeline_bind_point, pipeline);
+    }
+
+    #[inline]
     #[doc = "**Chapter**: Memory Allocation"]
     #[doc = "<br>"]
     #[doc = "**Description**: Allocate device memory"]
@@ -929,6 +1048,65 @@ impl Device {
     #[doc = "**Reference**: [`vkDestroyImageView`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroyImageView.html)"]
     pub unsafe fn destroy_image_view(&self, image_view: vk::ImageView) {
         (self.fns.destroy_image_view)(self.handle, image_view, std::ptr::null());
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Resource Creation"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Create a new acceleration structure object"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_KHR_acceleration_structure`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_acceleration_structure.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkCreateAccelerationStructureKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateAccelerationStructureKHR.html)"]
+    pub unsafe fn create_acceleration_structure_khr(&self, p_create_info: *const vk::AccelerationStructureCreateInfoKHR) -> Result<vk::AccelerationStructureKHR, Error> {
+        let mut p_acceleration_structure = std::mem::MaybeUninit::uninit();
+        match (self.fns.create_acceleration_structure_khr)(self.handle, p_create_info, std::ptr::null(), p_acceleration_structure.as_mut_ptr()) {
+            vk::Result::Success => Ok(p_acceleration_structure.assume_init()),
+            result => Err(Error::Vulkan(result)),
+        }
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Resource Creation"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Retrieve the required size for an acceleration structure"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_KHR_acceleration_structure`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_acceleration_structure.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkGetAccelerationStructureBuildSizesKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetAccelerationStructureBuildSizesKHR.html)"]
+    pub unsafe fn get_acceleration_structure_build_sizes_khr(
+        &self,
+        build_type: vk::AccelerationStructureBuildTypeKHR,
+        p_build_info: *const vk::AccelerationStructureBuildGeometryInfoKHR,
+        p_max_primitive_counts: *const u32,
+        p_size_info: *mut vk::AccelerationStructureBuildSizesInfoKHR,
+    ) {
+        (self.fns.get_acceleration_structure_build_sizes_khr)(self.handle, build_type, p_build_info, p_max_primitive_counts, p_size_info);
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Resource Creation"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Destroy an acceleration structure object"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_KHR_acceleration_structure`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_acceleration_structure.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkDestroyAccelerationStructureKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroyAccelerationStructureKHR.html)"]
+    pub unsafe fn destroy_acceleration_structure_khr(&self, acceleration_structure: vk::AccelerationStructureKHR) {
+        (self.fns.destroy_acceleration_structure_khr)(self.handle, acceleration_structure, std::ptr::null());
+    }
+
+    #[must_use]
+    #[inline]
+    #[doc = "**Chapter**: Resource Creation"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Query an address of a acceleration structure"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_KHR_acceleration_structure`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_acceleration_structure.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkGetAccelerationStructureDeviceAddressKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetAccelerationStructureDeviceAddressKHR.html)"]
+    pub unsafe fn get_acceleration_structure_device_address_khr(&self, p_info: *const vk::AccelerationStructureDeviceAddressInfoKHR) -> vk::DeviceAddress {
+        (self.fns.get_acceleration_structure_device_address_khr)(self.handle, p_info)
     }
 
     #[inline]
@@ -1306,6 +1484,39 @@ impl Device {
     }
 
     #[inline]
+    #[doc = "**Chapter**: Drawing Commands"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Issue an indirect mesh tasks draw into a command buffer"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_EXT_mesh_shader`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_mesh_shader.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkCmdDrawMeshTasksIndirectEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdDrawMeshTasksIndirectEXT.html)"]
+    pub unsafe fn cmd_draw_mesh_tasks_indirect_ext(&self, command_buffer: vk::CommandBuffer, buffer: vk::Buffer, offset: vk::DeviceSize, draw_count: u32, stride: u32) {
+        (self.fns.cmd_draw_mesh_tasks_indirect_ext)(command_buffer, buffer, offset, draw_count, stride);
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Drawing Commands"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Perform an indirect mesh tasks draw with the draw count sourced from a buffer"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_EXT_mesh_shader`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_mesh_shader.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkCmdDrawMeshTasksIndirectCountEXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdDrawMeshTasksIndirectCountEXT.html)"]
+    pub unsafe fn cmd_draw_mesh_tasks_indirect_count_ext(
+        &self,
+        command_buffer: vk::CommandBuffer,
+        buffer: vk::Buffer,
+        offset: vk::DeviceSize,
+        count_buffer: vk::Buffer,
+        count_buffer_offset: vk::DeviceSize,
+        max_draw_count: u32,
+        stride: u32,
+    ) {
+        (self.fns.cmd_draw_mesh_tasks_indirect_count_ext)(command_buffer, buffer, offset, count_buffer, count_buffer_offset, max_draw_count, stride);
+    }
+
+    #[inline]
     #[doc = "**Chapter**: Fixed-Function Vertex Post-Processing"]
     #[doc = "<br>"]
     #[doc = "**Description**: Set the viewport count and viewports dynamically for a command buffer"]
@@ -1459,5 +1670,66 @@ impl Device {
     #[doc = "**Reference**: [`vkCmdDispatchIndirect`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdDispatchIndirect.html)"]
     pub unsafe fn cmd_dispatch_indirect(&self, command_buffer: vk::CommandBuffer, buffer: vk::Buffer, offset: vk::DeviceSize) {
         (self.fns.cmd_dispatch_indirect)(command_buffer, buffer, offset);
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Acceleration Structures"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Build an acceleration structure"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_KHR_acceleration_structure`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_acceleration_structure.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkCmdBuildAccelerationStructuresKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdBuildAccelerationStructuresKHR.html)"]
+    pub unsafe fn cmd_build_acceleration_structures_khr(
+        &self,
+        command_buffer: vk::CommandBuffer,
+        info_count: u32,
+        p_infos: *const vk::AccelerationStructureBuildGeometryInfoKHR,
+        pp_build_range_infos: *const *const vk::AccelerationStructureBuildRangeInfoKHR,
+    ) {
+        (self.fns.cmd_build_acceleration_structures_khr)(command_buffer, info_count, p_infos, pp_build_range_infos);
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Ray Tracing"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Initialize a ray tracing dispatch"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_KHR_ray_tracing_pipeline`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_ray_tracing_pipeline.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkCmdTraceRaysKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdTraceRaysKHR.html)"]
+    pub unsafe fn cmd_trace_rays_khr(
+        &self,
+        command_buffer: vk::CommandBuffer,
+        p_raygen_shader_binding_table: *const vk::StridedDeviceAddressRegionKHR,
+        p_miss_shader_binding_table: *const vk::StridedDeviceAddressRegionKHR,
+        p_hit_shader_binding_table: *const vk::StridedDeviceAddressRegionKHR,
+        p_callable_shader_binding_table: *const vk::StridedDeviceAddressRegionKHR,
+        width: u32,
+        height: u32,
+        depth: u32,
+    ) {
+        (self.fns.cmd_trace_rays_khr)(
+            command_buffer,
+            p_raygen_shader_binding_table,
+            p_miss_shader_binding_table,
+            p_hit_shader_binding_table,
+            p_callable_shader_binding_table,
+            width,
+            height,
+            depth,
+        );
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Ray Tracing"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Initialize an indirect ray tracing dispatch with indirect shader binding tables"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_KHR_ray_tracing_maintenance1`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_ray_tracing_maintenance1.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkCmdTraceRaysIndirect2KHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdTraceRaysIndirect2KHR.html)"]
+    pub unsafe fn cmd_trace_rays_indirect2_khr(&self, command_buffer: vk::CommandBuffer, indirect_device_address: vk::DeviceAddress) {
+        (self.fns.cmd_trace_rays_indirect2_khr)(command_buffer, indirect_device_address);
     }
 }

@@ -217,6 +217,8 @@ unsafe fn create_descriptors(
         offset: 0,
         size: size_of::<Mat4>() as _,
     };
+
+    // Pipeline layout.
     let pipeline_layout = device.create_pipeline_layout(
         &(vk::PipelineLayoutCreateInfo {
             s_type: vk::StructureType::PipelineLayoutCreateInfo,

@@ -35,6 +35,13 @@
 //! - [`vk::CreateShadersEXT`] Create one or more new shaders
 //! - [`vk::CmdBindShadersEXT`] Bind shader objects to a command buffer
 //! - [`vk::DestroyShaderEXT`] Destroy a shader object
+//! - [`vk::CreateShaderModule`] Creates a new shader module object
+//! - [`vk::DestroyShaderModule`] Destroy a shader module
+//! ## Pipelines
+//! - [`vk::CreateRayTracingPipelinesKHR`] Creates a new ray tracing pipeline object
+//! - [`vk::GetRayTracingShaderGroupHandlesKHR`] Query ray tracing pipeline shader group handles
+//! - [`vk::DestroyPipeline`] Destroy a pipeline object
+//! - [`vk::CmdBindPipeline`] Bind a pipeline object to a command buffer
 //! ## Memory Allocation
 //! - [`vk::GetPhysicalDeviceMemoryProperties2`] Reports memory information for the specified physical device
 //! - [`vk::AllocateMemory`] Allocate device memory
@@ -48,6 +55,10 @@
 //! - [`vk::DestroyImage`] Destroy an image object
 //! - [`vk::CreateImageView`] Create an image view from an existing image
 //! - [`vk::DestroyImageView`] Destroy an image view object
+//! - [`vk::CreateAccelerationStructureKHR`] Create a new acceleration structure object
+//! - [`vk::GetAccelerationStructureBuildSizesKHR`] Retrieve the required size for an acceleration structure
+//! - [`vk::DestroyAccelerationStructureKHR`] Destroy an acceleration structure object
+//! - [`vk::GetAccelerationStructureDeviceAddressKHR`] Query an address of a acceleration structure
 //! - [`vk::GetDeviceBufferMemoryRequirements`] Returns the memory requirements for specified Vulkan object
 //! - [`vk::GetDeviceImageMemoryRequirements`] Returns the memory requirements for specified Vulkan object
 //! - [`vk::BindBufferMemory2`] Bind device memory to buffer objects
@@ -80,6 +91,8 @@
 //! - [`vk::CmdCopyImageToBuffer2`] Copy image data into a buffer
 //! ## Drawing Commands
 //! - [`vk::CmdDrawMeshTasksEXT`] Draw mesh task work items
+//! - [`vk::CmdDrawMeshTasksIndirectEXT`] Issue an indirect mesh tasks draw into a command buffer
+//! - [`vk::CmdDrawMeshTasksIndirectCountEXT`] Perform an indirect mesh tasks draw with the draw count sourced from a buffer
 //! ## Fixed-Function Vertex Post-Processing
 //! - [`vk::CmdSetViewportWithCount`] Set the viewport count and viewports dynamically for a command buffer
 //! - [`vk::CmdSetScissorWithCount`] Set the scissor count and scissor rectangular bounds dynamically for a command buffer
@@ -98,6 +111,11 @@
 //! ## Dispatching Commands
 //! - [`vk::CmdDispatch`] Dispatch compute work items
 //! - [`vk::CmdDispatchIndirect`] Dispatch compute work items with indirect parameters
+//! ## Acceleration Structures
+//! - [`vk::CmdBuildAccelerationStructuresKHR`] Build an acceleration structure
+//! ## Ray Tracing
+//! - [`vk::CmdTraceRaysKHR`] Initialize a ray tracing dispatch
+//! - [`vk::CmdTraceRaysIndirect2KHR`] Initialize an indirect ray tracing dispatch with indirect shader binding tables
 //! ## Additional Capabilities
 //! - [`vk::GetPhysicalDeviceCalibrateableTimeDomainsEXT`] Query calibrateable time domains
 //! ## Debugging

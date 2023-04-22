@@ -35,6 +35,9 @@ impl Compiler {
             ShaderType::Mesh => shaderc::ShaderKind::Mesh,
             ShaderType::Fragment => shaderc::ShaderKind::Fragment,
             ShaderType::Compute => shaderc::ShaderKind::Compute,
+            ShaderType::Raygen => shaderc::ShaderKind::RayGeneration,
+            ShaderType::Miss => shaderc::ShaderKind::Miss,
+            ShaderType::ClosestHit => shaderc::ShaderKind::ClosestHit,
         };
         let mut options = CompileOptions::new().context("Creating shader compiler options")?;
         options.set_target_env(TargetEnv::Vulkan, vk::make_api_version(0, 1, 3, 0));
@@ -76,6 +79,9 @@ pub enum ShaderType {
     Mesh,
     Fragment,
     Compute,
+    Raygen,
+    Miss,
+    ClosestHit,
 }
 
 impl ShaderType {
@@ -85,6 +91,9 @@ impl ShaderType {
             ShaderType::Mesh => vk::ShaderStageFlagBits::MeshEXT,
             ShaderType::Fragment => vk::ShaderStageFlagBits::Fragment,
             ShaderType::Compute => vk::ShaderStageFlagBits::Compute,
+            ShaderType::Raygen => vk::ShaderStageFlagBits::RaygenKHR,
+            ShaderType::Miss => vk::ShaderStageFlagBits::MissKHR,
+            ShaderType::ClosestHit => vk::ShaderStageFlagBits::ClosestHitKHR,
         }
     }
 
@@ -92,7 +101,11 @@ impl ShaderType {
         match self {
             ShaderType::Task => Some(vk::ShaderStageFlagBits::MeshEXT),
             ShaderType::Mesh => Some(vk::ShaderStageFlagBits::Fragment),
-            ShaderType::Fragment | ShaderType::Compute => None,
+            ShaderType::Fragment
+            | ShaderType::Compute
+            | ShaderType::Raygen
+            | ShaderType::Miss
+            | ShaderType::ClosestHit => None,
         }
     }
 }
