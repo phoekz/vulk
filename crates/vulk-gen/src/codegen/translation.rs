@@ -92,14 +92,33 @@ pub fn vk_complex_type(
     let rs_type = if let Some(vk_text) = vk_text {
         if vk_text.starts_with('[') && vk_text.ends_with(']') {
             let rs_text = vk_text.trim_start_matches('[').trim_end_matches(']');
-            if let Some(vk_enum) = vk_enum.as_ref() {
-                assert!(rs_text.is_empty());
-                assert!(vk_enum.starts_with("VK_"));
-                let constant_name = vk_enum.trim_start_matches("VK_");
-                format!("[{rs_type}; {constant_name} as _]")
+            let array_sizes = rs_text.split("][").collect::<Vec<_>>();
+            if array_sizes.len() == 1 {
+                // 1D array.
+                let array_size = *array_sizes.first().unwrap();
+                if let Some(vk_enum) = vk_enum.as_ref() {
+                    assert!(array_size.is_empty());
+                    assert!(vk_enum.starts_with("VK_"));
+                    let constant_name = vk_enum.trim_start_matches("VK_");
+                    format!("[{rs_type}; {constant_name} as _]")
+                } else {
+                    let element_count: u32 = array_size
+                        .parse()
+                        .with_context(|| format!("Parsing element_count from {array_size}"))?;
+                    format!("[{rs_type}; {element_count}]")
+                }
+            } else if array_sizes.len() == 2 {
+                // 2D array.
+                let array_sizes = array_sizes
+                    .into_iter()
+                    .map(|array_size| {
+                        let array_size: u32 = array_size.parse()?;
+                        Ok::<_, anyhow::Error>(array_size)
+                    })
+                    .collect::<Result<Vec<_>>>()?;
+                format!("[[{rs_type}; {}]; {}]", array_sizes[1], array_sizes[0])
             } else {
-                let element_count: u32 = rs_text.parse()?;
-                format!("[{rs_type}; {element_count}]")
+                bail!("Failed to construct array specifier from {vk_text}");
             }
         } else {
             let rs_specifier = translation::c_specifier(vk_text)?;

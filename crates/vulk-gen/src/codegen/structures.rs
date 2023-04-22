@@ -91,6 +91,8 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
                             &member.text,
                             &member.en,
                             true,
+                        )
+                        .with_context(|| format!("Translating type={vk_type}"))?;
 
                         // Special: prefer initializing Flags as FlagBits, since that is how the Flags are built.
                         let rs_type = rs_type.replace("Flags", "FlagBits");
@@ -127,7 +129,8 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
                 &member.text,
                 &member.en,
                 false,
-            )?;
+            )
+            .with_context(|| format!("Translating member type={vk_member_type}"))?;
             writeln!(
                 rs_members,
                 "{}",
