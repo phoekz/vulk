@@ -4188,6 +4188,7 @@ pub enum PipelineStageFlagBits2 {
     #[doc = "Translated from: `VK_PIPELINE_STAGE_2_NONE`"]
     None = 0,
     #[doc = "Translated from: `VK_PIPELINE_STAGE_2_TOP_OF_PIPE_BIT`"]
+    #[deprecated(note = "Replace with: `vk::PipelineStageFlagBits2::None`")]
     TopOfPipe = 0b1,
     #[doc = "Translated from: `VK_PIPELINE_STAGE_2_DRAW_INDIRECT_BIT`"]
     DrawIndirect = 0b10,
@@ -4214,6 +4215,7 @@ pub enum PipelineStageFlagBits2 {
     #[doc = "Translated from: `VK_PIPELINE_STAGE_2_ALL_TRANSFER_BIT`"]
     AllTransfer = 0b1000000000000,
     #[doc = "Translated from: `VK_PIPELINE_STAGE_2_BOTTOM_OF_PIPE_BIT`"]
+    #[deprecated(note = "Replace with: `vk::PipelineStageFlagBits2::AllCommands`")]
     BottomOfPipe = 0b10000000000000,
     #[doc = "Translated from: `VK_PIPELINE_STAGE_2_HOST_BIT`"]
     Host = 0b100000000000000,

@@ -111,6 +111,19 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
         map
     };
 
+    let deprecations = {
+        let mut map = HashMap::new();
+        map.insert(
+            "VK_PIPELINE_STAGE_2_TOP_OF_PIPE_BIT",
+            "Replace with: `vk::PipelineStageFlagBits2::None`",
+        );
+        map.insert(
+            "VK_PIPELINE_STAGE_2_BOTTOM_OF_PIPE_BIT",
+            "Replace with: `vk::PipelineStageFlagBits2::AllCommands`",
+        );
+        map
+    };
+
     for registry_type in &ctx.registry.types {
         let registry::TypeCategory::Bitmask {
             ty,
@@ -201,6 +214,12 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
                     rs_flag_bits_members,
                     r#"#[doc = "Translated from: `{vk_member_ident}`"]"#
                 )?;
+                if let Some(deprecation) = deprecations.get(vk_member_ident.as_str()) {
+                    writeln!(
+                        rs_flag_bits_members,
+                        r#"#[deprecated(note = "{deprecation}")]"#
+                    )?;
+                }
                 writeln!(
                     rs_flag_bits_members,
                     "{rs_member_ident} = {rs_member_value},"
