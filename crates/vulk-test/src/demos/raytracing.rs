@@ -1,5 +1,9 @@
 use super::*;
 
+//
+// Demo
+//
+
 pub struct Demo {
     commands: command::Commands,
     queries: query::Queries,

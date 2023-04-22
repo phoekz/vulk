@@ -9,7 +9,7 @@ pub struct Demo {
     queries: query::Queries,
     textures: Textures,
     descriptors: Descriptors,
-    shader: shader::Shader,
+    shaders: Shaders,
     render_targets: RenderTargets,
     output: Output,
 }
@@ -23,17 +23,27 @@ impl DemoCallbacks for Demo {
     {
         let commands = command::Commands::create(gpu, &command::CommandsCreateInfo)?;
         let queries = query::Queries::create(gpu, &query::QueriesCreateInfo)?;
-        let textures = create_textures(gpu)?;
-        let descriptors = create_descriptors(gpu, &textures)?;
-        let shader = create_shaders(gpu, &descriptors)?;
-        let render_targets = create_render_targets(gpu)?;
-        let output = create_output(gpu)?;
+        let textures = Textures::create(gpu, &TexturesCreateInfo {})?;
+        let descriptors = Descriptors::create(
+            gpu,
+            &DescriptorsCreateInfo {
+                textures: &textures,
+            },
+        )?;
+        let shaders = Shaders::create(
+            gpu,
+            &ShadersCreateInfo {
+                descriptors: &descriptors,
+            },
+        )?;
+        let render_targets = RenderTargets::create(gpu, &RenderTargetsCreateInfo {})?;
+        let output = Output::create(gpu, &OutputCreateInfo {})?;
         Ok(Self {
             commands,
             queries,
             textures,
             descriptors,
-            shader,
+            shaders,
             render_targets,
             output,
         })
@@ -44,22 +54,13 @@ impl DemoCallbacks for Demo {
     }
 
     unsafe fn destroy(gpu: &Gpu, state: Self) -> Result<()> {
-        let Self {
-            commands,
-            queries,
-            textures,
-            descriptors,
-            shader,
-            render_targets,
-            output,
-        } = state;
-        destroy_output(gpu, &output);
-        destroy_render_targets(gpu, &render_targets);
-        shader.destroy(gpu);
-        destroy_descriptors(gpu, &descriptors);
-        destroy_textures(gpu, &textures);
-        queries.destroy(gpu);
-        commands.destroy(gpu);
+        state.output.destroy(gpu);
+        state.render_targets.destroy(gpu);
+        state.shaders.destroy(gpu);
+        state.descriptors.destroy(gpu);
+        state.textures.destroy(gpu);
+        state.queries.destroy(gpu);
+        state.commands.destroy(gpu);
         Ok(())
     }
 }
@@ -68,102 +69,112 @@ impl DemoCallbacks for Demo {
 // Textures
 //
 
+struct TexturesCreateInfo {}
+
 struct Textures {
     images: Vec<resource::Image2d>,
     samplers: Vec<resource::Sampler>,
 }
 
-unsafe fn create_textures(gpu: &Gpu) -> Result<Textures> {
-    // Generate textures.
-    let (images, image_datas) = {
-        use palette::{FromColor, Hsl, Srgb};
-        use rand::prelude::*;
+impl GpuResource for Textures {
+    type CreateInfo<'a> = TexturesCreateInfo;
 
-        let seed = SystemTime::now().duration_since(SystemTime::UNIX_EPOCH)?;
-        let mut state = rand_pcg::Pcg64Mcg::seed_from_u64(seed.as_secs());
-        let noise = rand::distributions::Uniform::new_inclusive(-0.1, 0.1);
+    unsafe fn create(gpu: &Gpu, _: &Self::CreateInfo<'_>) -> Result<Self>
+    where
+        Self: Sized,
+    {
+        // Generate textures.
+        let (images, image_datas) = {
+            use palette::{FromColor, Hsl, Srgb};
+            use rand::prelude::*;
 
-        let width = 16;
-        let height = 16;
-        let count = 6;
+            let seed = SystemTime::now().duration_since(SystemTime::UNIX_EPOCH)?;
+            let mut state = rand_pcg::Pcg64Mcg::seed_from_u64(seed.as_secs());
+            let noise = rand::distributions::Uniform::new_inclusive(-0.1, 0.1);
 
-        let mut images = vec![];
-        let mut image_datas = vec![];
+            let width = 16;
+            let height = 16;
+            let count = 6;
 
-        for image_index in 0..count {
-            let image = resource::Image2d::create(
-                gpu,
-                &resource::Image2dCreateInfo {
-                    format: vk::Format::R8g8b8a8Unorm,
-                    width,
-                    height,
-                    samples: vk::SampleCountFlagBits::Count1,
-                    usage: vk::ImageUsageFlagBits::TransferDst | vk::ImageUsageFlagBits::Sampled,
-                    property_flags: vk::MemoryPropertyFlagBits::DeviceLocal.into(),
-                },
-            )?;
+            let mut images = vec![];
+            let mut image_datas = vec![];
 
-            let image_data = {
-                let hue = (image_index as f32 + 0.5) / count as f32;
-                let hsl = Hsl::new(360.0 * hue, 0.75, 0.75);
-                let rgb = Srgb::from_color(hsl);
-                let mut data = vec![0_u8; (4 * width * height) as _];
-                for y in 0..height {
-                    for x in 0..width {
-                        let r = f32::clamp(rgb.red + noise.sample(&mut state), 0.0, 1.0);
-                        let g = f32::clamp(rgb.green + noise.sample(&mut state), 0.0, 1.0);
-                        let b = f32::clamp(rgb.blue + noise.sample(&mut state), 0.0, 1.0);
+            for image_index in 0..count {
+                let image = resource::Image2d::create(
+                    gpu,
+                    &resource::Image2dCreateInfo {
+                        format: vk::Format::R8g8b8a8Unorm,
+                        width,
+                        height,
+                        samples: vk::SampleCountFlagBits::Count1,
+                        usage: vk::ImageUsageFlagBits::TransferDst
+                            | vk::ImageUsageFlagBits::Sampled,
+                        property_flags: vk::MemoryPropertyFlagBits::DeviceLocal.into(),
+                    },
+                )?;
 
-                        let i = (4 * (x + y * width)) as usize;
-                        data[i] = f32::round(r * 255.0) as u8;
-                        data[i + 1] = f32::round(g * 255.0) as u8;
-                        data[i + 2] = f32::round(b * 255.0) as u8;
-                        data[i + 3] = 255;
+                let image_data = {
+                    let hue = (image_index as f32 + 0.5) / count as f32;
+                    let hsl = Hsl::new(360.0 * hue, 0.75, 0.75);
+                    let rgb = Srgb::from_color(hsl);
+                    let mut data = vec![0_u8; (4 * width * height) as _];
+                    for y in 0..height {
+                        for x in 0..width {
+                            let r = f32::clamp(rgb.red + noise.sample(&mut state), 0.0, 1.0);
+                            let g = f32::clamp(rgb.green + noise.sample(&mut state), 0.0, 1.0);
+                            let b = f32::clamp(rgb.blue + noise.sample(&mut state), 0.0, 1.0);
+
+                            let i = (4 * (x + y * width)) as usize;
+                            data[i] = f32::round(r * 255.0) as u8;
+                            data[i + 1] = f32::round(g * 255.0) as u8;
+                            data[i + 2] = f32::round(b * 255.0) as u8;
+                            data[i + 3] = 255;
+                        }
                     }
-                }
-                data
-            };
+                    data
+                };
 
-            images.push(image);
-            image_datas.push(image_data);
+                images.push(image);
+                image_datas.push(image_data);
+            }
+
+            (images, image_datas)
+        };
+
+        // Upload.
+        resource::multi_upload_images(gpu, &images, &image_datas)?;
+
+        // Sampler.
+        let sampler_create_info =
+            |mag_filter: vk::Filter, min_filter: vk::Filter| resource::SamplerCreateInfo {
+                mag_filter,
+                min_filter,
+                mipmap_mode: vk::SamplerMipmapMode::Nearest,
+                address_mode: vk::SamplerAddressMode::ClampToEdge,
+            };
+        let sampler_create_infos = [
+            sampler_create_info(vk::Filter::Nearest, vk::Filter::Nearest),
+            sampler_create_info(vk::Filter::Linear, vk::Filter::Nearest),
+            sampler_create_info(vk::Filter::Nearest, vk::Filter::Nearest),
+            sampler_create_info(vk::Filter::Nearest, vk::Filter::Nearest),
+            sampler_create_info(vk::Filter::Nearest, vk::Filter::Nearest),
+            sampler_create_info(vk::Filter::Nearest, vk::Filter::Nearest),
+        ];
+        let mut samplers = vec![];
+        for sampler_create_info in sampler_create_infos {
+            samplers.push(resource::Sampler::create(gpu, &sampler_create_info)?);
         }
 
-        (images, image_datas)
-    };
-
-    // Upload.
-    resource::multi_upload_images(gpu, &images, &image_datas)?;
-
-    // Sampler.
-    let sampler_create_info =
-        |mag_filter: vk::Filter, min_filter: vk::Filter| resource::SamplerCreateInfo {
-            mag_filter,
-            min_filter,
-            mipmap_mode: vk::SamplerMipmapMode::Nearest,
-            address_mode: vk::SamplerAddressMode::ClampToEdge,
-        };
-    let sampler_create_infos = [
-        sampler_create_info(vk::Filter::Nearest, vk::Filter::Nearest),
-        sampler_create_info(vk::Filter::Linear, vk::Filter::Nearest),
-        sampler_create_info(vk::Filter::Nearest, vk::Filter::Nearest),
-        sampler_create_info(vk::Filter::Nearest, vk::Filter::Nearest),
-        sampler_create_info(vk::Filter::Nearest, vk::Filter::Nearest),
-        sampler_create_info(vk::Filter::Nearest, vk::Filter::Nearest),
-    ];
-    let mut samplers = vec![];
-    for sampler_create_info in sampler_create_infos {
-        samplers.push(resource::Sampler::create(gpu, &sampler_create_info)?);
+        Ok(Self { images, samplers })
     }
 
-    Ok(Textures { images, samplers })
-}
-
-unsafe fn destroy_textures(gpu: &Gpu, textures: &Textures) {
-    for image in &textures.images {
-        image.destroy(gpu);
-    }
-    for sampler in &textures.samplers {
-        sampler.destroy(gpu);
+    unsafe fn destroy(&self, gpu: &Gpu) {
+        for image in &self.images {
+            image.destroy(gpu);
+        }
+        for sampler in &self.samplers {
+            sampler.destroy(gpu);
+        }
     }
 }
 
@@ -171,241 +182,274 @@ unsafe fn destroy_textures(gpu: &Gpu, textures: &Textures) {
 // Descriptors
 //
 
+struct DescriptorsCreateInfo<'a> {
+    textures: &'a Textures,
+}
+
 struct Descriptors {
     storage: descriptor::DescriptorStorage,
     pipeline_layout: vk::PipelineLayout,
     push_constant_ranges: vk::PushConstantRange,
 }
 
-unsafe fn create_descriptors(
-    gpu @ Gpu { device, .. }: &Gpu,
-    textures: &Textures,
-) -> Result<Descriptors> {
-    // Descriptor storage.
-    let stage_flags = vk::ShaderStageFlagBits::Fragment.into();
-    let image_descriptors = textures
-        .images
-        .iter()
-        .map(|img| img.descriptor)
-        .collect::<Vec<_>>();
-    let sampler_descriptors = textures
-        .samplers
-        .iter()
-        .map(|sampler| sampler.descriptor)
-        .collect::<Vec<_>>();
-    let storage = descriptor::DescriptorStorage::create(
-        gpu,
-        &descriptor::DescriptorStorageCreateInfo {
-            bindings: &[
-                descriptor::DescriptorStorageBinding {
-                    descriptor_type: vk::DescriptorType::SampledImage,
-                    stage_flags,
-                    descriptors: &image_descriptors,
-                },
-                descriptor::DescriptorStorageBinding {
-                    descriptor_type: vk::DescriptorType::Sampler,
-                    stage_flags,
-                    descriptors: &sampler_descriptors,
-                },
-            ],
-        },
-    )?;
+impl GpuResource for Descriptors {
+    type CreateInfo<'a> = DescriptorsCreateInfo<'a>;
 
-    // Push constants.
-    let push_constant_ranges = vk::PushConstantRange {
-        stage_flags: vk::ShaderStageFlagBits::MeshEXT.into(),
-        offset: 0,
-        size: size_of::<Mat4>() as _,
-    };
+    unsafe fn create(gpu: &Gpu, create_info: &Self::CreateInfo<'_>) -> Result<Self>
+    where
+        Self: Sized,
+    {
+        // Descriptor storage.
+        let stage_flags = vk::ShaderStageFlagBits::Fragment.into();
+        let image_descriptors = create_info
+            .textures
+            .images
+            .iter()
+            .map(|img| img.descriptor)
+            .collect::<Vec<_>>();
+        let sampler_descriptors = create_info
+            .textures
+            .samplers
+            .iter()
+            .map(|sampler| sampler.descriptor)
+            .collect::<Vec<_>>();
+        let storage = descriptor::DescriptorStorage::create(
+            gpu,
+            &descriptor::DescriptorStorageCreateInfo {
+                bindings: &[
+                    descriptor::DescriptorStorageBinding {
+                        descriptor_type: vk::DescriptorType::SampledImage,
+                        stage_flags,
+                        descriptors: &image_descriptors,
+                    },
+                    descriptor::DescriptorStorageBinding {
+                        descriptor_type: vk::DescriptorType::Sampler,
+                        stage_flags,
+                        descriptors: &sampler_descriptors,
+                    },
+                ],
+            },
+        )?;
 
-    // Pipeline layout.
-    let pipeline_layout = device.create_pipeline_layout(
-        &(vk::PipelineLayoutCreateInfo {
-            s_type: vk::StructureType::PipelineLayoutCreateInfo,
-            p_next: null(),
-            flags: vk::PipelineLayoutCreateFlags::empty(),
-            set_layout_count: 1,
-            p_set_layouts: &storage.set_layout(),
-            push_constant_range_count: 1,
-            p_push_constant_ranges: &push_constant_ranges,
-        }),
-    )?;
+        // Push constants.
+        let push_constant_ranges = vk::PushConstantRange {
+            stage_flags: vk::ShaderStageFlagBits::MeshEXT.into(),
+            offset: 0,
+            size: size_of::<Mat4>() as _,
+        };
 
-    Ok(Descriptors {
-        storage,
-        pipeline_layout,
-        push_constant_ranges,
-    })
-}
+        // Pipeline layout.
+        let pipeline_layout = gpu.device.create_pipeline_layout(
+            &(vk::PipelineLayoutCreateInfo {
+                s_type: vk::StructureType::PipelineLayoutCreateInfo,
+                p_next: null(),
+                flags: vk::PipelineLayoutCreateFlags::empty(),
+                set_layout_count: 1,
+                p_set_layouts: &storage.set_layout(),
+                push_constant_range_count: 1,
+                p_push_constant_ranges: &push_constant_ranges,
+            }),
+        )?;
 
-unsafe fn destroy_descriptors(gpu @ Gpu { device, .. }: &Gpu, descriptors: &Descriptors) {
-    descriptors.storage.destroy(gpu);
-    device.destroy_pipeline_layout(descriptors.pipeline_layout);
+        Ok(Self {
+            storage,
+            pipeline_layout,
+            push_constant_ranges,
+        })
+    }
+
+    unsafe fn destroy(&self, gpu: &Gpu) {
+        self.storage.destroy(gpu);
+        gpu.device.destroy_pipeline_layout(self.pipeline_layout);
+    }
 }
 
 //
 // Shaders
 //
 
-unsafe fn create_shaders(gpu: &Gpu, descriptors: &Descriptors) -> Result<shader::Shader> {
-    // Shader compiler
-    let mut compiler = shader::Compiler::new()?;
+struct ShadersCreateInfo<'a> {
+    descriptors: &'a Descriptors,
+}
 
-    // Includes.
-    compiler.include(
-        "common.glsl",
-        r#"
-            #extension GL_EXT_mesh_shader : require
-            #extension GL_EXT_nonuniform_qualifier : require
-            #extension GL_EXT_scalar_block_layout : require
+struct Shaders {
+    shader: shader::Shader,
+}
 
-            struct MeshVertex {
-                vec2 texcoord;
-            };
+impl GpuResource for Shaders {
+    type CreateInfo<'a> = ShadersCreateInfo<'a>;
 
-            struct MeshPrimitive {
-                vec3 normal;
-                uint texture_id;
-                uint sampler_id;
-            };
-        "#,
-    );
+    unsafe fn create(gpu: &Gpu, create_info: &Self::CreateInfo<'_>) -> Result<Self>
+    where
+        Self: Sized,
+    {
+        // Shader compiler
+        let mut compiler = shader::Compiler::new()?;
 
-    // Shaders.
-    let task_spirv = compiler.compile(
-        shader::ShaderType::Task,
-        r#"
-            #version 460 core
-            #include "common.glsl"
+        // Includes.
+        compiler.include(
+            "common.glsl",
+            r#"
+          #extension GL_EXT_mesh_shader : require
+          #extension GL_EXT_nonuniform_qualifier : require
+          #extension GL_EXT_scalar_block_layout : require
 
-            void main() {
-                EmitMeshTasksEXT(1, 1, 1);
-            }
-        "#,
-    )?;
-    let mesh_spirv = compiler.compile(
-        shader::ShaderType::Mesh,
-        r#"
-            #version 460 core
-            #include "common.glsl"
-            #define MAX_VERTICES 36
-            #define MAX_PRIMITIVES 12
+          struct MeshVertex {
+              vec2 texcoord;
+          };
 
-            layout(scalar, push_constant) uniform PushBuffer {
-                mat4 transform;
-            };
-            layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
-            layout(triangles, max_vertices = MAX_VERTICES, max_primitives = MAX_PRIMITIVES) out;
-            layout(location = 0) out MeshVertex mesh_vertices[];
-            layout(location = 1) perprimitiveEXT flat out MeshPrimitive mesh_primitives[];
+          struct MeshPrimitive {
+              vec3 normal;
+              uint texture_id;
+              uint sampler_id;
+          };
+      "#,
+        );
 
-            void main() {
-                const vec3 vertices[8] = {
-                    vec3(-0.5, -0.5, -0.5), // 0
-                    vec3(+0.5, -0.5, -0.5), // 1
-                    vec3(+0.5, +0.5, -0.5), // 2
-                    vec3(-0.5, +0.5, -0.5), // 3
-                    vec3(-0.5, -0.5, +0.5), // 4
-                    vec3(+0.5, -0.5, +0.5), // 5
-                    vec3(+0.5, +0.5, +0.5), // 6
-                    vec3(-0.5, +0.5, +0.5), // 7
-                };
+        // Shaders.
+        let task_spirv = compiler.compile(
+            shader::ShaderType::Task,
+            r#"
+          #version 460 core
+          #include "common.glsl"
 
-                const vec2 texcoords[4] = {
-                    vec2(0.0, 0.0), // 0
-                    vec2(1.0, 0.0), // 1
-                    vec2(1.0, 1.0), // 2
-                    vec2(0.0, 1.0), // 3
-                };
+          void main() {
+              EmitMeshTasksEXT(1, 1, 1);
+          }
+      "#,
+        )?;
+        let mesh_spirv = compiler.compile(
+      shader::ShaderType::Mesh,
+      r#"
+          #version 460 core
+          #include "common.glsl"
+          #define MAX_VERTICES 36
+          #define MAX_PRIMITIVES 12
 
-                const vec3 normals[6] = {
-                    vec3(-1.0, +0.0, +0.0), // 0, -x
-                    vec3(+1.0, +0.0, +0.0), // 1, +x
-                    vec3(+0.0, -1.0, +0.0), // 2, -y
-                    vec3(+0.0, +1.0, +0.0), // 3, +y
-                    vec3(+0.0, +0.0, -1.0), // 4, -z
-                    vec3(+0.0, +0.0, +1.0), // 5, +z
-                };
+          layout(scalar, push_constant) uniform PushBuffer {
+              mat4 transform;
+          };
+          layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
+          layout(triangles, max_vertices = MAX_VERTICES, max_primitives = MAX_PRIMITIVES) out;
+          layout(location = 0) out MeshVertex mesh_vertices[];
+          layout(location = 1) perprimitiveEXT flat out MeshPrimitive mesh_primitives[];
 
-                const uvec3 indices[12] = {
-                    uvec3(4, 0, 7), uvec3(7, 0, 3), // -x
-                    uvec3(1, 5, 2), uvec3(2, 5, 6), // +x
-                    uvec3(4, 5, 0), uvec3(0, 5, 1), // -y
-                    uvec3(3, 2, 7), uvec3(7, 2, 6), // +y
-                    uvec3(0, 1, 3), uvec3(3, 1, 2), // -z
-                    uvec3(5, 4, 6), uvec3(6, 4, 7), // +z
-                };
+          void main() {
+              const vec3 vertices[8] = {
+                  vec3(-0.5, -0.5, -0.5), // 0
+                  vec3(+0.5, -0.5, -0.5), // 1
+                  vec3(+0.5, +0.5, -0.5), // 2
+                  vec3(-0.5, +0.5, -0.5), // 3
+                  vec3(-0.5, -0.5, +0.5), // 4
+                  vec3(+0.5, -0.5, +0.5), // 5
+                  vec3(+0.5, +0.5, +0.5), // 6
+                  vec3(-0.5, +0.5, +0.5), // 7
+              };
 
-                const uvec3 texcoord_indices[2] = {
-                    uvec3(0, 1, 3), uvec3(3, 1, 2),
-                };
+              const vec2 texcoords[4] = {
+                  vec2(0.0, 0.0), // 0
+                  vec2(1.0, 0.0), // 1
+                  vec2(1.0, 1.0), // 2
+                  vec2(0.0, 1.0), // 3
+              };
 
-                const bool culled[6] = {
-                    false, // -x
-                    false, // +x
-                    false, // -y
-                    false, // +y
-                    false, // -z
-                    false, // +z
-                };
+              const vec3 normals[6] = {
+                  vec3(-1.0, +0.0, +0.0), // 0, -x
+                  vec3(+1.0, +0.0, +0.0), // 1, +x
+                  vec3(+0.0, -1.0, +0.0), // 2, -y
+                  vec3(+0.0, +1.0, +0.0), // 3, +y
+                  vec3(+0.0, +0.0, -1.0), // 4, -z
+                  vec3(+0.0, +0.0, +1.0), // 5, +z
+              };
 
-                SetMeshOutputsEXT(MAX_VERTICES, MAX_PRIMITIVES);
-                for (uint i = 0; i < MAX_PRIMITIVES; i++) {
-                    gl_MeshVerticesEXT[3 * i + 0].gl_Position = transform * vec4(vertices[indices[i][0]], 1.0);
-                    gl_MeshVerticesEXT[3 * i + 1].gl_Position = transform * vec4(vertices[indices[i][1]], 1.0);
-                    gl_MeshVerticesEXT[3 * i + 2].gl_Position = transform * vec4(vertices[indices[i][2]], 1.0);
-                    mesh_vertices[3 * i + 0].texcoord = texcoords[texcoord_indices[i % 2][0]];
-                    mesh_vertices[3 * i + 1].texcoord = texcoords[texcoord_indices[i % 2][1]];
-                    mesh_vertices[3 * i + 2].texcoord = texcoords[texcoord_indices[i % 2][2]];
-                    gl_PrimitiveTriangleIndicesEXT[i] = uvec3(3 * i + 0, 3 * i + 1, 3 * i + 2);
-                    mesh_primitives[i].normal = normals[i / 2];
-                    mesh_primitives[i].texture_id = i / 2;
-                    mesh_primitives[i].sampler_id = i / 2;
-                    gl_MeshPrimitivesEXT[i].gl_CullPrimitiveEXT = culled[i / 2];
-                }
-            }
-        "#,
-    )?;
-    let fragment_spirv = compiler.compile(
-        shader::ShaderType::Fragment,
-        r#"
-            #version 460 core
-            #include "common.glsl"
+              const uvec3 indices[12] = {
+                  uvec3(4, 0, 7), uvec3(7, 0, 3), // -x
+                  uvec3(1, 5, 2), uvec3(2, 5, 6), // +x
+                  uvec3(4, 5, 0), uvec3(0, 5, 1), // -y
+                  uvec3(3, 2, 7), uvec3(7, 2, 6), // +y
+                  uvec3(0, 1, 3), uvec3(3, 1, 2), // -z
+                  uvec3(5, 4, 6), uvec3(6, 4, 7), // +z
+              };
 
-            layout(location = 0) in MeshVertex mesh_vertex;
-            layout(location = 1) perprimitiveEXT flat in MeshPrimitive mesh_primitive;
-            layout(binding = 0) uniform texture2D textures[];
-            layout(binding = 1) uniform sampler samplers[];
-            layout(location = 0) out vec4 fragment_color;
+              const uvec3 texcoord_indices[2] = {
+                  uvec3(0, 1, 3), uvec3(3, 1, 2),
+              };
 
-            void main() {
-                vec3 light = normalize(vec3(3.0, 1.5, 3.0));
-                float diffuse = 0.25 + 0.75 * max(0.0, dot(light, mesh_primitive.normal));
-                fragment_color.rgb = diffuse * texture(
-                    sampler2D(
-                        textures[nonuniformEXT(mesh_primitive.texture_id)],
-                        samplers[nonuniformEXT(mesh_primitive.sampler_id)]
-                    ), mesh_vertex.texcoord
-                ).rgb;
-                fragment_color.a = 1.0;
-            }
-        "#,
-    )?;
+              const bool culled[6] = {
+                  false, // -x
+                  false, // +x
+                  false, // -y
+                  false, // +y
+                  false, // -z
+                  false, // +z
+              };
 
-    shader::Shader::create(
-        gpu,
-        &shader::ShaderCreateInfo {
-            spirvs: &[task_spirv, mesh_spirv, fragment_spirv],
-            set_layouts: &[descriptors.storage.set_layout()],
-            push_constant_ranges: &[descriptors.push_constant_ranges],
-            specialization_info: None,
-        },
-    )
+              SetMeshOutputsEXT(MAX_VERTICES, MAX_PRIMITIVES);
+              for (uint i = 0; i < MAX_PRIMITIVES; i++) {
+                  gl_MeshVerticesEXT[3 * i + 0].gl_Position = transform * vec4(vertices[indices[i][0]], 1.0);
+                  gl_MeshVerticesEXT[3 * i + 1].gl_Position = transform * vec4(vertices[indices[i][1]], 1.0);
+                  gl_MeshVerticesEXT[3 * i + 2].gl_Position = transform * vec4(vertices[indices[i][2]], 1.0);
+                  mesh_vertices[3 * i + 0].texcoord = texcoords[texcoord_indices[i % 2][0]];
+                  mesh_vertices[3 * i + 1].texcoord = texcoords[texcoord_indices[i % 2][1]];
+                  mesh_vertices[3 * i + 2].texcoord = texcoords[texcoord_indices[i % 2][2]];
+                  gl_PrimitiveTriangleIndicesEXT[i] = uvec3(3 * i + 0, 3 * i + 1, 3 * i + 2);
+                  mesh_primitives[i].normal = normals[i / 2];
+                  mesh_primitives[i].texture_id = i / 2;
+                  mesh_primitives[i].sampler_id = i / 2;
+                  gl_MeshPrimitivesEXT[i].gl_CullPrimitiveEXT = culled[i / 2];
+              }
+          }
+      "#,
+  )?;
+        let fragment_spirv = compiler.compile(
+            shader::ShaderType::Fragment,
+            r#"
+          #version 460 core
+          #include "common.glsl"
+
+          layout(location = 0) in MeshVertex mesh_vertex;
+          layout(location = 1) perprimitiveEXT flat in MeshPrimitive mesh_primitive;
+          layout(binding = 0) uniform texture2D textures[];
+          layout(binding = 1) uniform sampler samplers[];
+          layout(location = 0) out vec4 fragment_color;
+
+          void main() {
+              vec3 light = normalize(vec3(3.0, 1.5, 3.0));
+              float diffuse = 0.25 + 0.75 * max(0.0, dot(light, mesh_primitive.normal));
+              fragment_color.rgb = diffuse * texture(
+                  sampler2D(
+                      textures[nonuniformEXT(mesh_primitive.texture_id)],
+                      samplers[nonuniformEXT(mesh_primitive.sampler_id)]
+                  ), mesh_vertex.texcoord
+              ).rgb;
+              fragment_color.a = 1.0;
+          }
+      "#,
+        )?;
+
+        let shader = shader::Shader::create(
+            gpu,
+            &shader::ShaderCreateInfo {
+                spirvs: &[task_spirv, mesh_spirv, fragment_spirv],
+                set_layouts: &[create_info.descriptors.storage.set_layout()],
+                push_constant_ranges: &[create_info.descriptors.push_constant_ranges],
+                specialization_info: None,
+            },
+        )?;
+
+        Ok(Self { shader })
+    }
+
+    unsafe fn destroy(&self, gpu: &Gpu) {
+        self.shader.destroy(gpu);
+    }
 }
 
 //
 // Render targets
 //
+
+struct RenderTargetsCreateInfo {}
 
 struct RenderTargets {
     color: resource::Image2d,
@@ -413,77 +457,92 @@ struct RenderTargets {
     resolve: resource::Image2d,
 }
 
-unsafe fn create_render_targets(gpu: &Gpu) -> Result<RenderTargets> {
-    let color = resource::Image2d::create(
-        gpu,
-        &resource::Image2dCreateInfo {
-            format: DEFAULT_RENDER_TARGET_COLOR_FORMAT,
-            width: DEFAULT_RENDER_TARGET_WIDTH,
-            height: DEFAULT_RENDER_TARGET_HEIGHT,
-            samples: DEFAULT_RENDER_TARGET_SAMPLES,
-            usage: vk::ImageUsageFlagBits::ColorAttachment.into(),
-            property_flags: vk::MemoryPropertyFlagBits::DeviceLocal.into(),
-        },
-    )?;
-    let depth = resource::Image2d::create(
-        gpu,
-        &resource::Image2dCreateInfo {
-            format: DEFAULT_RENDER_TARGET_DEPTH_FORMAT,
-            width: DEFAULT_RENDER_TARGET_WIDTH,
-            height: DEFAULT_RENDER_TARGET_HEIGHT,
-            samples: DEFAULT_RENDER_TARGET_SAMPLES,
-            usage: vk::ImageUsageFlagBits::DepthStencilAttachment.into(),
-            property_flags: vk::MemoryPropertyFlagBits::DeviceLocal.into(),
-        },
-    )?;
-    let resolve = resource::Image2d::create(
-        gpu,
-        &resource::Image2dCreateInfo {
-            format: DEFAULT_RENDER_TARGET_RESOLVE_FORMAT,
-            width: DEFAULT_RENDER_TARGET_WIDTH,
-            height: DEFAULT_RENDER_TARGET_HEIGHT,
-            samples: vk::SampleCountFlagBits::Count1,
-            usage: vk::ImageUsageFlagBits::ColorAttachment | vk::ImageUsageFlagBits::TransferSrc,
-            property_flags: vk::MemoryPropertyFlagBits::DeviceLocal.into(),
-        },
-    )?;
-    Ok(RenderTargets {
-        color,
-        depth,
-        resolve,
-    })
-}
+impl GpuResource for RenderTargets {
+    type CreateInfo<'a> = RenderTargetsCreateInfo;
 
-unsafe fn destroy_render_targets(gpu: &Gpu, rt: &RenderTargets) {
-    rt.color.destroy(gpu);
-    rt.depth.destroy(gpu);
-    rt.resolve.destroy(gpu);
+    unsafe fn create(gpu: &Gpu, _: &Self::CreateInfo<'_>) -> Result<Self>
+    where
+        Self: Sized,
+    {
+        let color = resource::Image2d::create(
+            gpu,
+            &resource::Image2dCreateInfo {
+                format: DEFAULT_RENDER_TARGET_COLOR_FORMAT,
+                width: DEFAULT_RENDER_TARGET_WIDTH,
+                height: DEFAULT_RENDER_TARGET_HEIGHT,
+                samples: DEFAULT_RENDER_TARGET_SAMPLES,
+                usage: vk::ImageUsageFlagBits::ColorAttachment.into(),
+                property_flags: vk::MemoryPropertyFlagBits::DeviceLocal.into(),
+            },
+        )?;
+        let depth = resource::Image2d::create(
+            gpu,
+            &resource::Image2dCreateInfo {
+                format: DEFAULT_RENDER_TARGET_DEPTH_FORMAT,
+                width: DEFAULT_RENDER_TARGET_WIDTH,
+                height: DEFAULT_RENDER_TARGET_HEIGHT,
+                samples: DEFAULT_RENDER_TARGET_SAMPLES,
+                usage: vk::ImageUsageFlagBits::DepthStencilAttachment.into(),
+                property_flags: vk::MemoryPropertyFlagBits::DeviceLocal.into(),
+            },
+        )?;
+        let resolve = resource::Image2d::create(
+            gpu,
+            &resource::Image2dCreateInfo {
+                format: DEFAULT_RENDER_TARGET_RESOLVE_FORMAT,
+                width: DEFAULT_RENDER_TARGET_WIDTH,
+                height: DEFAULT_RENDER_TARGET_HEIGHT,
+                samples: vk::SampleCountFlagBits::Count1,
+                usage: vk::ImageUsageFlagBits::ColorAttachment
+                    | vk::ImageUsageFlagBits::TransferSrc,
+                property_flags: vk::MemoryPropertyFlagBits::DeviceLocal.into(),
+            },
+        )?;
+        Ok(Self {
+            color,
+            depth,
+            resolve,
+        })
+    }
+
+    unsafe fn destroy(&self, gpu: &Gpu) {
+        self.color.destroy(gpu);
+        self.depth.destroy(gpu);
+        self.resolve.destroy(gpu);
+    }
 }
 
 //
 // Output
 //
 
-type OutputBuffer = resource::Buffer<u32>;
+struct OutputCreateInfo {}
 
 struct Output {
-    buffer: OutputBuffer,
+    buffer: resource::Buffer<u32>,
 }
 
-unsafe fn create_output(gpu: &Gpu) -> Result<Output> {
-    let buffer = OutputBuffer::create(
-        gpu,
-        &resource::BufferCreateInfo {
-            size: DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE as _,
-            usage: vk::BufferUsageFlagBits::TransferDst.into(),
-            property_flags: vk::MemoryPropertyFlagBits::HostVisible.into(),
-        },
-    )?;
-    Ok(Output { buffer })
-}
+impl GpuResource for Output {
+    type CreateInfo<'a> = OutputCreateInfo;
 
-unsafe fn destroy_output(gpu: &Gpu, output: &Output) {
-    output.buffer.destroy(gpu);
+    unsafe fn create(gpu: &Gpu, _: &Self::CreateInfo<'_>) -> Result<Self>
+    where
+        Self: Sized,
+    {
+        let buffer = resource::Buffer::create(
+            gpu,
+            &resource::BufferCreateInfo {
+                size: DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE as _,
+                usage: vk::BufferUsageFlagBits::TransferDst.into(),
+                property_flags: vk::MemoryPropertyFlagBits::HostVisible.into(),
+            },
+        )?;
+        Ok(Self { buffer })
+    }
+
+    unsafe fn destroy(&self, gpu: &Gpu) {
+        self.buffer.destroy(gpu);
+    }
 }
 
 //
@@ -496,7 +555,7 @@ unsafe fn draw(
         commands,
         queries,
         descriptors,
-        shader,
+        shaders,
         render_targets,
         output,
         ..
@@ -621,7 +680,7 @@ unsafe fn draw(
     );
 
     // Bind shaders.
-    shader.bind(gpu, cmd);
+    shaders.shader.bind(gpu, cmd);
 
     // Push constants.
     {

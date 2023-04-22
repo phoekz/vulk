@@ -20,8 +20,8 @@ impl DemoCallbacks for Demo {
     {
         let commands = command::Commands::create(gpu, &command::CommandsCreateInfo)?;
         let queries = query::Queries::create(gpu, &query::QueriesCreateInfo)?;
-        let render_targets = create_render_targets(gpu)?;
-        let output = create_output(gpu)?;
+        let render_targets = RenderTargets::create(gpu, &RenderTargetsCreateInfo {})?;
+        let output = Output::create(gpu, &OutputCreateInfo {})?;
         Ok(Self {
             commands,
             queries,
@@ -35,16 +35,10 @@ impl DemoCallbacks for Demo {
     }
 
     unsafe fn destroy(gpu: &Gpu, state: Self) -> Result<()> {
-        let Self {
-            commands,
-            queries,
-            render_targets,
-            output,
-        } = state;
-        destroy_output(gpu, &output);
-        destroy_render_targets(gpu, &render_targets);
-        queries.destroy(gpu);
-        commands.destroy(gpu);
+        state.output.destroy(gpu);
+        state.render_targets.destroy(gpu);
+        state.queries.destroy(gpu);
+        state.commands.destroy(gpu);
         Ok(())
     }
 }
@@ -53,53 +47,71 @@ impl DemoCallbacks for Demo {
 // Render targets
 //
 
+struct RenderTargetsCreateInfo {}
+
 struct RenderTargets {
     color: resource::Image2d,
 }
 
-unsafe fn create_render_targets(gpu: &Gpu) -> Result<RenderTargets> {
-    let color = resource::Image2d::create(
-        gpu,
-        &resource::Image2dCreateInfo {
-            format: DEFAULT_RENDER_TARGET_COLOR_FORMAT,
-            width: DEFAULT_RENDER_TARGET_WIDTH,
-            height: DEFAULT_RENDER_TARGET_HEIGHT,
-            samples: vk::SampleCountFlagBits::Count1,
-            usage: vk::ImageUsageFlagBits::ColorAttachment | vk::ImageUsageFlagBits::TransferSrc,
-            property_flags: vk::MemoryPropertyFlagBits::DeviceLocal.into(),
-        },
-    )?;
-    Ok(RenderTargets { color })
-}
+impl GpuResource for RenderTargets {
+    type CreateInfo<'a> = RenderTargetsCreateInfo;
 
-unsafe fn destroy_render_targets(gpu: &Gpu, rt: &RenderTargets) {
-    rt.color.destroy(gpu);
+    unsafe fn create(gpu: &Gpu, _: &Self::CreateInfo<'_>) -> Result<Self>
+    where
+        Self: Sized,
+    {
+        let color = resource::Image2d::create(
+            gpu,
+            &resource::Image2dCreateInfo {
+                format: DEFAULT_RENDER_TARGET_COLOR_FORMAT,
+                width: DEFAULT_RENDER_TARGET_WIDTH,
+                height: DEFAULT_RENDER_TARGET_HEIGHT,
+                samples: vk::SampleCountFlagBits::Count1,
+                usage: vk::ImageUsageFlagBits::ColorAttachment
+                    | vk::ImageUsageFlagBits::TransferSrc,
+                property_flags: vk::MemoryPropertyFlagBits::DeviceLocal.into(),
+            },
+        )?;
+
+        Ok(Self { color })
+    }
+
+    unsafe fn destroy(&self, gpu: &Gpu) {
+        self.color.destroy(gpu);
+    }
 }
 
 //
 // Output
 //
 
-type OutputBuffer = resource::Buffer<u32>;
+struct OutputCreateInfo {}
 
 struct Output {
-    buffer: OutputBuffer,
+    buffer: resource::Buffer<u32>,
 }
 
-unsafe fn create_output(gpu: &Gpu) -> Result<Output> {
-    let buffer = OutputBuffer::create(
-        gpu,
-        &resource::BufferCreateInfo {
-            size: DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE as _,
-            usage: vk::BufferUsageFlagBits::TransferDst.into(),
-            property_flags: vk::MemoryPropertyFlagBits::HostVisible.into(),
-        },
-    )?;
-    Ok(Output { buffer })
-}
+impl GpuResource for Output {
+    type CreateInfo<'a> = OutputCreateInfo;
 
-unsafe fn destroy_output(gpu: &Gpu, output: &Output) {
-    output.buffer.destroy(gpu);
+    unsafe fn create(gpu: &Gpu, _: &Self::CreateInfo<'_>) -> Result<Self>
+    where
+        Self: Sized,
+    {
+        let buffer = resource::Buffer::create(
+            gpu,
+            &resource::BufferCreateInfo {
+                size: DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE as _,
+                usage: vk::BufferUsageFlagBits::TransferDst.into(),
+                property_flags: vk::MemoryPropertyFlagBits::HostVisible.into(),
+            },
+        )?;
+        Ok(Self { buffer })
+    }
+
+    unsafe fn destroy(&self, gpu: &Gpu) {
+        self.buffer.destroy(gpu);
+    }
 }
 
 //

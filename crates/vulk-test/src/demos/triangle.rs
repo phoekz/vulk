@@ -7,7 +7,7 @@ use super::*;
 pub struct Demo {
     commands: command::Commands,
     queries: query::Queries,
-    shader: shader::Shader,
+    shaders: Shaders,
     render_targets: RenderTargets,
     output: Output,
 }
@@ -21,13 +21,13 @@ impl DemoCallbacks for Demo {
     {
         let commands = command::Commands::create(gpu, &command::CommandsCreateInfo)?;
         let queries = query::Queries::create(gpu, &query::QueriesCreateInfo)?;
-        let shader = create_shaders(gpu)?;
-        let render_targets = create_render_targets(gpu)?;
-        let output = create_output(gpu)?;
+        let shaders = Shaders::create(gpu, &ShadersCreateInfo {})?;
+        let render_targets = RenderTargets::create(gpu, &RenderTargetsCreateInfo {})?;
+        let output = Output::create(gpu, &OutputCreateInfo {})?;
         Ok(Self {
             commands,
             queries,
-            shader,
+            shaders,
             render_targets,
             output,
         })
@@ -38,18 +38,11 @@ impl DemoCallbacks for Demo {
     }
 
     unsafe fn destroy(gpu: &Gpu, state: Self) -> Result<()> {
-        let Self {
-            commands,
-            queries,
-            shader,
-            render_targets,
-            output,
-        } = state;
-        destroy_output(gpu, &output);
-        destroy_render_targets(gpu, &render_targets);
-        shader.destroy(gpu);
-        queries.destroy(gpu);
-        commands.destroy(gpu);
+        state.output.destroy(gpu);
+        state.render_targets.destroy(gpu);
+        state.shaders.destroy(gpu);
+        state.queries.destroy(gpu);
+        state.commands.destroy(gpu);
         Ok(())
     }
 }
@@ -58,14 +51,26 @@ impl DemoCallbacks for Demo {
 // Shaders
 //
 
-unsafe fn create_shaders(gpu: &Gpu) -> Result<shader::Shader> {
-    // Shader compiler
-    let mut compiler = shader::Compiler::new()?;
+struct ShadersCreateInfo {}
 
-    // Includes.
-    compiler.include(
-        "common.glsl",
-        r#"
+struct Shaders {
+    shader: shader::Shader,
+}
+
+impl GpuResource for Shaders {
+    type CreateInfo<'a> = ShadersCreateInfo;
+
+    unsafe fn create(gpu: &Gpu, _: &Self::CreateInfo<'_>) -> Result<Self>
+    where
+        Self: Sized,
+    {
+        // Shader compiler
+        let mut compiler = shader::Compiler::new()?;
+
+        // Includes.
+        compiler.include(
+            "common.glsl",
+            r#"
             #extension GL_EXT_mesh_shader : require
 
             struct MeshTask {
@@ -80,12 +85,12 @@ unsafe fn create_shaders(gpu: &Gpu) -> Result<shader::Shader> {
                 float alpha;
             };
         "#,
-    );
+        );
 
-    // Shaders.
-    let task_spirv = compiler.compile(
-        shader::ShaderType::Task,
-        r#"
+        // Shaders.
+        let task_spirv = compiler.compile(
+            shader::ShaderType::Task,
+            r#"
             #version 460 core
             #include "common.glsl"
 
@@ -96,10 +101,10 @@ unsafe fn create_shaders(gpu: &Gpu) -> Result<shader::Shader> {
                 EmitMeshTasksEXT(1, 1, 1);
             }
         "#,
-    )?;
-    let mesh_spirv = compiler.compile(
-        shader::ShaderType::Mesh,
-        r#"
+        )?;
+        let mesh_spirv = compiler.compile(
+            shader::ShaderType::Mesh,
+            r#"
             #version 460 core
             #include "common.glsl"
 
@@ -135,10 +140,10 @@ unsafe fn create_shaders(gpu: &Gpu) -> Result<shader::Shader> {
                 mesh_primitives[0].alpha = 1.0;
             }
         "#,
-    )?;
-    let fragment_spirv = compiler.compile(
-        shader::ShaderType::Fragment,
-        r#"
+        )?;
+        let fragment_spirv = compiler.compile(
+            shader::ShaderType::Fragment,
+            r#"
             #version 460 core
             #include "common.glsl"
 
@@ -150,70 +155,95 @@ unsafe fn create_shaders(gpu: &Gpu) -> Result<shader::Shader> {
                 fragment_color = vec4(mesh_vertex.color, mesh_primitive.alpha);
             }
         "#,
-    )?;
+        )?;
 
-    shader::Shader::create(
-        gpu,
-        &shader::ShaderCreateInfo {
-            spirvs: &[task_spirv, mesh_spirv, fragment_spirv],
-            set_layouts: &[],
-            push_constant_ranges: &[],
-            specialization_info: None,
-        },
-    )
+        let shader = shader::Shader::create(
+            gpu,
+            &shader::ShaderCreateInfo {
+                spirvs: &[task_spirv, mesh_spirv, fragment_spirv],
+                set_layouts: &[],
+                push_constant_ranges: &[],
+                specialization_info: None,
+            },
+        )?;
+
+        Ok(Self { shader })
+    }
+
+    unsafe fn destroy(&self, gpu: &Gpu) {
+        self.shader.destroy(gpu);
+    }
 }
 
 //
 // Render targets
 //
 
+struct RenderTargetsCreateInfo {}
+
 struct RenderTargets {
     color: resource::Image2d,
 }
 
-unsafe fn create_render_targets(gpu: &Gpu) -> Result<RenderTargets> {
-    let color = resource::Image2d::create(
-        gpu,
-        &resource::Image2dCreateInfo {
-            format: DEFAULT_RENDER_TARGET_COLOR_FORMAT,
-            width: DEFAULT_RENDER_TARGET_WIDTH,
-            height: DEFAULT_RENDER_TARGET_HEIGHT,
-            samples: vk::SampleCountFlagBits::Count1,
-            usage: vk::ImageUsageFlagBits::ColorAttachment | vk::ImageUsageFlagBits::TransferSrc,
-            property_flags: vk::MemoryPropertyFlagBits::DeviceLocal.into(),
-        },
-    )?;
-    Ok(RenderTargets { color })
-}
+impl GpuResource for RenderTargets {
+    type CreateInfo<'a> = RenderTargetsCreateInfo;
 
-unsafe fn destroy_render_targets(gpu: &Gpu, rt: &RenderTargets) {
-    rt.color.destroy(gpu);
+    unsafe fn create(gpu: &Gpu, _: &Self::CreateInfo<'_>) -> Result<Self>
+    where
+        Self: Sized,
+    {
+        let color = resource::Image2d::create(
+            gpu,
+            &resource::Image2dCreateInfo {
+                format: DEFAULT_RENDER_TARGET_COLOR_FORMAT,
+                width: DEFAULT_RENDER_TARGET_WIDTH,
+                height: DEFAULT_RENDER_TARGET_HEIGHT,
+                samples: vk::SampleCountFlagBits::Count1,
+                usage: vk::ImageUsageFlagBits::ColorAttachment
+                    | vk::ImageUsageFlagBits::TransferSrc,
+                property_flags: vk::MemoryPropertyFlagBits::DeviceLocal.into(),
+            },
+        )?;
+
+        Ok(Self { color })
+    }
+
+    unsafe fn destroy(&self, gpu: &Gpu) {
+        self.color.destroy(gpu);
+    }
 }
 
 //
 // Output
 //
 
-type OutputBuffer = resource::Buffer<u32>;
+struct OutputCreateInfo {}
 
 struct Output {
-    buffer: OutputBuffer,
+    buffer: resource::Buffer<u32>,
 }
 
-unsafe fn create_output(gpu: &Gpu) -> Result<Output> {
-    let buffer = OutputBuffer::create(
-        gpu,
-        &resource::BufferCreateInfo {
-            size: DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE as _,
-            usage: vk::BufferUsageFlagBits::TransferDst.into(),
-            property_flags: vk::MemoryPropertyFlagBits::HostVisible.into(),
-        },
-    )?;
-    Ok(Output { buffer })
-}
+impl GpuResource for Output {
+    type CreateInfo<'a> = OutputCreateInfo;
 
-unsafe fn destroy_output(gpu: &Gpu, output: &Output) {
-    output.buffer.destroy(gpu);
+    unsafe fn create(gpu: &Gpu, _: &Self::CreateInfo<'_>) -> Result<Self>
+    where
+        Self: Sized,
+    {
+        let buffer = resource::Buffer::create(
+            gpu,
+            &resource::BufferCreateInfo {
+                size: DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE as _,
+                usage: vk::BufferUsageFlagBits::TransferDst.into(),
+                property_flags: vk::MemoryPropertyFlagBits::HostVisible.into(),
+            },
+        )?;
+        Ok(Self { buffer })
+    }
+
+    unsafe fn destroy(&self, gpu: &Gpu) {
+        self.buffer.destroy(gpu);
+    }
 }
 
 //
@@ -225,7 +255,7 @@ unsafe fn draw(
     Demo {
         commands,
         queries,
-        shader,
+        shaders,
         render_targets,
         output,
     }: &Demo,
@@ -320,7 +350,7 @@ unsafe fn draw(
     }
 
     // Bind shaders.
-    shader.bind(gpu, cmd);
+    shaders.shader.bind(gpu, cmd);
 
     // Draw.
     device.cmd_draw_mesh_tasks_ext(cmd, 1, 1, 1);
