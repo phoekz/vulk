@@ -92,6 +92,24 @@ impl Descriptor {
         )
     }
 
+    pub unsafe fn create_storage_image(
+        gpu: &Gpu,
+        image_view: vk::ImageView,
+        image_layout: vk::ImageLayout,
+    ) -> Self {
+        Self::create(
+            gpu,
+            vk::DescriptorType::StorageImage,
+            &vk::DescriptorDataEXT {
+                p_storage_image: &vk::DescriptorImageInfo {
+                    sampler: vk::Sampler::null(),
+                    image_view,
+                    image_layout,
+                },
+            },
+        )
+    }
+
     pub unsafe fn create_sampler(gpu: &Gpu, sampler: vk::Sampler) -> Self {
         Self::create(
             gpu,
@@ -131,6 +149,7 @@ pub struct DescriptorStorageCreateInfo<'a> {
 
 pub type DescriptorBuffer = resource::Buffer<u8>;
 
+#[derive(Debug)]
 pub struct DescriptorStorage {
     set_layout: vk::DescriptorSetLayout,
     buffer: DescriptorBuffer,
@@ -307,6 +326,7 @@ fn descriptor_size(
     match ty {
         vk::DescriptorType::Sampler => properties.sampler_descriptor_size,
         vk::DescriptorType::SampledImage => properties.sampled_image_descriptor_size,
+        vk::DescriptorType::StorageImage => properties.storage_image_descriptor_size,
         vk::DescriptorType::StorageBuffer => properties.storage_buffer_descriptor_size,
         _ => {
             panic!("Unsupported descriptor type={ty:?}");

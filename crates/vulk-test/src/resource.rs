@@ -315,11 +315,18 @@ impl GpuResource for Image2d {
         let image_view = device.create_image_view(&image_view_create_info)?;
 
         // Descriptor.
-        let descriptor = descriptor::Descriptor::create_sampled_image(
-            gpu,
-            image_view,
-            vk::ImageLayout::ShaderReadOnlyOptimal,
-        );
+        let descriptor = if create_info
+            .usage
+            .contains(vk::ImageUsageFlagBits::Storage.into())
+        {
+            descriptor::Descriptor::create_storage_image(gpu, image_view, vk::ImageLayout::General)
+        } else {
+            descriptor::Descriptor::create_sampled_image(
+                gpu,
+                image_view,
+                vk::ImageLayout::ShaderReadOnlyOptimal,
+            )
+        };
 
         Ok(Self {
             image_create_info,

@@ -7,11 +7,11 @@ use super::*;
 pub struct Demo {
     commands: command::Commands,
     queries: query::Queries,
-    compute_buffer: ComputeBuffer,
     indirect_buffer: IndirectBuffer,
+    compute_image: ComputeImage,
     descriptors: Descriptors,
-    indirect_shader: shader::Shader,
-    compute_shader: shader::Shader,
+    shaders: Shaders,
+    output: Output,
 }
 
 impl DemoCallbacks for Demo {
@@ -20,19 +20,31 @@ impl DemoCallbacks for Demo {
     unsafe fn create(gpu: &Gpu) -> Result<Self> {
         let commands = command::Commands::create(gpu, &command::CommandsCreateInfo)?;
         let queries = query::Queries::create(gpu, &query::QueriesCreateInfo)?;
-        let compute_buffer = create_compute_buffer(gpu)?;
-        let indirect_buffer = create_indirect_buffer(gpu)?;
-        let descriptors = create_descriptors(gpu, &compute_buffer, &indirect_buffer)?;
-        let (indirect_shader, compute_shader) = create_shaders(gpu, &compute_buffer, &descriptors)?;
+        let indirect_buffer = IndirectBuffer::create(gpu, &IndirectBufferCreateInfo {})?;
+        let compute_image = ComputeImage::create(gpu, &ComputeImageCreateInfo {})?;
+        let descriptors = Descriptors::create(
+            gpu,
+            &DescriptorsCreateInfo {
+                indirect_buffer: &indirect_buffer,
+                compute_image: &compute_image,
+            },
+        )?;
+        let shaders = Shaders::create(
+            gpu,
+            &ShadersCreateInfo {
+                descriptors: &descriptors,
+            },
+        )?;
+        let output = Output::create(gpu, &OutputCreateInfo {})?;
 
         Ok(Self {
             commands,
             queries,
-            compute_buffer,
             indirect_buffer,
+            compute_image,
             descriptors,
-            indirect_shader,
-            compute_shader,
+            shaders,
+            output,
         })
     }
 
@@ -41,46 +53,20 @@ impl DemoCallbacks for Demo {
     }
 
     unsafe fn destroy(gpu: &Gpu, state: Self) -> Result<()> {
-        let Gpu { device, .. } = &gpu;
-        let Self {
-            commands,
-            queries,
-            compute_buffer,
-            indirect_buffer,
-            descriptors,
-            indirect_shader,
-            compute_shader,
-        } = state;
-        compute_shader.destroy(gpu);
-        indirect_shader.destroy(gpu);
-        device.destroy_pipeline_layout(descriptors.pipeline_layout);
-        compute_buffer.destroy(gpu);
-        indirect_buffer.destroy(gpu);
-        descriptors.storage.destroy(gpu);
-        queries.destroy(gpu);
-        commands.destroy(gpu);
+        state.output.destroy(gpu);
+        state.shaders.destroy(gpu);
+        state.descriptors.destroy(gpu);
+        state.compute_image.destroy(gpu);
+        state.indirect_buffer.destroy(gpu);
+        state.queries.destroy(gpu);
+        state.commands.destroy(gpu);
         Ok(())
     }
 }
 
 //
-// Buffers
+// Indirect buffer
 //
-
-type ComputeBuffer = resource::Buffer<u32>;
-
-unsafe fn create_compute_buffer(gpu: &Gpu) -> Result<ComputeBuffer> {
-    let buffer = ComputeBuffer::create(
-        gpu,
-        &resource::BufferCreateInfo {
-            element_count: 8,
-            usage: vk::BufferUsageFlagBits::StorageBuffer.into(),
-            property_flags: vk::MemoryPropertyFlagBits::HostVisible
-                | vk::MemoryPropertyFlagBits::HostCoherent,
-        },
-    )?;
-    Ok(buffer)
-}
 
 #[repr(C)]
 #[derive(Debug, serde::Serialize)]
@@ -90,166 +76,278 @@ struct IndirectDispatch {
     z: u32,
 }
 
-type IndirectBuffer = resource::Buffer<IndirectDispatch>;
+struct IndirectBufferCreateInfo {}
 
-unsafe fn create_indirect_buffer(gpu: &Gpu) -> Result<IndirectBuffer> {
-    let buffer = IndirectBuffer::create(
-        gpu,
-        &resource::BufferCreateInfo {
-            element_count: 1,
-            usage: vk::BufferUsageFlagBits::StorageBuffer | vk::BufferUsageFlagBits::IndirectBuffer,
-            property_flags: vk::MemoryPropertyFlagBits::HostVisible
-                | vk::MemoryPropertyFlagBits::HostCoherent,
-        },
-    )?;
-    Ok(buffer)
+struct IndirectBuffer {
+    buffer: resource::Buffer<IndirectDispatch>,
+}
+
+impl GpuResource for IndirectBuffer {
+    type CreateInfo<'a> = IndirectBufferCreateInfo;
+
+    unsafe fn create(gpu: &Gpu, _: &Self::CreateInfo<'_>) -> Result<Self>
+    where
+        Self: Sized,
+    {
+        let buffer = resource::Buffer::create(
+            gpu,
+            &resource::BufferCreateInfo {
+                element_count: 1,
+                usage: vk::BufferUsageFlagBits::StorageBuffer
+                    | vk::BufferUsageFlagBits::IndirectBuffer,
+                property_flags: vk::MemoryPropertyFlagBits::HostVisible
+                    | vk::MemoryPropertyFlagBits::HostCoherent,
+            },
+        )?;
+        Ok(Self { buffer })
+    }
+
+    unsafe fn destroy(&self, gpu: &Gpu) {
+        self.buffer.destroy(gpu);
+    }
+}
+
+//
+// Compute image
+//
+
+struct ComputeImageCreateInfo {}
+
+struct ComputeImage {
+    image: resource::Image2d,
+}
+
+impl GpuResource for ComputeImage {
+    type CreateInfo<'a> = ComputeImageCreateInfo;
+
+    unsafe fn create(gpu: &Gpu, _: &Self::CreateInfo<'_>) -> Result<Self>
+    where
+        Self: Sized,
+    {
+        let image = resource::Image2d::create(
+            gpu,
+            &resource::Image2dCreateInfo {
+                format: DEFAULT_RENDER_TARGET_COLOR_FORMAT,
+                width: DEFAULT_RENDER_TARGET_WIDTH,
+                height: DEFAULT_RENDER_TARGET_HEIGHT,
+                samples: vk::SampleCountFlagBits::Count1,
+                usage: vk::ImageUsageFlagBits::Storage | vk::ImageUsageFlagBits::TransferSrc,
+                property_flags: vk::MemoryPropertyFlagBits::DeviceLocal.into(),
+            },
+        )?;
+        Ok(Self { image })
+    }
+
+    unsafe fn destroy(&self, gpu: &Gpu) {
+        self.image.destroy(gpu);
+    }
+}
+
+//
+// Output
+//
+
+struct OutputCreateInfo {}
+
+struct Output {
+    buffer: resource::Buffer<u32>,
+}
+
+impl GpuResource for Output {
+    type CreateInfo<'a> = OutputCreateInfo;
+
+    unsafe fn create(gpu: &Gpu, _: &Self::CreateInfo<'_>) -> Result<Self>
+    where
+        Self: Sized,
+    {
+        let buffer = resource::Buffer::create(
+            gpu,
+            &resource::BufferCreateInfo {
+                element_count: DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE as _,
+                usage: vk::BufferUsageFlagBits::TransferDst.into(),
+                property_flags: vk::MemoryPropertyFlagBits::HostVisible.into(),
+            },
+        )?;
+        Ok(Self { buffer })
+    }
+
+    unsafe fn destroy(&self, gpu: &Gpu) {
+        self.buffer.destroy(gpu);
+    }
 }
 
 //
 // Descriptors
 //
 
+struct DescriptorsCreateInfo<'a> {
+    indirect_buffer: &'a IndirectBuffer,
+    compute_image: &'a ComputeImage,
+}
+
 struct Descriptors {
     storage: descriptor::DescriptorStorage,
     pipeline_layout: vk::PipelineLayout,
 }
 
-unsafe fn create_descriptors(
-    gpu @ Gpu { device, .. }: &Gpu,
-    compute_buffer: &ComputeBuffer,
-    indirect_buffer: &IndirectBuffer,
-) -> Result<Descriptors> {
-    // Descriptor storage.
-    let stage_flags = vk::ShaderStageFlagBits::Compute.into();
-    let storage = descriptor::DescriptorStorage::create(
-        gpu,
-        &descriptor::DescriptorStorageCreateInfo {
-            bindings: &[
-                descriptor::DescriptorStorageBinding {
-                    descriptor_type: vk::DescriptorType::StorageBuffer,
-                    stage_flags,
-                    descriptors: &[indirect_buffer.descriptor],
-                },
-                descriptor::DescriptorStorageBinding {
-                    descriptor_type: vk::DescriptorType::StorageBuffer,
-                    stage_flags,
-                    descriptors: &[compute_buffer.descriptor],
-                },
-            ],
-        },
-    )?;
+impl GpuResource for Descriptors {
+    type CreateInfo<'a> = DescriptorsCreateInfo<'a>;
 
-    // Pipeline layout.
-    let pipeline_layout = device.create_pipeline_layout(
-        &(vk::PipelineLayoutCreateInfo {
-            s_type: vk::StructureType::PipelineLayoutCreateInfo,
-            p_next: null(),
-            flags: vk::PipelineLayoutCreateFlags::empty(),
-            set_layout_count: 1,
-            p_set_layouts: &storage.set_layout(),
-            push_constant_range_count: 0,
-            p_push_constant_ranges: null(),
-        }),
-    )?;
+    unsafe fn create(gpu: &Gpu, create_info: &Self::CreateInfo<'_>) -> Result<Self>
+    where
+        Self: Sized,
+    {
+        // Descriptor storage.
+        let stage_flags = vk::ShaderStageFlagBits::Compute.into();
+        let storage = descriptor::DescriptorStorage::create(
+            gpu,
+            &descriptor::DescriptorStorageCreateInfo {
+                bindings: &[
+                    descriptor::DescriptorStorageBinding {
+                        descriptor_type: vk::DescriptorType::StorageBuffer,
+                        stage_flags,
+                        descriptors: &[create_info.indirect_buffer.buffer.descriptor],
+                    },
+                    descriptor::DescriptorStorageBinding {
+                        descriptor_type: vk::DescriptorType::StorageImage,
+                        stage_flags,
+                        descriptors: &[create_info.compute_image.image.descriptor],
+                    },
+                ],
+            },
+        )?;
 
-    Ok(Descriptors {
-        storage,
-        pipeline_layout,
-    })
+        // Pipeline layout.
+        let pipeline_layout = gpu.device.create_pipeline_layout(
+            &(vk::PipelineLayoutCreateInfo {
+                s_type: vk::StructureType::PipelineLayoutCreateInfo,
+                p_next: null(),
+                flags: vk::PipelineLayoutCreateFlags::empty(),
+                set_layout_count: 1,
+                p_set_layouts: &storage.set_layout(),
+                push_constant_range_count: 0,
+                p_push_constant_ranges: null(),
+            }),
+        )?;
+
+        Ok(Self {
+            storage,
+            pipeline_layout,
+        })
+    }
+
+    unsafe fn destroy(&self, gpu: &Gpu) {
+        gpu.device.destroy_pipeline_layout(self.pipeline_layout);
+        self.storage.destroy(gpu);
+    }
 }
 
 //
 // Shaders
 //
 
-unsafe fn create_shaders(
-    gpu: &Gpu,
-    compute_buffer: &ComputeBuffer,
-    descriptors: &Descriptors,
-) -> Result<(shader::Shader, shader::Shader)> {
-    // Shader compiler
-    let compiler = shader::Compiler::new()?;
+struct ShadersCreateInfo<'a> {
+    descriptors: &'a Descriptors,
+}
 
-    // Shaders.
-    let indirect_spirv = compiler.compile(
-        shader::ShaderType::Compute,
-        r#"
-            #version 460 core
-            #extension GL_EXT_scalar_block_layout : require
+struct Shaders {
+    indirect: shader::Shader,
+    compute: shader::Shader,
+}
 
-            layout(local_size_x = 1) in;
+impl GpuResource for Shaders {
+    type CreateInfo<'a> = ShadersCreateInfo<'a>;
 
-            struct IndirectCommand {
-                uint x;
-                uint y;
-                uint z;
-            };
+    unsafe fn create(gpu: &Gpu, create_info: &Self::CreateInfo<'_>) -> Result<Self>
+    where
+        Self: Sized,
+    {
+        // Shader compiler
+        let mut compiler = shader::Compiler::new()?;
 
-            layout(scalar, binding = 0) buffer IndirectCommands {
-                IndirectCommand data[];
-            } indirect_commands;
+        // Includes.
+        compiler.include(
+            "common.glsl",
+            r#"
+                #extension GL_EXT_scalar_block_layout : require
 
-            void main() {
-                IndirectCommand command;
-                command.x = 1;
-                command.y = 1;
-                command.z = 1;
-                indirect_commands.data[0] = command;
-            }
-        "#,
-    )?;
-    let compute_spirv = compiler.compile(
-        shader::ShaderType::Compute,
-        r#"
-            #version 460 core
-            #extension GL_EXT_scalar_block_layout : require
+                struct IndirectCommand {
+                    uint x;
+                    uint y;
+                    uint z;
+                };
 
-            layout(local_size_x_id = 0) in;
+                layout(scalar, binding = 0) buffer IndirectCommands {
+                    IndirectCommand data[];
+                } indirect_commands;
 
-            layout(scalar, binding = 1) buffer Values {
-                uint data[];
-            } values;
+                layout(binding = 1, rgba8) uniform image2D compute_image;
+            "#,
+        );
 
-            void main() {
-                uint id = gl_GlobalInvocationID.x;
-                values.data[id] = 1 + id;
-            }
-        "#,
-    )?;
+        // Indirect shader  .
+        let indirect_spirv = compiler.compile(
+            shader::ShaderType::Compute,
+            r#"
+                #version 460 core
+                #include "common.glsl"
 
-    // Create shaders.
-    let indirect_shader = shader::Shader::create(
-        gpu,
-        &shader::ShaderCreateInfo {
-            spirvs: &[indirect_spirv],
-            set_layouts: &[descriptors.storage.set_layout()],
-            push_constant_ranges: &[],
-            specialization_info: None,
-        },
-    )?;
-    let specialization_map_entry = vk::SpecializationMapEntry {
-        constant_id: 0,
-        offset: 0,
-        size: size_of::<u32>(),
-    };
-    let data = compute_buffer.element_count as u32;
-    let specialization_info = vk::SpecializationInfo {
-        map_entry_count: 1,
-        p_map_entries: addr_of!(specialization_map_entry).cast(),
-        data_size: size_of::<u32>(),
-        p_data: addr_of!(data).cast(),
-    };
-    let compute_shader = shader::Shader::create(
-        gpu,
-        &shader::ShaderCreateInfo {
-            spirvs: &[compute_spirv],
-            set_layouts: &[descriptors.storage.set_layout()],
-            push_constant_ranges: &[],
-            specialization_info: Some(&specialization_info),
-        },
-    )?;
+                layout(local_size_x = 1) in;
 
-    Ok((indirect_shader, compute_shader))
+                void main() {
+                    IndirectCommand command;
+                    command.x = 32;
+                    command.y = 32;
+                    command.z = 1;
+                    indirect_commands.data[0] = command;
+                }
+            "#,
+        )?;
+        let indirect = shader::Shader::create(
+            gpu,
+            &shader::ShaderCreateInfo {
+                spirvs: &[indirect_spirv],
+                set_layouts: &[create_info.descriptors.storage.set_layout()],
+                push_constant_ranges: &[],
+                specialization_info: None,
+            },
+        )?;
+
+        // Compute shader.
+        let compute_spirv = compiler.compile(
+            shader::ShaderType::Compute,
+            r#"
+                #version 460 core
+                #include "common.glsl"
+
+                layout(local_size_x = 8, local_size_y = 8) in;
+
+                void main() {
+                    uint x = gl_GlobalInvocationID.x;
+                    uint y = gl_GlobalInvocationID.y;
+                    vec2 p = vec2(2.0 * ((float(x) + 0.5) / 256.0 - 0.5), 2.0 * ((float(y) + 0.5) / 256.0 - 0.5));
+                    float len = 1.0 - min(1.0, 2.0 * length(p));
+                    imageStore(compute_image, ivec2(x, y), vec4(0.2 + len, 0.2 + 0.5 * len, 0.2, 1.0));
+                }
+            "#,
+        )?;
+        let compute = shader::Shader::create(
+            gpu,
+            &shader::ShaderCreateInfo {
+                spirvs: &[compute_spirv],
+                set_layouts: &[create_info.descriptors.storage.set_layout()],
+                push_constant_ranges: &[],
+                specialization_info: None,
+            },
+        )?;
+
+        Ok(Self { indirect, compute })
+    }
+
+    unsafe fn destroy(&self, gpu: &Gpu) {
+        self.indirect.destroy(gpu);
+        self.compute.destroy(gpu);
+    }
 }
 
 //
@@ -261,11 +359,11 @@ unsafe fn dispatch(
     Demo {
         commands,
         queries,
-        indirect_shader,
-        compute_shader,
-        compute_buffer,
         indirect_buffer,
+        compute_image,
         descriptors,
+        shaders,
+        output,
     }: &Demo,
     demo_name: &str,
 ) -> Result<()> {
@@ -286,7 +384,7 @@ unsafe fn dispatch(
 
     // Dispatch indirect shader.
     {
-        indirect_shader.bind(gpu, cmd);
+        shaders.indirect.bind(gpu, cmd);
         device.cmd_dispatch(cmd, 1, 1, 1);
     }
 
@@ -315,11 +413,92 @@ unsafe fn dispatch(
         );
     }
 
+    // Transition compute image.
+    device.cmd_pipeline_barrier2(
+        cmd,
+        &vk::DependencyInfo {
+            s_type: vk::StructureType::DependencyInfo,
+            p_next: null(),
+            dependency_flags: vk::DependencyFlags::empty(),
+            memory_barrier_count: 0,
+            p_memory_barriers: null(),
+            buffer_memory_barrier_count: 0,
+            p_buffer_memory_barriers: null(),
+            image_memory_barrier_count: 1,
+            p_image_memory_barriers: &vk::ImageMemoryBarrier2 {
+                s_type: vk::StructureType::ImageMemoryBarrier2,
+                p_next: null(),
+                src_stage_mask: vk::PipelineStageFlagBits2::None.into(),
+                src_access_mask: vk::AccessFlags2::empty(),
+                dst_stage_mask: vk::PipelineStageFlagBits2::ComputeShader.into(),
+                dst_access_mask: vk::AccessFlagBits2::ShaderWrite.into(),
+                old_layout: vk::ImageLayout::Undefined,
+                new_layout: vk::ImageLayout::General,
+                src_queue_family_index: 0,
+                dst_queue_family_index: 0,
+                image: compute_image.image.image,
+                subresource_range: compute_image.image.subresource_range(),
+            },
+        },
+    );
+
     // Dispatch compute shader.
     {
-        compute_shader.bind(gpu, cmd);
-        device.cmd_dispatch_indirect(cmd, indirect_buffer.buffer, 0);
+        shaders.compute.bind(gpu, cmd);
+        device.cmd_dispatch_indirect(cmd, indirect_buffer.buffer.buffer, 0);
     }
+
+    // Transition compute image.
+    device.cmd_pipeline_barrier2(
+        cmd,
+        &vk::DependencyInfo {
+            s_type: vk::StructureType::DependencyInfo,
+            p_next: null(),
+            dependency_flags: vk::DependencyFlags::empty(),
+            memory_barrier_count: 0,
+            p_memory_barriers: null(),
+            buffer_memory_barrier_count: 0,
+            p_buffer_memory_barriers: null(),
+            image_memory_barrier_count: 1,
+            p_image_memory_barriers: &vk::ImageMemoryBarrier2 {
+                s_type: vk::StructureType::ImageMemoryBarrier2,
+                p_next: null(),
+                src_stage_mask: vk::PipelineStageFlagBits2::ComputeShader.into(),
+                src_access_mask: vk::AccessFlagBits2::ShaderWrite.into(),
+                dst_stage_mask: vk::PipelineStageFlagBits2::Copy.into(),
+                dst_access_mask: vk::AccessFlagBits2::TransferRead.into(),
+                old_layout: vk::ImageLayout::General,
+                new_layout: vk::ImageLayout::TransferSrcOptimal,
+                src_queue_family_index: 0,
+                dst_queue_family_index: 0,
+                image: compute_image.image.image,
+                subresource_range: compute_image.image.subresource_range(),
+            },
+        },
+    );
+
+    // Copy to output.
+    device.cmd_copy_image_to_buffer2(
+        cmd,
+        &(vk::CopyImageToBufferInfo2 {
+            s_type: vk::StructureType::CopyImageToBufferInfo2,
+            p_next: null(),
+            src_image: compute_image.image.image,
+            src_image_layout: vk::ImageLayout::TransferSrcOptimal,
+            dst_buffer: output.buffer.buffer,
+            region_count: 1,
+            p_regions: &(vk::BufferImageCopy2 {
+                s_type: vk::StructureType::BufferImageCopy2,
+                p_next: null(),
+                buffer_offset: 0,
+                buffer_row_length: compute_image.image.width(),
+                buffer_image_height: compute_image.image.height(),
+                image_subresource: compute_image.image.subresource_layers(),
+                image_offset: vk::Offset3D { x: 0, y: 0, z: 0 },
+                image_extent: compute_image.image.extent_3d(),
+            }),
+        }),
+    );
 
     // End queries.
     queries.end(gpu, cmd, vk::PipelineStageFlagBits2::ComputeShader.into());
@@ -385,20 +564,37 @@ unsafe fn dispatch(
         #[derive(serde::Serialize)]
         struct Output<'a> {
             indirect: &'a [IndirectDispatch],
-            compute: &'a [u32],
         }
         #[allow(clippy::cast_ptr_alignment)]
-        let indirect =
-            std::slice::from_raw_parts(indirect_buffer.ptr, indirect_buffer.element_count);
-        let compute = std::slice::from_raw_parts(compute_buffer.ptr, compute_buffer.element_count);
+        let indirect = std::slice::from_raw_parts(
+            indirect_buffer.buffer.ptr,
+            indirect_buffer.buffer.element_count,
+        );
 
-        let output = ron::ser::to_string_pretty(
-            &Output { indirect, compute },
-            ron::ser::PrettyConfig::default(),
-        )?;
+        let output =
+            ron::ser::to_string_pretty(&Output { indirect }, ron::ser::PrettyConfig::default())?;
         let output_path = work_dir_or_create()?.join(format!("{demo_name}.ron"));
         std::fs::write(&output_path, output)?;
         info!("Wrote output to {}", output_path.display());
+    }
+
+    // Write image.
+    {
+        use imagelib::{ImageFormat, RgbaImage};
+        let width = compute_image.image.width();
+        let height = compute_image.image.height();
+        let pixels_byte_size = compute_image.image.byte_size();
+        let mut pixels = vec![0_u8; pixels_byte_size as _];
+        std::ptr::copy_nonoverlapping(
+            output.buffer.ptr.cast::<u8>(),
+            pixels.as_mut_ptr(),
+            pixels_byte_size as _,
+        );
+        let image = RgbaImage::from_raw(width, height, pixels)
+            .context("Creating image from output buffer")?;
+        let image_path = work_dir_or_create()?.join(format!("{demo_name}.png"));
+        image.save_with_format(&image_path, ImageFormat::Png)?;
+        info!("Wrote image to {}", image_path.display());
     }
 
     Ok(())
