@@ -43,6 +43,7 @@ use vulk::vk;
 //
 
 mod command;
+mod debug;
 mod demos;
 mod descriptor;
 mod gpu;
