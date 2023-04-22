@@ -90,7 +90,7 @@ unsafe fn create_output(gpu: &Gpu) -> Result<Output> {
     let buffer = OutputBuffer::create(
         gpu,
         &resource::BufferCreateInfo {
-            element_count: DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE as _,
+            size: DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE as _,
             usage: vk::BufferUsageFlagBits::TransferDst.into(),
             property_flags: vk::MemoryPropertyFlagBits::HostVisible.into(),
         },

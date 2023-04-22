@@ -221,14 +221,14 @@ impl GpuResource for DescriptorStorage {
         let buffer = DescriptorBuffer::create(
             gpu,
             &resource::BufferCreateInfo {
-                element_count: gpu.device.get_descriptor_set_layout_size_ext(set_layout) as _,
+                size: gpu.device.get_descriptor_set_layout_size_ext(set_layout) as _,
                 usage: vk::BufferUsageFlagBits::ResourceDescriptorBufferEXT
                     | vk::BufferUsageFlagBits::SamplerDescriptorBufferEXT,
                 property_flags: vk::MemoryPropertyFlagBits::HostVisible
                     | vk::MemoryPropertyFlagBits::HostCoherent,
             },
         )?;
-        debug!("set_layout={}", buffer.element_count);
+        debug!("set_layout={}", buffer.size);
 
         // Write.
         for (binding_index, binding) in create_info.bindings.iter().enumerate() {

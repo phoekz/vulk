@@ -6,7 +6,7 @@ use super::*;
 
 #[derive(Debug)]
 pub struct BufferCreateInfo {
-    pub element_count: usize,
+    pub size: usize,
     pub usage: vk::BufferUsageFlags,
     pub property_flags: vk::MemoryPropertyFlags,
 }
@@ -22,7 +22,8 @@ pub struct Buffer<T> {
     pub bind_buffer_memory_info: vk::BindBufferMemoryInfo,
 
     pub device_address: vk::DeviceAddress,
-    pub element_count: usize,
+    pub size: usize,
+    pub byte_size: usize,
     pub ptr: *mut T,
 
     pub descriptor: descriptor::Descriptor,
@@ -40,7 +41,7 @@ impl<T> GpuResource for Buffer<T> {
         create_info: &Self::CreateInfo<'_>,
     ) -> Result<Self> {
         // Size.
-        let size = (create_info.element_count * size_of::<T>()) as vk::DeviceSize;
+        let byte_size = (create_info.size * size_of::<T>()) as vk::DeviceSize;
 
         // Force SHADER_DEVICE_ADDRESS flag.
         let usage = create_info.usage | vk::BufferUsageFlagBits::ShaderDeviceAddress;
@@ -50,7 +51,7 @@ impl<T> GpuResource for Buffer<T> {
             s_type: vk::StructureType::BufferCreateInfo,
             p_next: null(),
             flags: vk::BufferCreateFlags::empty(),
-            size,
+            size: byte_size,
             usage,
             sharing_mode: vk::SharingMode::Exclusive,
             queue_family_index_count: 0,
@@ -136,7 +137,7 @@ impl<T> GpuResource for Buffer<T> {
                         flags: vk::MemoryMapFlags::empty(),
                         memory: device_memory,
                         offset: 0,
-                        size: size as _,
+                        size: byte_size as _,
                     }),
                 )
                 .context("Mapping device memory")?
@@ -146,7 +147,8 @@ impl<T> GpuResource for Buffer<T> {
         };
 
         // Descriptor.
-        let descriptor = descriptor::Descriptor::create_storage_buffer(gpu, device_address, size);
+        let descriptor =
+            descriptor::Descriptor::create_storage_buffer(gpu, device_address, byte_size);
 
         Ok(Buffer {
             buffer_create_info,
@@ -158,7 +160,8 @@ impl<T> GpuResource for Buffer<T> {
             bind_buffer_memory_info,
 
             device_address,
-            element_count: create_info.element_count,
+            byte_size: byte_size as _,
+            size: create_info.size,
             ptr,
 
             descriptor,
@@ -498,7 +501,7 @@ pub unsafe fn multi_upload_images(
     let staging = resource::Buffer::<u8>::create(
         gpu,
         &BufferCreateInfo {
-            element_count: byte_size,
+            size: byte_size,
             usage: vk::BufferUsageFlagBits::TransferSrc.into(),
             property_flags: vk::MemoryPropertyFlagBits::HostVisible
                 | vk::MemoryPropertyFlagBits::HostCoherent,

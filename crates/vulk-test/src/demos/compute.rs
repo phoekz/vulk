@@ -84,7 +84,7 @@ impl GpuResource for IndirectBuffer {
         let buffer = resource::Buffer::create(
             gpu,
             &resource::BufferCreateInfo {
-                element_count: 1,
+                size: 1,
                 usage: vk::BufferUsageFlagBits::StorageBuffer
                     | vk::BufferUsageFlagBits::IndirectBuffer,
                 property_flags: vk::MemoryPropertyFlagBits::HostVisible
@@ -155,7 +155,7 @@ impl GpuResource for Output {
         let buffer = resource::Buffer::create(
             gpu,
             &resource::BufferCreateInfo {
-                element_count: DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE as _,
+                size: DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE as _,
                 usage: vk::BufferUsageFlagBits::TransferDst.into(),
                 property_flags: vk::MemoryPropertyFlagBits::HostVisible.into(),
             },
@@ -568,7 +568,7 @@ unsafe fn dispatch(
         #[allow(clippy::cast_ptr_alignment)]
         let indirect = std::slice::from_raw_parts(
             indirect_buffer.buffer.ptr.cast::<DispatchIndirectCommand>(),
-            indirect_buffer.buffer.element_count,
+            indirect_buffer.buffer.size,
         );
 
         let output =

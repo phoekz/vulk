@@ -218,7 +218,7 @@ impl Geometry {
         let vertex_buffer = VertexBuffer::create(
             gpu,
             &resource::BufferCreateInfo {
-                element_count: gui.vertex_data.len(),
+                size: gui.vertex_data.len(),
                 usage: vk::BufferUsageFlagBits::StorageBuffer.into(),
                 property_flags: vk::MemoryPropertyFlagBits::HostVisible
                     | vk::MemoryPropertyFlagBits::HostCoherent,
@@ -227,7 +227,7 @@ impl Geometry {
         let index_buffer = IndexBuffer::create(
             gpu,
             &resource::BufferCreateInfo {
-                element_count: gui.index_data.len(),
+                size: gui.index_data.len(),
                 usage: vk::BufferUsageFlagBits::StorageBuffer.into(),
                 property_flags: vk::MemoryPropertyFlagBits::HostVisible
                     | vk::MemoryPropertyFlagBits::HostCoherent,
@@ -611,7 +611,7 @@ impl Output {
         let buffer = OutputBuffer::create(
             gpu,
             &resource::BufferCreateInfo {
-                element_count: DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE as _,
+                size: DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE as _,
                 usage: vk::BufferUsageFlagBits::TransferDst.into(),
                 property_flags: vk::MemoryPropertyFlagBits::HostVisible.into(),
             },

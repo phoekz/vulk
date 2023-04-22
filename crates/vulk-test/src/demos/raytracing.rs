@@ -169,7 +169,7 @@ impl GpuResource for Blas {
             let vertex_buffer = VertexBuffer::create(
                 gpu,
                 &resource::BufferCreateInfo {
-                    element_count: create_info.scene.vertex_data.len() as _,
+                    size: create_info.scene.vertex_data.len() as _,
                     usage: vk::BufferUsageFlagBits::AccelerationStructureBuildInputReadOnlyKHR
                         .into(),
                     property_flags: vk::MemoryPropertyFlagBits::HostVisible
@@ -179,7 +179,7 @@ impl GpuResource for Blas {
             let index_buffer = IndexBuffer::create(
                 gpu,
                 &resource::BufferCreateInfo {
-                    element_count: create_info.scene.index_data.len() as _,
+                    size: create_info.scene.index_data.len() as _,
                     usage: vk::BufferUsageFlagBits::AccelerationStructureBuildInputReadOnlyKHR
                         .into(),
                     property_flags: vk::MemoryPropertyFlagBits::HostVisible
@@ -189,7 +189,7 @@ impl GpuResource for Blas {
             let transform_buffer = TransformBuffer::create(
                 gpu,
                 &resource::BufferCreateInfo {
-                    element_count: create_info.scene.transform_data.len() as _,
+                    size: create_info.scene.transform_data.len() as _,
                     usage: vk::BufferUsageFlagBits::AccelerationStructureBuildInputReadOnlyKHR
                         .into(),
                     property_flags: vk::MemoryPropertyFlagBits::HostVisible
@@ -283,7 +283,7 @@ impl GpuResource for Blas {
         let blas_buffer = AccelerationStructureBuffer::create(
             gpu,
             &resource::BufferCreateInfo {
-                element_count: acceleration_structure_size as _,
+                size: acceleration_structure_size as _,
                 usage: vk::BufferUsageFlagBits::AccelerationStructureStorageKHR.into(),
                 property_flags: vk::MemoryPropertyFlagBits::DeviceLocal.into(),
             },
@@ -309,7 +309,7 @@ impl GpuResource for Blas {
         let blas_scratch_buffer = AccelerationStructureScratchBuffer::create(
             gpu,
             &resource::BufferCreateInfo {
-                element_count: build_scratch_size as _,
+                size: build_scratch_size as _,
                 usage: vk::BufferUsageFlagBits::StorageBuffer.into(),
                 property_flags: vk::MemoryPropertyFlagBits::DeviceLocal.into(),
             },
@@ -446,7 +446,7 @@ impl GpuResource for Tlas {
             let instance_buffer = InstanceBuffer::create(
                 gpu,
                 &resource::BufferCreateInfo {
-                    element_count: 1,
+                    size: 1,
                     usage: vk::BufferUsageFlagBits::AccelerationStructureBuildInputReadOnlyKHR
                         .into(),
                     property_flags: vk::MemoryPropertyFlagBits::HostVisible
@@ -522,7 +522,7 @@ impl GpuResource for Tlas {
         let tlas_buffer = AccelerationStructureBuffer::create(
             gpu,
             &resource::BufferCreateInfo {
-                element_count: acceleration_structure_size as _,
+                size: acceleration_structure_size as _,
                 usage: vk::BufferUsageFlagBits::AccelerationStructureStorageKHR.into(),
                 property_flags: vk::MemoryPropertyFlagBits::DeviceLocal.into(),
             },
@@ -548,7 +548,7 @@ impl GpuResource for Tlas {
         let tlas_scratch_buffer = AccelerationStructureScratchBuffer::create(
             gpu,
             &resource::BufferCreateInfo {
-                element_count: build_scratch_size as _,
+                size: build_scratch_size as _,
                 usage: vk::BufferUsageFlagBits::StorageBuffer.into(),
                 property_flags: vk::MemoryPropertyFlagBits::DeviceLocal.into(),
             },
@@ -1014,7 +1014,7 @@ impl GpuResource for Sbt {
             let buffer = ShaderBindingTableBuffer::create(
                 gpu,
                 &resource::BufferCreateInfo {
-                    element_count: shader_group_handle_size as _,
+                    size: shader_group_handle_size as _,
                     usage: vk::BufferUsageFlagBits::ShaderBindingTableKHR.into(),
                     property_flags: vk::MemoryPropertyFlagBits::HostVisible
                         | vk::MemoryPropertyFlagBits::HostCoherent,
@@ -1062,7 +1062,7 @@ impl GpuResource for Output {
         let buffer = resource::Buffer::create(
             gpu,
             &resource::BufferCreateInfo {
-                element_count: DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE as _,
+                size: DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE as _,
                 usage: vk::BufferUsageFlagBits::TransferDst.into(),
                 property_flags: vk::MemoryPropertyFlagBits::HostVisible.into(),
             },
