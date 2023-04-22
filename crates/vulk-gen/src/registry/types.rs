@@ -46,7 +46,7 @@ pub enum TypeCategory {
     },
 }
 
-#[derive(serde::Serialize, Debug)]
+#[derive(serde::Serialize, Debug, Clone)]
 pub struct TypeMember {
     pub name: String,
     pub ty: String,

@@ -115,6 +115,12 @@ impl Builder {
             docs::reference_url(ident.as_ref())
         ))
     }
+
+    #[inline]
+    #[must_use]
+    pub fn doc_note(self, note: impl AsRef<str>) -> Self {
+        self.doc_str(format!("**Note**: {}", note.as_ref()))
+    }
 }
 
 impl std::fmt::Display for Builder {

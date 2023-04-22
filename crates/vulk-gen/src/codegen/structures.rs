@@ -23,26 +23,15 @@ let {{rs_init_ident}} = vk::{{rs_ident}} {
 const TEMPLATE_INIT_MEMBER: &str = r#"    {{rs_init_member_ident}}: {{rs_init_member_value}},"#;
 
 pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
-    let mut extend_map: HashMap<_, Vec<_>> = HashMap::new();
-    for registry_type in &ctx.registry.types {
-        let registry::TypeCategory::Struct { structextends, .. } = &registry_type.category else {
-            continue;
-        };
-
-        for structextend in structextends {
-            if let Some(vec) = extend_map.get_mut(structextend.as_str()) {
-                vec.push(registry_type.name.as_str());
-            } else {
-                extend_map.insert(structextend.as_str(), vec![registry_type.name.as_str()]);
-            }
-        }
-    }
+    let extend_map = extend_map(&ctx.registry.types);
 
     let mut str = String::new();
     for registry_type in &ctx.registry.types {
         let registry::TypeCategory::Struct { members, .. } = &registry_type.category else {
             continue;
         };
+
+        let (members, collapsed_bitfields) = collapse_bitfields(members)?;
 
         let vk_ident = &registry_type.name;
         let mut vk_attr = attributes::Builder::new()
@@ -61,13 +50,20 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
                 vk_attr = vk_attr.doc_extend(structextend).doc_br();
             }
         }
+        if collapsed_bitfields > 0 {
+            vk_attr = vk_attr
+                .doc_note(format!(
+                    "The original type contained **{collapsed_bitfields}** bitfields which were collapsed by the generator."
+                ))
+                .doc_br();
+        }
         let vk_attr = vk_attr.build();
 
         let rs_ident = translation::vk_simple_type(vk_ident)?;
         let rs_init_template = {
             let rs_init_ident = translation::vk_simple_ident(&rs_ident)?;
             let mut rs_init_members = String::new();
-            for member in members {
+            for member in &members {
                 let vk_init_member_ident = &member.name;
                 let rs_init_member_ident = translation::vk_simple_ident(vk_init_member_ident)?;
                 let rs_init_member_value = match rs_init_member_ident.as_str() {
@@ -119,7 +115,7 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
         };
 
         let mut rs_members = String::new();
-        for member in members {
+        for member in &members {
             let vk_member_ident = &member.name;
             let rs_member_ident = translation::vk_simple_ident(vk_member_ident)?;
             let vk_member_type = &member.ty;
@@ -153,4 +149,142 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
     }
 
     Ok(str)
+}
+
+fn extend_map(types: &[registry::Type]) -> HashMap<&str, Vec<&str>> {
+    let mut map: HashMap<_, Vec<_>> = HashMap::new();
+    for ty in types {
+        let registry::TypeCategory::Struct { structextends, .. } = &ty.category else {
+            continue;
+        };
+        for structextend in structextends {
+            if let Some(vec) = map.get_mut(structextend.as_str()) {
+                vec.push(ty.name.as_str());
+            } else {
+                map.insert(structextend.as_str(), vec![ty.name.as_str()]);
+            }
+        }
+    }
+    map
+}
+
+type CollapsedBitfields = u32;
+
+fn collapse_bitfields(
+    members: &[registry::TypeMember],
+) -> Result<(Vec<registry::TypeMember>, CollapsedBitfields)> {
+    let is_bitfield = |member: &registry::TypeMember| -> bool {
+        if let Some(text) = &member.text {
+            text.starts_with(':')
+        } else {
+            false
+        }
+    };
+
+    let type_bitsize = {
+        let mut map = HashMap::new();
+        map.insert("uint32_t", 32_u32);
+        map.insert("uint64_t", 64_u32);
+        map
+    };
+
+    let bitfield_size = |member: &registry::TypeMember| -> Result<u32> {
+        if let Some(text) = &member.text {
+            if let Some(text) = text.strip_prefix(':') {
+                let bitsize: u32 = text.parse().with_context(|| format!("Parsing {text}"))?;
+                Ok(bitsize)
+            } else {
+                bail!("Member is not a bitfield");
+            }
+        } else {
+            bail!("Member is not a specifier");
+        }
+    };
+
+    if members.iter().any(is_bitfield) {
+        // Collapse bitfields.
+        let mut output_members = vec![];
+        let mut pending_type: Option<&str> = None;
+        let mut pending_names = vec![];
+        let mut pending_bits = vec![];
+        let mut remaining_bits = 0;
+        let mut collapsed_bitfields = 0;
+        for member in members {
+            if is_bitfield(member) {
+                // Start a new field.
+                if remaining_bits == 0 {
+                    remaining_bits = *type_bitsize
+                        .get(member.ty.as_str())
+                        .with_context(|| format!("Unsupported bitfield type={}", member.ty))?;
+                    pending_type = Some(member.ty.as_str());
+                }
+
+                // Bitfield size.
+                let bitfield_size = bitfield_size(member)?;
+
+                // Update pending.
+                pending_names.push(member.name.as_str());
+                pending_bits.push(bitfield_size);
+
+                // Subtract remaining.
+                remaining_bits = remaining_bits.checked_sub(bitfield_size).with_context(|| {
+                    format!("Bitfield is too long, remaining_bits={remaining_bits}, bitfield_size={bitfield_size}")
+                })?;
+
+                // Flush?
+                if remaining_bits == 0 {
+                    let ty = std::mem::take(&mut pending_type).unwrap();
+                    let names = std::mem::take(&mut pending_names);
+                    let bits = std::mem::take(&mut pending_bits);
+
+                    // Attach bitfield size as a suffix.
+                    let names = names
+                        .into_iter()
+                        .zip(bits)
+                        .map(|(name, bits)| format!("{name}{bits}"))
+                        .collect::<Vec<_>>();
+
+                    // Each word after the first one should start with a capital
+                    // letter. This makes sure when the words are joined,
+                    // `heck::AsSnakeCase` can split them.
+                    let names = names
+                        .into_iter()
+                        .enumerate()
+                        .map(|(index, name)| {
+                            if index == 0 {
+                                name
+                            } else {
+                                format!("{}", heck::AsPascalCase(name))
+                            }
+                        })
+                        .collect::<Vec<_>>();
+
+                    // Merged bitfields will have a name such as: `fooAndBar`.
+                    let name = names.join("And");
+
+                    output_members.push(registry::TypeMember {
+                        name,
+                        ty: ty.to_string(),
+                        optional: None,
+                        comment: None,
+                        text: None,
+                        en: None,
+                    });
+                }
+
+                // Stats.
+                collapsed_bitfields += 1;
+            } else {
+                output_members.push(member.clone());
+            }
+        }
+        ensure!(pending_names.is_empty());
+        ensure!(pending_bits.is_empty());
+        ensure!(remaining_bits == 0);
+
+        Ok((output_members, collapsed_bitfields))
+    } else {
+        // Passthrough for structures without bitfields.
+        Ok((members.iter().map(Clone::clone).collect(), 0))
+    }
 }
