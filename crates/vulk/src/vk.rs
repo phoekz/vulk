@@ -7556,7 +7556,7 @@ pub struct Rect2D {
 let instance_create_info = vk::InstanceCreateInfo {
     s_type: vk::StructureType::InstanceCreateInfo,
     p_next: null(),
-    flags: todo!("vk::InstanceCreateFlags"),
+    flags: todo!("vk::InstanceCreateFlagBits"),
     p_application_info: todo!("*const vk::ApplicationInfo"),
     enabled_layer_count: todo!("u32"),
     pp_enabled_layer_names: todo!("*const *const c_char"),
@@ -7726,7 +7726,7 @@ pub struct PhysicalDeviceProperties2 {
 # use vulk::vk as vk;
 # use std::ptr::{null, null_mut};
 let queue_family_properties = vk::QueueFamilyProperties {
-    queue_flags: todo!("vk::QueueFlags"),
+    queue_flags: todo!("vk::QueueFlagBits"),
     queue_count: todo!("u32"),
     timestamp_valid_bits: todo!("u32"),
     min_image_transfer_granularity: todo!("vk::Extent3D"),
@@ -7796,7 +7796,7 @@ pub struct QueueFamilyProperties2 {
 let device_create_info = vk::DeviceCreateInfo {
     s_type: vk::StructureType::DeviceCreateInfo,
     p_next: null(),
-    flags: todo!("vk::DeviceCreateFlags"),
+    flags: todo!("vk::DeviceCreateFlagBits"),
     queue_create_info_count: todo!("u32"),
     p_queue_create_infos: todo!("*const vk::DeviceQueueCreateInfo"),
     enabled_layer_count: todo!("u32"),
@@ -7836,7 +7836,7 @@ pub struct DeviceCreateInfo {
 let device_queue_create_info = vk::DeviceQueueCreateInfo {
     s_type: vk::StructureType::DeviceQueueCreateInfo,
     p_next: null(),
-    flags: todo!("vk::DeviceQueueCreateFlags"),
+    flags: todo!("vk::DeviceQueueCreateFlagBits"),
     queue_family_index: todo!("u32"),
     queue_count: todo!("u32"),
     p_queue_priorities: todo!("*const f32"),
@@ -7868,7 +7868,7 @@ pub struct DeviceQueueCreateInfo {
 let device_queue_info2 = vk::DeviceQueueInfo2 {
     s_type: vk::StructureType::DeviceQueueInfo2,
     p_next: null(),
-    flags: todo!("vk::DeviceQueueCreateFlags"),
+    flags: todo!("vk::DeviceQueueCreateFlagBits"),
     queue_family_index: todo!("u32"),
     queue_index: todo!("u32"),
 };
@@ -7898,7 +7898,7 @@ pub struct DeviceQueueInfo2 {
 let command_pool_create_info = vk::CommandPoolCreateInfo {
     s_type: vk::StructureType::CommandPoolCreateInfo,
     p_next: null(),
-    flags: todo!("vk::CommandPoolCreateFlags"),
+    flags: todo!("vk::CommandPoolCreateFlagBits"),
     queue_family_index: todo!("u32"),
 };
 ```"#]
@@ -7956,7 +7956,7 @@ pub struct CommandBufferAllocateInfo {
 let command_buffer_begin_info = vk::CommandBufferBeginInfo {
     s_type: vk::StructureType::CommandBufferBeginInfo,
     p_next: null(),
-    flags: todo!("vk::CommandBufferUsageFlags"),
+    flags: todo!("vk::CommandBufferUsageFlagBits"),
     p_inheritance_info: todo!("*const vk::CommandBufferInheritanceInfo"),
 };
 ```"#]
@@ -7988,8 +7988,8 @@ let command_buffer_inheritance_info = vk::CommandBufferInheritanceInfo {
     subpass: todo!("u32"),
     framebuffer: todo!("vk::Framebuffer"),
     occlusion_query_enable: todo!("vk::Bool32"),
-    query_flags: todo!("vk::QueryControlFlags"),
-    pipeline_statistics: todo!("vk::QueryPipelineStatisticFlags"),
+    query_flags: todo!("vk::QueryControlFlagBits"),
+    pipeline_statistics: todo!("vk::QueryPipelineStatisticFlagBits"),
 };
 ```"#]
 pub struct CommandBufferInheritanceInfo {
@@ -8020,7 +8020,7 @@ pub struct CommandBufferInheritanceInfo {
 let submit_info2 = vk::SubmitInfo2 {
     s_type: vk::StructureType::SubmitInfo2,
     p_next: null(),
-    flags: todo!("vk::SubmitFlags"),
+    flags: todo!("vk::SubmitFlagBits"),
     wait_semaphore_info_count: todo!("u32"),
     p_wait_semaphore_infos: todo!("*const vk::SemaphoreSubmitInfo"),
     command_buffer_info_count: todo!("u32"),
@@ -8060,7 +8060,7 @@ let semaphore_submit_info = vk::SemaphoreSubmitInfo {
     p_next: null(),
     semaphore: todo!("vk::Semaphore"),
     value: todo!("u64"),
-    stage_mask: todo!("vk::PipelineStageFlags2"),
+    stage_mask: todo!("vk::PipelineStageFlagBits2"),
     device_index: todo!("u32"),
 };
 ```"#]
@@ -8120,7 +8120,7 @@ pub struct CommandBufferSubmitInfo {
 let semaphore_create_info = vk::SemaphoreCreateInfo {
     s_type: vk::StructureType::SemaphoreCreateInfo,
     p_next: null(),
-    flags: todo!("vk::SemaphoreCreateFlags"),
+    flags: todo!("vk::SemaphoreCreateFlagBits"),
 };
 ```"#]
 pub struct SemaphoreCreateInfo {
@@ -8174,7 +8174,7 @@ pub struct SemaphoreTypeCreateInfo {
 let semaphore_wait_info = vk::SemaphoreWaitInfo {
     s_type: vk::StructureType::SemaphoreWaitInfo,
     p_next: null(),
-    flags: todo!("vk::SemaphoreWaitFlags"),
+    flags: todo!("vk::SemaphoreWaitFlagBits"),
     semaphore_count: todo!("u32"),
     p_semaphores: todo!("*const vk::Semaphore"),
     p_values: todo!("*const u64"),
@@ -8206,7 +8206,7 @@ pub struct SemaphoreWaitInfo {
 let dependency_info = vk::DependencyInfo {
     s_type: vk::StructureType::DependencyInfo,
     p_next: null(),
-    dependency_flags: todo!("vk::DependencyFlags"),
+    dependency_flags: todo!("vk::DependencyFlagBits"),
     memory_barrier_count: todo!("u32"),
     p_memory_barriers: todo!("*const vk::MemoryBarrier2"),
     buffer_memory_barrier_count: todo!("u32"),
@@ -8244,10 +8244,10 @@ pub struct DependencyInfo {
 let memory_barrier2 = vk::MemoryBarrier2 {
     s_type: vk::StructureType::MemoryBarrier2,
     p_next: null(),
-    src_stage_mask: todo!("vk::PipelineStageFlags2"),
-    src_access_mask: todo!("vk::AccessFlags2"),
-    dst_stage_mask: todo!("vk::PipelineStageFlags2"),
-    dst_access_mask: todo!("vk::AccessFlags2"),
+    src_stage_mask: todo!("vk::PipelineStageFlagBits2"),
+    src_access_mask: todo!("vk::AccessFlagBits2"),
+    dst_stage_mask: todo!("vk::PipelineStageFlagBits2"),
+    dst_access_mask: todo!("vk::AccessFlagBits2"),
 };
 ```"#]
 pub struct MemoryBarrier2 {
@@ -8276,10 +8276,10 @@ pub struct MemoryBarrier2 {
 let buffer_memory_barrier2 = vk::BufferMemoryBarrier2 {
     s_type: vk::StructureType::BufferMemoryBarrier2,
     p_next: null(),
-    src_stage_mask: todo!("vk::PipelineStageFlags2"),
-    src_access_mask: todo!("vk::AccessFlags2"),
-    dst_stage_mask: todo!("vk::PipelineStageFlags2"),
-    dst_access_mask: todo!("vk::AccessFlags2"),
+    src_stage_mask: todo!("vk::PipelineStageFlagBits2"),
+    src_access_mask: todo!("vk::AccessFlagBits2"),
+    dst_stage_mask: todo!("vk::PipelineStageFlagBits2"),
+    dst_access_mask: todo!("vk::AccessFlagBits2"),
     src_queue_family_index: todo!("u32"),
     dst_queue_family_index: todo!("u32"),
     buffer: todo!("vk::Buffer"),
@@ -8318,10 +8318,10 @@ pub struct BufferMemoryBarrier2 {
 let image_memory_barrier2 = vk::ImageMemoryBarrier2 {
     s_type: vk::StructureType::ImageMemoryBarrier2,
     p_next: null(),
-    src_stage_mask: todo!("vk::PipelineStageFlags2"),
-    src_access_mask: todo!("vk::AccessFlags2"),
-    dst_stage_mask: todo!("vk::PipelineStageFlags2"),
-    dst_access_mask: todo!("vk::AccessFlags2"),
+    src_stage_mask: todo!("vk::PipelineStageFlagBits2"),
+    src_access_mask: todo!("vk::AccessFlagBits2"),
+    dst_stage_mask: todo!("vk::PipelineStageFlagBits2"),
+    dst_access_mask: todo!("vk::AccessFlagBits2"),
     old_layout: todo!("vk::ImageLayout"),
     new_layout: todo!("vk::ImageLayout"),
     src_queue_family_index: todo!("u32"),
@@ -8388,7 +8388,7 @@ pub struct CalibratedTimestampInfoEXT {
 let rendering_info = vk::RenderingInfo {
     s_type: vk::StructureType::RenderingInfo,
     p_next: null(),
-    flags: todo!("vk::RenderingFlags"),
+    flags: todo!("vk::RenderingFlagBits"),
     render_area: todo!("vk::Rect2D"),
     layer_count: todo!("u32"),
     view_mask: todo!("u32"),
@@ -8468,9 +8468,9 @@ pub struct RenderingAttachmentInfo {
 let shader_create_info_ext = vk::ShaderCreateInfoEXT {
     s_type: vk::StructureType::ShaderCreateInfoEXT,
     p_next: null(),
-    flags: todo!("vk::ShaderCreateFlagsEXT"),
+    flags: todo!("vk::ShaderCreateFlagBitsEXT"),
     stage: todo!("vk::ShaderStageFlagBits"),
-    next_stage: todo!("vk::ShaderStageFlags"),
+    next_stage: todo!("vk::ShaderStageFlagBits"),
     code_type: todo!("vk::ShaderCodeTypeEXT"),
     code_size: todo!("usize"),
     p_code: todo!("*const c_void"),
@@ -8655,7 +8655,7 @@ pub struct PhysicalDeviceMemoryProperties2 {
 # use std::ptr::{null, null_mut};
 let memory_heap = vk::MemoryHeap {
     size: todo!("vk::DeviceSize"),
-    flags: todo!("vk::MemoryHeapFlags"),
+    flags: todo!("vk::MemoryHeapFlagBits"),
 };
 ```"#]
 pub struct MemoryHeap {
@@ -8678,7 +8678,7 @@ pub struct MemoryHeap {
 # use vulk::vk as vk;
 # use std::ptr::{null, null_mut};
 let memory_type = vk::MemoryType {
-    property_flags: todo!("vk::MemoryPropertyFlags"),
+    property_flags: todo!("vk::MemoryPropertyFlagBits"),
     heap_index: todo!("u32"),
 };
 ```"#]
@@ -8734,7 +8734,7 @@ pub struct MemoryAllocateInfo {
 let memory_allocate_flags_info = vk::MemoryAllocateFlagsInfo {
     s_type: vk::StructureType::MemoryAllocateFlagsInfo,
     p_next: null(),
-    flags: todo!("vk::MemoryAllocateFlags"),
+    flags: todo!("vk::MemoryAllocateFlagBits"),
     device_mask: todo!("u32"),
 };
 ```"#]
@@ -8762,7 +8762,7 @@ pub struct MemoryAllocateFlagsInfo {
 let memory_map_info_khr = vk::MemoryMapInfoKHR {
     s_type: vk::StructureType::MemoryMapInfoKHR,
     p_next: null(),
-    flags: todo!("vk::MemoryMapFlags"),
+    flags: todo!("vk::MemoryMapFlagBits"),
     memory: todo!("vk::DeviceMemory"),
     offset: todo!("vk::DeviceSize"),
     size: todo!("vk::DeviceSize"),
@@ -8794,7 +8794,7 @@ pub struct MemoryMapInfoKHR {
 let memory_unmap_info_khr = vk::MemoryUnmapInfoKHR {
     s_type: vk::StructureType::MemoryUnmapInfoKHR,
     p_next: null(),
-    flags: todo!("vk::MemoryUnmapFlagsKHR"),
+    flags: todo!("vk::MemoryUnmapFlagBitsKHR"),
     memory: todo!("vk::DeviceMemory"),
 };
 ```"#]
@@ -8822,9 +8822,9 @@ pub struct MemoryUnmapInfoKHR {
 let buffer_create_info = vk::BufferCreateInfo {
     s_type: vk::StructureType::BufferCreateInfo,
     p_next: null(),
-    flags: todo!("vk::BufferCreateFlags"),
+    flags: todo!("vk::BufferCreateFlagBits"),
     size: todo!("vk::DeviceSize"),
-    usage: todo!("vk::BufferUsageFlags"),
+    usage: todo!("vk::BufferUsageFlagBits"),
     sharing_mode: todo!("vk::SharingMode"),
     queue_family_index_count: todo!("u32"),
     p_queue_family_indices: todo!("*const u32"),
@@ -8858,7 +8858,7 @@ pub struct BufferCreateInfo {
 let image_create_info = vk::ImageCreateInfo {
     s_type: vk::StructureType::ImageCreateInfo,
     p_next: null(),
-    flags: todo!("vk::ImageCreateFlags"),
+    flags: todo!("vk::ImageCreateFlagBits"),
     image_type: todo!("vk::ImageType"),
     format: todo!("vk::Format"),
     extent: todo!("vk::Extent3D"),
@@ -8866,7 +8866,7 @@ let image_create_info = vk::ImageCreateInfo {
     array_layers: todo!("u32"),
     samples: todo!("vk::SampleCountFlagBits"),
     tiling: todo!("vk::ImageTiling"),
-    usage: todo!("vk::ImageUsageFlags"),
+    usage: todo!("vk::ImageUsageFlagBits"),
     sharing_mode: todo!("vk::SharingMode"),
     queue_family_index_count: todo!("u32"),
     p_queue_family_indices: todo!("*const u32"),
@@ -8908,7 +8908,7 @@ pub struct ImageCreateInfo {
 let image_view_create_info = vk::ImageViewCreateInfo {
     s_type: vk::StructureType::ImageViewCreateInfo,
     p_next: null(),
-    flags: todo!("vk::ImageViewCreateFlags"),
+    flags: todo!("vk::ImageViewCreateFlagBits"),
     image: todo!("vk::Image"),
     view_type: todo!("vk::ImageViewType"),
     format: todo!("vk::Format"),
@@ -8942,7 +8942,7 @@ pub struct ImageViewCreateInfo {
 # use vulk::vk as vk;
 # use std::ptr::{null, null_mut};
 let image_subresource_range = vk::ImageSubresourceRange {
-    aspect_mask: todo!("vk::ImageAspectFlags"),
+    aspect_mask: todo!("vk::ImageAspectFlagBits"),
     base_mip_level: todo!("u32"),
     level_count: todo!("u32"),
     base_array_layer: todo!("u32"),
@@ -9168,7 +9168,7 @@ pub struct BindImageMemoryInfo {
 let sampler_create_info = vk::SamplerCreateInfo {
     s_type: vk::StructureType::SamplerCreateInfo,
     p_next: null(),
-    flags: todo!("vk::SamplerCreateFlags"),
+    flags: todo!("vk::SamplerCreateFlagBits"),
     mag_filter: todo!("vk::Filter"),
     min_filter: todo!("vk::Filter"),
     mipmap_mode: todo!("vk::SamplerMipmapMode"),
@@ -9224,7 +9224,7 @@ pub struct SamplerCreateInfo {
 let descriptor_set_layout_create_info = vk::DescriptorSetLayoutCreateInfo {
     s_type: vk::StructureType::DescriptorSetLayoutCreateInfo,
     p_next: null(),
-    flags: todo!("vk::DescriptorSetLayoutCreateFlags"),
+    flags: todo!("vk::DescriptorSetLayoutCreateFlagBits"),
     binding_count: todo!("u32"),
     p_bindings: todo!("*const vk::DescriptorSetLayoutBinding"),
 };
@@ -9255,7 +9255,7 @@ let descriptor_set_layout_binding = vk::DescriptorSetLayoutBinding {
     binding: todo!("u32"),
     descriptor_type: todo!("vk::DescriptorType"),
     descriptor_count: todo!("u32"),
-    stage_flags: todo!("vk::ShaderStageFlags"),
+    stage_flags: todo!("vk::ShaderStageFlagBits"),
     p_immutable_samplers: todo!("*const vk::Sampler"),
 };
 ```"#]
@@ -9284,7 +9284,7 @@ pub struct DescriptorSetLayoutBinding {
 let pipeline_layout_create_info = vk::PipelineLayoutCreateInfo {
     s_type: vk::StructureType::PipelineLayoutCreateInfo,
     p_next: null(),
-    flags: todo!("vk::PipelineLayoutCreateFlags"),
+    flags: todo!("vk::PipelineLayoutCreateFlagBits"),
     set_layout_count: todo!("u32"),
     p_set_layouts: todo!("*const vk::DescriptorSetLayout"),
     push_constant_range_count: todo!("u32"),
@@ -9316,7 +9316,7 @@ pub struct PipelineLayoutCreateInfo {
 # use vulk::vk as vk;
 # use std::ptr::{null, null_mut};
 let push_constant_range = vk::PushConstantRange {
-    stage_flags: todo!("vk::ShaderStageFlags"),
+    stage_flags: todo!("vk::ShaderStageFlagBits"),
     offset: todo!("u32"),
     size: todo!("u32"),
 };
@@ -9455,7 +9455,7 @@ let descriptor_buffer_binding_info_ext = vk::DescriptorBufferBindingInfoEXT {
     s_type: vk::StructureType::DescriptorBufferBindingInfoEXT,
     p_next: null_mut(),
     address: todo!("vk::DeviceAddress"),
-    usage: todo!("vk::BufferUsageFlags"),
+    usage: todo!("vk::BufferUsageFlagBits"),
 };
 ```"#]
 pub struct DescriptorBufferBindingInfoEXT {
@@ -9482,10 +9482,10 @@ pub struct DescriptorBufferBindingInfoEXT {
 let query_pool_create_info = vk::QueryPoolCreateInfo {
     s_type: vk::StructureType::QueryPoolCreateInfo,
     p_next: null(),
-    flags: todo!("vk::QueryPoolCreateFlags"),
+    flags: todo!("vk::QueryPoolCreateFlagBits"),
     query_type: todo!("vk::QueryType"),
     query_count: todo!("u32"),
-    pipeline_statistics: todo!("vk::QueryPipelineStatisticFlags"),
+    pipeline_statistics: todo!("vk::QueryPipelineStatisticFlagBits"),
 };
 ```"#]
 pub struct QueryPoolCreateInfo {
@@ -9536,7 +9536,7 @@ pub struct ClearDepthStencilValue {
 # use vulk::vk as vk;
 # use std::ptr::{null, null_mut};
 let image_subresource_layers = vk::ImageSubresourceLayers {
-    aspect_mask: todo!("vk::ImageAspectFlags"),
+    aspect_mask: todo!("vk::ImageAspectFlagBits"),
     mip_level: todo!("u32"),
     base_array_layer: todo!("u32"),
     layer_count: todo!("u32"),
@@ -10322,16 +10322,16 @@ let physical_device_limits = vk::PhysicalDeviceLimits {
     max_framebuffer_width: todo!("u32"),
     max_framebuffer_height: todo!("u32"),
     max_framebuffer_layers: todo!("u32"),
-    framebuffer_color_sample_counts: todo!("vk::SampleCountFlags"),
-    framebuffer_depth_sample_counts: todo!("vk::SampleCountFlags"),
-    framebuffer_stencil_sample_counts: todo!("vk::SampleCountFlags"),
-    framebuffer_no_attachments_sample_counts: todo!("vk::SampleCountFlags"),
+    framebuffer_color_sample_counts: todo!("vk::SampleCountFlagBits"),
+    framebuffer_depth_sample_counts: todo!("vk::SampleCountFlagBits"),
+    framebuffer_stencil_sample_counts: todo!("vk::SampleCountFlagBits"),
+    framebuffer_no_attachments_sample_counts: todo!("vk::SampleCountFlagBits"),
     max_color_attachments: todo!("u32"),
-    sampled_image_color_sample_counts: todo!("vk::SampleCountFlags"),
-    sampled_image_integer_sample_counts: todo!("vk::SampleCountFlags"),
-    sampled_image_depth_sample_counts: todo!("vk::SampleCountFlags"),
-    sampled_image_stencil_sample_counts: todo!("vk::SampleCountFlags"),
-    storage_image_sample_counts: todo!("vk::SampleCountFlags"),
+    sampled_image_color_sample_counts: todo!("vk::SampleCountFlagBits"),
+    sampled_image_integer_sample_counts: todo!("vk::SampleCountFlagBits"),
+    sampled_image_depth_sample_counts: todo!("vk::SampleCountFlagBits"),
+    sampled_image_stencil_sample_counts: todo!("vk::SampleCountFlagBits"),
+    storage_image_sample_counts: todo!("vk::SampleCountFlagBits"),
     max_sample_mask_words: todo!("u32"),
     timestamp_compute_and_graphics: todo!("vk::Bool32"),
     timestamp_period: todo!("f32"),
@@ -10477,8 +10477,8 @@ let physical_device_subgroup_properties = vk::PhysicalDeviceSubgroupProperties {
     s_type: vk::StructureType::PhysicalDeviceSubgroupProperties,
     p_next: null_mut(),
     subgroup_size: todo!("u32"),
-    supported_stages: todo!("vk::ShaderStageFlags"),
-    supported_operations: todo!("vk::SubgroupFeatureFlags"),
+    supported_stages: todo!("vk::ShaderStageFlagBits"),
+    supported_operations: todo!("vk::SubgroupFeatureFlagBits"),
     quad_operations_in_all_stages: todo!("vk::Bool32"),
 };
 ```"#]
@@ -10736,9 +10736,9 @@ pub struct DebugUtilsLabelEXT {
 let debug_utils_messenger_create_info_ext = vk::DebugUtilsMessengerCreateInfoEXT {
     s_type: vk::StructureType::DebugUtilsMessengerCreateInfoEXT,
     p_next: null(),
-    flags: todo!("vk::DebugUtilsMessengerCreateFlagsEXT"),
-    message_severity: todo!("vk::DebugUtilsMessageSeverityFlagsEXT"),
-    message_type: todo!("vk::DebugUtilsMessageTypeFlagsEXT"),
+    flags: todo!("vk::DebugUtilsMessengerCreateFlagBitsEXT"),
+    message_severity: todo!("vk::DebugUtilsMessageSeverityFlagBitsEXT"),
+    message_type: todo!("vk::DebugUtilsMessageTypeFlagBitsEXT"),
     pfn_user_callback: todo!("vk::PfnDebugUtilsMessengerCallbackEXT"),
     p_user_data: todo!("*mut c_void"),
 };
@@ -10770,7 +10770,7 @@ pub struct DebugUtilsMessengerCreateInfoEXT {
 let debug_utils_messenger_callback_data_ext = vk::DebugUtilsMessengerCallbackDataEXT {
     s_type: vk::StructureType::DebugUtilsMessengerCallbackDataEXT,
     p_next: null(),
-    flags: todo!("vk::DebugUtilsMessengerCallbackDataFlagsEXT"),
+    flags: todo!("vk::DebugUtilsMessengerCallbackDataFlagBitsEXT"),
     p_message_id_name: todo!("*const c_char"),
     message_id_number: todo!("i32"),
     p_message: todo!("*const c_char"),

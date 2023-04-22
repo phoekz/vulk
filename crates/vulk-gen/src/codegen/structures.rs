@@ -91,7 +91,10 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
                             &member.text,
                             &member.en,
                             true,
-                        )?;
+
+                        // Special: prefer initializing Flags as FlagBits, since that is how the Flags are built.
+                        let rs_type = rs_type.replace("Flags", "FlagBits");
+
                         format!("todo!(\"{rs_type}\")")
                     }
                 };
