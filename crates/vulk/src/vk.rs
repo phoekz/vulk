@@ -3360,6 +3360,11 @@ impl InstanceCreateFlags {
     pub const fn empty() -> Self {
         Self(0)
     }
+
+    #[must_use]
+    pub fn contains(self, rhs: Self) -> bool {
+        self.0 & rhs.0 == rhs.0
+    }
 }
 
 impl std::ops::BitAnd for InstanceCreateFlags {
@@ -3450,6 +3455,11 @@ impl QueueFlags {
     #[must_use]
     pub const fn empty() -> Self {
         Self(0)
+    }
+
+    #[must_use]
+    pub fn contains(self, rhs: Self) -> bool {
+        self.0 & rhs.0 == rhs.0
     }
 }
 
@@ -3579,6 +3589,11 @@ impl DeviceQueueCreateFlags {
     pub const fn empty() -> Self {
         Self(0)
     }
+
+    #[must_use]
+    pub fn contains(self, rhs: Self) -> bool {
+        self.0 & rhs.0 == rhs.0
+    }
 }
 
 impl std::ops::BitAnd for DeviceQueueCreateFlags {
@@ -3670,6 +3685,11 @@ impl CommandPoolCreateFlags {
     #[must_use]
     pub const fn empty() -> Self {
         Self(0)
+    }
+
+    #[must_use]
+    pub fn contains(self, rhs: Self) -> bool {
+        self.0 & rhs.0 == rhs.0
     }
 }
 
@@ -3775,6 +3795,11 @@ impl CommandPoolResetFlags {
     pub const fn empty() -> Self {
         Self(0)
     }
+
+    #[must_use]
+    pub fn contains(self, rhs: Self) -> bool {
+        self.0 & rhs.0 == rhs.0
+    }
 }
 
 impl std::ops::BitAnd for CommandPoolResetFlags {
@@ -3866,6 +3891,11 @@ impl CommandBufferUsageFlags {
     #[must_use]
     pub const fn empty() -> Self {
         Self(0)
+    }
+
+    #[must_use]
+    pub fn contains(self, rhs: Self) -> bool {
+        self.0 & rhs.0 == rhs.0
     }
 }
 
@@ -3971,6 +4001,11 @@ impl SubmitFlags {
     pub const fn empty() -> Self {
         Self(0)
     }
+
+    #[must_use]
+    pub fn contains(self, rhs: Self) -> bool {
+        self.0 & rhs.0 == rhs.0
+    }
 }
 
 impl std::ops::BitAnd for SubmitFlags {
@@ -4062,6 +4097,11 @@ impl PipelineStageFlags2 {
     #[must_use]
     pub const fn empty() -> Self {
         Self(0)
+    }
+
+    #[must_use]
+    pub fn contains(self, rhs: Self) -> bool {
+        self.0 & rhs.0 == rhs.0
     }
 }
 
@@ -4232,6 +4272,11 @@ impl AccessFlags2 {
     #[must_use]
     pub const fn empty() -> Self {
         Self(0)
+    }
+
+    #[must_use]
+    pub fn contains(self, rhs: Self) -> bool {
+        self.0 & rhs.0 == rhs.0
     }
 }
 
@@ -4412,6 +4457,11 @@ impl SemaphoreWaitFlags {
     pub const fn empty() -> Self {
         Self(0)
     }
+
+    #[must_use]
+    pub fn contains(self, rhs: Self) -> bool {
+        self.0 & rhs.0 == rhs.0
+    }
 }
 
 impl std::ops::BitAnd for SemaphoreWaitFlags {
@@ -4503,6 +4553,11 @@ impl DependencyFlags {
     #[must_use]
     pub const fn empty() -> Self {
         Self(0)
+    }
+
+    #[must_use]
+    pub fn contains(self, rhs: Self) -> bool {
+        self.0 & rhs.0 == rhs.0
     }
 }
 
@@ -4599,6 +4654,11 @@ impl RenderingFlags {
     #[must_use]
     pub const fn empty() -> Self {
         Self(0)
+    }
+
+    #[must_use]
+    pub fn contains(self, rhs: Self) -> bool {
+        self.0 & rhs.0 == rhs.0
     }
 }
 
@@ -4699,6 +4759,11 @@ impl ResolveModeFlags {
     #[must_use]
     pub const fn empty() -> Self {
         Self(0)
+    }
+
+    #[must_use]
+    pub fn contains(self, rhs: Self) -> bool {
+        self.0 & rhs.0 == rhs.0
     }
 }
 
@@ -4809,6 +4874,11 @@ impl ShaderCreateFlagsEXT {
     #[must_use]
     pub const fn empty() -> Self {
         Self(0)
+    }
+
+    #[must_use]
+    pub fn contains(self, rhs: Self) -> bool {
+        self.0 & rhs.0 == rhs.0
     }
 }
 
@@ -4925,6 +4995,11 @@ impl ShaderStageFlags {
     #[must_use]
     pub const fn empty() -> Self {
         Self(0)
+    }
+
+    #[must_use]
+    pub fn contains(self, rhs: Self) -> bool {
+        self.0 & rhs.0 == rhs.0
     }
 }
 
@@ -5051,6 +5126,11 @@ impl MemoryHeapFlags {
     pub const fn empty() -> Self {
         Self(0)
     }
+
+    #[must_use]
+    pub fn contains(self, rhs: Self) -> bool {
+        self.0 & rhs.0 == rhs.0
+    }
 }
 
 impl std::ops::BitAnd for MemoryHeapFlags {
@@ -5144,6 +5224,11 @@ impl MemoryPropertyFlags {
     #[must_use]
     pub const fn empty() -> Self {
         Self(0)
+    }
+
+    #[must_use]
+    pub fn contains(self, rhs: Self) -> bool {
+        self.0 & rhs.0 == rhs.0
     }
 }
 
@@ -5257,6 +5342,11 @@ impl MemoryAllocateFlags {
     #[must_use]
     pub const fn empty() -> Self {
         Self(0)
+    }
+
+    #[must_use]
+    pub fn contains(self, rhs: Self) -> bool {
+        self.0 & rhs.0 == rhs.0
     }
 }
 
@@ -5398,6 +5488,11 @@ impl BufferUsageFlags {
     pub const fn empty() -> Self {
         Self(0)
     }
+
+    #[must_use]
+    pub fn contains(self, rhs: Self) -> bool {
+        self.0 & rhs.0 == rhs.0
+    }
 }
 
 impl std::ops::BitAnd for BufferUsageFlags {
@@ -5532,6 +5627,11 @@ impl BufferCreateFlags {
     pub const fn empty() -> Self {
         Self(0)
     }
+
+    #[must_use]
+    pub fn contains(self, rhs: Self) -> bool {
+        self.0 & rhs.0 == rhs.0
+    }
 }
 
 impl std::ops::BitAnd for BufferCreateFlags {
@@ -5644,6 +5744,11 @@ impl ImageUsageFlags {
     #[must_use]
     pub const fn empty() -> Self {
         Self(0)
+    }
+
+    #[must_use]
+    pub fn contains(self, rhs: Self) -> bool {
+        self.0 & rhs.0 == rhs.0
     }
 }
 
@@ -5763,6 +5868,11 @@ impl ImageCreateFlags {
     #[must_use]
     pub const fn empty() -> Self {
         Self(0)
+    }
+
+    #[must_use]
+    pub fn contains(self, rhs: Self) -> bool {
+        self.0 & rhs.0 == rhs.0
     }
 }
 
@@ -5898,6 +6008,11 @@ impl ImageViewCreateFlags {
     pub const fn empty() -> Self {
         Self(0)
     }
+
+    #[must_use]
+    pub fn contains(self, rhs: Self) -> bool {
+        self.0 & rhs.0 == rhs.0
+    }
 }
 
 impl std::ops::BitAnd for ImageViewCreateFlags {
@@ -5989,6 +6104,11 @@ impl ImageAspectFlags {
     #[must_use]
     pub const fn empty() -> Self {
         Self(0)
+    }
+
+    #[must_use]
+    pub fn contains(self, rhs: Self) -> bool {
+        self.0 & rhs.0 == rhs.0
     }
 }
 
@@ -6109,6 +6229,11 @@ impl SamplerCreateFlags {
     pub const fn empty() -> Self {
         Self(0)
     }
+
+    #[must_use]
+    pub fn contains(self, rhs: Self) -> bool {
+        self.0 & rhs.0 == rhs.0
+    }
 }
 
 impl std::ops::BitAnd for SamplerCreateFlags {
@@ -6200,6 +6325,11 @@ impl DescriptorSetLayoutCreateFlags {
     #[must_use]
     pub const fn empty() -> Self {
         Self(0)
+    }
+
+    #[must_use]
+    pub fn contains(self, rhs: Self) -> bool {
+        self.0 & rhs.0 == rhs.0
     }
 }
 
@@ -6304,6 +6434,11 @@ impl PipelineLayoutCreateFlags {
     #[must_use]
     pub const fn empty() -> Self {
         Self(0)
+    }
+
+    #[must_use]
+    pub fn contains(self, rhs: Self) -> bool {
+        self.0 & rhs.0 == rhs.0
     }
 }
 
@@ -6414,6 +6549,11 @@ impl QueryControlFlags {
     pub const fn empty() -> Self {
         Self(0)
     }
+
+    #[must_use]
+    pub fn contains(self, rhs: Self) -> bool {
+        self.0 & rhs.0 == rhs.0
+    }
 }
 
 impl std::ops::BitAnd for QueryControlFlags {
@@ -6505,6 +6645,11 @@ impl QueryResultFlags {
     #[must_use]
     pub const fn empty() -> Self {
         Self(0)
+    }
+
+    #[must_use]
+    pub fn contains(self, rhs: Self) -> bool {
+        self.0 & rhs.0 == rhs.0
     }
 }
 
@@ -6612,6 +6757,11 @@ impl QueryPipelineStatisticFlags {
     #[must_use]
     pub const fn empty() -> Self {
         Self(0)
+    }
+
+    #[must_use]
+    pub fn contains(self, rhs: Self) -> bool {
+        self.0 & rhs.0 == rhs.0
     }
 }
 
@@ -6747,6 +6897,11 @@ impl CullModeFlags {
     pub const fn empty() -> Self {
         Self(0)
     }
+
+    #[must_use]
+    pub fn contains(self, rhs: Self) -> bool {
+        self.0 & rhs.0 == rhs.0
+    }
 }
 
 impl std::ops::BitAnd for CullModeFlags {
@@ -6845,6 +7000,11 @@ impl ColorComponentFlags {
     pub const fn empty() -> Self {
         Self(0)
     }
+
+    #[must_use]
+    pub fn contains(self, rhs: Self) -> bool {
+        self.0 & rhs.0 == rhs.0
+    }
 }
 
 impl std::ops::BitAnd for ColorComponentFlags {
@@ -6942,6 +7102,11 @@ impl SampleCountFlags {
     #[must_use]
     pub const fn empty() -> Self {
         Self(0)
+    }
+
+    #[must_use]
+    pub fn contains(self, rhs: Self) -> bool {
+        self.0 & rhs.0 == rhs.0
     }
 }
 
@@ -7058,6 +7223,11 @@ impl SubgroupFeatureFlags {
     #[must_use]
     pub const fn empty() -> Self {
         Self(0)
+    }
+
+    #[must_use]
+    pub fn contains(self, rhs: Self) -> bool {
+        self.0 & rhs.0 == rhs.0
     }
 }
 
@@ -7196,6 +7366,11 @@ impl DebugUtilsMessageSeverityFlagsEXT {
     pub const fn empty() -> Self {
         Self(0)
     }
+
+    #[must_use]
+    pub fn contains(self, rhs: Self) -> bool {
+        self.0 & rhs.0 == rhs.0
+    }
 }
 
 impl std::ops::BitAnd for DebugUtilsMessageSeverityFlagsEXT {
@@ -7302,6 +7477,11 @@ impl DebugUtilsMessageTypeFlagsEXT {
     #[must_use]
     pub const fn empty() -> Self {
         Self(0)
+    }
+
+    #[must_use]
+    pub fn contains(self, rhs: Self) -> bool {
+        self.0 & rhs.0 == rhs.0
     }
 }
 

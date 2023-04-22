@@ -17,3 +17,11 @@ fn flag_bits_display_unknown_bits() {
     let flags = flags | vk::BufferUsageFlagBits::TransferSrc;
     assert_eq!(format!("{flags}"), "TransferSrc | 0b1000000000");
 }
+
+#[test]
+fn flags_contains() {
+    let flags = vk::MemoryPropertyFlagBits::HostVisible | vk::MemoryPropertyFlagBits::HostCoherent;
+    assert!(flags.contains(vk::MemoryPropertyFlagBits::HostVisible.into()));
+    assert!(flags.contains(vk::MemoryPropertyFlagBits::HostCoherent.into()));
+    assert!(!flags.contains(vk::MemoryPropertyFlagBits::DeviceLocal.into()));
+}

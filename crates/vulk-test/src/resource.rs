@@ -654,7 +654,7 @@ fn memory_type_index(
     for memory_type_index in 0..memory.memory_type_count {
         let memory_type = memory.memory_types[memory_type_index as usize];
         let type_matches = (1 << memory_type_index) & memory_type_bits != 0;
-        let property_matches = (memory_type.property_flags & property_flags) == property_flags;
+        let property_matches = memory_type.property_flags.contains(property_flags);
         if type_matches && property_matches {
             return memory_type_index;
         }

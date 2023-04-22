@@ -9,6 +9,11 @@ impl {{rs_flags_ident}} {
     pub const fn empty() -> Self {
         Self(0)
     }
+
+    #[must_use]
+    pub fn contains(self, rhs: Self) -> bool {
+        self.0 & rhs.0 == rhs.0
+    }
 }
 
 impl std::ops::BitAnd for {{rs_flags_ident}} {
