@@ -151,8 +151,9 @@ pub(super) fn parse_types<'a>(nodes: impl Iterator<Item = xml::Node<'a>>) -> Res
                 });
             }
             "struct" => {
+                let name = node.required_attribute("name");
                 output.push(Type {
-                    name: node.required_attribute("name"),
+                    name: name.clone(),
                     category: TypeCategory::Struct {
                         alias: node.attribute("alias"),
                         structextends: if let Some(structextends) = node.attribute("structextends")
@@ -163,13 +164,28 @@ pub(super) fn parse_types<'a>(nodes: impl Iterator<Item = xml::Node<'a>>) -> Res
                         },
                         members: node
                             .children_elements("member")
-                            .map(|node| TypeMember {
-                                name: node.required_child_text("name"),
-                                ty: node.required_child_text("type"),
-                                optional: node.attribute("optional"),
-                                comment: node.child_text("comment"),
-                                text: node.joined_children_text(),
-                                en: node.child_text("enum"),
+                            .filter_map(|node| {
+                                let member = TypeMember {
+                                    name: node.required_child_text("name"),
+                                    ty: node.required_child_text("type"),
+                                    optional: node.attribute("optional"),
+                                    comment: node.child_text("comment"),
+                                    text: node.joined_children_text(),
+                                    en: node.child_text("enum"),
+                                };
+
+                                let api = node.attribute("api");
+                                if let Some(api) = api {
+                                    if api == "vulkansc" {
+                                        debug!(
+                                            "Ignoring struct member: parent={} name={}, api=vulkansc",
+                                            name, member.name
+                                        );
+                                        return None;
+                                    }
+                                }
+
+                                Some(member)
                             })
                             .collect(),
                     },
