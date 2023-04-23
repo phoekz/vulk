@@ -297,10 +297,10 @@ impl GpuResource for Image2d {
             view_type: vk::ImageViewType::Type2d,
             format: image_create_info.format,
             components: vk::ComponentMapping {
-                r: vk::ComponentSwizzle::R,
-                g: vk::ComponentSwizzle::G,
-                b: vk::ComponentSwizzle::B,
-                a: vk::ComponentSwizzle::A,
+                r: vk::ComponentSwizzle::Identity,
+                g: vk::ComponentSwizzle::Identity,
+                b: vk::ComponentSwizzle::Identity,
+                a: vk::ComponentSwizzle::Identity,
             },
             subresource_range: vk::ImageSubresourceRange {
                 aspect_mask: create_info.format.aspect_mask(),
