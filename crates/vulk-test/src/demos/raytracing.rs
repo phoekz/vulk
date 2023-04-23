@@ -10,6 +10,7 @@ pub struct Demo {
     blas: Blas,
     tlas: Tlas,
     render_image: RenderImage,
+    stats: Stats,
     descriptors: Descriptors,
     pipeline: Pipeline,
     sbt: Sbt,
@@ -35,11 +36,13 @@ impl DemoCallbacks for Demo {
             },
         )?;
         let render_image = RenderImage::create(gpu, &RenderImageCreateInfo {})?;
+        let stats = Stats::create(gpu, &StatsCreateInfo {})?;
         let descriptors = Descriptors::create(
             gpu,
             &DescriptorsCreateInfo {
                 render_image: &render_image,
                 tlas: &tlas,
+                stats: &stats,
             },
         )?;
         let pipeline = Pipeline::create(
@@ -62,6 +65,7 @@ impl DemoCallbacks for Demo {
             blas,
             tlas,
             render_image,
+            stats,
             descriptors,
             pipeline,
             sbt,
@@ -78,6 +82,7 @@ impl DemoCallbacks for Demo {
         state.sbt.destroy(gpu);
         state.pipeline.destroy(gpu);
         state.descriptors.destroy(gpu);
+        state.stats.destroy(gpu);
         state.render_image.destroy(gpu);
         state.tlas.destroy(gpu);
         state.blas.destroy(gpu);
@@ -667,12 +672,55 @@ impl GpuResource for RenderImage {
 }
 
 //
+// Stats
+//
+
+#[repr(C)]
+#[derive(Debug)]
+struct StatCounters {
+    rays: u64,
+    hits: u64,
+    misses: u64,
+}
+
+struct StatsCreateInfo {}
+
+struct Stats {
+    counters: resource::Buffer<StatCounters>,
+}
+
+impl GpuResource for Stats {
+    type CreateInfo<'a> = StatsCreateInfo;
+
+    unsafe fn create(gpu: &Gpu, _: &Self::CreateInfo<'_>) -> Result<Self>
+    where
+        Self: Sized,
+    {
+        let counters = resource::Buffer::create(
+            gpu,
+            &resource::BufferCreateInfo {
+                size: 1,
+                usage: vk::BufferUsageFlagBits::StorageBuffer.into(),
+                property_flags: vk::MemoryPropertyFlagBits::HostVisible
+                    | vk::MemoryPropertyFlagBits::HostCoherent,
+            },
+        )?;
+        Ok(Self { counters })
+    }
+
+    unsafe fn destroy(&self, gpu: &Gpu) {
+        self.counters.destroy(gpu);
+    }
+}
+
+//
 // Descriptors
 //
 
 struct DescriptorsCreateInfo<'a> {
     render_image: &'a RenderImage,
     tlas: &'a Tlas,
+    stats: &'a Stats,
 }
 
 struct Descriptors {
@@ -688,8 +736,12 @@ impl GpuResource for Descriptors {
     where
         Self: Sized,
     {
+        // Stage flags.
+        let stage_flags = vk::ShaderStageFlagBits::RaygenKHR
+            | vk::ShaderStageFlagBits::MissKHR
+            | vk::ShaderStageFlagBits::ClosestHitKHR;
+
         // Descriptor storage.
-        let stage_flags = vk::ShaderStageFlagBits::RaygenKHR.into();
         let storage = descriptor::DescriptorStorage::create(
             gpu,
             &descriptor::DescriptorStorageCreateInfo {
@@ -703,6 +755,11 @@ impl GpuResource for Descriptors {
                         descriptor_type: vk::DescriptorType::AccelerationStructureKHR,
                         stage_flags,
                         descriptors: &[create_info.tlas.tlas_descriptor],
+                    },
+                    descriptor::DescriptorStorageBinding {
+                        descriptor_type: vk::DescriptorType::StorageBuffer,
+                        stage_flags,
+                        descriptors: &[create_info.stats.counters.descriptor],
                     },
                 ],
             },
@@ -771,6 +828,8 @@ impl GpuResource for Pipeline {
             r#"
                 #extension GL_EXT_ray_tracing : require
                 #extension GL_EXT_scalar_block_layout : require
+                #extension GL_EXT_shader_atomic_int64 : require
+                #extension GL_EXT_shader_explicit_arithmetic_types_int64 : require
 
                 layout(scalar, push_constant) uniform PushBuffer {
                     mat4 view_inverse;
@@ -778,6 +837,12 @@ impl GpuResource for Pipeline {
                 };
                 layout(binding = 0, rgba8) uniform image2D render_image;
                 layout(binding = 1) uniform accelerationStructureEXT tlas;
+                struct Counters {
+                    uint64_t rays;
+                    uint64_t hits;
+                    uint64_t misses;
+                };
+                layout(scalar, binding = 2) buffer Stats { Counters counters; };
             "#,
         );
 
@@ -816,6 +881,8 @@ impl GpuResource for Pipeline {
                         0                       // int payload
                     );
                     imageStore(render_image, ivec2(gl_LaunchIDEXT.xy), vec4(hitValue, 1.0));
+
+                    atomicAdd(counters.rays, 1);
                 }
             "#,
         )?;
@@ -829,6 +896,8 @@ impl GpuResource for Pipeline {
 
                 void main() {
                     hitValue = vec3(0.2, 0.2, 0.2);
+
+                    atomicAdd(counters.misses, 1);
                 }
             "#,
         )?;
@@ -845,6 +914,8 @@ impl GpuResource for Pipeline {
                 void main() {
                     vec3 barycentric = vec3(1.0 - attribs.x - attribs.y, attribs.x, attribs.y);
                     hitValue = barycentric;
+
+                    atomicAdd(counters.hits, 1);
                 }
             "#,
         )?;
@@ -1089,6 +1160,7 @@ unsafe fn dispatch(
         commands,
         queries,
         render_image,
+        stats,
         descriptors,
         pipeline,
         sbt,
@@ -1315,6 +1387,13 @@ unsafe fn dispatch(
     {
         info!("Rendering took {:?}", queries.elapsed(gpu)?);
         info!("Rendering statistics: {:?}", queries.statistics(gpu)?);
+
+        let stats = &std::slice::from_raw_parts(stats.counters.ptr, 1)[0];
+        info!("Raytracing statistics: {stats:?}",);
+        ensure!(
+            stats.rays == u64::from(DEFAULT_RENDER_TARGET_WIDTH * DEFAULT_RENDER_TARGET_HEIGHT)
+        );
+        ensure!(stats.rays == stats.hits + stats.misses);
     }
 
     // Write image.
