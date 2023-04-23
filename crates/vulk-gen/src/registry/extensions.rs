@@ -22,7 +22,7 @@ pub(super) fn parse_extensions<'a>(
         output.push(Extension {
             name,
             number: node.required_attribute("number"),
-            ty: node.attribute("ty"),
+            ty: node.attribute("type"),
             requires: parse_require(node.children_elements("require"))?,
             promotedto: node.attribute("promotedto"),
         });
