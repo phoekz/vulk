@@ -83,6 +83,15 @@ impl Registry {
                 "Extension name={} extended enums {} times",
                 extension.name, extend_count
             );
+            if let Some(promotedto) = &extension.promotedto {
+                // Special: VK_KHR_synchronization2 is intentional, because
+                // other extensions (such as ray tracing) have `requires` under
+                // VK_KHR_synchronization2.
+                warn!(
+                    "Extension {} was promoted to {promotedto}, make sure this is intentional!",
+                    extension.name
+                );
+            }
         }
         Ok(registry)
     }
