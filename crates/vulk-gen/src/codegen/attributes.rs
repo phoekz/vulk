@@ -121,6 +121,16 @@ impl Builder {
     pub fn doc_note(self, note: impl AsRef<str>) -> Self {
         self.doc_str(format!("**Note**: {}", note.as_ref()))
     }
+
+    #[inline]
+    #[must_use]
+    pub fn doc_includes_ext(self, include: impl AsRef<str>) -> Self {
+        self.doc_str(format!(
+            "**Includes**: [`{}`]({})",
+            include.as_ref(),
+            docs::reference_url(include.as_ref())
+        ))
+    }
 }
 
 impl std::fmt::Display for Builder {

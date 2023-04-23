@@ -6,6 +6,7 @@ mod base_types;
 mod bitmasks;
 mod commands;
 mod enumerations;
+mod extensions;
 mod function_pointers;
 mod handles;
 mod outputs;
@@ -22,9 +23,15 @@ pub struct GeneratorContext<'a> {
     c_type_map: &'a CtypeMap,
     provided_by_map: &'a ProvidedByMap,
     vkspec: &'a docs::Vkspec,
+    manifest: &'a manifest::Manifest,
 }
 
-pub fn generate(registry: &Registry, vkspec: &docs::Vkspec, vulk_lib_dir: &Path) -> Result<()> {
+pub fn generate(
+    registry: &Registry,
+    vkspec: &docs::Vkspec,
+    manifest: &manifest::Manifest,
+    vulk_lib_dir: &Path,
+) -> Result<()> {
     // Generate.
     let c_type_map = registry::c_type_map();
     let provided_by_map = ProvidedByMap::new(registry);
@@ -34,6 +41,7 @@ pub fn generate(registry: &Registry, vkspec: &docs::Vkspec, vulk_lib_dir: &Path)
         c_type_map: &c_type_map,
         provided_by_map: &provided_by_map,
         vkspec,
+        manifest,
     };
     let api_constants = api_constants::generate(&ctx).context("Generating api_constants")?;
     let base_types = base_types::generate(&ctx).context("Generating base_types")?;
@@ -50,9 +58,12 @@ pub fn generate(registry: &Registry, vkspec: &docs::Vkspec, vulk_lib_dir: &Path)
     let command_wrappers = commands::wrappers::generate(&ctx, &command_groups)
         .context("Generating commands::wrappers")?;
     let toc = toc::generate(&ctx).context("Generating toc")?;
+    let extensions = extensions::generate(&ctx).context("Generating extensions")?;
 
     // Render.
-    let lib_rs = outputs::lib::TEMPLATE.replace("{{toc}}", &toc);
+    let lib_rs = outputs::lib::TEMPLATE
+        .replace("{{toc}}", &toc)
+        .replace("{{extensions}}", &extensions);
     let loader_rs = outputs::loader::TEMPLATE
         .replace("{{init::wrappers}}", &command_wrappers.init_wrappers)
         .replace(
@@ -87,17 +98,19 @@ pub fn generate(registry: &Registry, vkspec: &docs::Vkspec, vulk_lib_dir: &Path)
         .replace("{{vk::unions}}", &unions);
     let tests_rs = outputs::tests::TEMPLATE.to_string();
 
-    // Formatting.
-    let lib_rs = rustfmt(&lib_rs).context("Failed to format 'lib.rs' with rustfmt")?;
-    let loader_rs = rustfmt(&loader_rs).context("Failed to format 'loader.rs' with rustfmt")?;
-    let vk_rs = rustfmt(&vk_rs).context("Failed to format 'vk.rs' with rustfmt")?;
-    let tests_rs = rustfmt(&tests_rs).context("Failed to format 'tests.rs' with rustfmt")?;
-
     // Write.
     std::fs::write(vulk_lib_dir.join("lib.rs"), lib_rs)?;
     std::fs::write(vulk_lib_dir.join("loader.rs"), loader_rs)?;
     std::fs::write(vulk_lib_dir.join("vk.rs"), vk_rs)?;
     std::fs::write(vulk_lib_dir.join("tests.rs"), tests_rs)?;
+
+    // Formatting.
+    rustfmt(&vulk_lib_dir.join("lib.rs"), 80).context("Failed to format 'lib.rs' with rustfmt")?;
+    rustfmt(&vulk_lib_dir.join("loader.rs"), 200)
+        .context("Failed to format 'loader.rs' with rustfmt")?;
+    rustfmt(&vulk_lib_dir.join("vk.rs"), 200).context("Failed to format 'vk.rs' with rustfmt")?;
+    rustfmt(&vulk_lib_dir.join("tests.rs"), 200)
+        .context("Failed to format 'tests.rs' with rustfmt")?;
 
     Ok(())
 }
@@ -106,25 +119,14 @@ pub fn generate(registry: &Registry, vkspec: &docs::Vkspec, vulk_lib_dir: &Path)
 // Utilities
 //
 
-fn rustfmt(input: &str) -> Result<String> {
-    // Temp.
-    let temp_dir = tempfile::tempdir()?;
-    let temp_path = temp_dir.path().join("vk.rs");
-    let temp_path = temp_path.as_os_str().to_string_lossy();
-    let temp_path = temp_path.as_ref();
-
-    // Write.
-    std::fs::write(temp_path, input)?;
-
-    // Format.
-    std::process::Command::new("rustfmt")
-        .args(["--config", "max_width=200", temp_path])
+fn rustfmt(path: &Path, max_width: u32) -> Result<()> {
+    let path = path.to_string_lossy().to_string();
+    let output = std::process::Command::new("rustfmt")
+        .args(["--config", &format!("max_width={max_width}"), path.as_str()])
         .output()?;
-
-    // Read.
-    let output = std::fs::read_to_string(temp_path)?;
-
-    Ok(output)
+    let code = output.status.code().unwrap();
+    ensure!(code == 0, "{output:?}");
+    Ok(())
 }
 
 pub struct ProvidedByMap(HashMap<String, String>);

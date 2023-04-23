@@ -93,7 +93,7 @@ fn main() -> Result<()> {
     let vulk_lib_dir = vulk_lib_dir();
     ensure!(vulk_lib_dir.exists());
     ensure!(vulk_lib_dir.is_dir());
-    codegen::generate(&registry, &vkspec, &vulk_lib_dir).context("Code generating")?;
+    codegen::generate(&registry, &vkspec, &manifest, &vulk_lib_dir).context("Code generating")?;
 
     // Execution time.
     info!(

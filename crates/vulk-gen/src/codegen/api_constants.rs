@@ -19,10 +19,17 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
         }
 
         let c_ident = &member.name;
+        let provided_by = ctx.provided_by_map.get(c_ident);
+        if !provided_by.starts_with("VK_VERSION") && !ctx.manifest.extensions.contains(provided_by)
+        {
+            debug!("Ignoring api constant: name={c_ident}, extension {provided_by} is not enabled");
+            continue;
+        }
+
         let c_attr = attributes::Builder::new()
             .doc_desc(ctx.vkspec.type_desc(c_ident))
             .doc_br()
-            .doc_provided(ctx.provided_by_map.get(c_ident))
+            .doc_provided(provided_by)
             .doc_br()
             .doc_ref(c_ident)
             .build();

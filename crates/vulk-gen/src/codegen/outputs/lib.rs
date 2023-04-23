@@ -4,6 +4,7 @@ pub const TEMPLATE: &str = r#"//! # `vulk`
 #![deny(nonstandard_style)]
 #![deny(clippy::pedantic)]
 #![allow(
+    clippy::doc_markdown,
     clippy::missing_errors_doc,
     clippy::missing_panics_doc,
     clippy::missing_safety_doc,
@@ -43,6 +44,12 @@ pub enum Error {
     #[error("vulkan error {0:?}")]
     Vulkan(vk::Result),
 }
+
+//
+// Extensions
+//
+
+{{extensions}}
 
 //
 // Utilities

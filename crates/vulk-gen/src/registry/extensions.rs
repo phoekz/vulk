@@ -5,8 +5,9 @@ pub struct Extension {
     pub name: String,
     pub number: String,
     pub ty: Option<String>,
-    pub requires: Vec<Require>,
     pub promotedto: Option<String>,
+    pub platform: Option<String>,
+    pub requires: Vec<Require>,
 }
 
 pub(super) fn parse_extensions<'a>(
@@ -25,6 +26,7 @@ pub(super) fn parse_extensions<'a>(
             ty: node.attribute("type"),
             requires: parse_require(node.children_elements("require"))?,
             promotedto: node.attribute("promotedto"),
+            platform: node.attribute("platform"),
         });
     }
 

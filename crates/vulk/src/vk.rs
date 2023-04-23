@@ -87,13 +87,6 @@ pub const REMAINING_MIP_LEVELS: u32 = !0;
 #[doc = "**Reference**: [`VK_REMAINING_ARRAY_LAYERS`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_REMAINING_ARRAY_LAYERS.html)"]
 pub const REMAINING_ARRAY_LAYERS: u32 = !0;
 
-#[doc = "**Description**: Sentinel for all remaining 3D slices"]
-#[doc = "<br>"]
-#[doc = "**Provided by**: [`VK_EXT_image_sliced_view_of_3d`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_image_sliced_view_of_3d.html)"]
-#[doc = "<br>"]
-#[doc = "**Reference**: [`VK_REMAINING_3D_SLICES_EXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_REMAINING_3D_SLICES_EXT.html)"]
-pub const REMAINING_3D_SLICES_EXT: u32 = !0;
-
 #[doc = "**Description**: Sentinel value to use entire remaining array length"]
 #[doc = "<br>"]
 #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
@@ -136,13 +129,6 @@ pub const QUEUE_FAMILY_IGNORED: u32 = !0;
 #[doc = "**Reference**: [`VK_QUEUE_FAMILY_EXTERNAL`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_QUEUE_FAMILY_EXTERNAL.html)"]
 pub const QUEUE_FAMILY_EXTERNAL: u32 = !1;
 
-#[doc = "**Description**: Foreign queue family index sentinel"]
-#[doc = "<br>"]
-#[doc = "**Provided by**: [`VK_EXT_queue_family_foreign`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_queue_family_foreign.html)"]
-#[doc = "<br>"]
-#[doc = "**Reference**: [`VK_QUEUE_FAMILY_FOREIGN_EXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_QUEUE_FAMILY_FOREIGN_EXT.html)"]
-pub const QUEUE_FAMILY_FOREIGN_EXT: u32 = !2;
-
 #[doc = "**Description**: Subpass index sentinel expanding synchronization scope outside a subpass"]
 #[doc = "<br>"]
 #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
@@ -177,20 +163,6 @@ pub const MAX_DRIVER_INFO_SIZE: u32 = 256;
 #[doc = "<br>"]
 #[doc = "**Reference**: [`VK_SHADER_UNUSED_KHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_SHADER_UNUSED_KHR.html)"]
 pub const SHADER_UNUSED_KHR: u32 = !0;
-
-#[doc = "**Description**: Length of an array of global queue priorities"]
-#[doc = "<br>"]
-#[doc = "**Provided by**: [`VK_KHR_global_priority`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_global_priority.html)"]
-#[doc = "<br>"]
-#[doc = "**Reference**: [`VK_MAX_GLOBAL_PRIORITY_SIZE_KHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_MAX_GLOBAL_PRIORITY_SIZE_KHR.html)"]
-pub const MAX_GLOBAL_PRIORITY_SIZE_KHR: u32 = 16;
-
-#[doc = "**Description**: Maximum length of a shader module identifier"]
-#[doc = "<br>"]
-#[doc = "**Provided by**: [`VK_EXT_shader_module_identifier`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_module_identifier.html)"]
-#[doc = "<br>"]
-#[doc = "**Reference**: [`VK_MAX_SHADER_MODULE_IDENTIFIER_SIZE_EXT`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_MAX_SHADER_MODULE_IDENTIFIER_SIZE_EXT.html)"]
-pub const MAX_SHADER_MODULE_IDENTIFIER_SIZE_EXT: u32 = 32;
 
 //
 // Base types

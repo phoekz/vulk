@@ -73,9 +73,6 @@ unsafe fn create_instance(init: &vulk::Init) -> Result<vulk::Instance> {
     // Layers.
     let enabled_layer_names = [b"VK_LAYER_KHRONOS_validation\0".as_ptr().cast()];
 
-    // Extensions.
-    let enabled_extension_names = [b"VK_EXT_debug_utils\0".as_ptr().cast()];
-
     // Create.
     let instance = init.create_instance(
         &(vk::InstanceCreateInfo {
@@ -93,8 +90,8 @@ unsafe fn create_instance(init: &vulk::Init) -> Result<vulk::Instance> {
             }),
             enabled_layer_count: enabled_layer_names.len() as _,
             pp_enabled_layer_names: enabled_layer_names.as_ptr(),
-            enabled_extension_count: enabled_extension_names.len() as _,
-            pp_enabled_extension_names: enabled_extension_names.as_ptr(),
+            enabled_extension_count: vulk::REQUIRED_INSTANCE_EXTENSIONS.len() as _,
+            pp_enabled_extension_names: vulk::REQUIRED_INSTANCE_EXTENSIONS.as_ptr(),
         }),
     )?;
     let instance = vulk::Instance::load(init, instance)?;
@@ -438,21 +435,6 @@ unsafe fn create_logical_device(
         },
     };
 
-    // Extensions.
-    let enabled_extension_names = [
-        b"VK_KHR_map_memory2\0".as_ptr().cast(),
-        b"VK_KHR_acceleration_structure\0".as_ptr().cast(),
-        b"VK_KHR_ray_tracing_pipeline\0".as_ptr().cast(),
-        b"VK_KHR_ray_query\0".as_ptr().cast(),
-        b"VK_KHR_pipeline_library\0".as_ptr().cast(),
-        b"VK_KHR_deferred_host_operations\0".as_ptr().cast(),
-        b"VK_KHR_ray_tracing_maintenance1\0".as_ptr().cast(),
-        b"VK_EXT_descriptor_buffer\0".as_ptr().cast(),
-        b"VK_EXT_shader_object\0".as_ptr().cast(),
-        b"VK_EXT_calibrated_timestamps\0".as_ptr().cast(),
-        b"VK_EXT_mesh_shader\0".as_ptr().cast(),
-    ];
-
     // Create.
     let device = instance.create_device(
         physical_device.handle,
@@ -471,8 +453,8 @@ unsafe fn create_logical_device(
             },
             enabled_layer_count: 0,
             pp_enabled_layer_names: null(),
-            enabled_extension_count: enabled_extension_names.len() as _,
-            pp_enabled_extension_names: enabled_extension_names.as_ptr(),
+            enabled_extension_count: vulk::REQUIRED_DEVICE_EXTENSIONS.len() as _,
+            pp_enabled_extension_names: vulk::REQUIRED_DEVICE_EXTENSIONS.as_ptr(),
             p_enabled_features: null(),
         }),
     )?;
