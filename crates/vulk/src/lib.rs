@@ -115,6 +115,18 @@
 //! ### Dispatching Commands
 //! - [`vk::CmdDispatch`] Dispatch compute work items
 //! - [`vk::CmdDispatchIndirect`] Dispatch compute work items with indirect parameters
+//! ### Window System Integration (WSI)
+//! - [`vk::CreateWin32SurfaceKHR`] Create a VkSurfaceKHR object for an Win32 native window
+//! - [`vk::DestroySurfaceKHR`] Destroy a VkSurfaceKHR object
+//! - [`vk::GetPhysicalDeviceSurfaceSupportKHR`] Query if presentation is supported
+//! - [`vk::GetPhysicalDeviceSurfaceCapabilitiesKHR`] Query surface capabilities
+//! - [`vk::GetPhysicalDeviceSurfaceFormatsKHR`] Query color formats supported by surface
+//! - [`vk::GetPhysicalDeviceSurfacePresentModesKHR`] Query supported presentation modes
+//! - [`vk::CreateSwapchainKHR`] Create a swapchain
+//! - [`vk::DestroySwapchainKHR`] Destroy a swapchain object
+//! - [`vk::GetSwapchainImagesKHR`] Obtain the array of presentable images associated with a swapchain
+//! - [`vk::AcquireNextImage2KHR`] Retrieve the index of the next available presentable image
+//! - [`vk::QueuePresentKHR`] Queue an image for presentation
 //! ### Acceleration Structures
 //! - [`vk::CmdBuildAccelerationStructuresKHR`] Build an acceleration structure
 //! ### Ray Tracing
@@ -126,6 +138,9 @@
 //! - [`vk::CreateDebugUtilsMessengerEXT`] Create a debug messenger object
 //! - [`vk::DestroyDebugUtilsMessengerEXT`] Destroy a debug messenger object
 //! ## Extensions
+//! - [`VK_KHR_surface`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_surface.html)
+//! - [`VK_KHR_swapchain`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_swapchain.html)
+//! - [`VK_KHR_win32_surface`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_win32_surface.html)
 //! - [`VK_EXT_debug_utils`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_debug_utils.html)
 //! - [`VK_KHR_acceleration_structure`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_acceleration_structure.html)
 //! - [`VK_KHR_ray_tracing_pipeline`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_ray_tracing_pipeline.html)
@@ -190,15 +205,23 @@ pub enum Error {
 // Extensions
 //
 
+#[doc = "**Includes**: [`VK_KHR_surface`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_surface.html)"]
+#[doc = "<br>"]
+#[doc = "**Includes**: [`VK_KHR_win32_surface`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_win32_surface.html)"]
+#[doc = "<br>"]
 #[doc = "**Includes**: [`VK_EXT_debug_utils`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_debug_utils.html)"]
 #[doc = "<br>"]
 #[doc = "**Includes**: [`VK_EXT_validation_features`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_validation_features.html)"]
 #[doc = "<br>"]
-pub const REQUIRED_INSTANCE_EXTENSIONS: [*const std::ffi::c_char; 2] = [
+pub const REQUIRED_INSTANCE_EXTENSIONS: [*const std::ffi::c_char; 4] = [
+    b"VK_KHR_surface\0".as_ptr().cast(),
+    b"VK_KHR_win32_surface\0".as_ptr().cast(),
     b"VK_EXT_debug_utils\0".as_ptr().cast(),
     b"VK_EXT_validation_features\0".as_ptr().cast(),
 ];
 
+#[doc = "**Includes**: [`VK_KHR_swapchain`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_swapchain.html)"]
+#[doc = "<br>"]
 #[doc = "**Includes**: [`VK_KHR_acceleration_structure`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_acceleration_structure.html)"]
 #[doc = "<br>"]
 #[doc = "**Includes**: [`VK_KHR_ray_tracing_pipeline`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_ray_tracing_pipeline.html)"]
@@ -223,7 +246,8 @@ pub const REQUIRED_INSTANCE_EXTENSIONS: [*const std::ffi::c_char; 2] = [
 #[doc = "<br>"]
 #[doc = "**Includes**: [`VK_EXT_shader_object`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)"]
 #[doc = "<br>"]
-pub const REQUIRED_DEVICE_EXTENSIONS: [*const std::ffi::c_char; 12] = [
+pub const REQUIRED_DEVICE_EXTENSIONS: [*const std::ffi::c_char; 13] = [
+    b"VK_KHR_swapchain\0".as_ptr().cast(),
     b"VK_KHR_acceleration_structure\0".as_ptr().cast(),
     b"VK_KHR_ray_tracing_pipeline\0".as_ptr().cast(),
     b"VK_KHR_ray_query\0".as_ptr().cast(),

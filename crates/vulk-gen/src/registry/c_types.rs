@@ -16,5 +16,7 @@ pub fn c_type_map() -> CtypeMap {
     map.insert("uint16_t", "u16");
     map.insert("uint32_t", "u32");
     map.insert("uint64_t", "u64");
+    map.insert("HINSTANCE", "*const c_void");
+    map.insert("HWND", "*const c_void");
     map
 }

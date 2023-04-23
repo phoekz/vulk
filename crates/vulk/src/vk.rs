@@ -958,6 +958,66 @@ impl std::fmt::Debug for QueryPool {
 
 #[repr(transparent)]
 #[derive(Clone, Copy)]
+#[doc = "**Chapter**: Window System Integration (WSI)"]
+#[doc = "<br>"]
+#[doc = "**Description**: Opaque handle to a surface object"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_surface`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_surface.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkSurfaceKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSurfaceKHR.html)"]
+pub struct SurfaceKHR(u64);
+
+impl SurfaceKHR {
+    #[must_use]
+    pub const fn null() -> Self {
+        Self(0)
+    }
+}
+
+impl std::fmt::Display for SurfaceKHR {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "0x{:016x}", self.0)
+    }
+}
+
+impl std::fmt::Debug for SurfaceKHR {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("SurfaceKHR").field(&format_args!("{self}")).finish()
+    }
+}
+
+#[repr(transparent)]
+#[derive(Clone, Copy)]
+#[doc = "**Chapter**: Window System Integration (WSI)"]
+#[doc = "<br>"]
+#[doc = "**Description**: Opaque handle to a swapchain object"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_swapchain`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_swapchain.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkSwapchainKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSwapchainKHR.html)"]
+pub struct SwapchainKHR(u64);
+
+impl SwapchainKHR {
+    #[must_use]
+    pub const fn null() -> Self {
+        Self(0)
+    }
+}
+
+impl std::fmt::Display for SwapchainKHR {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "0x{:016x}", self.0)
+    }
+}
+
+impl std::fmt::Debug for SwapchainKHR {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("SwapchainKHR").field(&format_args!("{self}")).finish()
+    }
+}
+
+#[repr(transparent)]
+#[derive(Clone, Copy)]
 #[doc = "**Chapter**: Deferred Host Operations"]
 #[doc = "<br>"]
 #[doc = "**Description**: A deferred operation"]
@@ -1078,6 +1138,14 @@ pub enum Result {
     ErrorInvalidOpaqueCaptureAddress = -1000257000,
     #[doc = "**Translated from**: `VK_PIPELINE_COMPILE_REQUIRED`"]
     PipelineCompileRequired = 1000297000,
+    #[doc = "**Translated from**: `VK_ERROR_SURFACE_LOST_KHR`"]
+    ErrorSurfaceLostKHR = -1000000000,
+    #[doc = "**Translated from**: `VK_ERROR_NATIVE_WINDOW_IN_USE_KHR`"]
+    ErrorNativeWindowInUseKHR = -1000000001,
+    #[doc = "**Translated from**: `VK_SUBOPTIMAL_KHR`"]
+    SuboptimalKHR = 1000001003,
+    #[doc = "**Translated from**: `VK_ERROR_OUT_OF_DATE_KHR`"]
+    ErrorOutOfDateKHR = -1000001004,
     #[doc = "**Translated from**: `VK_THREAD_IDLE_KHR`"]
     ThreadIdleKHR = 1000268000,
     #[doc = "**Translated from**: `VK_THREAD_DONE_KHR`"]
@@ -1538,6 +1606,24 @@ pub enum StructureType {
     DeviceBufferMemoryRequirements = 1000413002,
     #[doc = "**Translated from**: `VK_STRUCTURE_TYPE_DEVICE_IMAGE_MEMORY_REQUIREMENTS`"]
     DeviceImageMemoryRequirements = 1000413003,
+    #[doc = "**Translated from**: `VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR`"]
+    SwapchainCreateInfoKHR = 1000001000,
+    #[doc = "**Translated from**: `VK_STRUCTURE_TYPE_PRESENT_INFO_KHR`"]
+    PresentInfoKHR = 1000001001,
+    #[doc = "**Translated from**: `VK_STRUCTURE_TYPE_DEVICE_GROUP_PRESENT_CAPABILITIES_KHR`"]
+    DeviceGroupPresentCapabilitiesKHR = 1000060007,
+    #[doc = "**Translated from**: `VK_STRUCTURE_TYPE_IMAGE_SWAPCHAIN_CREATE_INFO_KHR`"]
+    ImageSwapchainCreateInfoKHR = 1000060008,
+    #[doc = "**Translated from**: `VK_STRUCTURE_TYPE_BIND_IMAGE_MEMORY_SWAPCHAIN_INFO_KHR`"]
+    BindImageMemorySwapchainInfoKHR = 1000060009,
+    #[doc = "**Translated from**: `VK_STRUCTURE_TYPE_ACQUIRE_NEXT_IMAGE_INFO_KHR`"]
+    AcquireNextImageInfoKHR = 1000060010,
+    #[doc = "**Translated from**: `VK_STRUCTURE_TYPE_DEVICE_GROUP_PRESENT_INFO_KHR`"]
+    DeviceGroupPresentInfoKHR = 1000060011,
+    #[doc = "**Translated from**: `VK_STRUCTURE_TYPE_DEVICE_GROUP_SWAPCHAIN_CREATE_INFO_KHR`"]
+    DeviceGroupSwapchainCreateInfoKHR = 1000060012,
+    #[doc = "**Translated from**: `VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR`"]
+    Win32SurfaceCreateInfoKHR = 1000009000,
     #[doc = "**Translated from**: `VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT`"]
     DebugUtilsObjectNameInfoEXT = 1000128000,
     #[doc = "**Translated from**: `VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_TAG_INFO_EXT`"]
@@ -2138,6 +2224,8 @@ pub enum ImageLayout {
     ReadOnlyOptimal = 1000314000,
     #[doc = "**Translated from**: `VK_IMAGE_LAYOUT_ATTACHMENT_OPTIMAL`"]
     AttachmentOptimal = 1000314001,
+    #[doc = "**Translated from**: `VK_IMAGE_LAYOUT_PRESENT_SRC_KHR`"]
+    PresentSrcKHR = 1000001002,
 }
 
 impl std::fmt::Display for ImageLayout {
@@ -2643,6 +2731,52 @@ pub enum BlendOp {
 }
 
 impl std::fmt::Display for BlendOp {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[repr(i32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[doc = "**Chapter**: Window System Integration (WSI)"]
+#[doc = "<br>"]
+#[doc = "**Description**: Supported color space of the presentation engine"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_surface`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_surface.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkColorSpaceKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkColorSpaceKHR.html)"]
+pub enum ColorSpaceKHR {
+    #[doc = "**Translated from**: `VK_COLOR_SPACE_SRGB_NONLINEAR_KHR`"]
+    ColorSpaceSrgbNonlinearKHR = 0,
+}
+
+impl std::fmt::Display for ColorSpaceKHR {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[repr(i32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[doc = "**Chapter**: Window System Integration (WSI)"]
+#[doc = "<br>"]
+#[doc = "**Description**: Presentation mode supported for a surface"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_surface`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_surface.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkPresentModeKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPresentModeKHR.html)"]
+pub enum PresentModeKHR {
+    #[doc = "**Translated from**: `VK_PRESENT_MODE_IMMEDIATE_KHR`"]
+    ImmediateKHR = 0,
+    #[doc = "**Translated from**: `VK_PRESENT_MODE_MAILBOX_KHR`"]
+    MailboxKHR = 1,
+    #[doc = "**Translated from**: `VK_PRESENT_MODE_FIFO_KHR`"]
+    FifoKHR = 2,
+    #[doc = "**Translated from**: `VK_PRESENT_MODE_FIFO_RELAXED_KHR`"]
+    FifoRelaxedKHR = 3,
+}
+
+impl std::fmt::Display for PresentModeKHR {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{self:?}")
     }
@@ -3728,6 +3862,10 @@ pub enum ObjectType {
     DescriptorUpdateTemplate = 1000085000,
     #[doc = "**Translated from**: `VK_OBJECT_TYPE_PRIVATE_DATA_SLOT`"]
     PrivateDataSlot = 1000295000,
+    #[doc = "**Translated from**: `VK_OBJECT_TYPE_SURFACE_KHR`"]
+    SurfaceKHR = 1000000000,
+    #[doc = "**Translated from**: `VK_OBJECT_TYPE_SWAPCHAIN_KHR`"]
+    SwapchainKHR = 1000001000,
     #[doc = "**Translated from**: `VK_OBJECT_TYPE_DEBUG_UTILS_MESSENGER_EXT`"]
     DebugUtilsMessengerEXT = 1000128000,
     #[doc = "**Translated from**: `VK_OBJECT_TYPE_ACCELERATION_STRUCTURE_KHR`"]
@@ -8329,6 +8467,365 @@ impl std::fmt::Display for ColorComponentFlagBits {
 }
 
 #[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[doc = "**Chapter**: Window System Integration (WSI)"]
+#[doc = "<br>"]
+#[doc = "**Description**: Reserved for future use"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_win32_surface`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_win32_surface.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkWin32SurfaceCreateFlagsKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkWin32SurfaceCreateFlagsKHR.html)"]
+pub struct Win32SurfaceCreateFlagsKHR(u32);
+
+impl Win32SurfaceCreateFlagsKHR {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq)]
+#[doc = "**Chapter**: Window System Integration (WSI)"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask of VkSurfaceTransformFlagBitsKHR"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_display`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_display.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkSurfaceTransformFlagsKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSurfaceTransformFlagsKHR.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkSurfaceTransformFlagBitsKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSurfaceTransformFlagBitsKHR.html)"]
+pub struct SurfaceTransformFlagsKHR(u32);
+
+impl SurfaceTransformFlagsKHR {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
+    }
+
+    #[must_use]
+    pub fn contains(self, rhs: Self) -> bool {
+        self.0 & rhs.0 == rhs.0
+    }
+}
+
+impl std::ops::BitAnd for SurfaceTransformFlagsKHR {
+    type Output = Self;
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Self(self.0 & rhs.0)
+    }
+}
+
+impl From<SurfaceTransformFlagBitsKHR> for SurfaceTransformFlagsKHR {
+    fn from(flag_bits: SurfaceTransformFlagBitsKHR) -> Self {
+        Self(flag_bits as u32)
+    }
+}
+
+impl std::ops::BitOr<SurfaceTransformFlagBitsKHR> for SurfaceTransformFlagsKHR {
+    type Output = SurfaceTransformFlagsKHR;
+    fn bitor(self, rhs: SurfaceTransformFlagBitsKHR) -> Self::Output {
+        Self(self.0 | rhs as u32)
+    }
+}
+
+impl std::fmt::Display for SurfaceTransformFlagsKHR {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        #[allow(deprecated)]
+        display_flag_bits_u32(
+            f,
+            self.0,
+            &[
+                SurfaceTransformFlagBitsKHR::IdentityKHR,
+                SurfaceTransformFlagBitsKHR::Rotate90KHR,
+                SurfaceTransformFlagBitsKHR::Rotate180KHR,
+                SurfaceTransformFlagBitsKHR::Rotate270KHR,
+                SurfaceTransformFlagBitsKHR::HorizontalMirrorKHR,
+                SurfaceTransformFlagBitsKHR::HorizontalMirrorRotate90KHR,
+                SurfaceTransformFlagBitsKHR::HorizontalMirrorRotate180KHR,
+                SurfaceTransformFlagBitsKHR::HorizontalMirrorRotate270KHR,
+                SurfaceTransformFlagBitsKHR::InheritKHR,
+            ],
+        )
+    }
+}
+
+impl std::fmt::Debug for SurfaceTransformFlagsKHR {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("SurfaceTransformFlagsKHR").field(&format!("{self}")).finish()
+    }
+}
+
+#[repr(u32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[doc = "**Chapter**: Window System Integration (WSI)"]
+#[doc = "<br>"]
+#[doc = "**Description**: Presentation transforms supported on a device"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_surface`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_surface.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkSurfaceTransformFlagBitsKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSurfaceTransformFlagBitsKHR.html)"]
+pub enum SurfaceTransformFlagBitsKHR {
+    #[doc = "Translated from: `VK_SURFACE_TRANSFORM_IDENTITY_BIT_KHR`"]
+    IdentityKHR = 0b1,
+    #[doc = "Translated from: `VK_SURFACE_TRANSFORM_ROTATE_90_BIT_KHR`"]
+    Rotate90KHR = 0b10,
+    #[doc = "Translated from: `VK_SURFACE_TRANSFORM_ROTATE_180_BIT_KHR`"]
+    Rotate180KHR = 0b100,
+    #[doc = "Translated from: `VK_SURFACE_TRANSFORM_ROTATE_270_BIT_KHR`"]
+    Rotate270KHR = 0b1000,
+    #[doc = "Translated from: `VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_BIT_KHR`"]
+    HorizontalMirrorKHR = 0b10000,
+    #[doc = "Translated from: `VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_90_BIT_KHR`"]
+    HorizontalMirrorRotate90KHR = 0b100000,
+    #[doc = "Translated from: `VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_180_BIT_KHR`"]
+    HorizontalMirrorRotate180KHR = 0b1000000,
+    #[doc = "Translated from: `VK_SURFACE_TRANSFORM_HORIZONTAL_MIRROR_ROTATE_270_BIT_KHR`"]
+    HorizontalMirrorRotate270KHR = 0b10000000,
+    #[doc = "Translated from: `VK_SURFACE_TRANSFORM_INHERIT_BIT_KHR`"]
+    InheritKHR = 0b100000000,
+}
+
+impl From<SurfaceTransformFlagBitsKHR> for u32 {
+    fn from(flag_bits: SurfaceTransformFlagBitsKHR) -> Self {
+        flag_bits as u32
+    }
+}
+
+impl std::ops::BitOr for SurfaceTransformFlagBitsKHR {
+    type Output = SurfaceTransformFlagsKHR;
+    fn bitor(self, rhs: Self) -> Self::Output {
+        SurfaceTransformFlagsKHR(self as u32 | rhs as u32)
+    }
+}
+
+impl std::ops::BitOr<SurfaceTransformFlagsKHR> for SurfaceTransformFlagBitsKHR {
+    type Output = SurfaceTransformFlagsKHR;
+    fn bitor(self, rhs: SurfaceTransformFlagsKHR) -> Self::Output {
+        SurfaceTransformFlagsKHR(self as u32 | rhs.0)
+    }
+}
+
+impl std::fmt::Display for SurfaceTransformFlagBitsKHR {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq)]
+#[doc = "**Chapter**: Window System Integration (WSI)"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask of VkCompositeAlphaFlagBitsKHR"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_surface`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_surface.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkCompositeAlphaFlagsKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkCompositeAlphaFlagsKHR.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkCompositeAlphaFlagBitsKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkCompositeAlphaFlagBitsKHR.html)"]
+pub struct CompositeAlphaFlagsKHR(u32);
+
+impl CompositeAlphaFlagsKHR {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
+    }
+
+    #[must_use]
+    pub fn contains(self, rhs: Self) -> bool {
+        self.0 & rhs.0 == rhs.0
+    }
+}
+
+impl std::ops::BitAnd for CompositeAlphaFlagsKHR {
+    type Output = Self;
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Self(self.0 & rhs.0)
+    }
+}
+
+impl From<CompositeAlphaFlagBitsKHR> for CompositeAlphaFlagsKHR {
+    fn from(flag_bits: CompositeAlphaFlagBitsKHR) -> Self {
+        Self(flag_bits as u32)
+    }
+}
+
+impl std::ops::BitOr<CompositeAlphaFlagBitsKHR> for CompositeAlphaFlagsKHR {
+    type Output = CompositeAlphaFlagsKHR;
+    fn bitor(self, rhs: CompositeAlphaFlagBitsKHR) -> Self::Output {
+        Self(self.0 | rhs as u32)
+    }
+}
+
+impl std::fmt::Display for CompositeAlphaFlagsKHR {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        #[allow(deprecated)]
+        display_flag_bits_u32(
+            f,
+            self.0,
+            &[
+                CompositeAlphaFlagBitsKHR::OpaqueKHR,
+                CompositeAlphaFlagBitsKHR::PreMultipliedKHR,
+                CompositeAlphaFlagBitsKHR::PostMultipliedKHR,
+                CompositeAlphaFlagBitsKHR::InheritKHR,
+            ],
+        )
+    }
+}
+
+impl std::fmt::Debug for CompositeAlphaFlagsKHR {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("CompositeAlphaFlagsKHR").field(&format!("{self}")).finish()
+    }
+}
+
+#[repr(u32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[doc = "**Chapter**: Window System Integration (WSI)"]
+#[doc = "<br>"]
+#[doc = "**Description**: Alpha compositing modes supported on a device"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_surface`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_surface.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkCompositeAlphaFlagBitsKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkCompositeAlphaFlagBitsKHR.html)"]
+pub enum CompositeAlphaFlagBitsKHR {
+    #[doc = "Translated from: `VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR`"]
+    OpaqueKHR = 0b1,
+    #[doc = "Translated from: `VK_COMPOSITE_ALPHA_PRE_MULTIPLIED_BIT_KHR`"]
+    PreMultipliedKHR = 0b10,
+    #[doc = "Translated from: `VK_COMPOSITE_ALPHA_POST_MULTIPLIED_BIT_KHR`"]
+    PostMultipliedKHR = 0b100,
+    #[doc = "Translated from: `VK_COMPOSITE_ALPHA_INHERIT_BIT_KHR`"]
+    InheritKHR = 0b1000,
+}
+
+impl From<CompositeAlphaFlagBitsKHR> for u32 {
+    fn from(flag_bits: CompositeAlphaFlagBitsKHR) -> Self {
+        flag_bits as u32
+    }
+}
+
+impl std::ops::BitOr for CompositeAlphaFlagBitsKHR {
+    type Output = CompositeAlphaFlagsKHR;
+    fn bitor(self, rhs: Self) -> Self::Output {
+        CompositeAlphaFlagsKHR(self as u32 | rhs as u32)
+    }
+}
+
+impl std::ops::BitOr<CompositeAlphaFlagsKHR> for CompositeAlphaFlagBitsKHR {
+    type Output = CompositeAlphaFlagsKHR;
+    fn bitor(self, rhs: CompositeAlphaFlagsKHR) -> Self::Output {
+        CompositeAlphaFlagsKHR(self as u32 | rhs.0)
+    }
+}
+
+impl std::fmt::Display for CompositeAlphaFlagBitsKHR {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq)]
+#[doc = "**Chapter**: Window System Integration (WSI)"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask of VkSwapchainCreateFlagBitsKHR"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_swapchain`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_swapchain.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkSwapchainCreateFlagsKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSwapchainCreateFlagsKHR.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkSwapchainCreateFlagBitsKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSwapchainCreateFlagBitsKHR.html)"]
+pub struct SwapchainCreateFlagsKHR(u32);
+
+impl SwapchainCreateFlagsKHR {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
+    }
+
+    #[must_use]
+    pub fn contains(self, rhs: Self) -> bool {
+        self.0 & rhs.0 == rhs.0
+    }
+}
+
+impl std::ops::BitAnd for SwapchainCreateFlagsKHR {
+    type Output = Self;
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Self(self.0 & rhs.0)
+    }
+}
+
+impl From<SwapchainCreateFlagBitsKHR> for SwapchainCreateFlagsKHR {
+    fn from(flag_bits: SwapchainCreateFlagBitsKHR) -> Self {
+        Self(flag_bits as u32)
+    }
+}
+
+impl std::ops::BitOr<SwapchainCreateFlagBitsKHR> for SwapchainCreateFlagsKHR {
+    type Output = SwapchainCreateFlagsKHR;
+    fn bitor(self, rhs: SwapchainCreateFlagBitsKHR) -> Self::Output {
+        Self(self.0 | rhs as u32)
+    }
+}
+
+impl std::fmt::Display for SwapchainCreateFlagsKHR {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        #[allow(deprecated)]
+        display_flag_bits_u32(f, self.0, &[SwapchainCreateFlagBitsKHR::SplitInstanceBindRegionsKHR, SwapchainCreateFlagBitsKHR::ProtectedKHR])
+    }
+}
+
+impl std::fmt::Debug for SwapchainCreateFlagsKHR {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("SwapchainCreateFlagsKHR").field(&format!("{self}")).finish()
+    }
+}
+
+#[repr(u32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[doc = "**Chapter**: Window System Integration (WSI)"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask controlling swapchain creation"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_swapchain`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_swapchain.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkSwapchainCreateFlagBitsKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSwapchainCreateFlagBitsKHR.html)"]
+pub enum SwapchainCreateFlagBitsKHR {
+    #[doc = "Translated from: `VK_SWAPCHAIN_CREATE_SPLIT_INSTANCE_BIND_REGIONS_BIT_KHR`"]
+    SplitInstanceBindRegionsKHR = 0b1,
+    #[doc = "Translated from: `VK_SWAPCHAIN_CREATE_PROTECTED_BIT_KHR`"]
+    ProtectedKHR = 0b10,
+}
+
+impl From<SwapchainCreateFlagBitsKHR> for u32 {
+    fn from(flag_bits: SwapchainCreateFlagBitsKHR) -> Self {
+        flag_bits as u32
+    }
+}
+
+impl std::ops::BitOr for SwapchainCreateFlagBitsKHR {
+    type Output = SwapchainCreateFlagsKHR;
+    fn bitor(self, rhs: Self) -> Self::Output {
+        SwapchainCreateFlagsKHR(self as u32 | rhs as u32)
+    }
+}
+
+impl std::ops::BitOr<SwapchainCreateFlagsKHR> for SwapchainCreateFlagBitsKHR {
+    type Output = SwapchainCreateFlagsKHR;
+    fn bitor(self, rhs: SwapchainCreateFlagsKHR) -> Self::Output {
+        SwapchainCreateFlagsKHR(self as u32 | rhs.0)
+    }
+}
+
+impl std::fmt::Display for SwapchainCreateFlagBitsKHR {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[repr(C)]
 #[derive(Clone, Copy, PartialEq, Eq)]
 #[doc = "**Chapter**: Acceleration Structures"]
 #[doc = "<br>"]
@@ -11711,6 +12208,226 @@ pub struct PhysicalDeviceSparseProperties {
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Window System Integration (WSI)"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure specifying parameters of a newly created Win32 surface object"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_win32_surface`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_win32_surface.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkWin32SurfaceCreateInfoKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkWin32SurfaceCreateInfoKHR.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
+let win32_surface_create_info_khr = vk::Win32SurfaceCreateInfoKHR {
+    s_type: vk::StructureType::Win32SurfaceCreateInfoKHR,
+    p_next: null(),
+    flags: vk::Win32SurfaceCreateFlagsKHR::empty(),
+    hinstance: todo!("*const c_void"),
+    hwnd: todo!("*const c_void"),
+};
+```"#]
+pub struct Win32SurfaceCreateInfoKHR {
+    pub s_type: StructureType,
+    pub p_next: *const c_void,
+    pub flags: Win32SurfaceCreateFlagsKHR,
+    pub hinstance: *const c_void,
+    pub hwnd: *const c_void,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Window System Integration (WSI)"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure describing capabilities of a surface"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_surface`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_surface.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkSurfaceCapabilitiesKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSurfaceCapabilitiesKHR.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
+let surface_capabilities_khr = vk::SurfaceCapabilitiesKHR {
+    min_image_count: todo!("u32"),
+    max_image_count: todo!("u32"),
+    current_extent: todo!("vk::Extent2D"),
+    min_image_extent: todo!("vk::Extent2D"),
+    max_image_extent: todo!("vk::Extent2D"),
+    max_image_array_layers: todo!("u32"),
+    supported_transforms: todo!("vk::SurfaceTransformFlagBitsKHR"),
+    current_transform: todo!("vk::SurfaceTransformFlagBitsKHR"),
+    supported_composite_alpha: todo!("vk::CompositeAlphaFlagBitsKHR"),
+    supported_usage_flags: todo!("vk::ImageUsageFlagBits"),
+};
+```"#]
+pub struct SurfaceCapabilitiesKHR {
+    pub min_image_count: u32,
+    pub max_image_count: u32,
+    pub current_extent: Extent2D,
+    pub min_image_extent: Extent2D,
+    pub max_image_extent: Extent2D,
+    pub max_image_array_layers: u32,
+    pub supported_transforms: SurfaceTransformFlagsKHR,
+    pub current_transform: SurfaceTransformFlagBitsKHR,
+    pub supported_composite_alpha: CompositeAlphaFlagsKHR,
+    pub supported_usage_flags: ImageUsageFlags,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Window System Integration (WSI)"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure describing a supported swapchain format-color space pair"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_surface`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_surface.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkSurfaceFormatKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSurfaceFormatKHR.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
+let surface_format_khr = vk::SurfaceFormatKHR {
+    format: todo!("vk::Format"),
+    color_space: todo!("vk::ColorSpaceKHR"),
+};
+```"#]
+pub struct SurfaceFormatKHR {
+    pub format: Format,
+    pub color_space: ColorSpaceKHR,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Window System Integration (WSI)"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure specifying parameters of a newly created swapchain object"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_swapchain`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_swapchain.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkSwapchainCreateInfoKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSwapchainCreateInfoKHR.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
+let swapchain_create_info_khr = vk::SwapchainCreateInfoKHR {
+    s_type: vk::StructureType::SwapchainCreateInfoKHR,
+    p_next: null(),
+    flags: todo!("vk::SwapchainCreateFlagBitsKHR"),
+    surface: todo!("vk::SurfaceKHR"),
+    min_image_count: todo!("u32"),
+    image_format: todo!("vk::Format"),
+    image_color_space: todo!("vk::ColorSpaceKHR"),
+    image_extent: todo!("vk::Extent2D"),
+    image_array_layers: todo!("u32"),
+    image_usage: todo!("vk::ImageUsageFlagBits"),
+    image_sharing_mode: todo!("vk::SharingMode"),
+    queue_family_index_count: todo!("u32"),
+    p_queue_family_indices: todo!("*const u32"),
+    pre_transform: todo!("vk::SurfaceTransformFlagBitsKHR"),
+    composite_alpha: todo!("vk::CompositeAlphaFlagBitsKHR"),
+    present_mode: todo!("vk::PresentModeKHR"),
+    clipped: todo!("vk::Bool32"),
+    old_swapchain: todo!("vk::SwapchainKHR"),
+};
+```"#]
+pub struct SwapchainCreateInfoKHR {
+    pub s_type: StructureType,
+    pub p_next: *const c_void,
+    pub flags: SwapchainCreateFlagsKHR,
+    pub surface: SurfaceKHR,
+    pub min_image_count: u32,
+    pub image_format: Format,
+    pub image_color_space: ColorSpaceKHR,
+    pub image_extent: Extent2D,
+    pub image_array_layers: u32,
+    pub image_usage: ImageUsageFlags,
+    pub image_sharing_mode: SharingMode,
+    pub queue_family_index_count: u32,
+    pub p_queue_family_indices: *const u32,
+    pub pre_transform: SurfaceTransformFlagBitsKHR,
+    pub composite_alpha: CompositeAlphaFlagBitsKHR,
+    pub present_mode: PresentModeKHR,
+    pub clipped: Bool32,
+    pub old_swapchain: SwapchainKHR,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Window System Integration (WSI)"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure specifying parameters of the acquire"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_swapchain`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_swapchain.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkAcquireNextImageInfoKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkAcquireNextImageInfoKHR.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
+let acquire_next_image_info_khr = vk::AcquireNextImageInfoKHR {
+    s_type: vk::StructureType::AcquireNextImageInfoKHR,
+    p_next: null(),
+    swapchain: todo!("vk::SwapchainKHR"),
+    timeout: todo!("u64"),
+    semaphore: todo!("vk::Semaphore"),
+    fence: todo!("vk::Fence"),
+    device_mask: todo!("u32"),
+};
+```"#]
+pub struct AcquireNextImageInfoKHR {
+    pub s_type: StructureType,
+    pub p_next: *const c_void,
+    pub swapchain: SwapchainKHR,
+    pub timeout: u64,
+    pub semaphore: Semaphore,
+    pub fence: Fence,
+    pub device_mask: u32,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Window System Integration (WSI)"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure describing parameters of a queue presentation"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_swapchain`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_swapchain.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkPresentInfoKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkPresentInfoKHR.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
+let present_info_khr = vk::PresentInfoKHR {
+    s_type: vk::StructureType::PresentInfoKHR,
+    p_next: null(),
+    wait_semaphore_count: todo!("u32"),
+    p_wait_semaphores: todo!("*const vk::Semaphore"),
+    swapchain_count: todo!("u32"),
+    p_swapchains: todo!("*const vk::SwapchainKHR"),
+    p_image_indices: todo!("*const u32"),
+    p_results: todo!("*mut vk::Result"),
+};
+```"#]
+pub struct PresentInfoKHR {
+    pub s_type: StructureType,
+    pub p_next: *const c_void,
+    pub wait_semaphore_count: u32,
+    pub p_wait_semaphores: *const Semaphore,
+    pub swapchain_count: u32,
+    pub p_swapchains: *const SwapchainKHR,
+    pub p_image_indices: *const u32,
+    pub p_results: *mut Result,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
 #[doc = "**Chapter**: Acceleration Structures"]
 #[doc = "<br>"]
 #[doc = "**Description**: Structure specifying the geometry data used to build an acceleration structure"]
@@ -14701,6 +15418,154 @@ pub type CmdDispatchIndirect = unsafe extern "C" fn(
     buffer: Buffer,                //
     offset: DeviceSize,            //
 );
+
+#[doc = "**Chapter**: Window System Integration (WSI)"]
+#[doc = "<br>"]
+#[doc = "**Description**: Create a VkSurfaceKHR object for an Win32 native window"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_win32_surface`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_win32_surface.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkCreateWin32SurfaceKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateWin32SurfaceKHR.html)"]
+pub type CreateWin32SurfaceKHR = unsafe extern "C" fn(
+    instance: Instance,                              //
+    p_create_info: *const Win32SurfaceCreateInfoKHR, //
+    p_allocator: *const AllocationCallbacks,         //
+    p_surface: *mut SurfaceKHR,                      //
+) -> Result;
+
+#[doc = "**Chapter**: Window System Integration (WSI)"]
+#[doc = "<br>"]
+#[doc = "**Description**: Destroy a VkSurfaceKHR object"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_surface`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_surface.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkDestroySurfaceKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroySurfaceKHR.html)"]
+pub type DestroySurfaceKHR = unsafe extern "C" fn(
+    instance: Instance,                      //
+    surface: SurfaceKHR,                     //
+    p_allocator: *const AllocationCallbacks, //
+);
+
+#[doc = "**Chapter**: Window System Integration (WSI)"]
+#[doc = "<br>"]
+#[doc = "**Description**: Query if presentation is supported"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_surface`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_surface.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkGetPhysicalDeviceSurfaceSupportKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceSurfaceSupportKHR.html)"]
+pub type GetPhysicalDeviceSurfaceSupportKHR = unsafe extern "C" fn(
+    physical_device: PhysicalDevice, //
+    queue_family_index: u32,         //
+    surface: SurfaceKHR,             //
+    p_supported: *mut Bool32,        //
+) -> Result;
+
+#[doc = "**Chapter**: Window System Integration (WSI)"]
+#[doc = "<br>"]
+#[doc = "**Description**: Query surface capabilities"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_surface`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_surface.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkGetPhysicalDeviceSurfaceCapabilitiesKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceSurfaceCapabilitiesKHR.html)"]
+pub type GetPhysicalDeviceSurfaceCapabilitiesKHR = unsafe extern "C" fn(
+    physical_device: PhysicalDevice,                     //
+    surface: SurfaceKHR,                                 //
+    p_surface_capabilities: *mut SurfaceCapabilitiesKHR, //
+) -> Result;
+
+#[doc = "**Chapter**: Window System Integration (WSI)"]
+#[doc = "<br>"]
+#[doc = "**Description**: Query color formats supported by surface"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_surface`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_surface.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkGetPhysicalDeviceSurfaceFormatsKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceSurfaceFormatsKHR.html)"]
+pub type GetPhysicalDeviceSurfaceFormatsKHR = unsafe extern "C" fn(
+    physical_device: PhysicalDevice,          //
+    surface: SurfaceKHR,                      //
+    p_surface_format_count: *mut u32,         //
+    p_surface_formats: *mut SurfaceFormatKHR, //
+) -> Result;
+
+#[doc = "**Chapter**: Window System Integration (WSI)"]
+#[doc = "<br>"]
+#[doc = "**Description**: Query supported presentation modes"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_surface`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_surface.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkGetPhysicalDeviceSurfacePresentModesKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceSurfacePresentModesKHR.html)"]
+pub type GetPhysicalDeviceSurfacePresentModesKHR = unsafe extern "C" fn(
+    physical_device: PhysicalDevice,      //
+    surface: SurfaceKHR,                  //
+    p_present_mode_count: *mut u32,       //
+    p_present_modes: *mut PresentModeKHR, //
+) -> Result;
+
+#[doc = "**Chapter**: Window System Integration (WSI)"]
+#[doc = "<br>"]
+#[doc = "**Description**: Create a swapchain"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_swapchain`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_swapchain.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkCreateSwapchainKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateSwapchainKHR.html)"]
+pub type CreateSwapchainKHR = unsafe extern "C" fn(
+    device: Device,                               //
+    p_create_info: *const SwapchainCreateInfoKHR, //
+    p_allocator: *const AllocationCallbacks,      //
+    p_swapchain: *mut SwapchainKHR,               //
+) -> Result;
+
+#[doc = "**Chapter**: Window System Integration (WSI)"]
+#[doc = "<br>"]
+#[doc = "**Description**: Destroy a swapchain object"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_swapchain`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_swapchain.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkDestroySwapchainKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroySwapchainKHR.html)"]
+pub type DestroySwapchainKHR = unsafe extern "C" fn(
+    device: Device,                          //
+    swapchain: SwapchainKHR,                 //
+    p_allocator: *const AllocationCallbacks, //
+);
+
+#[doc = "**Chapter**: Window System Integration (WSI)"]
+#[doc = "<br>"]
+#[doc = "**Description**: Obtain the array of presentable images associated with a swapchain"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_swapchain`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_swapchain.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkGetSwapchainImagesKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetSwapchainImagesKHR.html)"]
+pub type GetSwapchainImagesKHR = unsafe extern "C" fn(
+    device: Device,                    //
+    swapchain: SwapchainKHR,           //
+    p_swapchain_image_count: *mut u32, //
+    p_swapchain_images: *mut Image,    //
+) -> Result;
+
+#[doc = "**Chapter**: Window System Integration (WSI)"]
+#[doc = "<br>"]
+#[doc = "**Description**: Retrieve the index of the next available presentable image"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_swapchain`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_swapchain.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkAcquireNextImage2KHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkAcquireNextImage2KHR.html)"]
+pub type AcquireNextImage2KHR = unsafe extern "C" fn(
+    device: Device,                                 //
+    p_acquire_info: *const AcquireNextImageInfoKHR, //
+    p_image_index: *mut u32,                        //
+) -> Result;
+
+#[doc = "**Chapter**: Window System Integration (WSI)"]
+#[doc = "<br>"]
+#[doc = "**Description**: Queue an image for presentation"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_KHR_swapchain`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_swapchain.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkQueuePresentKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkQueuePresentKHR.html)"]
+pub type QueuePresentKHR = unsafe extern "C" fn(
+    queue: Queue,                          //
+    p_present_info: *const PresentInfoKHR, //
+) -> Result;
 
 #[doc = "**Chapter**: Acceleration Structures"]
 #[doc = "<br>"]

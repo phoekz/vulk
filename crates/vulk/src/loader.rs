@@ -101,6 +101,12 @@ pub struct InstanceFunctions {
     pub get_physical_device_queue_family_properties2: vk::GetPhysicalDeviceQueueFamilyProperties2,
     pub create_device: vk::CreateDevice,
     pub get_physical_device_memory_properties2: vk::GetPhysicalDeviceMemoryProperties2,
+    pub create_win32_surface_khr: vk::CreateWin32SurfaceKHR,
+    pub destroy_surface_khr: vk::DestroySurfaceKHR,
+    pub get_physical_device_surface_support_khr: vk::GetPhysicalDeviceSurfaceSupportKHR,
+    pub get_physical_device_surface_capabilities_khr: vk::GetPhysicalDeviceSurfaceCapabilitiesKHR,
+    pub get_physical_device_surface_formats_khr: vk::GetPhysicalDeviceSurfaceFormatsKHR,
+    pub get_physical_device_surface_present_modes_khr: vk::GetPhysicalDeviceSurfacePresentModesKHR,
     pub get_physical_device_calibrateable_time_domains_ext: vk::GetPhysicalDeviceCalibrateableTimeDomainsEXT,
     pub create_debug_utils_messenger_ext: vk::CreateDebugUtilsMessengerEXT,
     pub destroy_debug_utils_messenger_ext: vk::DestroyDebugUtilsMessengerEXT,
@@ -130,6 +136,12 @@ impl Instance {
                 get_physical_device_queue_family_properties2: std::mem::transmute(load(b"vkGetPhysicalDeviceQueueFamilyProperties2\0")?),
                 create_device: std::mem::transmute(load(b"vkCreateDevice\0")?),
                 get_physical_device_memory_properties2: std::mem::transmute(load(b"vkGetPhysicalDeviceMemoryProperties2\0")?),
+                create_win32_surface_khr: std::mem::transmute(load(b"vkCreateWin32SurfaceKHR\0")?),
+                destroy_surface_khr: std::mem::transmute(load(b"vkDestroySurfaceKHR\0")?),
+                get_physical_device_surface_support_khr: std::mem::transmute(load(b"vkGetPhysicalDeviceSurfaceSupportKHR\0")?),
+                get_physical_device_surface_capabilities_khr: std::mem::transmute(load(b"vkGetPhysicalDeviceSurfaceCapabilitiesKHR\0")?),
+                get_physical_device_surface_formats_khr: std::mem::transmute(load(b"vkGetPhysicalDeviceSurfaceFormatsKHR\0")?),
+                get_physical_device_surface_present_modes_khr: std::mem::transmute(load(b"vkGetPhysicalDeviceSurfacePresentModesKHR\0")?),
                 get_physical_device_calibrateable_time_domains_ext: std::mem::transmute(load(b"vkGetPhysicalDeviceCalibrateableTimeDomainsEXT\0")?),
                 create_debug_utils_messenger_ext: std::mem::transmute(load(b"vkCreateDebugUtilsMessengerEXT\0")?),
                 destroy_debug_utils_messenger_ext: std::mem::transmute(load(b"vkDestroyDebugUtilsMessengerEXT\0")?),
@@ -243,6 +255,108 @@ impl Instance {
     #[doc = "**Reference**: [`vkGetPhysicalDeviceMemoryProperties2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceMemoryProperties2.html)"]
     pub unsafe fn get_physical_device_memory_properties2(&self, physical_device: vk::PhysicalDevice, p_memory_properties: *mut vk::PhysicalDeviceMemoryProperties2) {
         (self.fns.get_physical_device_memory_properties2)(physical_device, p_memory_properties);
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Window System Integration (WSI)"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Create a VkSurfaceKHR object for an Win32 native window"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_KHR_win32_surface`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_win32_surface.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkCreateWin32SurfaceKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateWin32SurfaceKHR.html)"]
+    pub unsafe fn create_win32_surface_khr(&self, p_create_info: *const vk::Win32SurfaceCreateInfoKHR) -> Result<vk::SurfaceKHR, Error> {
+        let mut p_surface = std::mem::MaybeUninit::uninit();
+        match (self.fns.create_win32_surface_khr)(self.handle, p_create_info, std::ptr::null(), p_surface.as_mut_ptr()) {
+            vk::Result::Success => Ok(p_surface.assume_init()),
+            result => Err(Error::Vulkan(result)),
+        }
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Window System Integration (WSI)"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Destroy a VkSurfaceKHR object"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_KHR_surface`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_surface.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkDestroySurfaceKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroySurfaceKHR.html)"]
+    pub unsafe fn destroy_surface_khr(&self, surface: vk::SurfaceKHR) {
+        (self.fns.destroy_surface_khr)(self.handle, surface, std::ptr::null());
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Window System Integration (WSI)"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Query if presentation is supported"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_KHR_surface`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_surface.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkGetPhysicalDeviceSurfaceSupportKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceSurfaceSupportKHR.html)"]
+    pub unsafe fn get_physical_device_surface_support_khr(&self, physical_device: vk::PhysicalDevice, queue_family_index: u32, surface: vk::SurfaceKHR) -> Result<vk::Bool32, Error> {
+        let mut p_supported = std::mem::MaybeUninit::uninit();
+        match (self.fns.get_physical_device_surface_support_khr)(physical_device, queue_family_index, surface, p_supported.as_mut_ptr()) {
+            vk::Result::Success => Ok(p_supported.assume_init()),
+            result => Err(Error::Vulkan(result)),
+        }
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Window System Integration (WSI)"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Query surface capabilities"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_KHR_surface`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_surface.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkGetPhysicalDeviceSurfaceCapabilitiesKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceSurfaceCapabilitiesKHR.html)"]
+    pub unsafe fn get_physical_device_surface_capabilities_khr(&self, physical_device: vk::PhysicalDevice, surface: vk::SurfaceKHR) -> Result<vk::SurfaceCapabilitiesKHR, Error> {
+        let mut p_surface_capabilities = std::mem::MaybeUninit::uninit();
+        match (self.fns.get_physical_device_surface_capabilities_khr)(physical_device, surface, p_surface_capabilities.as_mut_ptr()) {
+            vk::Result::Success => Ok(p_surface_capabilities.assume_init()),
+            result => Err(Error::Vulkan(result)),
+        }
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Window System Integration (WSI)"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Query color formats supported by surface"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_KHR_surface`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_surface.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkGetPhysicalDeviceSurfaceFormatsKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceSurfaceFormatsKHR.html)"]
+    pub unsafe fn get_physical_device_surface_formats_khr(
+        &self,
+        physical_device: vk::PhysicalDevice,
+        surface: vk::SurfaceKHR,
+        p_surface_format_count: *mut u32,
+        p_surface_formats: *mut vk::SurfaceFormatKHR,
+    ) -> Result<(), Error> {
+        match (self.fns.get_physical_device_surface_formats_khr)(physical_device, surface, p_surface_format_count, p_surface_formats) {
+            vk::Result::Success => Ok(()),
+            result => Err(Error::Vulkan(result)),
+        }
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Window System Integration (WSI)"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Query supported presentation modes"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_KHR_surface`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_surface.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkGetPhysicalDeviceSurfacePresentModesKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetPhysicalDeviceSurfacePresentModesKHR.html)"]
+    pub unsafe fn get_physical_device_surface_present_modes_khr(
+        &self,
+        physical_device: vk::PhysicalDevice,
+        surface: vk::SurfaceKHR,
+        p_present_mode_count: *mut u32,
+        p_present_modes: *mut vk::PresentModeKHR,
+    ) -> Result<(), Error> {
+        match (self.fns.get_physical_device_surface_present_modes_khr)(physical_device, surface, p_present_mode_count, p_present_modes) {
+            vk::Result::Success => Ok(()),
+            result => Err(Error::Vulkan(result)),
+        }
     }
 
     #[inline]
@@ -386,6 +500,11 @@ pub struct DeviceFunctions {
     pub cmd_set_color_write_mask_ext: vk::CmdSetColorWriteMaskEXT,
     pub cmd_dispatch: vk::CmdDispatch,
     pub cmd_dispatch_indirect: vk::CmdDispatchIndirect,
+    pub create_swapchain_khr: vk::CreateSwapchainKHR,
+    pub destroy_swapchain_khr: vk::DestroySwapchainKHR,
+    pub get_swapchain_images_khr: vk::GetSwapchainImagesKHR,
+    pub acquire_next_image2_khr: vk::AcquireNextImage2KHR,
+    pub queue_present_khr: vk::QueuePresentKHR,
     pub cmd_build_acceleration_structures_khr: vk::CmdBuildAccelerationStructuresKHR,
     pub cmd_trace_rays_khr: vk::CmdTraceRaysKHR,
     pub cmd_trace_rays_indirect2_khr: vk::CmdTraceRaysIndirect2KHR,
@@ -495,6 +614,11 @@ impl Device {
                 cmd_set_color_write_mask_ext: std::mem::transmute(load(b"vkCmdSetColorWriteMaskEXT\0")?),
                 cmd_dispatch: std::mem::transmute(load(b"vkCmdDispatch\0")?),
                 cmd_dispatch_indirect: std::mem::transmute(load(b"vkCmdDispatchIndirect\0")?),
+                create_swapchain_khr: std::mem::transmute(load(b"vkCreateSwapchainKHR\0")?),
+                destroy_swapchain_khr: std::mem::transmute(load(b"vkDestroySwapchainKHR\0")?),
+                get_swapchain_images_khr: std::mem::transmute(load(b"vkGetSwapchainImagesKHR\0")?),
+                acquire_next_image2_khr: std::mem::transmute(load(b"vkAcquireNextImage2KHR\0")?),
+                queue_present_khr: std::mem::transmute(load(b"vkQueuePresentKHR\0")?),
                 cmd_build_acceleration_structures_khr: std::mem::transmute(load(b"vkCmdBuildAccelerationStructuresKHR\0")?),
                 cmd_trace_rays_khr: std::mem::transmute(load(b"vkCmdTraceRaysKHR\0")?),
                 cmd_trace_rays_indirect2_khr: std::mem::transmute(load(b"vkCmdTraceRaysIndirect2KHR\0")?),
@@ -1722,6 +1846,80 @@ impl Device {
     #[doc = "**Reference**: [`vkCmdDispatchIndirect`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdDispatchIndirect.html)"]
     pub unsafe fn cmd_dispatch_indirect(&self, command_buffer: vk::CommandBuffer, buffer: vk::Buffer, offset: vk::DeviceSize) {
         (self.fns.cmd_dispatch_indirect)(command_buffer, buffer, offset);
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Window System Integration (WSI)"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Create a swapchain"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_KHR_swapchain`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_swapchain.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkCreateSwapchainKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCreateSwapchainKHR.html)"]
+    pub unsafe fn create_swapchain_khr(&self, p_create_info: *const vk::SwapchainCreateInfoKHR) -> Result<vk::SwapchainKHR, Error> {
+        let mut p_swapchain = std::mem::MaybeUninit::uninit();
+        match (self.fns.create_swapchain_khr)(self.handle, p_create_info, std::ptr::null(), p_swapchain.as_mut_ptr()) {
+            vk::Result::Success => Ok(p_swapchain.assume_init()),
+            result => Err(Error::Vulkan(result)),
+        }
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Window System Integration (WSI)"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Destroy a swapchain object"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_KHR_swapchain`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_swapchain.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkDestroySwapchainKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkDestroySwapchainKHR.html)"]
+    pub unsafe fn destroy_swapchain_khr(&self, swapchain: vk::SwapchainKHR) {
+        (self.fns.destroy_swapchain_khr)(self.handle, swapchain, std::ptr::null());
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Window System Integration (WSI)"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Obtain the array of presentable images associated with a swapchain"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_KHR_swapchain`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_swapchain.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkGetSwapchainImagesKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetSwapchainImagesKHR.html)"]
+    pub unsafe fn get_swapchain_images_khr(&self, swapchain: vk::SwapchainKHR, p_swapchain_image_count: *mut u32, p_swapchain_images: *mut vk::Image) -> Result<(), Error> {
+        match (self.fns.get_swapchain_images_khr)(self.handle, swapchain, p_swapchain_image_count, p_swapchain_images) {
+            vk::Result::Success => Ok(()),
+            result => Err(Error::Vulkan(result)),
+        }
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Window System Integration (WSI)"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Retrieve the index of the next available presentable image"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_KHR_swapchain`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_swapchain.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkAcquireNextImage2KHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkAcquireNextImage2KHR.html)"]
+    pub unsafe fn acquire_next_image2_khr(&self, p_acquire_info: *const vk::AcquireNextImageInfoKHR) -> Result<u32, Error> {
+        let mut p_image_index = std::mem::MaybeUninit::uninit();
+        match (self.fns.acquire_next_image2_khr)(self.handle, p_acquire_info, p_image_index.as_mut_ptr()) {
+            vk::Result::Success => Ok(p_image_index.assume_init()),
+            result => Err(Error::Vulkan(result)),
+        }
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Window System Integration (WSI)"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Queue an image for presentation"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_KHR_swapchain`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_swapchain.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkQueuePresentKHR`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkQueuePresentKHR.html)"]
+    pub unsafe fn queue_present_khr(&self, queue: vk::Queue, p_present_info: *const vk::PresentInfoKHR) -> Result<(), Error> {
+        match (self.fns.queue_present_khr)(queue, p_present_info) {
+            vk::Result::Success => Ok(()),
+            result => Err(Error::Vulkan(result)),
+        }
     }
 
     #[inline]

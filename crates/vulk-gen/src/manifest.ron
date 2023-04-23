@@ -115,6 +115,18 @@
         // Dispatching Commands
         "vkCmdDispatch",
         "vkCmdDispatchIndirect",
+        // Window System Integration (WSI)
+        "vkCreateWin32SurfaceKHR",
+        "vkDestroySurfaceKHR",
+        "vkGetPhysicalDeviceSurfaceSupportKHR",
+        "vkGetPhysicalDeviceSurfaceCapabilitiesKHR",
+        "vkGetPhysicalDeviceSurfaceFormatsKHR",
+        "vkGetPhysicalDeviceSurfacePresentModesKHR",
+        "vkCreateSwapchainKHR",
+        "vkDestroySwapchainKHR",
+        "vkGetSwapchainImagesKHR",
+        "vkAcquireNextImage2KHR",
+        "vkQueuePresentKHR",
         // Acceleration Structures
         "vkCmdBuildAccelerationStructuresKHR",
         // Ray Tracing
@@ -159,6 +171,9 @@
         "VK_EXT_mesh_shader",
         "VK_EXT_shader_object",
         "VK_EXT_validation_features",
+        "VK_KHR_surface",
+        "VK_KHR_win32_surface",
+        "VK_KHR_swapchain",
         "VK_KHR_map_memory2",
         "VK_KHR_synchronization2",
         "VK_KHR_acceleration_structure",

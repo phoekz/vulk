@@ -33,7 +33,7 @@ use std::{
     time::{Duration, Instant, SystemTime},
 };
 
-use anyhow::{ensure, Context, Result};
+use anyhow::{bail, ensure, Context, Result};
 use gpu::Gpu;
 use log::{debug, info, log, warn};
 use vulk::vk;
@@ -70,6 +70,7 @@ fn main() -> Result<()> {
         run_demo::<demos::CubeDemo>(&gpu)?;
         run_demo::<demos::GuiDemo>(&gpu)?;
         run_demo::<demos::RaytracingDemo>(&gpu)?;
+        run_demo::<demos::WindowDemo>(&gpu)?;
         gpu.destroy();
     };
 
