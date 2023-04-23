@@ -1,6 +1,5 @@
 [package]
 name = "vulk-test"
-version = "0.1.0"
 
 authors.workspace = true
 categories.workspace = true
@@ -10,9 +9,10 @@ keywords.workspace = true
 license.workspace = true
 readme.workspace = true
 repository.workspace = true
+version.workspace = true
 
 [dependencies]
-vulk = { version = "0.1.0", path = "../vulk" }
+vulk = { version = "0.1.1", path = "../vulk" }
 
 anyhow.workspace = true
 env_logger.workspace = true

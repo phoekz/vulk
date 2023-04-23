@@ -1,6 +1,5 @@
 [package]
 name = "vulk-gen"
-version = "0.1.0"
 
 authors.workspace = true
 categories.workspace = true
@@ -10,6 +9,7 @@ keywords.workspace = true
 license.workspace = true
 readme.workspace = true
 repository.workspace = true
+version.workspace = true
 
 [dependencies]
 anyhow.workspace = true
