@@ -268,11 +268,7 @@ impl GpuResource for Shaders {
                     uint y;
                     uint z;
                 };
-
-                layout(scalar, binding = 0) buffer IndirectCommands {
-                    IndirectCommand data[];
-                } indirect_commands;
-
+                layout(scalar, binding = 0) buffer IndirectCommands { IndirectCommand indirect_commands[]; };
                 layout(binding = 1, rgba8) uniform image2D compute_image;
             "#,
         );
@@ -291,7 +287,7 @@ impl GpuResource for Shaders {
                     command.x = 32;
                     command.y = 32;
                     command.z = 1;
-                    indirect_commands.data[0] = command;
+                    indirect_commands[0] = command;
                 }
             "#,
         )?;

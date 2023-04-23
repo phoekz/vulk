@@ -433,16 +433,9 @@ impl Shaders {
                 vec2 texcoord;
                 uint color;
             };
-            layout(scalar, binding = 0) readonly buffer VertexBuffer {
-                Vertex vertex_buffer[];
-            };
-
-            layout(scalar, binding = 1) readonly buffer IndexBuffer {
-                uint16_t index_buffer[];
-            };
-
+            layout(scalar, binding = 0) readonly buffer VertexBuffer { Vertex vertex_buffer[]; };
+            layout(scalar, binding = 1) readonly buffer IndexBuffer { uint16_t index_buffer[]; };
             layout(binding = 2) uniform texture2D atlas_texture;
-
             layout(binding = 3) uniform sampler atlas_sampler;
 
             struct MeshVertex {
