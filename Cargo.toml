@@ -4,7 +4,13 @@ resolver = "2"
 
 [workspace.package]
 authors = ["Vinh Truong <vinhphuc.truong@gmail.com>"]
+categories = ["graphics", "rendering", "game-development"]
+description = "Vulkan bindings for Rust, except only the bleeding edge features"
 edition = "2021"
+keywords = ["vulkan", "graphics"]
+license = "MIT"
+repository = "https://github.com/phoekz/vulk"
+
 
 [workspace.dependencies]
 anyhow = "1.0.70"
