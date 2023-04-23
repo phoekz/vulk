@@ -9,8 +9,8 @@ description = "Vulkan bindings for Rust, except only the bleeding edge features"
 edition = "2021"
 keywords = ["vulkan", "graphics"]
 license = "MIT"
+readme = "README.md"
 repository = "https://github.com/phoekz/vulk"
-
 
 [workspace.dependencies]
 anyhow = "1.0.70"
