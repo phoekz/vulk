@@ -39,19 +39,25 @@ pub(super) fn parse_commands<'a>(
             return_type: proto.required_child_text("type"),
             params: node
                 .children_elements("param")
-                .map(|node| {
+                .filter_map(|node| {
                     let name = node.required_child_text("name");
+                    if let Some(api) = node.attribute("api") {
+                        if api == "vulkansc" {
+                            debug!("Ignoring command parameter: name={name}, api=vulkansc");
+                            return None;
+                        }
+                    }
                     let ty = node.required_child_text("type");
                     let optional = node.attribute("optional");
                     let text = node.joined_children_text();
                     let len = node.attribute("len");
-                    CommandParam {
+                    Some(CommandParam {
                         name,
                         ty,
                         optional,
                         text,
                         len,
-                    }
+                    })
                 })
                 .collect(),
             successcodes: if let Some(successcodes) = node.attribute("successcodes") {

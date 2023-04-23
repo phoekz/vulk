@@ -303,10 +303,7 @@ impl GpuResource for Image2d {
                 a: vk::ComponentSwizzle::A,
             },
             subresource_range: vk::ImageSubresourceRange {
-                aspect_mask: create_info
-                    .format
-                    .aspect_mask()
-                    .with_context(|| format!("Invalid image format: {}", create_info.format))?,
+                aspect_mask: create_info.format.aspect_mask(),
                 base_mip_level: 0,
                 level_count: 1,
                 base_array_layer: 0,

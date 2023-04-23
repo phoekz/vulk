@@ -22,6 +22,7 @@ pub struct GeneratorContext<'a> {
     registry: &'a Registry,
     c_type_map: &'a CtypeMap,
     provided_by_map: &'a ProvidedByMap,
+    empty_flag_bits_map: &'a EmptyFlagBitsMap,
     vkspec: &'a docs::Vkspec,
     manifest: &'a manifest::Manifest,
 }
@@ -35,11 +36,13 @@ pub fn generate(
     // Generate.
     let c_type_map = registry::c_type_map();
     let provided_by_map = ProvidedByMap::new(registry);
+    let empty_flag_bits_map = EmptyFlagBitsMap::new(registry);
     let command_groups = commands::analysis::group_by_loader(registry);
     let ctx = GeneratorContext {
         registry,
         c_type_map: &c_type_map,
         provided_by_map: &provided_by_map,
+        empty_flag_bits_map: &empty_flag_bits_map,
         vkspec,
         manifest,
     };
@@ -170,5 +173,61 @@ impl ProvidedByMap {
         self.0
             .get(ident.as_ref())
             .unwrap_or_else(|| panic!("Getting {} from provided by map", ident.as_ref()))
+    }
+}
+
+struct EmptyFlagBitsMap(HashSet<String>);
+
+impl EmptyFlagBitsMap {
+    pub fn new(registry: &Registry) -> Self {
+        let mut map = HashSet::new();
+
+        for en in &registry.enums {
+            let registry::EnumType::Bitmask = en.ty else {
+                continue;
+            };
+
+            if en.members.is_empty() {
+                // Vk*FlagBits has no members.
+                map.insert(en.name.clone());
+            }
+        }
+
+        for ty in &registry.types {
+            let registry::TypeCategory::Bitmask {
+                requires,
+                bitvalues,
+                ..
+            } = &ty.category else {
+                continue;
+            };
+
+            match (requires, bitvalues) {
+                (None, None) => {
+                    // Vk*Flags has no references => Flags must be empty.
+                    map.insert(ty.name.clone());
+                }
+                (Some(requires), None) => {
+                    if map.contains(requires) {
+                        // The reference is empty => Flags must be empty.
+                        map.insert(ty.name.clone());
+                    }
+                }
+                (None, Some(bitvalues)) => {
+                    if map.contains(bitvalues) {
+                        // The reference is empty => Flags must be empty.
+                        map.insert(ty.name.clone());
+                    }
+                }
+
+                _ => {}
+            }
+        }
+
+        Self(map)
+    }
+
+    pub fn contains(&self, name: impl AsRef<str>) -> bool {
+        self.0.contains(name.as_ref())
     }
 }

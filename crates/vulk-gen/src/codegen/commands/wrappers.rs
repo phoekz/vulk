@@ -51,24 +51,52 @@ pub struct Rendered {
 pub fn generate(ctx: &GeneratorContext<'_>, groups: &analysis::CommandGroups) -> Result<Rendered> {
     let mut base_type_map = HashSet::new();
     let mut handle_map = HashSet::new();
+    let mut s_type_map = HashSet::new();
     for registry_ty in &ctx.registry.types {
         let name = registry_ty.name.as_str();
-        match registry_ty.category {
+        match &registry_ty.category {
             registry::TypeCategory::Basetype { .. } => {
                 base_type_map.insert(name);
             }
             registry::TypeCategory::Handle { .. } => {
                 handle_map.insert(name);
             }
+            registry::TypeCategory::Struct { members, .. } => {
+                for member in members {
+                    if member.name == "sType" {
+                        s_type_map.insert(name);
+                        break;
+                    }
+                }
+            }
             _ => {}
         }
     }
 
-    let init_wrappers = generate_wrappers(ctx, &base_type_map, &handle_map, &groups.init, false)?;
-    let instance_wrappers =
-        generate_wrappers(ctx, &base_type_map, &handle_map, &groups.instance, true)?;
-    let device_wrappers =
-        generate_wrappers(ctx, &base_type_map, &handle_map, &groups.device, true)?;
+    let init_wrappers = generate_wrappers(
+        ctx,
+        &base_type_map,
+        &handle_map,
+        &s_type_map,
+        &groups.init,
+        false,
+    )?;
+    let instance_wrappers = generate_wrappers(
+        ctx,
+        &base_type_map,
+        &handle_map,
+        &s_type_map,
+        &groups.instance,
+        true,
+    )?;
+    let device_wrappers = generate_wrappers(
+        ctx,
+        &base_type_map,
+        &handle_map,
+        &s_type_map,
+        &groups.device,
+        true,
+    )?;
 
     Ok(Rendered {
         init_wrappers,
@@ -81,6 +109,7 @@ fn generate_wrappers(
     ctx: &GeneratorContext<'_>,
     base_type_map: &HashSet<&str>,
     handle_map: &HashSet<&str>,
+    s_type_map: &HashSet<&str>,
     commands: &[&registry::Command],
     can_inline_handles: bool,
 ) -> Result<String> {
@@ -178,7 +207,13 @@ fn generate_wrappers(
                 None
             };
 
-        match analysis::wrapper_type(ctx.c_type_map, base_type_map, handle_map, command)? {
+        match analysis::wrapper_type(
+            ctx.c_type_map,
+            base_type_map,
+            handle_map,
+            s_type_map,
+            command,
+        )? {
             analysis::WrapperType::Identity => {
                 let vk_attr = attributes::Builder::new().must_use().raw(vk_attr).build();
                 writeln!(

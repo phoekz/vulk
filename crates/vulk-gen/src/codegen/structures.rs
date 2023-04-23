@@ -90,10 +90,14 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
                         )
                         .with_context(|| format!("Translating type={vk_type}"))?;
 
-                        // Special: prefer initializing Flags as FlagBits, since that is how the Flags are built.
-                        let rs_type = rs_type.replace("Flags", "FlagBits");
-
-                        format!("todo!(\"{rs_type}\")")
+                        // Special: Empty Vk*Flags can be initialized with empty().
+                        if ctx.empty_flag_bits_map.contains(vk_type) && vk_type.contains("Flags") {
+                            format!("{rs_type}::empty()")
+                        } else {
+                            // Special: prefer initializing Flags as FlagBits, since that is how the Flags are built.
+                            let rs_type = rs_type.replace("Flags", "FlagBits");
+                            format!("todo!(\"{rs_type}\")")
+                        }
                     }
                 };
                 writeln!(

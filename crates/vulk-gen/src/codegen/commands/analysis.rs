@@ -73,6 +73,7 @@ pub fn group_by_loader(registry: &Registry) -> CommandGroups<'_> {
     }
 }
 
+#[derive(Debug)]
 pub enum WrapperType {
     Identity,
     IdentityVoid,
@@ -85,6 +86,7 @@ pub fn wrapper_type(
     c_type_map: &CtypeMap,
     base_type_map: &HashSet<&str>,
     handle_map: &HashSet<&str>,
+    s_type_map: &HashSet<&str>,
     command: &registry::Command,
 ) -> Result<WrapperType> {
     let mutable_params = {
@@ -113,10 +115,11 @@ pub fn wrapper_type(
             &None,
             false,
         )?;
-        let is_c_type = c_type_map.contains_key(last_param.ty.as_str());
-        let is_handle = handle_map.contains(last_param.ty.as_str());
-        let is_base_type = base_type_map.contains(last_param.ty.as_str());
-        param_type.contains("*mut") && (is_c_type || is_handle || is_base_type)
+        let _is_c_type = c_type_map.contains_key(last_param.ty.as_str());
+        let _is_handle = handle_map.contains(last_param.ty.as_str());
+        let _is_base_type = base_type_map.contains(last_param.ty.as_str());
+        let is_s_type_struct = s_type_map.contains(last_param.ty.as_str());
+        param_type.contains("*mut") && !is_s_type_struct
     };
     let complex_output_param = last_param.len.is_some();
     let returnable_output_param =
@@ -129,5 +132,6 @@ pub fn wrapper_type(
         ("void", false) => WrapperType::IdentityVoid,
         _ => WrapperType::Identity,
     };
+
     Ok(wrapper_type)
 }

@@ -17,7 +17,7 @@ const TEMPLATE_MEMBER: &str = r#"{{vk_member_attr}}{{rs_member_ident}} = {{rs_me
 const TEMPLATE_FORMAT_ASPECT_MASK: &str = r#"
 impl Format {
     #[must_use]
-    pub fn aspect_mask(self) -> Option<ImageAspectFlags> {
+    pub fn aspect_mask(self) -> ImageAspectFlags {
         #[allow(clippy::match_same_arms)]
         match self {
             {{aspect_mask_matches}}
@@ -74,11 +74,16 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
         let rs_member_idents = translation::vk_enum(vk_ident, &vk_member_idents)?;
         let mut rs_members = String::new();
         for (member, rs_member_ident) in registry_enum.members.iter().zip(&rs_member_idents) {
+            if member.alias.is_some() {
+                continue;
+            }
             let vk_member_ident = &member.name;
             let vk_member_attr = attributes::Builder::new()
                 .doc_translated(vk_member_ident)
                 .build();
-            let vk_member_value = member.value.as_ref().context("Missing type")?;
+            let vk_member_value = member.value.as_ref().with_context(|| {
+                format!("Missing value, enum={vk_ident}, member={vk_member_ident}")
+            })?;
             let rs_member_value = vk_member_value;
             writeln!(
                 rs_members,
@@ -161,9 +166,9 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
                         flags.push_str(".into()");
                     }
 
-                    format!("Some({flags})")
+                    format!("{flags}")
                 } else {
-                    r#"None"#.to_string()
+                    "ImageAspectFlags::empty()".to_string()
                 };
 
                 let block_size = if let Some(&format) = format_map.get(vk_member_ident) {
