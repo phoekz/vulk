@@ -12,7 +12,7 @@ repository.workspace = true
 version.workspace = true
 
 [dependencies]
-vulk = { version = "0.1.1", path = "../vulk" }
+vulk = { version = "0.1.2", path = "../vulk" }
 
 anyhow.workspace = true
 env_logger.workspace = true
