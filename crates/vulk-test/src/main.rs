@@ -85,7 +85,7 @@ trait DemoCallbacks {
     unsafe fn create(gpu: &Gpu) -> Result<Self>
     where
         Self: Sized;
-    unsafe fn execute(gpu: &Gpu, state: &Self) -> Result<()>;
+    unsafe fn execute(gpu: &Gpu, state: &mut Self) -> Result<()>;
     unsafe fn destroy(gpu: &Gpu, state: Self) -> Result<()>;
 }
 
@@ -96,8 +96,8 @@ where
     let time = Instant::now();
     let name = Demo::NAME;
     info!("Running demo::{name}");
-    let state = Demo::create(gpu).with_context(|| format!("Creating demo::{name}"))?;
-    Demo::execute(gpu, &state).with_context(|| format!("Executing demo::{name}"))?;
+    let mut state = Demo::create(gpu).with_context(|| format!("Creating demo::{name}"))?;
+    Demo::execute(gpu, &mut state).with_context(|| format!("Executing demo::{name}"))?;
     Demo::destroy(gpu, state).with_context(|| format!("Destroying demo::{name}"))?;
     info!("demo::{name} took {} seconds", time.elapsed().as_secs_f64());
     Ok(())

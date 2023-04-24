@@ -33,7 +33,7 @@ impl DemoCallbacks for Demo {
         })
     }
 
-    unsafe fn execute(gpu: &Gpu, state: &Self) -> Result<()> {
+    unsafe fn execute(gpu: &Gpu, state: &mut Self) -> Result<()> {
         draw(gpu, state, Self::NAME)
     }
 
