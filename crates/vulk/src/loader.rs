@@ -101,6 +101,7 @@ pub struct InstanceFunctions {
     pub get_physical_device_queue_family_properties2: vk::GetPhysicalDeviceQueueFamilyProperties2,
     pub create_device: vk::CreateDevice,
     pub get_physical_device_memory_properties2: vk::GetPhysicalDeviceMemoryProperties2,
+    #[cfg(target_family = "windows")]
     pub create_win32_surface_khr: vk::CreateWin32SurfaceKHR,
     pub destroy_surface_khr: vk::DestroySurfaceKHR,
     pub get_physical_device_surface_support_khr: vk::GetPhysicalDeviceSurfaceSupportKHR,
@@ -136,6 +137,7 @@ impl Instance {
                 get_physical_device_queue_family_properties2: std::mem::transmute(load(b"vkGetPhysicalDeviceQueueFamilyProperties2\0")?),
                 create_device: std::mem::transmute(load(b"vkCreateDevice\0")?),
                 get_physical_device_memory_properties2: std::mem::transmute(load(b"vkGetPhysicalDeviceMemoryProperties2\0")?),
+                #[cfg(target_family = "windows")]
                 create_win32_surface_khr: std::mem::transmute(load(b"vkCreateWin32SurfaceKHR\0")?),
                 destroy_surface_khr: std::mem::transmute(load(b"vkDestroySurfaceKHR\0")?),
                 get_physical_device_surface_support_khr: std::mem::transmute(load(b"vkGetPhysicalDeviceSurfaceSupportKHR\0")?),
@@ -257,6 +259,7 @@ impl Instance {
         (self.fns.get_physical_device_memory_properties2)(physical_device, p_memory_properties);
     }
 
+    #[cfg(target_family = "windows")]
     #[inline]
     #[doc = "**Chapter**: Window System Integration (WSI)"]
     #[doc = "<br>"]

@@ -207,6 +207,9 @@ fn generate_wrappers(
                 None
             };
 
+        if let Some(attr) = command_only_targets_windows(ctx, vk_ident) {
+            writeln!(str, "{attr}")?;
+        }
         match analysis::wrapper_type(
             ctx.c_type_map,
             base_type_map,

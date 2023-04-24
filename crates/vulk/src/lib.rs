@@ -205,6 +205,15 @@ pub enum Error {
 // Extensions
 //
 
+#[cfg(target_family = "windows")]
+pub const REQUIRED_INSTANCE_EXTENSION_COUNT: usize = 3 + 1;
+#[cfg(target_family = "windows")]
+pub const REQUIRED_DEVICE_EXTENSION_COUNT: usize = 13 + 0;
+#[cfg(not(target_family = "windows"))]
+pub const REQUIRED_INSTANCE_EXTENSION_COUNT: usize = 3;
+#[cfg(not(target_family = "windows"))]
+pub const REQUIRED_DEVICE_EXTENSION_COUNT: usize = 13;
+
 #[doc = "**Includes**: [`VK_KHR_surface`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_surface.html)"]
 #[doc = "<br>"]
 #[doc = "**Includes**: [`VK_KHR_win32_surface`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_win32_surface.html)"]
@@ -213,8 +222,10 @@ pub enum Error {
 #[doc = "<br>"]
 #[doc = "**Includes**: [`VK_EXT_validation_features`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_validation_features.html)"]
 #[doc = "<br>"]
-pub const REQUIRED_INSTANCE_EXTENSIONS: [*const std::ffi::c_char; 4] = [
+pub const REQUIRED_INSTANCE_EXTENSIONS: [*const std::ffi::c_char;
+    REQUIRED_INSTANCE_EXTENSION_COUNT] = [
     b"VK_KHR_surface\0".as_ptr().cast(),
+    #[cfg(target_family = "windows")]
     b"VK_KHR_win32_surface\0".as_ptr().cast(),
     b"VK_EXT_debug_utils\0".as_ptr().cast(),
     b"VK_EXT_validation_features\0".as_ptr().cast(),
@@ -246,7 +257,8 @@ pub const REQUIRED_INSTANCE_EXTENSIONS: [*const std::ffi::c_char; 4] = [
 #[doc = "<br>"]
 #[doc = "**Includes**: [`VK_EXT_shader_object`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)"]
 #[doc = "<br>"]
-pub const REQUIRED_DEVICE_EXTENSIONS: [*const std::ffi::c_char; 13] = [
+pub const REQUIRED_DEVICE_EXTENSIONS: [*const std::ffi::c_char;
+    REQUIRED_DEVICE_EXTENSION_COUNT] = [
     b"VK_KHR_swapchain\0".as_ptr().cast(),
     b"VK_KHR_acceleration_structure\0".as_ptr().cast(),
     b"VK_KHR_ray_tracing_pipeline\0".as_ptr().cast(),

@@ -70,9 +70,12 @@ fn main() -> Result<()> {
         run_demo::<demos::CubeDemo>(&gpu)?;
         run_demo::<demos::GuiDemo>(&gpu)?;
         run_demo::<demos::RaytracingDemo>(&gpu)?;
+        #[cfg(target_family = "windows")]
         run_demo::<demos::WindowDemo>(&gpu)?;
         gpu.destroy();
     };
+
+    info!("Done");
 
     Ok(())
 }
