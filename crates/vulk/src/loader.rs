@@ -305,6 +305,7 @@ pub struct DeviceFunctions {
     pub reset_command_pool: vk::ResetCommandPool,
     pub destroy_command_pool: vk::DestroyCommandPool,
     pub allocate_command_buffers: vk::AllocateCommandBuffers,
+    pub reset_command_buffer: vk::ResetCommandBuffer,
     pub free_command_buffers: vk::FreeCommandBuffers,
     pub begin_command_buffer: vk::BeginCommandBuffer,
     pub end_command_buffer: vk::EndCommandBuffer,
@@ -413,6 +414,7 @@ impl Device {
                 reset_command_pool: std::mem::transmute(load(b"vkResetCommandPool\0")?),
                 destroy_command_pool: std::mem::transmute(load(b"vkDestroyCommandPool\0")?),
                 allocate_command_buffers: std::mem::transmute(load(b"vkAllocateCommandBuffers\0")?),
+                reset_command_buffer: std::mem::transmute(load(b"vkResetCommandBuffer\0")?),
                 free_command_buffers: std::mem::transmute(load(b"vkFreeCommandBuffers\0")?),
                 begin_command_buffer: std::mem::transmute(load(b"vkBeginCommandBuffer\0")?),
                 end_command_buffer: std::mem::transmute(load(b"vkEndCommandBuffer\0")?),
@@ -591,6 +593,21 @@ impl Device {
     #[doc = "**Reference**: [`vkAllocateCommandBuffers`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkAllocateCommandBuffers.html)"]
     pub unsafe fn allocate_command_buffers(&self, p_allocate_info: *const vk::CommandBufferAllocateInfo, p_command_buffers: *mut vk::CommandBuffer) -> Result<(), Error> {
         match (self.fns.allocate_command_buffers)(self.handle, p_allocate_info, p_command_buffers) {
+            vk::Result::Success => Ok(()),
+            result => Err(Error::Vulkan(result)),
+        }
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Command Buffers"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Reset a command buffer to the initial state"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkResetCommandBuffer`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkResetCommandBuffer.html)"]
+    pub unsafe fn reset_command_buffer(&self, command_buffer: vk::CommandBuffer, flags: vk::CommandBufferResetFlags) -> Result<(), Error> {
+        match (self.fns.reset_command_buffer)(command_buffer, flags) {
             vk::Result::Success => Ok(()),
             result => Err(Error::Vulkan(result)),
         }

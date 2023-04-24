@@ -17,6 +17,7 @@
         "vkResetCommandPool",
         "vkDestroyCommandPool",
         "vkAllocateCommandBuffers",
+        "vkResetCommandBuffer",
         "vkFreeCommandBuffers",
         "vkBeginCommandBuffer",
         "vkEndCommandBuffer",

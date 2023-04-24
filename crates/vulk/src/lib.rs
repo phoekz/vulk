@@ -17,6 +17,7 @@
 //! - [`vk::ResetCommandPool`] Reset a command pool
 //! - [`vk::DestroyCommandPool`] Destroy a command pool object
 //! - [`vk::AllocateCommandBuffers`] Allocate command buffers from an existing command pool
+//! - [`vk::ResetCommandBuffer`] Reset a command buffer to the initial state
 //! - [`vk::FreeCommandBuffers`] Free command buffers
 //! - [`vk::BeginCommandBuffer`] Start recording a command buffer
 //! - [`vk::EndCommandBuffer`] Finish recording a command buffer

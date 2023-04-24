@@ -4289,6 +4289,104 @@ impl std::fmt::Display for CommandPoolResetFlagBits {
 #[derive(Clone, Copy, PartialEq, Eq)]
 #[doc = "**Chapter**: Command Buffers"]
 #[doc = "<br>"]
+#[doc = "**Description**: Bitmask of VkCommandBufferResetFlagBits"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkCommandBufferResetFlags`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkCommandBufferResetFlags.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkCommandBufferResetFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkCommandBufferResetFlagBits.html)"]
+pub struct CommandBufferResetFlags(u32);
+
+impl CommandBufferResetFlags {
+    #[must_use]
+    pub const fn empty() -> Self {
+        Self(0)
+    }
+
+    #[must_use]
+    pub fn contains(self, rhs: Self) -> bool {
+        self.0 & rhs.0 == rhs.0
+    }
+}
+
+impl std::ops::BitAnd for CommandBufferResetFlags {
+    type Output = Self;
+    fn bitand(self, rhs: Self) -> Self::Output {
+        Self(self.0 & rhs.0)
+    }
+}
+
+impl From<CommandBufferResetFlagBits> for CommandBufferResetFlags {
+    fn from(flag_bits: CommandBufferResetFlagBits) -> Self {
+        Self(flag_bits as u32)
+    }
+}
+
+impl std::ops::BitOr<CommandBufferResetFlagBits> for CommandBufferResetFlags {
+    type Output = CommandBufferResetFlags;
+    fn bitor(self, rhs: CommandBufferResetFlagBits) -> Self::Output {
+        Self(self.0 | rhs as u32)
+    }
+}
+
+impl std::fmt::Display for CommandBufferResetFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        #[allow(deprecated)]
+        display_flag_bits_u32(f, self.0, &[CommandBufferResetFlagBits::ReleaseResources])
+    }
+}
+
+impl std::fmt::Debug for CommandBufferResetFlags {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_tuple("CommandBufferResetFlags").field(&format!("{self}")).finish()
+    }
+}
+
+#[repr(u32)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+#[doc = "**Chapter**: Command Buffers"]
+#[doc = "<br>"]
+#[doc = "**Description**: Bitmask controlling behavior of a command buffer reset"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkCommandBufferResetFlagBits`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkCommandBufferResetFlagBits.html)"]
+pub enum CommandBufferResetFlagBits {
+    #[doc = "Translated from: `VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT`"]
+    ReleaseResources = 0b1,
+}
+
+impl From<CommandBufferResetFlagBits> for u32 {
+    fn from(flag_bits: CommandBufferResetFlagBits) -> Self {
+        flag_bits as u32
+    }
+}
+
+impl std::ops::BitOr for CommandBufferResetFlagBits {
+    type Output = CommandBufferResetFlags;
+    fn bitor(self, rhs: Self) -> Self::Output {
+        CommandBufferResetFlags(self as u32 | rhs as u32)
+    }
+}
+
+impl std::ops::BitOr<CommandBufferResetFlags> for CommandBufferResetFlagBits {
+    type Output = CommandBufferResetFlags;
+    fn bitor(self, rhs: CommandBufferResetFlags) -> Self::Output {
+        CommandBufferResetFlags(self as u32 | rhs.0)
+    }
+}
+
+impl std::fmt::Display for CommandBufferResetFlagBits {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{self:?}")
+    }
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, PartialEq, Eq)]
+#[doc = "**Chapter**: Command Buffers"]
+#[doc = "<br>"]
 #[doc = "**Description**: Bitmask of VkCommandBufferUsageFlagBits"]
 #[doc = "<br>"]
 #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
@@ -13506,6 +13604,18 @@ pub type AllocateCommandBuffers = unsafe extern "C" fn(
     device: Device,                                    //
     p_allocate_info: *const CommandBufferAllocateInfo, //
     p_command_buffers: *mut CommandBuffer,             //
+) -> Result;
+
+#[doc = "**Chapter**: Command Buffers"]
+#[doc = "<br>"]
+#[doc = "**Description**: Reset a command buffer to the initial state"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkResetCommandBuffer`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkResetCommandBuffer.html)"]
+pub type ResetCommandBuffer = unsafe extern "C" fn(
+    command_buffer: CommandBuffer,  //
+    flags: CommandBufferResetFlags, //
 ) -> Result;
 
 #[doc = "**Chapter**: Command Buffers"]
