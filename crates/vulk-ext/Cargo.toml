@@ -1,0 +1,18 @@
+[package]
+name = "vulk-ext"
+
+authors.workspace = true
+categories.workspace = true
+description.workspace = true
+edition.workspace = true
+keywords.workspace = true
+license.workspace = true
+readme.workspace = true
+repository.workspace = true
+version.workspace = true
+
+[dependencies]
+vulk = { version = "0.*", path = "../vulk" }
+
+anyhow.workspace = true
+log.workspace = true

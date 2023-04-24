@@ -166,7 +166,7 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
                         flags.push_str(".into()");
                     }
 
-                    format!("{flags}")
+                    flags.to_string()
                 } else {
                     "ImageAspectFlags::empty()".to_string()
                 };

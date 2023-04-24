@@ -24,9 +24,7 @@
 //
 
 use std::{
-    borrow::Cow,
     collections::HashMap,
-    ffi::CStr,
     mem::{size_of, transmute, zeroed, MaybeUninit},
     path::PathBuf,
     ptr::{addr_of, addr_of_mut, null, null_mut},
@@ -35,15 +33,15 @@ use std::{
 
 use anyhow::{bail, ensure, Context, Result};
 use gpu::Gpu;
-use log::{debug, info, log, warn};
+use log::{debug, info, warn};
 use vulk::vk;
+use vulk_ext::vkx;
 
 //
 // Modules
 //
 
 mod command;
-mod debug;
 mod demos;
 mod descriptor;
 mod gpu;

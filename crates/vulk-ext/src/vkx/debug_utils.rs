@@ -1,25 +1,25 @@
 use super::*;
 
-pub struct Debug {
+pub(crate) struct DebugUtils {
     debug_utils_messenger: vk::DebugUtilsMessengerEXT,
 }
 
-impl Debug {
-    pub unsafe fn create(instance: &vulk::Instance) -> Result<Self> {
+impl DebugUtils {
+    pub(crate) unsafe fn create(instance: &vulk::Instance) -> Result<Self> {
         let debug_utils_messenger_create_info_ext = debug_utils_messenger_create_info_ext();
         let debug_utils_messenger =
             instance.create_debug_utils_messenger_ext(&debug_utils_messenger_create_info_ext)?;
-        Ok(Debug {
+        Ok(Self {
             debug_utils_messenger,
         })
     }
 
-    pub unsafe fn destroy(&self, instance: &vulk::Instance) {
+    pub(crate) unsafe fn destroy(&self, instance: &vulk::Instance) {
         instance.destroy_debug_utils_messenger_ext(self.debug_utils_messenger);
     }
 }
 
-pub fn debug_utils_messenger_create_info_ext() -> vk::DebugUtilsMessengerCreateInfoEXT {
+pub(crate) fn debug_utils_messenger_create_info_ext() -> vk::DebugUtilsMessengerCreateInfoEXT {
     let message_severity = vk::DebugUtilsMessageSeverityFlagBitsEXT::VerboseEXT
         | vk::DebugUtilsMessageSeverityFlagBitsEXT::InfoEXT
         | vk::DebugUtilsMessageSeverityFlagBitsEXT::WarningEXT
@@ -47,14 +47,14 @@ unsafe extern "C" fn debug_utils_messenger_callback(
     // Unpack.
     let callback_data = *p_callback_data;
     let message_id_name = if callback_data.p_message_id_name.is_null() {
-        Cow::from("")
+        std::borrow::Cow::from("")
     } else {
-        CStr::from_ptr(callback_data.p_message_id_name).to_string_lossy()
+        std::ffi::CStr::from_ptr(callback_data.p_message_id_name).to_string_lossy()
     };
     let message = if callback_data.p_message.is_null() {
-        Cow::from("")
+        std::borrow::Cow::from("")
     } else {
-        CStr::from_ptr(callback_data.p_message).to_string_lossy()
+        std::ffi::CStr::from_ptr(callback_data.p_message).to_string_lossy()
     };
     let message_id_number: u32 = std::mem::transmute(callback_data.message_id_number);
 
@@ -103,7 +103,6 @@ unsafe extern "C" fn debug_utils_messenger_callback(
     }
 
     // Severity.
-    #[allow(clippy::match_same_arms)]
     let level = match message_severity {
         vk::DebugUtilsMessageSeverityFlagBitsEXT::VerboseEXT => log::Level::Debug,
         vk::DebugUtilsMessageSeverityFlagBitsEXT::InfoEXT => log::Level::Info,

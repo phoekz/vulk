@@ -5,9 +5,7 @@ use super::*;
 //
 
 pub struct Gpu {
-    pub init: vulk::Init,
-    pub instance: vulk::Instance,
-    pub debug: debug::Debug,
+    pub instance: vkx::Instance,
     pub physical_device: PhysicalDevice,
     pub queue_family: QueueFamily,
     pub device: vulk::Device,
@@ -17,9 +15,11 @@ pub struct Gpu {
 
 impl Gpu {
     pub unsafe fn create() -> Result<Self> {
-        let init = vulk::Init::load().context("Initializing Vulk")?;
-        let instance = create_instance(&init).context("Creating instance")?;
-        let debug = debug::Debug::create(&instance).context("Creating debug")?;
+        let instance = vkx::Instance::create(&vkx::InstanceCreateInfo {
+            application_name: "vulk-test",
+            engine_name: "vulk-test",
+            validation_layers: true,
+        })?;
         let physical_device =
             create_physical_device(&instance).context("Creating physical device")?;
         let queue_family = find_queue_family(&physical_device).context("Find queue family")?;
@@ -28,11 +28,8 @@ impl Gpu {
         let queue = get_queue(&device, &queue_family);
         let timestamp_calibration = get_timestamp_calibration(&instance, &physical_device, &device)
             .context("Getting timestamp calibration")?;
-
         Ok(Self {
-            init,
             instance,
-            debug,
             physical_device,
             queue_family,
             device,
@@ -43,60 +40,8 @@ impl Gpu {
 
     pub unsafe fn destroy(self) {
         self.device.destroy_device();
-        self.debug.destroy(&self.instance);
-        self.instance.destroy_instance();
+        self.instance.destroy();
     }
-}
-
-//
-// Instance
-//
-
-unsafe fn create_instance(init: &vulk::Init) -> Result<vulk::Instance> {
-    // Instance-specific debug messenger.
-    let debug_utils_messenger_create_info_ext = debug::debug_utils_messenger_create_info_ext();
-
-    // Validation features.
-    let enabled_validation_features = [
-        vk::ValidationFeatureEnableEXT::BestPracticesEXT,
-        vk::ValidationFeatureEnableEXT::SynchronizationValidationEXT,
-    ];
-    let validation_features_ext = vk::ValidationFeaturesEXT {
-        s_type: vk::StructureType::ValidationFeaturesEXT,
-        p_next: addr_of!(debug_utils_messenger_create_info_ext).cast(),
-        enabled_validation_feature_count: enabled_validation_features.len() as _,
-        p_enabled_validation_features: enabled_validation_features.as_ptr(),
-        disabled_validation_feature_count: 0,
-        p_disabled_validation_features: null(),
-    };
-
-    // Layers.
-    let enabled_layer_names = [b"VK_LAYER_KHRONOS_validation\0".as_ptr().cast()];
-
-    // Create.
-    let instance = init.create_instance(
-        &(vk::InstanceCreateInfo {
-            s_type: vk::StructureType::InstanceCreateInfo,
-            p_next: addr_of!(validation_features_ext).cast(),
-            flags: vk::InstanceCreateFlags::empty(),
-            p_application_info: &(vk::ApplicationInfo {
-                s_type: vk::StructureType::ApplicationInfo,
-                p_next: null(),
-                p_application_name: b"vulk-test\0".as_ptr().cast(),
-                application_version: 1,
-                p_engine_name: b"vulk-test\0".as_ptr().cast(),
-                engine_version: 1,
-                api_version: vk::make_api_version(0, 1, 3, 0),
-            }),
-            enabled_layer_count: enabled_layer_names.len() as _,
-            pp_enabled_layer_names: enabled_layer_names.as_ptr(),
-            enabled_extension_count: vulk::REQUIRED_INSTANCE_EXTENSIONS.len() as _,
-            pp_enabled_extension_names: vulk::REQUIRED_INSTANCE_EXTENSIONS.as_ptr(),
-        }),
-    )?;
-    let instance = vulk::Instance::load(init, instance)?;
-
-    Ok(instance)
 }
 
 //
@@ -209,7 +154,7 @@ unsafe fn find_queue_family(physical_device: &PhysicalDevice) -> Result<QueueFam
                 | vk::QueueFlagBits::Compute
                 | vk::QueueFlagBits::Transfer;
             let queue_flags = queue_family_properties.queue_flags;
-            if (queue_flags & required_queue_flags) == required_queue_flags {
+            if queue_flags.contains(required_queue_flags) {
                 Some(QueueFamily {
                     index: queue_family_index as _,
                     properties: *queue_family_properties,
