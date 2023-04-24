@@ -24,7 +24,9 @@
 //! ### Synchronization and Cache Control
 //! - [`vk::CreateSemaphore`] Create a new queue semaphore object
 //! - [`vk::DestroySemaphore`] Destroy a semaphore object
+//! - [`vk::GetSemaphoreCounterValue`] Query the current state of a timeline semaphore
 //! - [`vk::WaitSemaphores`] Wait for timeline semaphores on the host
+//! - [`vk::SignalSemaphore`] Signal a timeline semaphore on the host
 //! - [`vk::CmdPipelineBarrier2`] Insert a memory dependency
 //! - [`vk::QueueWaitIdle`] Wait for a queue to become idle
 //! - [`vk::DeviceWaitIdle`] Wait for a device to become idle

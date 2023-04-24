@@ -311,7 +311,9 @@ pub struct DeviceFunctions {
     pub queue_submit2: vk::QueueSubmit2,
     pub create_semaphore: vk::CreateSemaphore,
     pub destroy_semaphore: vk::DestroySemaphore,
+    pub get_semaphore_counter_value: vk::GetSemaphoreCounterValue,
     pub wait_semaphores: vk::WaitSemaphores,
+    pub signal_semaphore: vk::SignalSemaphore,
     pub cmd_pipeline_barrier2: vk::CmdPipelineBarrier2,
     pub queue_wait_idle: vk::QueueWaitIdle,
     pub device_wait_idle: vk::DeviceWaitIdle,
@@ -417,7 +419,9 @@ impl Device {
                 queue_submit2: std::mem::transmute(load(b"vkQueueSubmit2\0")?),
                 create_semaphore: std::mem::transmute(load(b"vkCreateSemaphore\0")?),
                 destroy_semaphore: std::mem::transmute(load(b"vkDestroySemaphore\0")?),
+                get_semaphore_counter_value: std::mem::transmute(load(b"vkGetSemaphoreCounterValue\0")?),
                 wait_semaphores: std::mem::transmute(load(b"vkWaitSemaphores\0")?),
+                signal_semaphore: std::mem::transmute(load(b"vkSignalSemaphore\0")?),
                 cmd_pipeline_barrier2: std::mem::transmute(load(b"vkCmdPipelineBarrier2\0")?),
                 queue_wait_idle: std::mem::transmute(load(b"vkQueueWaitIdle\0")?),
                 device_wait_idle: std::mem::transmute(load(b"vkDeviceWaitIdle\0")?),
@@ -680,6 +684,22 @@ impl Device {
     #[inline]
     #[doc = "**Chapter**: Synchronization and Cache Control"]
     #[doc = "<br>"]
+    #[doc = "**Description**: Query the current state of a timeline semaphore"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_VERSION_1_2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_2.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkGetSemaphoreCounterValue`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetSemaphoreCounterValue.html)"]
+    pub unsafe fn get_semaphore_counter_value(&self, semaphore: vk::Semaphore) -> Result<u64, Error> {
+        let mut p_value = std::mem::MaybeUninit::uninit();
+        match (self.fns.get_semaphore_counter_value)(self.handle, semaphore, p_value.as_mut_ptr()) {
+            vk::Result::Success => Ok(p_value.assume_init()),
+            result => Err(Error::Vulkan(result)),
+        }
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Synchronization and Cache Control"]
+    #[doc = "<br>"]
     #[doc = "**Description**: Wait for timeline semaphores on the host"]
     #[doc = "<br>"]
     #[doc = "**Provided by**: [`VK_VERSION_1_2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_2.html)"]
@@ -687,6 +707,21 @@ impl Device {
     #[doc = "**Reference**: [`vkWaitSemaphores`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkWaitSemaphores.html)"]
     pub unsafe fn wait_semaphores(&self, p_wait_info: *const vk::SemaphoreWaitInfo, timeout: u64) -> Result<(), Error> {
         match (self.fns.wait_semaphores)(self.handle, p_wait_info, timeout) {
+            vk::Result::Success => Ok(()),
+            result => Err(Error::Vulkan(result)),
+        }
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Synchronization and Cache Control"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Signal a timeline semaphore on the host"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_VERSION_1_2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_2.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkSignalSemaphore`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkSignalSemaphore.html)"]
+    pub unsafe fn signal_semaphore(&self, p_signal_info: *const vk::SemaphoreSignalInfo) -> Result<(), Error> {
+        match (self.fns.signal_semaphore)(self.handle, p_signal_info) {
             vk::Result::Success => Ok(()),
             result => Err(Error::Vulkan(result)),
         }

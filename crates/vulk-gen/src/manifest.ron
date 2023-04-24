@@ -24,7 +24,9 @@
         // Synchronization and Cache Control
         "vkCreateSemaphore",
         "vkDestroySemaphore",
+        "vkGetSemaphoreCounterValue",
         "vkWaitSemaphores",
+        "vkSignalSemaphore",
         "vkCmdPipelineBarrier2",
         "vkQueueWaitIdle",
         "vkDeviceWaitIdle",

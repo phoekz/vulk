@@ -9647,6 +9647,34 @@ pub struct SemaphoreWaitInfo {
 #[derive(Clone, Copy, Debug)]
 #[doc = "**Chapter**: Synchronization and Cache Control"]
 #[doc = "<br>"]
+#[doc = "**Description**: Structure containing information about a semaphore signal operation"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_2.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkSemaphoreSignalInfo`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkSemaphoreSignalInfo.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
+let semaphore_signal_info = vk::SemaphoreSignalInfo {
+    s_type: vk::StructureType::SemaphoreSignalInfo,
+    p_next: null(),
+    semaphore: todo!("vk::Semaphore"),
+    value: todo!("u64"),
+};
+```"#]
+pub struct SemaphoreSignalInfo {
+    pub s_type: StructureType,
+    pub p_next: *const c_void,
+    pub semaphore: Semaphore,
+    pub value: u64,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Synchronization and Cache Control"]
+#[doc = "<br>"]
 #[doc = "**Description**: Structure specifying dependency information for a synchronization command"]
 #[doc = "<br>"]
 #[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
@@ -13560,6 +13588,19 @@ pub type DestroySemaphore = unsafe extern "C" fn(
 
 #[doc = "**Chapter**: Synchronization and Cache Control"]
 #[doc = "<br>"]
+#[doc = "**Description**: Query the current state of a timeline semaphore"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_2.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkGetSemaphoreCounterValue`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkGetSemaphoreCounterValue.html)"]
+pub type GetSemaphoreCounterValue = unsafe extern "C" fn(
+    device: Device,       //
+    semaphore: Semaphore, //
+    p_value: *mut u64,    //
+) -> Result;
+
+#[doc = "**Chapter**: Synchronization and Cache Control"]
+#[doc = "<br>"]
 #[doc = "**Description**: Wait for timeline semaphores on the host"]
 #[doc = "<br>"]
 #[doc = "**Provided by**: [`VK_VERSION_1_2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_2.html)"]
@@ -13569,6 +13610,18 @@ pub type WaitSemaphores = unsafe extern "C" fn(
     device: Device,                        //
     p_wait_info: *const SemaphoreWaitInfo, //
     timeout: u64,                          //
+) -> Result;
+
+#[doc = "**Chapter**: Synchronization and Cache Control"]
+#[doc = "<br>"]
+#[doc = "**Description**: Signal a timeline semaphore on the host"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_2.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkSignalSemaphore`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkSignalSemaphore.html)"]
+pub type SignalSemaphore = unsafe extern "C" fn(
+    device: Device,                            //
+    p_signal_info: *const SemaphoreSignalInfo, //
 ) -> Result;
 
 #[doc = "**Chapter**: Synchronization and Cache Control"]
