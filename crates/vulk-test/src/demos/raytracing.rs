@@ -849,6 +849,8 @@ impl GpuResource for Pipeline {
         // Compile shaders.
         let raygen_spirv = compiler.compile(
             shader::ShaderType::Raygen,
+            "raygen_shader",
+            "main",
             r#"
                 #version 460 core
                 #include "common.glsl"
@@ -888,6 +890,8 @@ impl GpuResource for Pipeline {
         )?;
         let miss_spirv = compiler.compile(
             shader::ShaderType::Miss,
+            "miss_shader",
+            "main",
             r#"
                 #version 460 core
                 #include "common.glsl"
@@ -903,6 +907,8 @@ impl GpuResource for Pipeline {
         )?;
         let closest_hit_spirv = compiler.compile(
             shader::ShaderType::ClosestHit,
+            "closest_hit_shader",
+            "main",
             r#"
                 #version 460 core
                 #include "common.glsl"

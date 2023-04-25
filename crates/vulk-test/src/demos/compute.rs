@@ -276,6 +276,8 @@ impl GpuResource for Shaders {
         // Indirect shader  .
         let indirect_spirv = compiler.compile(
             shader::ShaderType::Compute,
+            "indirect_shader",
+            "main",
             r#"
                 #version 460 core
                 #include "common.glsl"
@@ -304,6 +306,8 @@ impl GpuResource for Shaders {
         // Compute shader.
         let compute_spirv = compiler.compile(
             shader::ShaderType::Compute,
+            "compute_shader",
+            "main",
             r#"
                 #version 460 core
                 #include "common.glsl"

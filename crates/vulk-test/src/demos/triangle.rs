@@ -90,6 +90,8 @@ impl GpuResource for Shaders {
         // Shaders.
         let task_spirv = compiler.compile(
             shader::ShaderType::Task,
+            "task_shader",
+            "main",
             r#"
             #version 460 core
             #include "common.glsl"
@@ -104,6 +106,8 @@ impl GpuResource for Shaders {
         )?;
         let mesh_spirv = compiler.compile(
             shader::ShaderType::Mesh,
+            "mesh_shader",
+            "main",
             r#"
             #version 460 core
             #include "common.glsl"
@@ -143,6 +147,8 @@ impl GpuResource for Shaders {
         )?;
         let fragment_spirv = compiler.compile(
             shader::ShaderType::Fragment,
+            "fragment_shader",
+            "main",
             r#"
             #version 460 core
             #include "common.glsl"

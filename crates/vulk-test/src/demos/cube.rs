@@ -290,141 +290,147 @@ impl GpuResource for Shaders {
         compiler.include(
             "common.glsl",
             r#"
-          #extension GL_EXT_mesh_shader : require
-          #extension GL_EXT_nonuniform_qualifier : require
-          #extension GL_EXT_scalar_block_layout : require
+            #extension GL_EXT_mesh_shader : require
+            #extension GL_EXT_nonuniform_qualifier : require
+            #extension GL_EXT_scalar_block_layout : require
 
-          struct MeshVertex {
-              vec2 texcoord;
-          };
+            struct MeshVertex {
+                vec2 texcoord;
+            };
 
-          struct MeshPrimitive {
-              vec3 normal;
-              uint texture_id;
-              uint sampler_id;
-          };
-      "#,
+            struct MeshPrimitive {
+                vec3 normal;
+                uint texture_id;
+                uint sampler_id;
+                };
+            "#,
         );
 
         // Shaders.
         let task_spirv = compiler.compile(
             shader::ShaderType::Task,
+            "task_shader",
+            "main",
             r#"
-          #version 460 core
-          #include "common.glsl"
+                #version 460 core
+                #include "common.glsl"
 
-          void main() {
-              EmitMeshTasksEXT(1, 1, 1);
-          }
-      "#,
+                void main() {
+                    EmitMeshTasksEXT(1, 1, 1);
+                }
+            "#,
         )?;
         let mesh_spirv = compiler.compile(
-      shader::ShaderType::Mesh,
-      r#"
-          #version 460 core
-          #include "common.glsl"
-          #define MAX_VERTICES 36
-          #define MAX_PRIMITIVES 12
+            shader::ShaderType::Mesh,
+            "mesh_shader",
+            "main",
+            r#"
+                #version 460 core
+                #include "common.glsl"
+                #define MAX_VERTICES 36
+                #define MAX_PRIMITIVES 12
 
-          layout(scalar, push_constant) uniform PushBuffer {
-              mat4 transform;
-          };
-          layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
-          layout(triangles, max_vertices = MAX_VERTICES, max_primitives = MAX_PRIMITIVES) out;
-          layout(location = 0) out MeshVertex mesh_vertices[];
-          layout(location = 1) perprimitiveEXT flat out MeshPrimitive mesh_primitives[];
+                layout(scalar, push_constant) uniform PushBuffer {
+                    mat4 transform;
+                };
+                layout(local_size_x = 1, local_size_y = 1, local_size_z = 1) in;
+                layout(triangles, max_vertices = MAX_VERTICES, max_primitives = MAX_PRIMITIVES) out;
+                layout(location = 0) out MeshVertex mesh_vertices[];
+                layout(location = 1) perprimitiveEXT flat out MeshPrimitive mesh_primitives[];
 
-          void main() {
-              const vec3 vertices[8] = {
-                  vec3(-0.5, -0.5, -0.5), // 0
-                  vec3(+0.5, -0.5, -0.5), // 1
-                  vec3(+0.5, +0.5, -0.5), // 2
-                  vec3(-0.5, +0.5, -0.5), // 3
-                  vec3(-0.5, -0.5, +0.5), // 4
-                  vec3(+0.5, -0.5, +0.5), // 5
-                  vec3(+0.5, +0.5, +0.5), // 6
-                  vec3(-0.5, +0.5, +0.5), // 7
-              };
+                void main() {
+                    const vec3 vertices[8] = {
+                        vec3(-0.5, -0.5, -0.5), // 0
+                        vec3(+0.5, -0.5, -0.5), // 1
+                        vec3(+0.5, +0.5, -0.5), // 2
+                        vec3(-0.5, +0.5, -0.5), // 3
+                        vec3(-0.5, -0.5, +0.5), // 4
+                        vec3(+0.5, -0.5, +0.5), // 5
+                        vec3(+0.5, +0.5, +0.5), // 6
+                        vec3(-0.5, +0.5, +0.5), // 7
+                    };
 
-              const vec2 texcoords[4] = {
-                  vec2(0.0, 0.0), // 0
-                  vec2(1.0, 0.0), // 1
-                  vec2(1.0, 1.0), // 2
-                  vec2(0.0, 1.0), // 3
-              };
+                    const vec2 texcoords[4] = {
+                        vec2(0.0, 0.0), // 0
+                        vec2(1.0, 0.0), // 1
+                        vec2(1.0, 1.0), // 2
+                        vec2(0.0, 1.0), // 3
+                    };
 
-              const vec3 normals[6] = {
-                  vec3(-1.0, +0.0, +0.0), // 0, -x
-                  vec3(+1.0, +0.0, +0.0), // 1, +x
-                  vec3(+0.0, -1.0, +0.0), // 2, -y
-                  vec3(+0.0, +1.0, +0.0), // 3, +y
-                  vec3(+0.0, +0.0, -1.0), // 4, -z
-                  vec3(+0.0, +0.0, +1.0), // 5, +z
-              };
+                    const vec3 normals[6] = {
+                        vec3(-1.0, +0.0, +0.0), // 0, -x
+                        vec3(+1.0, +0.0, +0.0), // 1, +x
+                        vec3(+0.0, -1.0, +0.0), // 2, -y
+                        vec3(+0.0, +1.0, +0.0), // 3, +y
+                        vec3(+0.0, +0.0, -1.0), // 4, -z
+                        vec3(+0.0, +0.0, +1.0), // 5, +z
+                    };
 
-              const uvec3 indices[12] = {
-                  uvec3(4, 0, 7), uvec3(7, 0, 3), // -x
-                  uvec3(1, 5, 2), uvec3(2, 5, 6), // +x
-                  uvec3(4, 5, 0), uvec3(0, 5, 1), // -y
-                  uvec3(3, 2, 7), uvec3(7, 2, 6), // +y
-                  uvec3(0, 1, 3), uvec3(3, 1, 2), // -z
-                  uvec3(5, 4, 6), uvec3(6, 4, 7), // +z
-              };
+                    const uvec3 indices[12] = {
+                        uvec3(4, 0, 7), uvec3(7, 0, 3), // -x
+                        uvec3(1, 5, 2), uvec3(2, 5, 6), // +x
+                        uvec3(4, 5, 0), uvec3(0, 5, 1), // -y
+                        uvec3(3, 2, 7), uvec3(7, 2, 6), // +y
+                        uvec3(0, 1, 3), uvec3(3, 1, 2), // -z
+                        uvec3(5, 4, 6), uvec3(6, 4, 7), // +z
+                    };
 
-              const uvec3 texcoord_indices[2] = {
-                  uvec3(0, 1, 3), uvec3(3, 1, 2),
-              };
+                    const uvec3 texcoord_indices[2] = {
+                        uvec3(0, 1, 3), uvec3(3, 1, 2),
+                    };
 
-              const bool culled[6] = {
-                  false, // -x
-                  false, // +x
-                  false, // -y
-                  false, // +y
-                  false, // -z
-                  false, // +z
-              };
+                    const bool culled[6] = {
+                        false, // -x
+                        false, // +x
+                        false, // -y
+                        false, // +y
+                        false, // -z
+                        false, // +z
+                    };
 
-              SetMeshOutputsEXT(MAX_VERTICES, MAX_PRIMITIVES);
-              for (uint i = 0; i < MAX_PRIMITIVES; i++) {
-                  gl_MeshVerticesEXT[3 * i + 0].gl_Position = transform * vec4(vertices[indices[i][0]], 1.0);
-                  gl_MeshVerticesEXT[3 * i + 1].gl_Position = transform * vec4(vertices[indices[i][1]], 1.0);
-                  gl_MeshVerticesEXT[3 * i + 2].gl_Position = transform * vec4(vertices[indices[i][2]], 1.0);
-                  mesh_vertices[3 * i + 0].texcoord = texcoords[texcoord_indices[i % 2][0]];
-                  mesh_vertices[3 * i + 1].texcoord = texcoords[texcoord_indices[i % 2][1]];
-                  mesh_vertices[3 * i + 2].texcoord = texcoords[texcoord_indices[i % 2][2]];
-                  gl_PrimitiveTriangleIndicesEXT[i] = uvec3(3 * i + 0, 3 * i + 1, 3 * i + 2);
-                  mesh_primitives[i].normal = normals[i / 2];
-                  mesh_primitives[i].texture_id = i / 2;
-                  mesh_primitives[i].sampler_id = i / 2;
-                  gl_MeshPrimitivesEXT[i].gl_CullPrimitiveEXT = culled[i / 2];
-              }
-          }
-      "#,
-  )?;
+                    SetMeshOutputsEXT(MAX_VERTICES, MAX_PRIMITIVES);
+                    for (uint i = 0; i < MAX_PRIMITIVES; i++) {
+                        gl_MeshVerticesEXT[3 * i + 0].gl_Position = transform * vec4(vertices[indices[i][0]], 1.0);
+                        gl_MeshVerticesEXT[3 * i + 1].gl_Position = transform * vec4(vertices[indices[i][1]], 1.0);
+                        gl_MeshVerticesEXT[3 * i + 2].gl_Position = transform * vec4(vertices[indices[i][2]], 1.0);
+                        mesh_vertices[3 * i + 0].texcoord = texcoords[texcoord_indices[i % 2][0]];
+                        mesh_vertices[3 * i + 1].texcoord = texcoords[texcoord_indices[i % 2][1]];
+                        mesh_vertices[3 * i + 2].texcoord = texcoords[texcoord_indices[i % 2][2]];
+                        gl_PrimitiveTriangleIndicesEXT[i] = uvec3(3 * i + 0, 3 * i + 1, 3 * i + 2);
+                        mesh_primitives[i].normal = normals[i / 2];
+                        mesh_primitives[i].texture_id = i / 2;
+                        mesh_primitives[i].sampler_id = i / 2;
+                        gl_MeshPrimitivesEXT[i].gl_CullPrimitiveEXT = culled[i / 2];
+                    }
+                }
+            "#,
+        )?;
         let fragment_spirv = compiler.compile(
             shader::ShaderType::Fragment,
+            "fragment_shader",
+            "main",
             r#"
-          #version 460 core
-          #include "common.glsl"
+                #version 460 core
+                #include "common.glsl"
 
-          layout(location = 0) in MeshVertex mesh_vertex;
-          layout(location = 1) perprimitiveEXT flat in MeshPrimitive mesh_primitive;
-          layout(binding = 0) uniform texture2D textures[];
-          layout(binding = 1) uniform sampler samplers[];
-          layout(location = 0) out vec4 fragment_color;
+                layout(location = 0) in MeshVertex mesh_vertex;
+                layout(location = 1) perprimitiveEXT flat in MeshPrimitive mesh_primitive;
+                layout(binding = 0) uniform texture2D textures[];
+                layout(binding = 1) uniform sampler samplers[];
+                layout(location = 0) out vec4 fragment_color;
 
-          void main() {
-              vec3 light = normalize(vec3(3.0, 1.5, 3.0));
-              float diffuse = 0.25 + 0.75 * max(0.0, dot(light, mesh_primitive.normal));
-              fragment_color.rgb = diffuse * texture(
-                  sampler2D(
-                      textures[nonuniformEXT(mesh_primitive.texture_id)],
-                      samplers[nonuniformEXT(mesh_primitive.sampler_id)]
-                  ), mesh_vertex.texcoord
-              ).rgb;
-              fragment_color.a = 1.0;
-          }
-      "#,
+                void main() {
+                    vec3 light = normalize(vec3(3.0, 1.5, 3.0));
+                    float diffuse = 0.25 + 0.75 * max(0.0, dot(light, mesh_primitive.normal));
+                    fragment_color.rgb = diffuse * texture(
+                        sampler2D(
+                            textures[nonuniformEXT(mesh_primitive.texture_id)],
+                            samplers[nonuniformEXT(mesh_primitive.sampler_id)]
+                        ), mesh_vertex.texcoord
+                    ).rgb;
+                    fragment_color.a = 1.0;
+                }
+            "#,
         )?;
 
         let shader = shader::Shader::create(

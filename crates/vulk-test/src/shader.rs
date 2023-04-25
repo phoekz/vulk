@@ -1,3 +1,5 @@
+use std::ffi::CString;
+
 use super::*;
 
 pub struct Compiler {
@@ -22,7 +24,13 @@ impl Compiler {
         );
     }
 
-    pub fn compile(&self, shader_type: ShaderType, code: impl AsRef<str>) -> Result<SpirV> {
+    pub fn compile(
+        &self,
+        shader_type: ShaderType,
+        input_file_name: impl AsRef<str>,
+        entry_point_name: impl AsRef<str>,
+        code: impl AsRef<str>,
+    ) -> Result<SpirV> {
         use shaderc::CompileOptions;
         use shaderc::OptimizationLevel;
         use shaderc::ResolvedInclude;
@@ -59,8 +67,8 @@ impl Compiler {
         let shader = self.compiler.compile_into_spirv(
             code.as_ref(),
             shader_kind,
-            "unused",
-            "main",
+            input_file_name.as_ref(),
+            entry_point_name.as_ref(),
             Some(&options),
         )?;
         if shader.get_num_warnings() > 0 {
@@ -69,6 +77,7 @@ impl Compiler {
         Ok(SpirV {
             ty: shader_type,
             code: shader.as_binary_u8().to_owned(),
+            entry_point: CString::new(entry_point_name.as_ref())?,
         })
     }
 }
@@ -113,6 +122,7 @@ impl ShaderType {
 pub struct SpirV {
     pub ty: ShaderType,
     pub code: Vec<u8>,
+    pub entry_point: CString,
 }
 
 pub struct ShaderCreateInfo<'a> {
@@ -147,7 +157,7 @@ impl GpuResource for Shader {
                 code_type: vk::ShaderCodeTypeEXT::SpirvEXT,
                 code_size: spirv.code.len(),
                 p_code: spirv.code.as_ptr().cast(),
-                p_name: b"main\0".as_ptr().cast(),
+                p_name: spirv.entry_point.as_ptr(),
                 set_layout_count: create_info.set_layouts.len() as _,
                 p_set_layouts: create_info.set_layouts.as_ptr(),
                 push_constant_range_count: create_info.push_constant_ranges.len() as _,
