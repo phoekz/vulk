@@ -256,7 +256,7 @@ impl GpuResource for DescriptorStorage {
         Ok(Self { set_layout, buffer })
     }
 
-    unsafe fn destroy(&self, gpu: &Gpu) {
+    unsafe fn destroy(self, gpu: &Gpu) {
         gpu.device.destroy_descriptor_set_layout(self.set_layout);
         self.buffer.destroy(gpu);
     }

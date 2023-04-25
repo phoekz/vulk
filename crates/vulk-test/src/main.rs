@@ -114,7 +114,7 @@ trait GpuResource {
     unsafe fn create(gpu: &Gpu, create_info: &Self::CreateInfo<'_>) -> Result<Self>
     where
         Self: Sized;
-    unsafe fn destroy(&self, gpu: &Gpu);
+    unsafe fn destroy(self, gpu: &Gpu);
 }
 
 //

@@ -65,7 +65,7 @@ impl GpuResource for Queries {
         })
     }
 
-    unsafe fn destroy(&self, Gpu { device, .. }: &Gpu) {
+    unsafe fn destroy(self, Gpu { device, .. }: &Gpu) {
         device.destroy_query_pool(self.timestamp);
         device.destroy_query_pool(self.pipeline);
         device.destroy_query_pool(self.mesh_shader);

@@ -170,7 +170,7 @@ impl GpuResource for Shaders {
         Ok(Self { shader })
     }
 
-    unsafe fn destroy(&self, gpu: &Gpu) {
+    unsafe fn destroy(self, gpu: &Gpu) {
         self.shader.destroy(gpu);
     }
 }
@@ -208,7 +208,7 @@ impl GpuResource for RenderTargets {
         Ok(Self { color })
     }
 
-    unsafe fn destroy(&self, gpu: &Gpu) {
+    unsafe fn destroy(self, gpu: &Gpu) {
         self.color.destroy(gpu);
     }
 }
@@ -241,7 +241,7 @@ impl GpuResource for Output {
         Ok(Self { buffer })
     }
 
-    unsafe fn destroy(&self, gpu: &Gpu) {
+    unsafe fn destroy(self, gpu: &Gpu) {
         self.buffer.destroy(gpu);
     }
 }

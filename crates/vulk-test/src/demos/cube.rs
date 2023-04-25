@@ -168,11 +168,11 @@ impl GpuResource for Textures {
         Ok(Self { images, samplers })
     }
 
-    unsafe fn destroy(&self, gpu: &Gpu) {
-        for image in &self.images {
+    unsafe fn destroy(self, gpu: &Gpu) {
+        for image in self.images {
             image.destroy(gpu);
         }
-        for sampler in &self.samplers {
+        for sampler in self.samplers {
             sampler.destroy(gpu);
         }
     }
@@ -258,7 +258,7 @@ impl GpuResource for Descriptors {
         })
     }
 
-    unsafe fn destroy(&self, gpu: &Gpu) {
+    unsafe fn destroy(self, gpu: &Gpu) {
         self.storage.destroy(gpu);
         gpu.device.destroy_pipeline_layout(self.pipeline_layout);
     }
@@ -440,7 +440,7 @@ impl GpuResource for Shaders {
         Ok(Self { shader })
     }
 
-    unsafe fn destroy(&self, gpu: &Gpu) {
+    unsafe fn destroy(self, gpu: &Gpu) {
         self.shader.destroy(gpu);
     }
 }
@@ -505,7 +505,7 @@ impl GpuResource for RenderTargets {
         })
     }
 
-    unsafe fn destroy(&self, gpu: &Gpu) {
+    unsafe fn destroy(self, gpu: &Gpu) {
         self.color.destroy(gpu);
         self.depth.destroy(gpu);
         self.resolve.destroy(gpu);
@@ -540,7 +540,7 @@ impl GpuResource for Output {
         Ok(Self { buffer })
     }
 
-    unsafe fn destroy(&self, gpu: &Gpu) {
+    unsafe fn destroy(self, gpu: &Gpu) {
         self.buffer.destroy(gpu);
     }
 }

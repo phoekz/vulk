@@ -178,7 +178,7 @@ impl GpuResource for Shader {
         Ok(Self { stages, shaders })
     }
 
-    unsafe fn destroy(&self, Gpu { device, .. }: &Gpu) {
+    unsafe fn destroy(self, Gpu { device, .. }: &Gpu) {
         for &shader in &self.shaders {
             device.destroy_shader_ext(shader);
         }

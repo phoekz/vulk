@@ -395,7 +395,7 @@ impl GpuResource for Blas {
         })
     }
 
-    unsafe fn destroy(&self, gpu: &Gpu) {
+    unsafe fn destroy(self, gpu: &Gpu) {
         self.blas_buffer.destroy(gpu);
         gpu.device.destroy_acceleration_structure_khr(self.blas);
     }
@@ -629,7 +629,7 @@ impl GpuResource for Tlas {
         })
     }
 
-    unsafe fn destroy(&self, gpu: &Gpu) {
+    unsafe fn destroy(self, gpu: &Gpu) {
         self.tlas_buffer.destroy(gpu);
         gpu.device.destroy_acceleration_structure_khr(self.tlas);
     }
@@ -666,7 +666,7 @@ impl GpuResource for RenderImage {
         Ok(Self { image })
     }
 
-    unsafe fn destroy(&self, gpu: &Gpu) {
+    unsafe fn destroy(self, gpu: &Gpu) {
         self.image.destroy(gpu);
     }
 }
@@ -708,7 +708,7 @@ impl GpuResource for Stats {
         Ok(Self { counters })
     }
 
-    unsafe fn destroy(&self, gpu: &Gpu) {
+    unsafe fn destroy(self, gpu: &Gpu) {
         self.counters.destroy(gpu);
     }
 }
@@ -792,7 +792,7 @@ impl GpuResource for Descriptors {
         })
     }
 
-    unsafe fn destroy(&self, gpu: &Gpu) {
+    unsafe fn destroy(self, gpu: &Gpu) {
         gpu.device.destroy_pipeline_layout(self.pipeline_layout);
         self.storage.destroy(gpu);
     }
@@ -1039,7 +1039,7 @@ impl GpuResource for Pipeline {
         })
     }
 
-    unsafe fn destroy(&self, gpu: &Gpu) {
+    unsafe fn destroy(self, gpu: &Gpu) {
         gpu.device.destroy_pipeline(self.pipeline);
         for &shader in &self.shaders {
             gpu.device.destroy_shader_module(shader);
@@ -1110,8 +1110,8 @@ impl GpuResource for Sbt {
         })
     }
 
-    unsafe fn destroy(&self, gpu: &Gpu) {
-        for binding_table in &self.binding_tables {
+    unsafe fn destroy(self, gpu: &Gpu) {
+        for binding_table in self.binding_tables {
             binding_table.destroy(gpu);
         }
     }
@@ -1145,7 +1145,7 @@ impl GpuResource for Output {
         Ok(Self { buffer })
     }
 
-    unsafe fn destroy(&self, gpu: &Gpu) {
+    unsafe fn destroy(self, gpu: &Gpu) {
         self.buffer.destroy(gpu);
     }
 }

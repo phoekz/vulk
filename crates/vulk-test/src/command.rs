@@ -69,7 +69,7 @@ impl GpuResource for Commands {
         })
     }
 
-    unsafe fn destroy(&self, Gpu { device, .. }: &Gpu) {
+    unsafe fn destroy(self, Gpu { device, .. }: &Gpu) {
         device.destroy_semaphore(self.semaphore);
         device.free_command_buffers(self.command_pool, 1, addr_of!(self.command_buffer).cast());
         device.destroy_command_pool(self.command_pool);

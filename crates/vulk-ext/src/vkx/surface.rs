@@ -98,8 +98,7 @@ impl Surface {
         })
     }
 
-    // Todo: change to consuming self.
-    pub unsafe fn destroy(&self, instance: &Instance) {
+    pub unsafe fn destroy(self, instance: &Instance) {
         instance.destroy_surface_khr(self.surface);
     }
 

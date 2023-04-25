@@ -256,7 +256,7 @@ impl Geometry {
         })
     }
 
-    unsafe fn destroy(&self, gpu: &Gpu) {
+    unsafe fn destroy(self, gpu: &Gpu) {
         self.vertex_buffer.destroy(gpu);
         self.index_buffer.destroy(gpu);
     }
@@ -301,7 +301,7 @@ impl Textures {
         Ok(Self { image, sampler })
     }
 
-    unsafe fn destroy(&self, gpu: &Gpu) {
+    unsafe fn destroy(self, gpu: &Gpu) {
         self.image.destroy(gpu);
         self.sampler.destroy(gpu);
     }
@@ -389,7 +389,7 @@ impl Descriptors {
         })
     }
 
-    unsafe fn destroy(&self, gpu @ Gpu { device, .. }: &Gpu) {
+    unsafe fn destroy(self, gpu @ Gpu { device, .. }: &Gpu) {
         device.destroy_pipeline_layout(self.pipeline_layout);
         self.storage.destroy(gpu);
     }
@@ -558,7 +558,7 @@ impl Shaders {
         Ok(Self { shader })
     }
 
-    unsafe fn destroy(&self, gpu: &Gpu) {
+    unsafe fn destroy(self, gpu: &Gpu) {
         self.shader.destroy(gpu);
     }
 }
@@ -588,7 +588,7 @@ impl RenderTargets {
         Ok(Self { color })
     }
 
-    unsafe fn destroy(&self, gpu: &Gpu) {
+    unsafe fn destroy(self, gpu: &Gpu) {
         self.color.destroy(gpu);
     }
 }
@@ -616,7 +616,7 @@ impl Output {
         Ok(Self { buffer })
     }
 
-    unsafe fn destroy(&self, gpu: &Gpu) {
+    unsafe fn destroy(self, gpu: &Gpu) {
         self.buffer.destroy(gpu);
     }
 }

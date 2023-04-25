@@ -94,7 +94,7 @@ impl GpuResource for IndirectBuffer {
         Ok(Self { buffer })
     }
 
-    unsafe fn destroy(&self, gpu: &Gpu) {
+    unsafe fn destroy(self, gpu: &Gpu) {
         self.buffer.destroy(gpu);
     }
 }
@@ -130,7 +130,7 @@ impl GpuResource for ComputeImage {
         Ok(Self { image })
     }
 
-    unsafe fn destroy(&self, gpu: &Gpu) {
+    unsafe fn destroy(self, gpu: &Gpu) {
         self.image.destroy(gpu);
     }
 }
@@ -163,7 +163,7 @@ impl GpuResource for Output {
         Ok(Self { buffer })
     }
 
-    unsafe fn destroy(&self, gpu: &Gpu) {
+    unsafe fn destroy(self, gpu: &Gpu) {
         self.buffer.destroy(gpu);
     }
 }
@@ -228,7 +228,7 @@ impl GpuResource for Descriptors {
         })
     }
 
-    unsafe fn destroy(&self, gpu: &Gpu) {
+    unsafe fn destroy(self, gpu: &Gpu) {
         gpu.device.destroy_pipeline_layout(self.pipeline_layout);
         self.storage.destroy(gpu);
     }
@@ -332,7 +332,7 @@ impl GpuResource for Shaders {
         Ok(Self { indirect, compute })
     }
 
-    unsafe fn destroy(&self, gpu: &Gpu) {
+    unsafe fn destroy(self, gpu: &Gpu) {
         self.indirect.destroy(gpu);
         self.compute.destroy(gpu);
     }

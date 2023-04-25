@@ -168,7 +168,7 @@ impl<T> GpuResource for Buffer<T> {
         })
     }
 
-    unsafe fn destroy(&self, Gpu { device, .. }: &Gpu) {
+    unsafe fn destroy(self, Gpu { device, .. }: &Gpu) {
         device.destroy_buffer(self.buffer);
         device.free_memory(self.device_memory);
     }
@@ -344,7 +344,7 @@ impl GpuResource for Image2d {
         })
     }
 
-    unsafe fn destroy(&self, Gpu { device, .. }: &Gpu) {
+    unsafe fn destroy(self, Gpu { device, .. }: &Gpu) {
         device.destroy_image_view(self.image_view);
         device.destroy_image(self.image);
         device.free_memory(self.device_memory);
@@ -468,7 +468,7 @@ impl GpuResource for Sampler {
         })
     }
 
-    unsafe fn destroy(&self, Gpu { device, .. }: &Gpu) {
+    unsafe fn destroy(self, Gpu { device, .. }: &Gpu) {
         device.destroy_sampler(self.sampler);
     }
 }

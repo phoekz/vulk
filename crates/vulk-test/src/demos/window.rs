@@ -116,7 +116,7 @@ impl GpuResource for Renderer {
         })
     }
 
-    unsafe fn destroy(&self, gpu: &Gpu) {
+    unsafe fn destroy(self, gpu: &Gpu) {
         self.commands.destroy(gpu);
         self.swapchain.destroy(gpu);
         self.surface.destroy(&gpu.instance);
@@ -168,7 +168,7 @@ impl GpuResource for Swapchain {
         })
     }
 
-    unsafe fn destroy(&self, Gpu { device, .. }: &Gpu) {
+    unsafe fn destroy(self, Gpu { device, .. }: &Gpu) {
         device.destroy_swapchain_khr(self.swapchain);
         for &(_, image_view) in &self.swapchain_images {
             device.destroy_image_view(image_view);
@@ -307,7 +307,7 @@ impl GpuResource for Commands {
         })
     }
 
-    unsafe fn destroy(&self, Gpu { device, .. }: &Gpu) {
+    unsafe fn destroy(self, Gpu { device, .. }: &Gpu) {
         device.destroy_command_pool(self.command_pool);
         device.destroy_semaphore(self.command_buffer_available);
         for &present_complete in &self.present_completes {
