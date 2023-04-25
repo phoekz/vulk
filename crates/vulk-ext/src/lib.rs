@@ -27,7 +27,7 @@
 use std::mem::zeroed;
 use std::ptr::{addr_of, addr_of_mut, null, null_mut};
 
-use anyhow::{bail, Context, Result};
+use anyhow::{bail, ensure, Context, Result};
 use log::log;
 use vulk::vk;
 

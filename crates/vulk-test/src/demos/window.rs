@@ -226,14 +226,7 @@ struct Commands {
 impl GpuResource for Commands {
     type CreateInfo<'a> = CommandsCreateInfo;
 
-    unsafe fn create(
-        Gpu {
-            device,
-            queue_family,
-            ..
-        }: &Gpu,
-        create_info: &Self::CreateInfo<'_>,
-    ) -> Result<Self>
+    unsafe fn create(Gpu { device, .. }: &Gpu, create_info: &Self::CreateInfo<'_>) -> Result<Self>
     where
         Self: Sized,
     {
@@ -243,7 +236,7 @@ impl GpuResource for Commands {
                 s_type: vk::StructureType::CommandPoolCreateInfo,
                 p_next: null(),
                 flags: vk::CommandPoolCreateFlagBits::ResetCommandBuffer.into(),
-                queue_family_index: queue_family.index,
+                queue_family_index: device.queue_family_index,
             }),
         )?;
 
@@ -425,7 +418,7 @@ unsafe fn execute(
 }
 
 unsafe fn redraw(
-    Gpu { device, queue, .. }: &Gpu,
+    Gpu { device, .. }: &Gpu,
     Renderer {
         swapchain,
         commands,
@@ -579,7 +572,7 @@ unsafe fn redraw(
 
     // Queue submit.
     device.queue_submit2(
-        *queue,
+        device.queue,
         1,
         &(vk::SubmitInfo2 {
             s_type: vk::StructureType::SubmitInfo2,
@@ -638,7 +631,7 @@ unsafe fn redraw(
             p_image_indices: &image_index,
             p_results: result.as_mut_ptr(),
         };
-        device.queue_present_khr(*queue, &present_info_khr)?;
+        device.queue_present_khr(device.queue, &present_info_khr)?;
         let result = result.assume_init();
         ensure!(result == vk::Result::Success);
     }

@@ -85,12 +85,9 @@ impl PhysicalDevice {
             raytracing_pipeline_properties: rtp_props,
         })
     }
-}
 
-impl std::ops::Deref for PhysicalDevice {
-    type Target = vk::PhysicalDevice;
-
-    fn deref(&self) -> &Self::Target {
-        &self.physical_device
+    #[must_use]
+    pub fn handle(&self) -> vk::PhysicalDevice {
+        self.physical_device
     }
 }

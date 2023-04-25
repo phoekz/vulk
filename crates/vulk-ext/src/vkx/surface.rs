@@ -13,14 +13,6 @@ pub struct Surface {
     pub present_mode: vk::PresentModeKHR,
 }
 
-// Todo: check this when picking a queue
-// let present_supported = instance.get_physical_device_surface_support_khr(
-//     physical_device.handle,
-//     queue_family.index,
-//     surface,
-// )?;
-// ensure!(present_supported == vk::TRUE);
-
 impl Surface {
     pub unsafe fn create<Window>(
         instance: &Instance,
@@ -50,14 +42,14 @@ impl Surface {
         let surface = instance.create_win32_surface_khr(&create_info)?;
 
         // Surface capabilities.
-        let surface_capabilities =
-            instance.get_physical_device_surface_capabilities_khr(**physical_device, surface)?;
+        let surface_capabilities = instance
+            .get_physical_device_surface_capabilities_khr(physical_device.handle(), surface)?;
 
         // Surface formats.
         let surface_formats = vulk::read_to_vec(
             |count, ptr| {
                 instance.get_physical_device_surface_formats_khr(
-                    **physical_device,
+                    physical_device.handle(),
                     surface,
                     count,
                     ptr,
@@ -74,7 +66,7 @@ impl Surface {
         let present_modes = vulk::read_to_vec(
             |count, ptr| {
                 instance.get_physical_device_surface_present_modes_khr(
-                    **physical_device,
+                    physical_device.handle(),
                     surface,
                     count,
                     ptr,
@@ -100,6 +92,11 @@ impl Surface {
 
     pub unsafe fn destroy(self, instance: &Instance) {
         instance.destroy_surface_khr(self.surface);
+    }
+
+    #[must_use]
+    pub fn handle(&self) -> vk::SurfaceKHR {
+        self.surface
     }
 
     #[must_use]

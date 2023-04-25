@@ -478,7 +478,7 @@ impl GpuResource for Sampler {
 //
 
 pub unsafe fn multi_upload_images(
-    gpu @ Gpu { device, queue, .. }: &Gpu,
+    gpu @ Gpu { device, .. }: &Gpu,
     images: &[Image2d],
     datas: &[Vec<u8>],
 ) -> Result<()> {
@@ -609,7 +609,7 @@ pub unsafe fn multi_upload_images(
     // End staging.
     commands.end(gpu)?;
     device.queue_submit2(
-        *queue,
+        device.queue,
         1,
         &(vk::SubmitInfo2 {
             s_type: vk::StructureType::SubmitInfo2,

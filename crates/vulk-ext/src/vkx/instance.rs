@@ -1,15 +1,25 @@
 use super::*;
 
-pub struct Instance {
-    _init: vulk::Init,
-    instance: vulk::Instance,
-    debug_utils: DebugUtils,
-}
-
 pub struct InstanceCreateInfo<'a> {
     pub application_name: &'a str,
     pub engine_name: &'a str,
     pub validation_layers: bool,
+}
+
+impl Default for InstanceCreateInfo<'_> {
+    fn default() -> Self {
+        Self {
+            application_name: "vulk",
+            engine_name: "vulk",
+            validation_layers: true,
+        }
+    }
+}
+
+pub struct Instance {
+    _init: vulk::Init,
+    instance: vulk::Instance,
+    debug_utils: DebugUtils,
 }
 
 impl Instance {

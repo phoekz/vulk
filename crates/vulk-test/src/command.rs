@@ -11,21 +11,14 @@ pub struct Commands {
 impl GpuResource for Commands {
     type CreateInfo<'a> = CommandsCreateInfo;
 
-    unsafe fn create(
-        Gpu {
-            device,
-            queue_family,
-            ..
-        }: &Gpu,
-        _: &Self::CreateInfo<'_>,
-    ) -> Result<Self> {
+    unsafe fn create(Gpu { device, .. }: &Gpu, _: &Self::CreateInfo<'_>) -> Result<Self> {
         // Command pool.
         let command_pool = device.create_command_pool(
             &(vk::CommandPoolCreateInfo {
                 s_type: vk::StructureType::CommandPoolCreateInfo,
                 p_next: null(),
                 flags: vk::CommandPoolCreateFlags::empty(),
-                queue_family_index: queue_family.index,
+                queue_family_index: device.queue_family_index,
             }),
         )?;
 
@@ -98,11 +91,11 @@ impl Commands {
 
     pub unsafe fn submit_and_wait(
         &self,
-        Gpu { device, queue, .. }: &Gpu,
+        Gpu { device, .. }: &Gpu,
         signal_stage_mask: vk::PipelineStageFlags2,
     ) -> Result<()> {
         device.queue_submit2(
-            *queue,
+            device.queue,
             1,
             &(vk::SubmitInfo2 {
                 s_type: vk::StructureType::SubmitInfo2,

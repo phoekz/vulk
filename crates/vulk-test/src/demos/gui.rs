@@ -626,7 +626,7 @@ impl Output {
 //
 
 unsafe fn draw(
-    gpu @ Gpu { device, queue, .. }: &Gpu,
+    gpu @ Gpu { device, .. }: &Gpu,
     GuiDemo {
         gui,
         commands,
@@ -847,7 +847,7 @@ unsafe fn draw(
 
     // Queue submit.
     device.queue_submit2(
-        *queue,
+        device.queue,
         1,
         &(vk::SubmitInfo2 {
             s_type: vk::StructureType::SubmitInfo2,
