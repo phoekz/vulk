@@ -74,29 +74,6 @@ impl WindowSystem {
         ));
         Ok(Self { event_loop, window })
     }
-
-    fn win32_surface_create_info_khr(&self) -> Result<vk::Win32SurfaceCreateInfoKHR> {
-        use raw_window_handle::{HasRawDisplayHandle, HasRawWindowHandle};
-        use raw_window_handle::{RawDisplayHandle, RawWindowHandle};
-
-        let display_handle = self.window.raw_display_handle();
-        let window_handle = self.window.raw_window_handle();
-        match (display_handle, window_handle) {
-            (RawDisplayHandle::Windows(_), RawWindowHandle::Win32(window)) => {
-                Ok(vk::Win32SurfaceCreateInfoKHR {
-                    s_type: vk::StructureType::Win32SurfaceCreateInfoKHR,
-                    p_next: null(),
-                    flags: vk::Win32SurfaceCreateFlagsKHR::empty(),
-                    hinstance: window.hinstance,
-                    hwnd: window.hwnd,
-                })
-            }
-
-            _ => {
-                bail!("Unsupported platform: display_handle={display_handle:?}, window_handle={window_handle:?}");
-            }
-        }
-    }
 }
 
 //
@@ -108,7 +85,7 @@ struct RendererCreateInfo<'a> {
 }
 
 struct Renderer {
-    surface: Surface,
+    surface: vkx::Surface,
     swapchain: Swapchain,
     commands: Commands,
 }
@@ -120,13 +97,10 @@ impl GpuResource for Renderer {
     where
         Self: Sized,
     {
-        let surface = Surface::create(
-            gpu,
-            &SurfaceCreateInfo {
-                win32_surface_create_info_khr: create_info
-                    .window_system
-                    .win32_surface_create_info_khr()?,
-            },
+        let surface = vkx::Surface::create(
+            &gpu.instance,
+            &gpu.physical_device,
+            &create_info.window_system.window,
         )?;
         let swapchain = Swapchain::create(gpu, &SwapchainCreateInfo { surface: &surface })?;
         let commands = Commands::create(
@@ -145,159 +119,7 @@ impl GpuResource for Renderer {
     unsafe fn destroy(&self, gpu: &Gpu) {
         self.commands.destroy(gpu);
         self.swapchain.destroy(gpu);
-        self.surface.destroy(gpu);
-    }
-}
-
-//
-// Surface
-//
-
-struct SurfaceCreateInfo {
-    win32_surface_create_info_khr: vk::Win32SurfaceCreateInfoKHR,
-}
-
-#[allow(dead_code)]
-struct Surface {
-    surface: vk::SurfaceKHR,
-    win32_surface_create_info_khr: vk::Win32SurfaceCreateInfoKHR,
-    surface_capabilities: vk::SurfaceCapabilitiesKHR,
-    surface_formats: Vec<vk::SurfaceFormatKHR>,
-    surface_format: vk::SurfaceFormatKHR,
-    present_modes: Vec<vk::PresentModeKHR>,
-    present_mode: vk::PresentModeKHR,
-}
-
-impl GpuResource for Surface {
-    type CreateInfo<'a> = SurfaceCreateInfo;
-
-    unsafe fn create(
-        Gpu {
-            instance,
-            physical_device,
-            queue_family,
-            ..
-        }: &Gpu,
-        create_info: &Self::CreateInfo<'_>,
-    ) -> Result<Self>
-    where
-        Self: Sized,
-    {
-        // Surface.
-        let win32_surface_create_info_khr = create_info.win32_surface_create_info_khr;
-        let surface = instance.create_win32_surface_khr(&win32_surface_create_info_khr)?;
-
-        // Surface support.
-        let present_supported = instance.get_physical_device_surface_support_khr(
-            physical_device.handle,
-            queue_family.index,
-            surface,
-        )?;
-        ensure!(present_supported == vk::TRUE);
-
-        // Surface capabilities.
-        let surface_capabilities = instance
-            .get_physical_device_surface_capabilities_khr(physical_device.handle, surface)?;
-
-        // Surface formats.
-        let surface_formats = vulk::read_to_vec(
-            |count, ptr| {
-                instance.get_physical_device_surface_formats_khr(
-                    physical_device.handle,
-                    surface,
-                    count,
-                    ptr,
-                )
-            },
-            None,
-        )?;
-        let surface_format = *surface_formats
-            .iter()
-            .find(|f| f.format == vk::Format::B8g8r8a8Unorm)
-            .context("Finding surface format")?;
-
-        // Present modes.
-        let present_modes = vulk::read_to_vec(
-            |count, ptr| {
-                instance.get_physical_device_surface_present_modes_khr(
-                    physical_device.handle,
-                    surface,
-                    count,
-                    ptr,
-                )
-            },
-            None,
-        )?;
-        let present_mode = *present_modes
-            .iter()
-            .find(|&&p| p == vk::PresentModeKHR::FifoKHR)
-            .context("Finding present mode")?;
-
-        Ok(Self {
-            surface,
-            win32_surface_create_info_khr,
-            surface_capabilities,
-            surface_formats,
-            surface_format,
-            present_modes,
-            present_mode,
-        })
-    }
-
-    unsafe fn destroy(&self, Gpu { instance, .. }: &Gpu) {
-        instance.destroy_surface_khr(self.surface);
-    }
-}
-
-impl Surface {
-    fn swapchain_create_info_khr(&self) -> vk::SwapchainCreateInfoKHR {
-        vk::SwapchainCreateInfoKHR {
-            s_type: vk::StructureType::SwapchainCreateInfoKHR,
-            p_next: null(),
-            flags: vk::SwapchainCreateFlagsKHR::empty(),
-            surface: self.surface,
-            min_image_count: self.surface_capabilities.min_image_count,
-            image_format: self.surface_format.format,
-            image_color_space: self.surface_format.color_space,
-            image_extent: vk::Extent2D {
-                width: self.surface_capabilities.min_image_extent.width,
-                height: self.surface_capabilities.min_image_extent.height,
-            },
-            image_array_layers: 1,
-            image_usage: vk::ImageUsageFlagBits::ColorAttachment.into(),
-            image_sharing_mode: vk::SharingMode::Exclusive,
-            queue_family_index_count: 0,
-            p_queue_family_indices: null(),
-            pre_transform: vk::SurfaceTransformFlagBitsKHR::IdentityKHR,
-            composite_alpha: vk::CompositeAlphaFlagBitsKHR::OpaqueKHR,
-            present_mode: self.present_mode,
-            clipped: vk::TRUE,
-            old_swapchain: vk::SwapchainKHR::null(),
-        }
-    }
-
-    fn image_view_create_info(&self, image: vk::Image) -> vk::ImageViewCreateInfo {
-        vk::ImageViewCreateInfo {
-            s_type: vk::StructureType::ImageViewCreateInfo,
-            p_next: null(),
-            flags: vk::ImageViewCreateFlags::empty(),
-            image,
-            view_type: vk::ImageViewType::Type2d,
-            format: self.surface_format.format,
-            components: vk::ComponentMapping {
-                r: vk::ComponentSwizzle::Identity,
-                g: vk::ComponentSwizzle::Identity,
-                b: vk::ComponentSwizzle::Identity,
-                a: vk::ComponentSwizzle::Identity,
-            },
-            subresource_range: vk::ImageSubresourceRange {
-                aspect_mask: self.surface_format.format.aspect_mask(),
-                base_mip_level: 0,
-                level_count: 1,
-                base_array_layer: 0,
-                layer_count: 1,
-            },
-        }
+        self.surface.destroy(&gpu.instance);
     }
 }
 
@@ -306,7 +128,7 @@ impl Surface {
 //
 
 struct SwapchainCreateInfo<'a> {
-    surface: &'a Surface,
+    surface: &'a vkx::Surface,
 }
 
 struct Swapchain {

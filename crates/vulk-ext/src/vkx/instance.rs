@@ -76,7 +76,7 @@ impl Instance {
         })
     }
 
-    pub unsafe fn destroy(&self) {
+    pub unsafe fn destroy(self) {
         self.debug_utils.destroy(&self.instance);
         self.instance.destroy_instance();
     }

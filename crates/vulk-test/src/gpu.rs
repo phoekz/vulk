@@ -6,7 +6,7 @@ use super::*;
 
 pub struct Gpu {
     pub instance: vkx::Instance,
-    pub physical_device: PhysicalDevice,
+    pub physical_device: vkx::PhysicalDevice,
     pub queue_family: QueueFamily,
     pub device: vulk::Device,
     pub queue: vk::Queue,
@@ -21,7 +21,7 @@ impl Gpu {
             validation_layers: true,
         })?;
         let physical_device =
-            create_physical_device(&instance).context("Creating physical device")?;
+            vkx::PhysicalDevice::create(&instance).context("Creating physical device")?;
         let queue_family = find_queue_family(&physical_device).context("Find queue family")?;
         let device = create_logical_device(&instance, &physical_device, &queue_family)
             .context("Creating device")?;
@@ -45,97 +45,6 @@ impl Gpu {
 }
 
 //
-// Physical device
-//
-
-pub struct PhysicalDevice {
-    pub handle: vk::PhysicalDevice,
-    pub properties: vk::PhysicalDeviceProperties,
-    pub queue_family_properties: Vec<vk::QueueFamilyProperties>,
-    pub memory_properties: vk::PhysicalDeviceMemoryProperties,
-    pub descriptor_buffer_properties_ext: vk::PhysicalDeviceDescriptorBufferPropertiesEXT,
-    pub mesh_shader_properties_ext: vk::PhysicalDeviceMeshShaderPropertiesEXT,
-    pub subgroup_properties: vk::PhysicalDeviceSubgroupProperties,
-    pub acceleration_structure_properties: vk::PhysicalDeviceAccelerationStructurePropertiesKHR,
-    pub raytracing_pipeline_properties: vk::PhysicalDeviceRayTracingPipelinePropertiesKHR,
-}
-
-unsafe fn create_physical_device(instance: &vulk::Instance) -> Result<PhysicalDevice> {
-    // Find physical devices.
-    let physical_devices = vulk::read_to_vec(
-        |count, ptr| instance.enumerate_physical_devices(count, ptr),
-        None,
-    )?;
-    info!("Found {} physical devices", physical_devices.len());
-
-    // Pick a physical device.
-    let physical_device = physical_devices[0];
-
-    // Device properties.
-    let mut as_props: vk::PhysicalDeviceAccelerationStructurePropertiesKHR = zeroed();
-    as_props.s_type = vk::StructureType::PhysicalDeviceAccelerationStructurePropertiesKHR;
-    let mut rtp_props: vk::PhysicalDeviceRayTracingPipelinePropertiesKHR = zeroed();
-    rtp_props.s_type = vk::StructureType::PhysicalDeviceRayTracingPipelinePropertiesKHR;
-    rtp_props.p_next = addr_of_mut!(as_props).cast();
-    let mut sg_props: vk::PhysicalDeviceSubgroupProperties = zeroed();
-    sg_props.s_type = vk::StructureType::PhysicalDeviceSubgroupProperties;
-    sg_props.p_next = addr_of_mut!(rtp_props).cast();
-    let mut ms_props: vk::PhysicalDeviceMeshShaderPropertiesEXT = zeroed();
-    ms_props.s_type = vk::StructureType::PhysicalDeviceMeshShaderPropertiesEXT;
-    ms_props.p_next = addr_of_mut!(sg_props).cast();
-    let mut db_props: vk::PhysicalDeviceDescriptorBufferPropertiesEXT = zeroed();
-    db_props.s_type = vk::StructureType::PhysicalDeviceDescriptorBufferPropertiesEXT;
-    db_props.p_next = addr_of_mut!(ms_props).cast();
-    let mut props2 = vk::PhysicalDeviceProperties2 {
-        s_type: vk::StructureType::PhysicalDeviceProperties2,
-        p_next: addr_of_mut!(db_props).cast(),
-        properties: zeroed(),
-    };
-    instance.get_physical_device_properties2(physical_device, &mut props2);
-
-    // Assert that our descriptor type can fit any kind of descriptor.
-    descriptor::validate_descriptor_sizes(&db_props)?;
-
-    // Queue family properties.
-    let qf_props = {
-        let qf_props2 = vulk::read_to_vec(
-            |a, b| {
-                instance.get_physical_device_queue_family_properties2(physical_device, a, b);
-                Ok(())
-            },
-            Some(vk::StructureType::QueueFamilyProperties2),
-        )?;
-        qf_props2
-            .into_iter()
-            .map(|qf_prop| qf_prop.queue_family_properties)
-            .collect()
-    };
-
-    // Memory properties.
-    let mem_props = {
-        let mut mem_props2 = vk::PhysicalDeviceMemoryProperties2 {
-            s_type: vk::StructureType::PhysicalDeviceMemoryProperties2,
-            p_next: null_mut(),
-            memory_properties: zeroed(),
-        };
-        instance.get_physical_device_memory_properties2(physical_device, &mut mem_props2);
-        mem_props2.memory_properties
-    };
-
-    Ok(PhysicalDevice {
-        handle: physical_device,
-        properties: props2.properties,
-        queue_family_properties: qf_props,
-        memory_properties: mem_props,
-        descriptor_buffer_properties_ext: db_props,
-        mesh_shader_properties_ext: ms_props,
-        subgroup_properties: sg_props,
-        acceleration_structure_properties: as_props,
-        raytracing_pipeline_properties: rtp_props,
-    })
-}
-
-//
 // Queue family
 //
 
@@ -144,7 +53,7 @@ pub struct QueueFamily {
     pub properties: vk::QueueFamilyProperties,
 }
 
-unsafe fn find_queue_family(physical_device: &PhysicalDevice) -> Result<QueueFamily> {
+unsafe fn find_queue_family(physical_device: &vkx::PhysicalDevice) -> Result<QueueFamily> {
     physical_device
         .queue_family_properties
         .iter()
@@ -171,8 +80,8 @@ unsafe fn find_queue_family(physical_device: &PhysicalDevice) -> Result<QueueFam
 //
 
 unsafe fn create_logical_device(
-    instance: &vulk::Instance,
-    physical_device: &PhysicalDevice,
+    instance: &vkx::Instance,
+    physical_device: &vkx::PhysicalDevice,
     queue_family: &QueueFamily,
 ) -> Result<vulk::Device> {
     // Features.
@@ -382,7 +291,7 @@ unsafe fn create_logical_device(
 
     // Create.
     let device = instance.create_device(
-        physical_device.handle,
+        **physical_device,
         &(vk::DeviceCreateInfo {
             s_type: vk::StructureType::DeviceCreateInfo,
             p_next: addr_of!(physical_device_features2).cast(),
@@ -436,8 +345,8 @@ pub struct TimestampCalibration {
 }
 
 unsafe fn get_timestamp_calibration(
-    instance: &vulk::Instance,
-    physical_device: &PhysicalDevice,
+    instance: &vkx::Instance,
+    physical_device: &vkx::PhysicalDevice,
     device: &vulk::Device,
 ) -> Result<TimestampCalibration> {
     // Check support.
@@ -445,7 +354,7 @@ unsafe fn get_timestamp_calibration(
         let time_domains = vulk::read_to_vec(
             |count, ptr| {
                 instance.get_physical_device_calibrateable_time_domains_ext(
-                    physical_device.handle,
+                    **physical_device,
                     count,
                     ptr,
                 )

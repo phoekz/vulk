@@ -16,3 +16,4 @@ vulk = { version = "0.*", path = "../vulk" }
 
 anyhow.workspace = true
 log.workspace = true
+raw-window-handle.workspace = true

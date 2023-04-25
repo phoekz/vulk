@@ -24,9 +24,10 @@
 // Imports
 //
 
-use std::ptr::{addr_of, null, null_mut};
+use std::mem::zeroed;
+use std::ptr::{addr_of, addr_of_mut, null, null_mut};
 
-use anyhow::{Context, Result};
+use anyhow::{bail, Context, Result};
 use log::log;
 use vulk::vk;
 
