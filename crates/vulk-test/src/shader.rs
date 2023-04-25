@@ -40,7 +40,7 @@ impl Compiler {
             ShaderType::ClosestHit => shaderc::ShaderKind::ClosestHit,
         };
         let mut options = CompileOptions::new().context("Creating shader compiler options")?;
-        options.set_target_env(TargetEnv::Vulkan, vk::make_api_version(0, 1, 3, 0));
+        options.set_target_env(TargetEnv::Vulkan, vulk::REQUIRED_VULKAN_VERSION);
         options.set_optimization_level(OptimizationLevel::Performance);
         options.set_target_spirv(SpirvVersion::V1_6);
         options.set_source_language(SourceLanguage::GLSL);

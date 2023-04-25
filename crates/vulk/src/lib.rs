@@ -188,6 +188,12 @@ pub use loader::Init;
 pub use loader::Instance;
 
 //
+// Constants
+//
+
+pub const REQUIRED_VULKAN_VERSION: u32 = vk::make_api_version(0, 1, 3, 0);
+
+//
 // Error
 //
 

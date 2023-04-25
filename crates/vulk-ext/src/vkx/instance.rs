@@ -66,7 +66,7 @@ impl Instance {
                     application_version: 1,
                     p_engine_name: engine_name.as_ptr(),
                     engine_version: 1,
-                    api_version: vk::make_api_version(0, 1, 3, 0),
+                    api_version: vulk::REQUIRED_VULKAN_VERSION,
                 }),
                 enabled_layer_count: enabled_layer_names.len() as _,
                 pp_enabled_layer_names: enabled_layer_names.as_ptr(),
