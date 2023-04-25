@@ -24,16 +24,15 @@
 //
 
 use std::{
-    collections::HashMap,
     mem::{size_of, transmute, zeroed, MaybeUninit},
     path::PathBuf,
     ptr::{addr_of, addr_of_mut, null, null_mut},
     time::{Duration, Instant, SystemTime},
 };
 
-use anyhow::{bail, ensure, Context, Result};
+use anyhow::{ensure, Context, Result};
 use gpu::Gpu;
-use log::{debug, info, warn};
+use log::{debug, info};
 use vulk::vk;
 use vulk_ext::vkx;
 
@@ -47,7 +46,6 @@ mod descriptor;
 mod gpu;
 mod query;
 mod resource;
-mod shader;
 
 //
 // Main

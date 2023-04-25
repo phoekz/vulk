@@ -243,8 +243,8 @@ struct ShadersCreateInfo<'a> {
 }
 
 struct Shaders {
-    indirect: shader::Shader,
-    compute: shader::Shader,
+    indirect: vkx::Shader,
+    compute: vkx::Shader,
 }
 
 impl GpuResource for Shaders {
@@ -255,7 +255,7 @@ impl GpuResource for Shaders {
         Self: Sized,
     {
         // Shader compiler
-        let mut compiler = shader::Compiler::new()?;
+        let mut compiler = vkx::ShaderCompiler::new()?;
 
         // Includes.
         compiler.include(
@@ -275,7 +275,7 @@ impl GpuResource for Shaders {
 
         // Indirect shader  .
         let indirect_spirv = compiler.compile(
-            shader::ShaderType::Compute,
+            vkx::ShaderType::Compute,
             "indirect_shader",
             "main",
             r#"
@@ -293,10 +293,10 @@ impl GpuResource for Shaders {
                 }
             "#,
         )?;
-        let indirect = shader::Shader::create(
-            gpu,
-            &shader::ShaderCreateInfo {
-                spirvs: &[indirect_spirv],
+        let indirect = vkx::Shader::create(
+            &gpu.device,
+            &vkx::ShaderCreateInfo {
+                shader_binaries: &[indirect_spirv],
                 set_layouts: &[create_info.descriptors.storage.set_layout()],
                 push_constant_ranges: &[],
                 specialization_info: None,
@@ -305,7 +305,7 @@ impl GpuResource for Shaders {
 
         // Compute shader.
         let compute_spirv = compiler.compile(
-            shader::ShaderType::Compute,
+            vkx::ShaderType::Compute,
             "compute_shader",
             "main",
             r#"
@@ -323,10 +323,10 @@ impl GpuResource for Shaders {
                 }
             "#,
         )?;
-        let compute = shader::Shader::create(
-            gpu,
-            &shader::ShaderCreateInfo {
-                spirvs: &[compute_spirv],
+        let compute = vkx::Shader::create(
+            &gpu.device,
+            &vkx::ShaderCreateInfo {
+                shader_binaries: &[compute_spirv],
                 set_layouts: &[create_info.descriptors.storage.set_layout()],
                 push_constant_ranges: &[],
                 specialization_info: None,
@@ -337,8 +337,8 @@ impl GpuResource for Shaders {
     }
 
     unsafe fn destroy(self, gpu: &Gpu) {
-        self.indirect.destroy(gpu);
-        self.compute.destroy(gpu);
+        self.indirect.destroy(&gpu.device);
+        self.compute.destroy(&gpu.device);
     }
 }
 
@@ -376,7 +376,7 @@ unsafe fn dispatch(
 
     // Dispatch indirect shader.
     {
-        shaders.indirect.bind(gpu, cmd);
+        shaders.indirect.bind(&gpu.device, cmd);
         device.cmd_dispatch(cmd, 1, 1, 1);
     }
 
@@ -436,7 +436,7 @@ unsafe fn dispatch(
 
     // Dispatch compute shader.
     {
-        shaders.compute.bind(gpu, cmd);
+        shaders.compute.bind(&gpu.device, cmd);
         device.cmd_dispatch_indirect(cmd, indirect_buffer.buffer.buffer, 0);
     }
 

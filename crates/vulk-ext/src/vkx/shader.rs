@@ -1,13 +1,89 @@
-use std::ffi::CString;
-
 use super::*;
 
-pub struct Compiler {
+#[derive(Clone, Copy, Debug)]
+pub enum ShaderType {
+    Task,
+    Mesh,
+    Fragment,
+    Compute,
+    Raygen,
+    Miss,
+    ClosestHit,
+}
+
+impl ShaderType {
+    #[must_use]
+    pub fn shader_stage(self) -> vk::ShaderStageFlagBits {
+        match self {
+            ShaderType::Task => vk::ShaderStageFlagBits::TaskEXT,
+            ShaderType::Mesh => vk::ShaderStageFlagBits::MeshEXT,
+            ShaderType::Fragment => vk::ShaderStageFlagBits::Fragment,
+            ShaderType::Compute => vk::ShaderStageFlagBits::Compute,
+            ShaderType::Raygen => vk::ShaderStageFlagBits::RaygenKHR,
+            ShaderType::Miss => vk::ShaderStageFlagBits::MissKHR,
+            ShaderType::ClosestHit => vk::ShaderStageFlagBits::ClosestHitKHR,
+        }
+    }
+
+    #[must_use]
+    pub fn next_shader_stage(self) -> Option<vk::ShaderStageFlagBits> {
+        match self {
+            ShaderType::Task => Some(vk::ShaderStageFlagBits::MeshEXT),
+            ShaderType::Mesh => Some(vk::ShaderStageFlagBits::Fragment),
+            ShaderType::Fragment
+            | ShaderType::Compute
+            | ShaderType::Raygen
+            | ShaderType::Miss
+            | ShaderType::ClosestHit => None,
+        }
+    }
+}
+
+pub struct ShaderBinary {
+    ty: ShaderType,
+    code: Vec<u8>,
+    entry_point: CString,
+}
+
+impl ShaderBinary {
+    #[must_use]
+    pub fn shader_type(&self) -> ShaderType {
+        self.ty
+    }
+
+    #[must_use]
+    pub fn code_size(&self) -> usize {
+        self.code.len()
+    }
+
+    #[must_use]
+    pub fn p_code(&self) -> *const std::ffi::c_void {
+        self.code.as_ptr().cast()
+    }
+
+    #[must_use]
+    pub fn entry_point(&self) -> *const std::ffi::c_char {
+        self.entry_point.as_ptr()
+    }
+
+    #[must_use]
+    pub fn shader_module_create_info(&self) -> vk::ShaderModuleCreateInfo {
+        vk::ShaderModuleCreateInfo {
+            s_type: vk::StructureType::ShaderModuleCreateInfo,
+            p_next: null(),
+            flags: vk::ShaderModuleCreateFlags::empty(),
+            code_size: self.code_size(),
+            p_code: self.p_code().cast(),
+        }
+    }
+}
+
+pub struct ShaderCompiler {
     compiler: shaderc::Compiler,
     includes: HashMap<String, String>,
 }
 
-impl Compiler {
+impl ShaderCompiler {
     pub fn new() -> Result<Self> {
         use shaderc::Compiler;
         let compiler = Compiler::new().context("Creating shader compiler")?;
@@ -30,7 +106,7 @@ impl Compiler {
         input_file_name: impl AsRef<str>,
         entry_point_name: impl AsRef<str>,
         code: impl AsRef<str>,
-    ) -> Result<SpirV> {
+    ) -> Result<ShaderBinary> {
         use shaderc::CompileOptions;
         use shaderc::OptimizationLevel;
         use shaderc::ResolvedInclude;
@@ -72,9 +148,9 @@ impl Compiler {
             Some(&options),
         )?;
         if shader.get_num_warnings() > 0 {
-            warn!("{}", shader.get_warning_messages());
+            error!("{}", shader.get_warning_messages());
         }
-        Ok(SpirV {
+        Ok(ShaderBinary {
             ty: shader_type,
             code: shader.as_binary_u8().to_owned(),
             entry_point: CString::new(entry_point_name.as_ref())?,
@@ -82,51 +158,8 @@ impl Compiler {
     }
 }
 
-#[derive(Clone, Copy, Debug)]
-pub enum ShaderType {
-    Task,
-    Mesh,
-    Fragment,
-    Compute,
-    Raygen,
-    Miss,
-    ClosestHit,
-}
-
-impl ShaderType {
-    pub fn shader_stage(self) -> vk::ShaderStageFlagBits {
-        match self {
-            ShaderType::Task => vk::ShaderStageFlagBits::TaskEXT,
-            ShaderType::Mesh => vk::ShaderStageFlagBits::MeshEXT,
-            ShaderType::Fragment => vk::ShaderStageFlagBits::Fragment,
-            ShaderType::Compute => vk::ShaderStageFlagBits::Compute,
-            ShaderType::Raygen => vk::ShaderStageFlagBits::RaygenKHR,
-            ShaderType::Miss => vk::ShaderStageFlagBits::MissKHR,
-            ShaderType::ClosestHit => vk::ShaderStageFlagBits::ClosestHitKHR,
-        }
-    }
-
-    pub fn next_shader_stage(self) -> Option<vk::ShaderStageFlagBits> {
-        match self {
-            ShaderType::Task => Some(vk::ShaderStageFlagBits::MeshEXT),
-            ShaderType::Mesh => Some(vk::ShaderStageFlagBits::Fragment),
-            ShaderType::Fragment
-            | ShaderType::Compute
-            | ShaderType::Raygen
-            | ShaderType::Miss
-            | ShaderType::ClosestHit => None,
-        }
-    }
-}
-
-pub struct SpirV {
-    pub ty: ShaderType,
-    pub code: Vec<u8>,
-    pub entry_point: CString,
-}
-
 pub struct ShaderCreateInfo<'a> {
-    pub spirvs: &'a [SpirV],
+    pub shader_binaries: &'a [ShaderBinary],
     pub set_layouts: &'a [vk::DescriptorSetLayout],
     pub push_constant_ranges: &'a [vk::PushConstantRange],
     pub specialization_info: Option<&'a vk::SpecializationInfo>,
@@ -137,27 +170,25 @@ pub struct Shader {
     shaders: Vec<vk::ShaderEXT>,
 }
 
-impl GpuResource for Shader {
-    type CreateInfo<'a> = ShaderCreateInfo<'a>;
-
-    unsafe fn create(Gpu { device, .. }: &Gpu, create_info: &Self::CreateInfo<'_>) -> Result<Self> {
+impl Shader {
+    pub unsafe fn create(device: &vkx::Device, create_info: &ShaderCreateInfo<'_>) -> Result<Self> {
         let create_infos = create_info
-            .spirvs
+            .shader_binaries
             .iter()
-            .map(|spirv| vk::ShaderCreateInfoEXT {
+            .map(|binary| vk::ShaderCreateInfoEXT {
                 s_type: vk::StructureType::ShaderCreateInfoEXT,
                 p_next: null(),
                 flags: vk::ShaderCreateFlagBitsEXT::LinkStageEXT.into(),
-                stage: spirv.ty.shader_stage(),
-                next_stage: if let Some(next_stage) = spirv.ty.next_shader_stage() {
+                stage: binary.ty.shader_stage(),
+                next_stage: if let Some(next_stage) = binary.ty.next_shader_stage() {
                     next_stage.into()
                 } else {
                     zeroed()
                 },
                 code_type: vk::ShaderCodeTypeEXT::SpirvEXT,
-                code_size: spirv.code.len(),
-                p_code: spirv.code.as_ptr().cast(),
-                p_name: spirv.entry_point.as_ptr(),
+                code_size: binary.code_size(),
+                p_code: binary.p_code(),
+                p_name: binary.entry_point(),
                 set_layout_count: create_info.set_layouts.len() as _,
                 p_set_layouts: create_info.set_layouts.as_ptr(),
                 push_constant_range_count: create_info.push_constant_ranges.len() as _,
@@ -171,16 +202,16 @@ impl GpuResource for Shader {
                 },
             })
             .collect::<Vec<_>>();
-        let mut shaders = Vec::with_capacity(create_info.spirvs.len());
+        let mut shaders = Vec::with_capacity(create_info.shader_binaries.len());
         device.create_shaders_ext(
             create_infos.len() as _,
             create_infos.as_ptr(),
             shaders.as_mut_ptr(),
         )?;
-        shaders.set_len(create_info.spirvs.len());
+        shaders.set_len(create_info.shader_binaries.len());
 
         let stages = create_info
-            .spirvs
+            .shader_binaries
             .iter()
             .map(|spirv| spirv.ty.shader_stage())
             .collect();
@@ -188,7 +219,7 @@ impl GpuResource for Shader {
         Ok(Self { stages, shaders })
     }
 
-    unsafe fn destroy(self, Gpu { device, .. }: &Gpu) {
+    pub unsafe fn destroy(self, device: &vkx::Device) {
         for &shader in &self.shaders {
             device.destroy_shader_ext(shader);
         }
@@ -196,7 +227,7 @@ impl GpuResource for Shader {
 }
 
 impl Shader {
-    pub unsafe fn bind(&self, Gpu { device, .. }: &Gpu, cmd: vk::CommandBuffer) {
+    pub unsafe fn bind(&self, device: &vkx::Device, cmd: vk::CommandBuffer) {
         device.cmd_bind_shaders_ext(
             cmd,
             self.stages.len() as _,

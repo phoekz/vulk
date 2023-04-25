@@ -820,7 +820,7 @@ impl GpuResource for Pipeline {
         Self: Sized,
     {
         // Shader compiler
-        let mut compiler = shader::Compiler::new()?;
+        let mut compiler = vkx::ShaderCompiler::new()?;
 
         // Includes.
         compiler.include(
@@ -848,7 +848,7 @@ impl GpuResource for Pipeline {
 
         // Compile shaders.
         let raygen_spirv = compiler.compile(
-            shader::ShaderType::Raygen,
+            vkx::ShaderType::Raygen,
             "raygen_shader",
             "main",
             r#"
@@ -889,7 +889,7 @@ impl GpuResource for Pipeline {
             "#,
         )?;
         let miss_spirv = compiler.compile(
-            shader::ShaderType::Miss,
+            vkx::ShaderType::Miss,
             "miss_shader",
             "main",
             r#"
@@ -906,7 +906,7 @@ impl GpuResource for Pipeline {
             "#,
         )?;
         let closest_hit_spirv = compiler.compile(
-            shader::ShaderType::ClosestHit,
+            vkx::ShaderType::ClosestHit,
             "closest_hit_shader",
             "main",
             r#"
@@ -927,27 +927,11 @@ impl GpuResource for Pipeline {
         )?;
 
         // Shader modules.
-        let raygen_shader = device.create_shader_module(&vk::ShaderModuleCreateInfo {
-            s_type: vk::StructureType::ShaderModuleCreateInfo,
-            p_next: null(),
-            flags: vk::ShaderModuleCreateFlags::empty(),
-            code_size: raygen_spirv.code.len(),
-            p_code: raygen_spirv.code.as_ptr().cast(),
-        })?;
-        let miss_shader = device.create_shader_module(&vk::ShaderModuleCreateInfo {
-            s_type: vk::StructureType::ShaderModuleCreateInfo,
-            p_next: null(),
-            flags: vk::ShaderModuleCreateFlags::empty(),
-            code_size: miss_spirv.code.len(),
-            p_code: miss_spirv.code.as_ptr().cast(),
-        })?;
-        let closest_hit_shader = device.create_shader_module(&vk::ShaderModuleCreateInfo {
-            s_type: vk::StructureType::ShaderModuleCreateInfo,
-            p_next: null(),
-            flags: vk::ShaderModuleCreateFlags::empty(),
-            code_size: closest_hit_spirv.code.len(),
-            p_code: closest_hit_spirv.code.as_ptr().cast(),
-        })?;
+        let raygen_shader =
+            device.create_shader_module(&raygen_spirv.shader_module_create_info())?;
+        let miss_shader = device.create_shader_module(&miss_spirv.shader_module_create_info())?;
+        let closest_hit_shader =
+            device.create_shader_module(&closest_hit_spirv.shader_module_create_info())?;
         let shaders = vec![raygen_shader, miss_shader, closest_hit_shader];
 
         // Ray tracing pipeline.

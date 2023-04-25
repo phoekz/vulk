@@ -273,7 +273,7 @@ struct ShadersCreateInfo<'a> {
 }
 
 struct Shaders {
-    shader: shader::Shader,
+    shader: vkx::Shader,
 }
 
 impl GpuResource for Shaders {
@@ -284,7 +284,7 @@ impl GpuResource for Shaders {
         Self: Sized,
     {
         // Shader compiler
-        let mut compiler = shader::Compiler::new()?;
+        let mut compiler = vkx::ShaderCompiler::new()?;
 
         // Includes.
         compiler.include(
@@ -308,7 +308,7 @@ impl GpuResource for Shaders {
 
         // Shaders.
         let task_spirv = compiler.compile(
-            shader::ShaderType::Task,
+            vkx::ShaderType::Task,
             "task_shader",
             "main",
             r#"
@@ -321,7 +321,7 @@ impl GpuResource for Shaders {
             "#,
         )?;
         let mesh_spirv = compiler.compile(
-            shader::ShaderType::Mesh,
+            vkx::ShaderType::Mesh,
             "mesh_shader",
             "main",
             r#"
@@ -406,7 +406,7 @@ impl GpuResource for Shaders {
             "#,
         )?;
         let fragment_spirv = compiler.compile(
-            shader::ShaderType::Fragment,
+            vkx::ShaderType::Fragment,
             "fragment_shader",
             "main",
             r#"
@@ -433,10 +433,10 @@ impl GpuResource for Shaders {
             "#,
         )?;
 
-        let shader = shader::Shader::create(
-            gpu,
-            &shader::ShaderCreateInfo {
-                spirvs: &[task_spirv, mesh_spirv, fragment_spirv],
+        let shader = vkx::Shader::create(
+            &gpu.device,
+            &vkx::ShaderCreateInfo {
+                shader_binaries: &[task_spirv, mesh_spirv, fragment_spirv],
                 set_layouts: &[create_info.descriptors.storage.set_layout()],
                 push_constant_ranges: &[create_info.descriptors.push_constant_ranges],
                 specialization_info: None,
@@ -447,7 +447,7 @@ impl GpuResource for Shaders {
     }
 
     unsafe fn destroy(self, gpu: &Gpu) {
-        self.shader.destroy(gpu);
+        self.shader.destroy(&gpu.device);
     }
 }
 
@@ -686,7 +686,7 @@ unsafe fn draw(
     );
 
     // Bind shaders.
-    shaders.shader.bind(gpu, cmd);
+    shaders.shader.bind(&gpu.device, cmd);
 
     // Push constants.
     {

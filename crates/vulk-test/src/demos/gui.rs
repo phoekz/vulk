@@ -400,13 +400,13 @@ impl Descriptors {
 //
 
 struct Shaders {
-    shader: shader::Shader,
+    shader: vkx::Shader,
 }
 
 impl Shaders {
     unsafe fn create(gpu: &Gpu, descriptors: &Descriptors) -> Result<Self> {
         // Shader compiler
-        let mut compiler = shader::Compiler::new()?;
+        let mut compiler = vkx::ShaderCompiler::new()?;
 
         // Includes.
         compiler.include(
@@ -447,7 +447,7 @@ impl Shaders {
 
         // Shaders.
         let task_spirv = compiler.compile(
-            shader::ShaderType::Task,
+            vkx::ShaderType::Task,
             "task_shader",
             "main",
             r#"
@@ -461,7 +461,7 @@ impl Shaders {
             "#,
         )?;
         let mesh_spirv = compiler.compile(
-            shader::ShaderType::Mesh,
+            vkx::ShaderType::Mesh,
             "mesh_shader",
             "main",
             r#"
@@ -532,7 +532,7 @@ impl Shaders {
             "#,
         )?;
         let fragment_spirv = compiler.compile(
-            shader::ShaderType::Fragment,
+            vkx::ShaderType::Fragment,
             "fragment_shader",
             "main",
             r#"
@@ -551,10 +551,10 @@ impl Shaders {
             "#,
         )?;
 
-        let shader = shader::Shader::create(
-            gpu,
-            &shader::ShaderCreateInfo {
-                spirvs: &[task_spirv, mesh_spirv, fragment_spirv],
+        let shader = vkx::Shader::create(
+            &gpu.device,
+            &vkx::ShaderCreateInfo {
+                shader_binaries: &[task_spirv, mesh_spirv, fragment_spirv],
                 set_layouts: &[descriptors.storage.set_layout()],
                 push_constant_ranges: &[descriptors.push_constant_range],
                 specialization_info: None,
@@ -565,7 +565,7 @@ impl Shaders {
     }
 
     unsafe fn destroy(self, gpu: &Gpu) {
-        self.shader.destroy(gpu);
+        self.shader.destroy(&gpu.device);
     }
 }
 
@@ -767,7 +767,7 @@ unsafe fn draw(
     }
 
     // Bind shaders.
-    shaders.shader.bind(gpu, cmd);
+    shaders.shader.bind(&gpu.device, cmd);
 
     // Draws.
     for draw in &gui.draw_commands {
