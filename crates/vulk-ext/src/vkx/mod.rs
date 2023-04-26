@@ -27,7 +27,7 @@ pub use buffer::{
 };
 pub use descriptor::{Descriptor, DescriptorBinding, DescriptorCreateInfo, DescriptorStorage};
 pub use device::Device;
-pub use image::{ImageCreator, ImageViewCreator};
+pub use image::{ImageCreator, ImageDedicatedResource, ImageOps, ImageResource, ImageViewCreator};
 pub use instance::{Instance, InstanceCreateInfo};
 pub use memory::{BufferAllocation, BufferAllocations, ImageAllocations};
 pub use physical_device::PhysicalDevice;
@@ -37,3 +37,9 @@ pub use surface::Surface;
 pub use swapchain::Swapchain;
 
 pub(crate) use debug_utils::DebugUtils;
+
+pub mod prelude {
+    use super::*;
+
+    pub use image::ImageOps;
+}

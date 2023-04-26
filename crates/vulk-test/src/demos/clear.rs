@@ -50,7 +50,7 @@ impl DemoCallbacks for Demo {
 struct RenderTargetsCreateInfo {}
 
 struct RenderTargets {
-    color: resource::Image2d,
+    color: vkx::ImageDedicatedResource,
 }
 
 impl GpuResource for RenderTargets {
@@ -60,24 +60,23 @@ impl GpuResource for RenderTargets {
     where
         Self: Sized,
     {
-        let color = resource::Image2d::create(
-            gpu,
-            &resource::Image2dCreateInfo {
-                format: DEFAULT_RENDER_TARGET_COLOR_FORMAT,
-                width: DEFAULT_RENDER_TARGET_WIDTH,
-                height: DEFAULT_RENDER_TARGET_HEIGHT,
-                samples: vk::SampleCountFlagBits::Count1,
-                usage: vk::ImageUsageFlagBits::ColorAttachment
-                    | vk::ImageUsageFlagBits::TransferSrc,
-                property_flags: vk::MemoryPropertyFlagBits::DeviceLocal.into(),
-            },
+        let color = vkx::ImageDedicatedResource::create_2d(
+            &gpu.physical_device,
+            &gpu.device,
+            DEFAULT_RENDER_TARGET_COLOR_FORMAT,
+            DEFAULT_RENDER_TARGET_WIDTH,
+            DEFAULT_RENDER_TARGET_HEIGHT,
+            vk::SampleCountFlagBits::Count1,
+            vk::ImageUsageFlagBits::InputAttachment
+                | vk::ImageUsageFlagBits::ColorAttachment
+                | vk::ImageUsageFlagBits::TransferSrc,
+            vk::MemoryPropertyFlagBits::DeviceLocal.into(),
         )?;
-
         Ok(Self { color })
     }
 
     unsafe fn destroy(self, gpu: &Gpu) {
-        self.color.destroy(gpu);
+        self.color.destroy(&gpu.device);
     }
 }
 
@@ -156,7 +155,7 @@ unsafe fn draw(
                 new_layout: vk::ImageLayout::AttachmentOptimal,
                 src_queue_family_index: 0,
                 dst_queue_family_index: 0,
-                image: render_targets.color.image,
+                image: render_targets.color.image_handle(),
                 subresource_range: render_targets.color.subresource_range(),
             },
         },
@@ -176,7 +175,7 @@ unsafe fn draw(
             p_color_attachments: &(vk::RenderingAttachmentInfo {
                 s_type: vk::StructureType::RenderingAttachmentInfo,
                 p_next: null(),
-                image_view: render_targets.color.image_view,
+                image_view: render_targets.color.image_view_handle(),
                 image_layout: vk::ImageLayout::AttachmentOptimal,
                 resolve_mode: vk::ResolveModeFlagBits::None,
                 resolve_image_view: vk::ImageView::null(),
@@ -220,7 +219,7 @@ unsafe fn draw(
                 new_layout: vk::ImageLayout::TransferSrcOptimal,
                 src_queue_family_index: 0,
                 dst_queue_family_index: 0,
-                image: render_targets.color.image,
+                image: render_targets.color.image_handle(),
                 subresource_range: render_targets.color.subresource_range(),
             },
         },
@@ -232,7 +231,7 @@ unsafe fn draw(
         &(vk::CopyImageToBufferInfo2 {
             s_type: vk::StructureType::CopyImageToBufferInfo2,
             p_next: null(),
-            src_image: render_targets.color.image,
+            src_image: render_targets.color.image_handle(),
             src_image_layout: vk::ImageLayout::TransferSrcOptimal,
             dst_buffer: output.buffer.handle(),
             region_count: 1,

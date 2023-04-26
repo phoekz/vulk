@@ -1,169 +1,6 @@
 use super::*;
 
 //
-// Texture
-//
-
-#[derive(Debug)]
-pub struct Image2dCreateInfo {
-    pub format: vk::Format,
-    pub width: u32,
-    pub height: u32,
-    pub samples: vk::SampleCountFlagBits,
-    pub usage: vk::ImageUsageFlags,
-    pub property_flags: vk::MemoryPropertyFlags,
-}
-
-#[derive(Debug)]
-pub struct Image2d {
-    pub image_create_info: vk::ImageCreateInfo,
-    pub image: vk::Image,
-
-    allocations: vkx::ImageAllocations,
-
-    pub image_view: vk::ImageView,
-    pub image_view_create_info: vk::ImageViewCreateInfo,
-
-    pub descriptor: vkx::Descriptor,
-}
-
-impl GpuResource for Image2d {
-    type CreateInfo<'a> = Image2dCreateInfo;
-
-    unsafe fn create(
-        Gpu {
-            device,
-            physical_device,
-            ..
-        }: &Gpu,
-        create_info: &Self::CreateInfo<'_>,
-    ) -> Result<Self> {
-        // Image.
-        let (image, image_create_info) = vkx::ImageCreator::new_2d(
-            create_info.width,
-            create_info.height,
-            create_info.format,
-            create_info.usage,
-        )
-        .samples(create_info.samples)
-        .create(device)
-        .context("Creating image")?;
-
-        // Allocate.
-        let allocations = vkx::ImageAllocations::allocate(
-            physical_device,
-            device,
-            &[image],
-            &[image_create_info],
-            create_info.property_flags,
-        )?;
-
-        // Image view.
-        let (image_view, image_view_create_info) =
-            vkx::ImageViewCreator::new_2d(image, image_create_info.format)
-                .create(device)
-                .context("Creating image view")?;
-
-        // Descriptor.
-        let descriptor = if create_info
-            .usage
-            .contains(vk::ImageUsageFlagBits::Storage.into())
-        {
-            vkx::Descriptor::create(
-                physical_device,
-                device,
-                vkx::DescriptorCreateInfo::StorageImage {
-                    image_view,
-                    image_layout: vk::ImageLayout::General,
-                },
-            )
-        } else {
-            vkx::Descriptor::create(
-                physical_device,
-                device,
-                vkx::DescriptorCreateInfo::SampledImage {
-                    image_view,
-                    image_layout: vk::ImageLayout::ShaderReadOnlyOptimal,
-                },
-            )
-        };
-
-        Ok(Self {
-            image_create_info,
-            image,
-
-            allocations,
-
-            image_view,
-            image_view_create_info,
-
-            descriptor,
-        })
-    }
-
-    unsafe fn destroy(self, Gpu { device, .. }: &Gpu) {
-        device.destroy_image_view(self.image_view);
-        device.destroy_image(self.image);
-        self.allocations.free(device);
-    }
-}
-
-impl Image2d {
-    pub unsafe fn format(&self) -> vk::Format {
-        self.image_create_info.format
-    }
-
-    pub unsafe fn width(&self) -> u32 {
-        self.image_create_info.extent.width
-    }
-
-    pub unsafe fn height(&self) -> u32 {
-        self.image_create_info.extent.height
-    }
-
-    pub unsafe fn byte_size(&self) -> u32 {
-        self.format().block_size() * self.width() * self.height()
-    }
-
-    pub unsafe fn extent_2d(&self) -> vk::Extent2D {
-        vk::Extent2D {
-            width: self.width(),
-            height: self.height(),
-        }
-    }
-
-    pub unsafe fn extent_3d(&self) -> vk::Extent3D {
-        vk::Extent3D {
-            width: self.width(),
-            height: self.height(),
-            depth: 1,
-        }
-    }
-
-    pub unsafe fn rect_2d(&self) -> vk::Rect2D {
-        vk::Rect2D {
-            offset: vk::Offset2D { x: 0, y: 0 },
-            extent: self.extent_2d(),
-        }
-    }
-
-    pub unsafe fn subresource_range(&self) -> vk::ImageSubresourceRange {
-        self.image_view_create_info.subresource_range
-    }
-
-    pub unsafe fn subresource_layers(&self) -> vk::ImageSubresourceLayers {
-        vk::ImageSubresourceLayers {
-            aspect_mask: self.image_view_create_info.subresource_range.aspect_mask,
-            mip_level: 0,
-            base_array_layer: self
-                .image_view_create_info
-                .subresource_range
-                .base_array_layer,
-            layer_count: self.image_view_create_info.subresource_range.layer_count,
-        }
-    }
-}
-
 // Upload
 //
 
@@ -173,8 +10,8 @@ pub unsafe fn multi_upload_images(
         device,
         ..
     }: &Gpu,
-    images: &[Image2d],
-    datas: &[Vec<u8>],
+    images: &[vkx::ImageResource],
+    datas: &[&[u8]],
 ) -> Result<()> {
     // Validation.
     ensure!(!images.is_empty());
@@ -191,7 +28,7 @@ pub unsafe fn multi_upload_images(
     let mut staging_buffer = vkx::BufferDedicatedTransfer::create(
         physical_device,
         device,
-        datas.iter().map(Vec::len).sum::<usize>() as vk::DeviceSize,
+        datas.iter().map(|data| data.len()).sum::<usize>() as vk::DeviceSize,
         vk::BufferUsageFlagBits::TransferSrc.into(),
         vk::MemoryPropertyFlagBits::HostVisible | vk::MemoryPropertyFlagBits::HostCoherent,
     )?;
@@ -243,7 +80,7 @@ pub unsafe fn multi_upload_images(
                     new_layout: vk::ImageLayout::TransferDstOptimal,
                     src_queue_family_index: 0,
                     dst_queue_family_index: 0,
-                    image: image.image,
+                    image: image.image_handle(),
                     subresource_range: image.subresource_range(),
                 },
             },
@@ -254,7 +91,7 @@ pub unsafe fn multi_upload_images(
                 s_type: vk::StructureType::CopyBufferToImageInfo2,
                 p_next: null(),
                 src_buffer: staging_buffer.handle(),
-                dst_image: image.image,
+                dst_image: image.image_handle(),
                 dst_image_layout: vk::ImageLayout::TransferDstOptimal,
                 region_count: 1,
                 p_regions: &(vk::BufferImageCopy2 {
@@ -288,11 +125,11 @@ pub unsafe fn multi_upload_images(
                     src_access_mask: vk::AccessFlagBits2::TransferWrite.into(),
                     dst_stage_mask: vk::PipelineStageFlagBits2::FragmentShader.into(),
                     dst_access_mask: vk::AccessFlagBits2::ShaderRead.into(),
-                    new_layout: vk::ImageLayout::ShaderReadOnlyOptimal,
+                    new_layout: vk::ImageLayout::ReadOnlyOptimal,
                     old_layout: vk::ImageLayout::TransferDstOptimal,
                     src_queue_family_index: 0,
                     dst_queue_family_index: 0,
-                    image: image.image,
+                    image: image.image_handle(),
                     subresource_range: image.subresource_range(),
                 },
             },

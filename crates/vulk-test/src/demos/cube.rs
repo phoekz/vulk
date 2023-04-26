@@ -72,7 +72,8 @@ impl DemoCallbacks for Demo {
 struct TexturesCreateInfo {}
 
 struct Textures {
-    images: Vec<resource::Image2d>,
+    images: Vec<vkx::ImageResource>,
+    image_allocations: vkx::ImageAllocations,
     samplers: Vec<vkx::SamplerResource>,
 }
 
@@ -84,7 +85,7 @@ impl GpuResource for Textures {
         Self: Sized,
     {
         // Generate textures.
-        let (images, image_datas) = {
+        let (images, image_create_infos, image_datas) = {
             use palette::{FromColor, Hsl, Srgb};
             use rand::prelude::*;
 
@@ -97,21 +98,18 @@ impl GpuResource for Textures {
             let count = 6;
 
             let mut images = vec![];
+            let mut image_create_infos = vec![];
             let mut image_datas = vec![];
-
             for image_index in 0..count {
-                let image = resource::Image2d::create(
-                    gpu,
-                    &resource::Image2dCreateInfo {
-                        format: vk::Format::R8g8b8a8Unorm,
-                        width,
-                        height,
-                        samples: vk::SampleCountFlagBits::Count1,
-                        usage: vk::ImageUsageFlagBits::TransferDst
-                            | vk::ImageUsageFlagBits::Sampled,
-                        property_flags: vk::MemoryPropertyFlagBits::DeviceLocal.into(),
-                    },
-                )?;
+                let (image, image_create_info) = vkx::ImageCreator::new_2d(
+                    width,
+                    height,
+                    vk::Format::R8g8b8a8Unorm,
+                    vk::ImageUsageFlagBits::TransferDst | vk::ImageUsageFlagBits::Sampled,
+                )
+                .create(&gpu.device)?;
+                images.push(image);
+                image_create_infos.push(image_create_info);
 
                 let image_data = {
                     let hue = (image_index as f32 + 0.5) / count as f32;
@@ -133,16 +131,48 @@ impl GpuResource for Textures {
                     }
                     data
                 };
-
-                images.push(image);
                 image_datas.push(image_data);
             }
 
-            (images, image_datas)
+            (images, image_create_infos, image_datas)
         };
 
+        // Allocation.
+        let image_allocations = vkx::ImageAllocations::allocate(
+            &gpu.physical_device,
+            &gpu.device,
+            &images,
+            &image_create_infos,
+            vk::MemoryPropertyFlagBits::DeviceLocal.into(),
+        )?;
+
+        // Image views.
+        let mut image_views = vec![];
+        let mut image_view_create_infos = vec![];
+        for (&image, image_create_info) in images.iter().zip(&image_create_infos) {
+            let (image_view, image_view_create_info) =
+                vkx::ImageViewCreator::new_2d(image, image_create_info.format)
+                    .create(&gpu.device)?;
+            image_views.push(image_view);
+            image_view_create_infos.push(image_view_create_info);
+        }
+
+        // Image resources.
+        let image_resources = vkx::ImageResource::create(
+            &gpu.physical_device,
+            &gpu.device,
+            &images,
+            &image_views,
+            &image_create_infos,
+            &image_view_create_infos,
+        )?;
+
         // Upload.
-        resource::multi_upload_images(gpu, &images, &image_datas)?;
+        resource::multi_upload_images(
+            gpu,
+            &image_resources,
+            &image_datas.iter().map(Vec::as_slice).collect::<Vec<_>>(),
+        )?;
 
         // Samplers.
         let sampler_creator = |mag_filter: vk::Filter, min_filter: vk::Filter| {
@@ -174,13 +204,18 @@ impl GpuResource for Textures {
             &sampler_create_infos,
         )?;
 
-        Ok(Self { images, samplers })
+        Ok(Self {
+            images: image_resources,
+            image_allocations,
+            samplers,
+        })
     }
 
     unsafe fn destroy(self, gpu: &Gpu) {
         for image in self.images {
-            image.destroy(gpu);
+            image.destroy(&gpu.device);
         }
+        self.image_allocations.free(&gpu.device);
         for sampler in self.samplers {
             sampler.destroy(&gpu.device);
         }
@@ -214,7 +249,7 @@ impl GpuResource for Descriptors {
             .textures
             .images
             .iter()
-            .map(|img| img.descriptor)
+            .map(vkx::ImageResource::descriptor)
             .collect::<Vec<_>>();
         let sampler_descriptors = create_info
             .textures
@@ -466,9 +501,9 @@ impl GpuResource for Shaders {
 struct RenderTargetsCreateInfo {}
 
 struct RenderTargets {
-    color: resource::Image2d,
-    depth: resource::Image2d,
-    resolve: resource::Image2d,
+    color: vkx::ImageDedicatedResource,
+    depth: vkx::ImageDedicatedResource,
+    resolve: vkx::ImageDedicatedResource,
 }
 
 impl GpuResource for RenderTargets {
@@ -478,39 +513,38 @@ impl GpuResource for RenderTargets {
     where
         Self: Sized,
     {
-        let color = resource::Image2d::create(
-            gpu,
-            &resource::Image2dCreateInfo {
-                format: DEFAULT_RENDER_TARGET_COLOR_FORMAT,
-                width: DEFAULT_RENDER_TARGET_WIDTH,
-                height: DEFAULT_RENDER_TARGET_HEIGHT,
-                samples: DEFAULT_RENDER_TARGET_SAMPLES,
-                usage: vk::ImageUsageFlagBits::ColorAttachment.into(),
-                property_flags: vk::MemoryPropertyFlagBits::DeviceLocal.into(),
-            },
+        let color = vkx::ImageDedicatedResource::create_2d(
+            &gpu.physical_device,
+            &gpu.device,
+            DEFAULT_RENDER_TARGET_COLOR_FORMAT,
+            DEFAULT_RENDER_TARGET_WIDTH,
+            DEFAULT_RENDER_TARGET_HEIGHT,
+            DEFAULT_RENDER_TARGET_SAMPLES,
+            vk::ImageUsageFlagBits::InputAttachment | vk::ImageUsageFlagBits::ColorAttachment,
+            vk::MemoryPropertyFlagBits::DeviceLocal.into(),
         )?;
-        let depth = resource::Image2d::create(
-            gpu,
-            &resource::Image2dCreateInfo {
-                format: DEFAULT_RENDER_TARGET_DEPTH_FORMAT,
-                width: DEFAULT_RENDER_TARGET_WIDTH,
-                height: DEFAULT_RENDER_TARGET_HEIGHT,
-                samples: DEFAULT_RENDER_TARGET_SAMPLES,
-                usage: vk::ImageUsageFlagBits::DepthStencilAttachment.into(),
-                property_flags: vk::MemoryPropertyFlagBits::DeviceLocal.into(),
-            },
+        let depth = vkx::ImageDedicatedResource::create_2d(
+            &gpu.physical_device,
+            &gpu.device,
+            DEFAULT_RENDER_TARGET_DEPTH_FORMAT,
+            DEFAULT_RENDER_TARGET_WIDTH,
+            DEFAULT_RENDER_TARGET_HEIGHT,
+            DEFAULT_RENDER_TARGET_SAMPLES,
+            vk::ImageUsageFlagBits::InputAttachment
+                | vk::ImageUsageFlagBits::DepthStencilAttachment,
+            vk::MemoryPropertyFlagBits::DeviceLocal.into(),
         )?;
-        let resolve = resource::Image2d::create(
-            gpu,
-            &resource::Image2dCreateInfo {
-                format: DEFAULT_RENDER_TARGET_RESOLVE_FORMAT,
-                width: DEFAULT_RENDER_TARGET_WIDTH,
-                height: DEFAULT_RENDER_TARGET_HEIGHT,
-                samples: vk::SampleCountFlagBits::Count1,
-                usage: vk::ImageUsageFlagBits::ColorAttachment
-                    | vk::ImageUsageFlagBits::TransferSrc,
-                property_flags: vk::MemoryPropertyFlagBits::DeviceLocal.into(),
-            },
+        let resolve = vkx::ImageDedicatedResource::create_2d(
+            &gpu.physical_device,
+            &gpu.device,
+            DEFAULT_RENDER_TARGET_RESOLVE_FORMAT,
+            DEFAULT_RENDER_TARGET_WIDTH,
+            DEFAULT_RENDER_TARGET_HEIGHT,
+            vk::SampleCountFlagBits::Count1,
+            vk::ImageUsageFlagBits::InputAttachment
+                | vk::ImageUsageFlagBits::ColorAttachment
+                | vk::ImageUsageFlagBits::TransferSrc,
+            vk::MemoryPropertyFlagBits::DeviceLocal.into(),
         )?;
         Ok(Self {
             color,
@@ -520,9 +554,9 @@ impl GpuResource for RenderTargets {
     }
 
     unsafe fn destroy(self, gpu: &Gpu) {
-        self.color.destroy(gpu);
-        self.depth.destroy(gpu);
-        self.resolve.destroy(gpu);
+        self.color.destroy(&gpu.device);
+        self.depth.destroy(&gpu.device);
+        self.resolve.destroy(&gpu.device);
     }
 }
 
@@ -604,7 +638,7 @@ unsafe fn draw(
                 new_layout: vk::ImageLayout::AttachmentOptimal,
                 src_queue_family_index: 0,
                 dst_queue_family_index: 0,
-                image: render_targets.resolve.image,
+                image: render_targets.resolve.image_handle(),
                 subresource_range: render_targets.resolve.subresource_range(),
             },
         },
@@ -624,10 +658,10 @@ unsafe fn draw(
             p_color_attachments: &(vk::RenderingAttachmentInfo {
                 s_type: vk::StructureType::RenderingAttachmentInfo,
                 p_next: null(),
-                image_view: render_targets.color.image_view,
+                image_view: render_targets.color.image_view_handle(),
                 image_layout: vk::ImageLayout::AttachmentOptimal,
                 resolve_mode: vk::ResolveModeFlagBits::Average,
-                resolve_image_view: render_targets.resolve.image_view,
+                resolve_image_view: render_targets.resolve.image_view_handle(),
                 resolve_image_layout: vk::ImageLayout::AttachmentOptimal,
                 load_op: vk::AttachmentLoadOp::Clear,
                 store_op: vk::AttachmentStoreOp::Store,
@@ -640,7 +674,7 @@ unsafe fn draw(
             p_depth_attachment: &(vk::RenderingAttachmentInfo {
                 s_type: vk::StructureType::RenderingAttachmentInfo,
                 p_next: null(),
-                image_view: render_targets.depth.image_view,
+                image_view: render_targets.depth.image_view_handle(),
                 image_layout: vk::ImageLayout::AttachmentOptimal,
                 resolve_mode: vk::ResolveModeFlagBits::None,
                 resolve_image_view: vk::ImageView::null(),
@@ -754,7 +788,7 @@ unsafe fn draw(
                 new_layout: vk::ImageLayout::TransferSrcOptimal,
                 src_queue_family_index: 0,
                 dst_queue_family_index: 0,
-                image: render_targets.resolve.image,
+                image: render_targets.resolve.image_handle(),
                 subresource_range: render_targets.resolve.subresource_range(),
             },
         },
@@ -766,7 +800,7 @@ unsafe fn draw(
         &(vk::CopyImageToBufferInfo2 {
             s_type: vk::StructureType::CopyImageToBufferInfo2,
             p_next: null(),
-            src_image: render_targets.resolve.image,
+            src_image: render_targets.resolve.image_handle(),
             src_image_layout: vk::ImageLayout::TransferSrcOptimal,
             dst_buffer: output.buffer.handle(),
             region_count: 1,

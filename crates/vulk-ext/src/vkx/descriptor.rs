@@ -46,6 +46,10 @@ pub enum DescriptorCreateInfo {
         image_view: vk::ImageView,
         image_layout: vk::ImageLayout,
     },
+    InputAttachment {
+        image_view: vk::ImageView,
+        image_layout: vk::ImageLayout,
+    },
     Sampler(vk::Sampler),
     AccelerationStructure(vk::DeviceAddress),
 }
@@ -57,6 +61,7 @@ impl DescriptorCreateInfo {
             DescriptorCreateInfo::StorageBuffer { .. } => props.storage_buffer_descriptor_size,
             DescriptorCreateInfo::SampledImage { .. } => props.sampled_image_descriptor_size,
             DescriptorCreateInfo::StorageImage { .. } => props.storage_image_descriptor_size,
+            DescriptorCreateInfo::InputAttachment { .. } => props.input_attachment_descriptor_size,
             DescriptorCreateInfo::Sampler(_) => props.sampler_descriptor_size,
             DescriptorCreateInfo::AccelerationStructure(_) => {
                 props.acceleration_structure_descriptor_size
@@ -70,6 +75,7 @@ impl DescriptorCreateInfo {
             DescriptorCreateInfo::StorageBuffer { .. } => vk::DescriptorType::StorageBuffer,
             DescriptorCreateInfo::SampledImage { .. } => vk::DescriptorType::SampledImage,
             DescriptorCreateInfo::StorageImage { .. } => vk::DescriptorType::StorageImage,
+            DescriptorCreateInfo::InputAttachment { .. } => vk::DescriptorType::InputAttachment,
             DescriptorCreateInfo::Sampler(_) => vk::DescriptorType::Sampler,
             DescriptorCreateInfo::AccelerationStructure(_) => {
                 vk::DescriptorType::AccelerationStructureKHR
@@ -153,6 +159,21 @@ impl Descriptor {
                 size,
                 vk::DescriptorDataEXT {
                     p_storage_image: &vk::DescriptorImageInfo {
+                        sampler: vk::Sampler::null(),
+                        image_view,
+                        image_layout,
+                    },
+                },
+            ),
+            DescriptorCreateInfo::InputAttachment {
+                image_view,
+                image_layout,
+            } => Self::get_descriptor_data(
+                device,
+                ty,
+                size,
+                vk::DescriptorDataEXT {
+                    p_input_attachment_image: &vk::DescriptorImageInfo {
                         sampler: vk::Sampler::null(),
                         image_view,
                         image_layout,

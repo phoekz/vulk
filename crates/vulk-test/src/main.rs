@@ -34,6 +34,7 @@ use std::{
 use anyhow::{ensure, Context, Result};
 use gpu::Gpu;
 use log::info;
+use vkx::prelude::*;
 use vulk::vk;
 use vulk_ext::vkx;
 

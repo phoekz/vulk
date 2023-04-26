@@ -619,7 +619,7 @@ impl GpuResource for Tlas {
 struct RenderImageCreateInfo {}
 
 struct RenderImage {
-    image: resource::Image2d,
+    image: vkx::ImageDedicatedResource,
 }
 
 impl GpuResource for RenderImage {
@@ -629,22 +629,21 @@ impl GpuResource for RenderImage {
     where
         Self: Sized,
     {
-        let image = resource::Image2d::create(
-            gpu,
-            &resource::Image2dCreateInfo {
-                format: DEFAULT_RENDER_TARGET_COLOR_FORMAT,
-                width: DEFAULT_RENDER_TARGET_WIDTH,
-                height: DEFAULT_RENDER_TARGET_HEIGHT,
-                samples: vk::SampleCountFlagBits::Count1,
-                usage: vk::ImageUsageFlagBits::Storage | vk::ImageUsageFlagBits::TransferSrc,
-                property_flags: vk::MemoryPropertyFlagBits::DeviceLocal.into(),
-            },
+        let image = vkx::ImageDedicatedResource::create_2d(
+            &gpu.physical_device,
+            &gpu.device,
+            DEFAULT_RENDER_TARGET_COLOR_FORMAT,
+            DEFAULT_RENDER_TARGET_WIDTH,
+            DEFAULT_RENDER_TARGET_HEIGHT,
+            vk::SampleCountFlagBits::Count1,
+            vk::ImageUsageFlagBits::Storage | vk::ImageUsageFlagBits::TransferSrc,
+            vk::MemoryPropertyFlagBits::DeviceLocal.into(),
         )?;
         Ok(Self { image })
     }
 
     unsafe fn destroy(self, gpu: &Gpu) {
-        self.image.destroy(gpu);
+        self.image.destroy(&gpu.device);
     }
 }
 
@@ -724,7 +723,7 @@ impl GpuResource for Descriptors {
                 vkx::DescriptorBinding {
                     ty: vk::DescriptorType::StorageImage,
                     stages,
-                    descriptors: &[create_info.render_image.image.descriptor],
+                    descriptors: &[create_info.render_image.image.descriptor()],
                 },
                 vkx::DescriptorBinding {
                     ty: vk::DescriptorType::AccelerationStructureKHR,
@@ -1182,7 +1181,7 @@ unsafe fn dispatch(
                 new_layout: vk::ImageLayout::General,
                 src_queue_family_index: 0,
                 dst_queue_family_index: 0,
-                image: render_image.image.image,
+                image: render_image.image.image_handle(),
                 subresource_range: render_image.image.subresource_range(),
             },
         },
@@ -1285,7 +1284,7 @@ unsafe fn dispatch(
                 new_layout: vk::ImageLayout::TransferSrcOptimal,
                 src_queue_family_index: 0,
                 dst_queue_family_index: 0,
-                image: render_image.image.image,
+                image: render_image.image.image_handle(),
                 subresource_range: render_image.image.subresource_range(),
             },
         },
@@ -1297,7 +1296,7 @@ unsafe fn dispatch(
         &(vk::CopyImageToBufferInfo2 {
             s_type: vk::StructureType::CopyImageToBufferInfo2,
             p_next: null(),
-            src_image: render_image.image.image,
+            src_image: render_image.image.image_handle(),
             src_image_layout: vk::ImageLayout::TransferSrcOptimal,
             dst_buffer: output.buffer.handle(),
             region_count: 1,
