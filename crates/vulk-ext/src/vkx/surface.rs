@@ -1,7 +1,6 @@
 use super::*;
 
 use raw_window_handle::{HasRawDisplayHandle, HasRawWindowHandle};
-use raw_window_handle::{RawDisplayHandle, RawWindowHandle};
 
 pub struct Surface {
     surface: vk::SurfaceKHR,
@@ -14,6 +13,7 @@ pub struct Surface {
 }
 
 impl Surface {
+    #[cfg(target_family = "windows")]
     pub unsafe fn create<Window>(
         instance: &Instance,
         physical_device: &PhysicalDevice,
@@ -22,6 +22,8 @@ impl Surface {
     where
         Window: HasRawDisplayHandle + HasRawWindowHandle,
     {
+        use raw_window_handle::{RawDisplayHandle, RawWindowHandle};
+
         // Surface.
         let display_handle = window.raw_display_handle();
         let window_handle = window.raw_window_handle();
@@ -88,6 +90,18 @@ impl Surface {
             present_modes,
             present_mode,
         })
+    }
+
+    #[cfg(not(target_family = "windows"))]
+    pub unsafe fn create<Window>(
+        _instance: &Instance,
+        _physical_device: &PhysicalDevice,
+        _window: &Window,
+    ) -> Result<Self>
+    where
+        Window: HasRawDisplayHandle + HasRawWindowHandle,
+    {
+        todo!("Unsupported platform");
     }
 
     pub unsafe fn destroy(self, instance: &Instance) {
