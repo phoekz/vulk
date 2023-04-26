@@ -32,7 +32,7 @@ use std::{
 
 use anyhow::{ensure, Context, Result};
 use gpu::Gpu;
-use log::{debug, info};
+use log::info;
 use vulk::vk;
 use vulk_ext::vkx;
 
@@ -42,7 +42,6 @@ use vulk_ext::vkx;
 
 mod command;
 mod demos;
-mod descriptor;
 mod gpu;
 mod query;
 mod resource;

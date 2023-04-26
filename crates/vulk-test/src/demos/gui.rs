@@ -319,7 +319,7 @@ struct PushConstants {
 }
 
 struct Descriptors {
-    storage: descriptor::DescriptorStorage,
+    storage: vkx::DescriptorStorage,
     pipeline_layout: vk::PipelineLayout,
     push_constant_range: vk::PushConstantRange,
 }
@@ -331,40 +331,39 @@ impl Descriptors {
         textures: &Textures,
     ) -> Result<Self> {
         // Descriptor storage.
-        let stage_flags = vk::ShaderStageFlagBits::TaskEXT
+        let stages = vk::ShaderStageFlagBits::TaskEXT
             | vk::ShaderStageFlagBits::MeshEXT
             | vk::ShaderStageFlagBits::Fragment;
-        let storage = descriptor::DescriptorStorage::create(
-            gpu,
-            &descriptor::DescriptorStorageCreateInfo {
-                bindings: &[
-                    descriptor::DescriptorStorageBinding {
-                        descriptor_type: vk::DescriptorType::StorageBuffer,
-                        stage_flags,
-                        descriptors: &[geometry.vertex_buffer.descriptor()],
-                    },
-                    descriptor::DescriptorStorageBinding {
-                        descriptor_type: vk::DescriptorType::StorageBuffer,
-                        stage_flags,
-                        descriptors: &[geometry.index_buffer.descriptor()],
-                    },
-                    descriptor::DescriptorStorageBinding {
-                        descriptor_type: vk::DescriptorType::SampledImage,
-                        stage_flags,
-                        descriptors: &[textures.image.descriptor],
-                    },
-                    descriptor::DescriptorStorageBinding {
-                        descriptor_type: vk::DescriptorType::Sampler,
-                        stage_flags,
-                        descriptors: &[textures.sampler.descriptor],
-                    },
-                ],
-            },
+        let storage = vkx::DescriptorStorage::create(
+            &gpu.physical_device,
+            &gpu.device,
+            &[
+                vkx::DescriptorBinding {
+                    ty: vk::DescriptorType::StorageBuffer,
+                    stages,
+                    descriptors: &[geometry.vertex_buffer.descriptor()],
+                },
+                vkx::DescriptorBinding {
+                    ty: vk::DescriptorType::StorageBuffer,
+                    stages,
+                    descriptors: &[geometry.index_buffer.descriptor()],
+                },
+                vkx::DescriptorBinding {
+                    ty: vk::DescriptorType::SampledImage,
+                    stages,
+                    descriptors: &[textures.image.descriptor],
+                },
+                vkx::DescriptorBinding {
+                    ty: vk::DescriptorType::Sampler,
+                    stages,
+                    descriptors: &[textures.sampler.descriptor],
+                },
+            ],
         )?;
 
         // Pipeline layout.
         let push_constant_range = vk::PushConstantRange {
-            stage_flags,
+            stage_flags: stages,
             offset: 0,
             size: size_of::<PushConstants>() as _,
         };
@@ -389,7 +388,7 @@ impl Descriptors {
 
     unsafe fn destroy(self, gpu @ Gpu { device, .. }: &Gpu) {
         device.destroy_pipeline_layout(self.pipeline_layout);
-        self.storage.destroy(gpu);
+        self.storage.destroy(&gpu.device);
     }
 }
 
@@ -711,9 +710,9 @@ unsafe fn draw(
     );
 
     // Bind descriptors.
-    descriptors.storage.bind(gpu, cmd);
+    descriptors.storage.bind(&gpu.device, cmd);
     descriptors.storage.set_offsets(
-        gpu,
+        &gpu.device,
         cmd,
         vk::PipelineBindPoint::Graphics,
         descriptors.pipeline_layout,

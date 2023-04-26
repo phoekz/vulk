@@ -178,7 +178,7 @@ struct DescriptorsCreateInfo<'a> {
 }
 
 struct Descriptors {
-    storage: descriptor::DescriptorStorage,
+    storage: vkx::DescriptorStorage,
     pipeline_layout: vk::PipelineLayout,
 }
 
@@ -190,23 +190,22 @@ impl GpuResource for Descriptors {
         Self: Sized,
     {
         // Descriptor storage.
-        let stage_flags = vk::ShaderStageFlagBits::Compute.into();
-        let storage = descriptor::DescriptorStorage::create(
-            gpu,
-            &descriptor::DescriptorStorageCreateInfo {
-                bindings: &[
-                    descriptor::DescriptorStorageBinding {
-                        descriptor_type: vk::DescriptorType::StorageBuffer,
-                        stage_flags,
-                        descriptors: &[create_info.indirect_buffer.buffer.descriptor()],
-                    },
-                    descriptor::DescriptorStorageBinding {
-                        descriptor_type: vk::DescriptorType::StorageImage,
-                        stage_flags,
-                        descriptors: &[create_info.compute_image.image.descriptor],
-                    },
-                ],
-            },
+        let stages = vk::ShaderStageFlagBits::Compute.into();
+        let storage = vkx::DescriptorStorage::create(
+            &gpu.physical_device,
+            &gpu.device,
+            &[
+                vkx::DescriptorBinding {
+                    ty: vk::DescriptorType::StorageBuffer,
+                    stages,
+                    descriptors: &[create_info.indirect_buffer.buffer.descriptor()],
+                },
+                vkx::DescriptorBinding {
+                    ty: vk::DescriptorType::StorageImage,
+                    stages,
+                    descriptors: &[create_info.compute_image.image.descriptor],
+                },
+            ],
         )?;
 
         // Pipeline layout.
@@ -230,7 +229,7 @@ impl GpuResource for Descriptors {
 
     unsafe fn destroy(self, gpu: &Gpu) {
         gpu.device.destroy_pipeline_layout(self.pipeline_layout);
-        self.storage.destroy(gpu);
+        self.storage.destroy(&gpu.device);
     }
 }
 
@@ -366,9 +365,9 @@ unsafe fn dispatch(
     queries.begin(gpu, cmd, vk::PipelineStageFlagBits2::None.into());
 
     // Bind descriptors.
-    descriptors.storage.bind(gpu, cmd);
+    descriptors.storage.bind(device, cmd);
     descriptors.storage.set_offsets(
-        gpu,
+        &gpu.device,
         cmd,
         vk::PipelineBindPoint::Compute,
         descriptors.pipeline_layout,

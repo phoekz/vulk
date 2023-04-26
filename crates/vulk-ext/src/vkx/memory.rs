@@ -85,6 +85,9 @@ impl BufferAllocations {
             .iter()
             .all(|info| info.flags == vk::BufferCreateFlags::empty()));
         ensure!(create_infos.iter().all(|info| info.size > 0));
+        ensure!(create_infos.iter().all(|info| info
+            .usage
+            .contains(vk::BufferUsageFlagBits::ShaderDeviceAddress.into())));
         ensure!(create_infos
             .iter()
             .all(|info| info.sharing_mode == vk::SharingMode::Exclusive));

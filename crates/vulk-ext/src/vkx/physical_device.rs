@@ -12,8 +12,6 @@ pub struct PhysicalDevice {
     pub raytracing_pipeline_properties: vk::PhysicalDeviceRayTracingPipelinePropertiesKHR,
 }
 
-// Todo: descriptor::validate_descriptor_sizes(&db_props)?;
-
 impl PhysicalDevice {
     pub unsafe fn create(instance: &Instance) -> Result<Self> {
         // Find physical devices.
@@ -72,6 +70,9 @@ impl PhysicalDevice {
             instance.get_physical_device_memory_properties2(physical_device, &mut mem_props2);
             mem_props2.memory_properties
         };
+
+        // Post-validation.
+        descriptor::validate_descriptor_sizes(&db_props)?;
 
         Ok(Self {
             physical_device,

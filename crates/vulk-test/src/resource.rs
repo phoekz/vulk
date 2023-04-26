@@ -19,15 +19,14 @@ pub struct Buffer {
     buffer: vk::Buffer,
     allocations: vkx::BufferAllocations,
     allocation: vkx::BufferAllocation,
-    descriptor: descriptor::Descriptor,
-    usage: vk::BufferUsageFlags,
+    descriptor: vkx::Descriptor,
 }
 
 impl GpuResource for Buffer {
     type CreateInfo<'a> = BufferCreateInfo;
 
     unsafe fn create(
-        gpu @ Gpu {
+        Gpu {
             device,
             physical_device,
             ..
@@ -63,10 +62,13 @@ impl GpuResource for Buffer {
         let allocation = allocations.allocations()[0];
 
         // Descriptor.
-        let descriptor = descriptor::Descriptor::create_storage_buffer(
-            gpu,
-            allocation.device_address(),
-            create_info.size,
+        let descriptor = vkx::Descriptor::create(
+            physical_device,
+            device,
+            vkx::DescriptorCreateInfo::StorageBuffer {
+                address: allocation.device_address(),
+                range: create_info.size,
+            },
         );
 
         Ok(Self {
@@ -74,7 +76,6 @@ impl GpuResource for Buffer {
             allocations,
             allocation,
             descriptor,
-            usage,
         })
     }
 
@@ -97,12 +98,8 @@ impl Buffer {
         &mut self.allocation
     }
 
-    pub fn descriptor(&self) -> descriptor::Descriptor {
+    pub fn descriptor(&self) -> vkx::Descriptor {
         self.descriptor
-    }
-
-    pub fn usage(&self) -> vk::BufferUsageFlags {
-        self.usage
     }
 }
 
@@ -133,14 +130,14 @@ pub struct Image2d {
     pub image_view: vk::ImageView,
     pub image_view_create_info: vk::ImageViewCreateInfo,
 
-    pub descriptor: descriptor::Descriptor,
+    pub descriptor: vkx::Descriptor,
 }
 
 impl GpuResource for Image2d {
     type CreateInfo<'a> = Image2dCreateInfo;
 
     unsafe fn create(
-        gpu @ Gpu {
+        Gpu {
             device,
             physical_device,
             ..
@@ -251,12 +248,22 @@ impl GpuResource for Image2d {
             .usage
             .contains(vk::ImageUsageFlagBits::Storage.into())
         {
-            descriptor::Descriptor::create_storage_image(gpu, image_view, vk::ImageLayout::General)
+            vkx::Descriptor::create(
+                physical_device,
+                device,
+                vkx::DescriptorCreateInfo::StorageImage {
+                    image_view,
+                    image_layout: vk::ImageLayout::General,
+                },
+            )
         } else {
-            descriptor::Descriptor::create_sampled_image(
-                gpu,
-                image_view,
-                vk::ImageLayout::ShaderReadOnlyOptimal,
+            vkx::Descriptor::create(
+                physical_device,
+                device,
+                vkx::DescriptorCreateInfo::SampledImage {
+                    image_view,
+                    image_layout: vk::ImageLayout::ShaderReadOnlyOptimal,
+                },
             )
         };
 
@@ -355,14 +362,18 @@ pub struct SamplerCreateInfo {
 pub struct Sampler {
     pub sampler: vk::Sampler,
     pub sampler_create_info: vk::SamplerCreateInfo,
-    pub descriptor: descriptor::Descriptor,
+    pub descriptor: vkx::Descriptor,
 }
 
 impl GpuResource for Sampler {
     type CreateInfo<'a> = SamplerCreateInfo;
 
     unsafe fn create(
-        gpu @ Gpu { device, .. }: &Gpu,
+        Gpu {
+            physical_device,
+            device,
+            ..
+        }: &Gpu,
         create_info: &Self::CreateInfo<'_>,
     ) -> Result<Self> {
         // Sampler info.
@@ -391,7 +402,11 @@ impl GpuResource for Sampler {
         let sampler = device.create_sampler(&sampler_create_info)?;
 
         // Descriptor.
-        let descriptor = descriptor::Descriptor::create_sampler(gpu, sampler);
+        let descriptor = vkx::Descriptor::create(
+            physical_device,
+            device,
+            vkx::DescriptorCreateInfo::Sampler(sampler),
+        );
 
         Ok(Self {
             sampler,

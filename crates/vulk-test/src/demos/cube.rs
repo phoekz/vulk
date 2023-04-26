@@ -187,7 +187,7 @@ struct DescriptorsCreateInfo<'a> {
 }
 
 struct Descriptors {
-    storage: descriptor::DescriptorStorage,
+    storage: vkx::DescriptorStorage,
     pipeline_layout: vk::PipelineLayout,
     push_constant_ranges: vk::PushConstantRange,
 }
@@ -200,7 +200,7 @@ impl GpuResource for Descriptors {
         Self: Sized,
     {
         // Descriptor storage.
-        let stage_flags = vk::ShaderStageFlagBits::Fragment.into();
+        let stages = vk::ShaderStageFlagBits::Fragment.into();
         let image_descriptors = create_info
             .textures
             .images
@@ -213,22 +213,21 @@ impl GpuResource for Descriptors {
             .iter()
             .map(|sampler| sampler.descriptor)
             .collect::<Vec<_>>();
-        let storage = descriptor::DescriptorStorage::create(
-            gpu,
-            &descriptor::DescriptorStorageCreateInfo {
-                bindings: &[
-                    descriptor::DescriptorStorageBinding {
-                        descriptor_type: vk::DescriptorType::SampledImage,
-                        stage_flags,
-                        descriptors: &image_descriptors,
-                    },
-                    descriptor::DescriptorStorageBinding {
-                        descriptor_type: vk::DescriptorType::Sampler,
-                        stage_flags,
-                        descriptors: &sampler_descriptors,
-                    },
-                ],
-            },
+        let storage = vkx::DescriptorStorage::create(
+            &gpu.physical_device,
+            &gpu.device,
+            &[
+                vkx::DescriptorBinding {
+                    ty: vk::DescriptorType::SampledImage,
+                    stages,
+                    descriptors: &image_descriptors,
+                },
+                vkx::DescriptorBinding {
+                    ty: vk::DescriptorType::Sampler,
+                    stages,
+                    descriptors: &sampler_descriptors,
+                },
+            ],
         )?;
 
         // Push constants.
@@ -259,7 +258,7 @@ impl GpuResource for Descriptors {
     }
 
     unsafe fn destroy(self, gpu: &Gpu) {
-        self.storage.destroy(gpu);
+        self.storage.destroy(&gpu.device);
         gpu.device.destroy_pipeline_layout(self.pipeline_layout);
     }
 }
@@ -677,9 +676,9 @@ unsafe fn draw(
     }
 
     // Bind descriptors.
-    descriptors.storage.bind(gpu, cmd);
+    descriptors.storage.bind(&gpu.device, cmd);
     descriptors.storage.set_offsets(
-        gpu,
+        &gpu.device,
         cmd,
         vk::PipelineBindPoint::Graphics,
         descriptors.pipeline_layout,

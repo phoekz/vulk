@@ -5,6 +5,7 @@ use super::*;
 //
 
 mod debug_utils;
+mod descriptor;
 mod device;
 mod instance;
 mod memory;
@@ -16,6 +17,7 @@ mod surface;
 // Re-exports
 //
 
+pub use descriptor::{Descriptor, DescriptorBinding, DescriptorCreateInfo, DescriptorStorage};
 pub use device::Device;
 pub use instance::{Instance, InstanceCreateInfo};
 pub use memory::{BufferAllocation, BufferAllocations};

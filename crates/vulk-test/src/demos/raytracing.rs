@@ -420,7 +420,7 @@ struct TlasCreateInfo<'a> {
 struct Tlas {
     tlas: vk::AccelerationStructureKHR,
     tlas_buffer: AccelerationStructureBuffer,
-    tlas_descriptor: descriptor::Descriptor,
+    tlas_descriptor: vkx::Descriptor,
 }
 
 impl GpuResource for Tlas {
@@ -622,8 +622,11 @@ impl GpuResource for Tlas {
         };
 
         // Descriptor.
-        let tlas_descriptor =
-            descriptor::Descriptor::create_acceleration_structure(gpu, tlas_address);
+        let tlas_descriptor = vkx::Descriptor::create(
+            &gpu.physical_device,
+            &gpu.device,
+            vkx::DescriptorCreateInfo::AccelerationStructure(tlas_address),
+        );
 
         // Cleanup.
         instance_buffer.destroy(gpu);
@@ -731,7 +734,7 @@ struct DescriptorsCreateInfo<'a> {
 }
 
 struct Descriptors {
-    storage: descriptor::DescriptorStorage,
+    storage: vkx::DescriptorStorage,
     pipeline_layout: vk::PipelineLayout,
     push_constant_ranges: vk::PushConstantRange,
 }
@@ -744,37 +747,36 @@ impl GpuResource for Descriptors {
         Self: Sized,
     {
         // Stage flags.
-        let stage_flags = vk::ShaderStageFlagBits::RaygenKHR
+        let stages = vk::ShaderStageFlagBits::RaygenKHR
             | vk::ShaderStageFlagBits::MissKHR
             | vk::ShaderStageFlagBits::ClosestHitKHR;
 
         // Descriptor storage.
-        let storage = descriptor::DescriptorStorage::create(
-            gpu,
-            &descriptor::DescriptorStorageCreateInfo {
-                bindings: &[
-                    descriptor::DescriptorStorageBinding {
-                        descriptor_type: vk::DescriptorType::StorageImage,
-                        stage_flags,
-                        descriptors: &[create_info.render_image.image.descriptor],
-                    },
-                    descriptor::DescriptorStorageBinding {
-                        descriptor_type: vk::DescriptorType::AccelerationStructureKHR,
-                        stage_flags,
-                        descriptors: &[create_info.tlas.tlas_descriptor],
-                    },
-                    descriptor::DescriptorStorageBinding {
-                        descriptor_type: vk::DescriptorType::StorageBuffer,
-                        stage_flags,
-                        descriptors: &[create_info.stats.counters.descriptor()],
-                    },
-                ],
-            },
+        let storage = vkx::DescriptorStorage::create(
+            &gpu.physical_device,
+            &gpu.device,
+            &[
+                vkx::DescriptorBinding {
+                    ty: vk::DescriptorType::StorageImage,
+                    stages,
+                    descriptors: &[create_info.render_image.image.descriptor],
+                },
+                vkx::DescriptorBinding {
+                    ty: vk::DescriptorType::AccelerationStructureKHR,
+                    stages,
+                    descriptors: &[create_info.tlas.tlas_descriptor],
+                },
+                vkx::DescriptorBinding {
+                    ty: vk::DescriptorType::StorageBuffer,
+                    stages,
+                    descriptors: &[create_info.stats.counters.descriptor()],
+                },
+            ],
         )?;
 
         // Push constants.
         let push_constant_ranges = vk::PushConstantRange {
-            stage_flags,
+            stage_flags: stages,
             offset: 0,
             size: (2 * size_of::<Mat4>()) as _,
         };
@@ -801,7 +803,7 @@ impl GpuResource for Descriptors {
 
     unsafe fn destroy(self, gpu: &Gpu) {
         gpu.device.destroy_pipeline_layout(self.pipeline_layout);
-        self.storage.destroy(gpu);
+        self.storage.destroy(&gpu.device);
     }
 }
 
@@ -1202,9 +1204,9 @@ unsafe fn dispatch(
     );
 
     // Bind descriptors.
-    descriptors.storage.bind(gpu, cmd);
+    descriptors.storage.bind(&gpu.device, cmd);
     descriptors.storage.set_offsets(
-        gpu,
+        &gpu.device,
         cmd,
         vk::PipelineBindPoint::RayTracingKHR,
         descriptors.pipeline_layout,
