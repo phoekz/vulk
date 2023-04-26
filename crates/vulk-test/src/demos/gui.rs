@@ -259,7 +259,7 @@ impl Geometry {
 
 struct Textures {
     image: resource::Image2d,
-    sampler: resource::Sampler,
+    sampler: vkx::SamplerResource,
 }
 
 impl Textures {
@@ -280,21 +280,26 @@ impl Textures {
             std::slice::from_ref(&image),
             std::slice::from_ref(&gui.texture_data),
         )?;
-        let sampler = resource::Sampler::create(
-            gpu,
-            &resource::SamplerCreateInfo {
-                mag_filter: vk::Filter::Linear,
-                min_filter: vk::Filter::Linear,
-                mipmap_mode: vk::SamplerMipmapMode::Linear,
-                address_mode: vk::SamplerAddressMode::ClampToEdge,
-            },
+
+        let (sampler, sampler_create_info) = vkx::SamplerCreator::new()
+            .mag_filter(vk::Filter::Linear)
+            .min_filter(vk::Filter::Linear)
+            .mipmap_mode(vk::SamplerMipmapMode::Linear)
+            .address_mode_uvw(vk::SamplerAddressMode::ClampToEdge)
+            .create(&gpu.device)?;
+        let mut samplers = vkx::SamplerResource::create(
+            &gpu.physical_device,
+            &gpu.device,
+            &[sampler],
+            &[sampler_create_info],
         )?;
+        let sampler = samplers.swap_remove(0);
         Ok(Self { image, sampler })
     }
 
     unsafe fn destroy(self, gpu: &Gpu) {
         self.image.destroy(gpu);
-        self.sampler.destroy(gpu);
+        self.sampler.destroy(&gpu.device);
     }
 }
 
@@ -349,7 +354,7 @@ impl Descriptors {
                 vkx::DescriptorBinding {
                     ty: vk::DescriptorType::Sampler,
                     stages,
-                    descriptors: &[textures.sampler.descriptor],
+                    descriptors: &[textures.sampler.descriptor()],
                 },
             ],
         )?;

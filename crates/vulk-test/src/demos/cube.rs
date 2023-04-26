@@ -73,7 +73,7 @@ struct TexturesCreateInfo {}
 
 struct Textures {
     images: Vec<resource::Image2d>,
-    samplers: Vec<resource::Sampler>,
+    samplers: Vec<vkx::SamplerResource>,
 }
 
 impl GpuResource for Textures {
@@ -144,26 +144,35 @@ impl GpuResource for Textures {
         // Upload.
         resource::multi_upload_images(gpu, &images, &image_datas)?;
 
-        // Sampler.
-        let sampler_create_info =
-            |mag_filter: vk::Filter, min_filter: vk::Filter| resource::SamplerCreateInfo {
-                mag_filter,
-                min_filter,
-                mipmap_mode: vk::SamplerMipmapMode::Nearest,
-                address_mode: vk::SamplerAddressMode::ClampToEdge,
-            };
-        let sampler_create_infos = [
-            sampler_create_info(vk::Filter::Nearest, vk::Filter::Nearest),
-            sampler_create_info(vk::Filter::Linear, vk::Filter::Nearest),
-            sampler_create_info(vk::Filter::Nearest, vk::Filter::Nearest),
-            sampler_create_info(vk::Filter::Nearest, vk::Filter::Nearest),
-            sampler_create_info(vk::Filter::Nearest, vk::Filter::Nearest),
-            sampler_create_info(vk::Filter::Nearest, vk::Filter::Nearest),
+        // Samplers.
+        let sampler_creator = |mag_filter: vk::Filter, min_filter: vk::Filter| {
+            vkx::SamplerCreator::new()
+                .mag_filter(mag_filter)
+                .min_filter(min_filter)
+                .mipmap_mode(vk::SamplerMipmapMode::Nearest)
+                .address_mode_uvw(vk::SamplerAddressMode::ClampToEdge)
+        };
+        let sampler_creators = [
+            sampler_creator(vk::Filter::Nearest, vk::Filter::Nearest),
+            sampler_creator(vk::Filter::Linear, vk::Filter::Nearest),
+            sampler_creator(vk::Filter::Nearest, vk::Filter::Nearest),
+            sampler_creator(vk::Filter::Nearest, vk::Filter::Nearest),
+            sampler_creator(vk::Filter::Nearest, vk::Filter::Nearest),
+            sampler_creator(vk::Filter::Nearest, vk::Filter::Nearest),
         ];
         let mut samplers = vec![];
-        for sampler_create_info in sampler_create_infos {
-            samplers.push(resource::Sampler::create(gpu, &sampler_create_info)?);
+        let mut sampler_create_infos = vec![];
+        for sampler_creator in sampler_creators {
+            let (sampler, sampler_create_info) = sampler_creator.create(&gpu.device)?;
+            samplers.push(sampler);
+            sampler_create_infos.push(sampler_create_info);
         }
+        let samplers = vkx::SamplerResource::create(
+            &gpu.physical_device,
+            &gpu.device,
+            &samplers,
+            &sampler_create_infos,
+        )?;
 
         Ok(Self { images, samplers })
     }
@@ -173,7 +182,7 @@ impl GpuResource for Textures {
             image.destroy(gpu);
         }
         for sampler in self.samplers {
-            sampler.destroy(gpu);
+            sampler.destroy(&gpu.device);
         }
     }
 }
@@ -211,7 +220,7 @@ impl GpuResource for Descriptors {
             .textures
             .samplers
             .iter()
-            .map(|sampler| sampler.descriptor)
+            .map(vkx::SamplerResource::descriptor)
             .collect::<Vec<_>>();
         let storage = vkx::DescriptorStorage::create(
             &gpu.physical_device,

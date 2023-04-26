@@ -164,65 +164,6 @@ impl Image2d {
     }
 }
 
-//
-// Sampler
-//
-
-#[derive(Debug)]
-pub struct SamplerCreateInfo {
-    pub mag_filter: vk::Filter,
-    pub min_filter: vk::Filter,
-    pub mipmap_mode: vk::SamplerMipmapMode,
-    pub address_mode: vk::SamplerAddressMode,
-}
-
-#[derive(Debug)]
-pub struct Sampler {
-    pub sampler: vk::Sampler,
-    pub sampler_create_info: vk::SamplerCreateInfo,
-    pub descriptor: vkx::Descriptor,
-}
-
-impl GpuResource for Sampler {
-    type CreateInfo<'a> = SamplerCreateInfo;
-
-    unsafe fn create(
-        Gpu {
-            physical_device,
-            device,
-            ..
-        }: &Gpu,
-        create_info: &Self::CreateInfo<'_>,
-    ) -> Result<Self> {
-        // Sampler.
-        let (sampler, sampler_create_info) = vkx::SamplerCreator::new()
-            .mag_filter(create_info.mag_filter)
-            .min_filter(create_info.min_filter)
-            .mipmap_mode(create_info.mipmap_mode)
-            .address_mode_uvw(create_info.address_mode)
-            .create(device)
-            .context("Creating sampler")?;
-
-        // Descriptor.
-        let descriptor = vkx::Descriptor::create(
-            physical_device,
-            device,
-            vkx::DescriptorCreateInfo::Sampler(sampler),
-        );
-
-        Ok(Self {
-            sampler,
-            sampler_create_info,
-            descriptor,
-        })
-    }
-
-    unsafe fn destroy(self, Gpu { device, .. }: &Gpu) {
-        device.destroy_sampler(self.sampler);
-    }
-}
-
-//
 // Upload
 //
 

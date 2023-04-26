@@ -94,3 +94,61 @@ impl Default for SamplerCreator {
         Self::new()
     }
 }
+
+/// [`SamplerResource`] is meant to be used by a shader.
+pub struct SamplerResource {
+    sampler: vk::Sampler,
+    sampler_create_info: vk::SamplerCreateInfo,
+    descriptor: Descriptor,
+}
+
+impl SamplerResource {
+    pub unsafe fn create(
+        physical_device: &PhysicalDevice,
+        device: &Device,
+        samplers: &[vk::Sampler],
+        sampler_create_infos: &[vk::SamplerCreateInfo],
+    ) -> Result<Vec<Self>> {
+        // Validation.
+        ensure!(!samplers.is_empty());
+        ensure!(!sampler_create_infos.is_empty());
+        ensure!(samplers.len() == sampler_create_infos.len());
+
+        // Sampler resources.
+        let mut sampler_resources = vec![];
+        for i in 0..samplers.len() {
+            let sampler = samplers[i];
+            let sampler_create_info = sampler_create_infos[i];
+            let descriptor = vkx::Descriptor::create(
+                physical_device,
+                device,
+                vkx::DescriptorCreateInfo::Sampler(sampler),
+            );
+            sampler_resources.push(Self {
+                sampler,
+                sampler_create_info,
+                descriptor,
+            });
+        }
+        Ok(sampler_resources)
+    }
+
+    pub unsafe fn destroy(self, device: &Device) {
+        device.destroy_sampler(self.sampler);
+    }
+
+    #[must_use]
+    pub fn handle(&self) -> vk::Sampler {
+        self.sampler
+    }
+
+    #[must_use]
+    pub fn create_info(&self) -> &vk::SamplerCreateInfo {
+        &self.sampler_create_info
+    }
+
+    #[must_use]
+    pub fn descriptor(&self) -> Descriptor {
+        self.descriptor
+    }
+}
