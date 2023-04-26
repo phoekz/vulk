@@ -105,7 +105,6 @@ impl GpuResource for Output {
             vk::BufferUsageFlagBits::TransferDst.into(),
             vk::MemoryPropertyFlagBits::HostVisible.into(),
         )?;
-        dbg!(&buffer);
         Ok(Self { buffer })
     }
 
