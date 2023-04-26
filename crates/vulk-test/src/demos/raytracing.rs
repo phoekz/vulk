@@ -96,18 +96,19 @@ impl DemoCallbacks for Demo {
 // Types
 //
 
-type VertexBuffer = resource::Buffer<Vertex>;
-type IndexBuffer = resource::Buffer<u32>;
-type TransformBuffer = resource::Buffer<vk::TransformMatrixKHR>;
-type AccelerationStructureBuffer = resource::Buffer<u8>;
-type AccelerationStructureScratchBuffer = resource::Buffer<u8>;
-type ShaderBindingTableBuffer = resource::Buffer<u8>;
+type VertexBuffer = resource::Buffer;
+type IndexBuffer = resource::Buffer;
+type TransformBuffer = resource::Buffer;
+type AccelerationStructureBuffer = resource::Buffer;
+type AccelerationStructureScratchBuffer = resource::Buffer;
+type ShaderBindingTableBuffer = resource::Buffer;
 
 //
 // Scene
 //
 
 #[repr(C)]
+#[derive(Clone, Copy)]
 struct Vertex {
     position: Vec3,
 }
@@ -175,48 +176,53 @@ impl GpuResource for Blas {
     {
         // Buffers
         let (vertex_buffer, index_buffer, transform_buffer) = {
-            let vertex_buffer = VertexBuffer::create(
+            type VertexType = Vertex;
+            type IndexType = u32;
+            type TransformType = vk::TransformMatrixKHR;
+
+            let mut vertex_buffer = VertexBuffer::create(
                 gpu,
                 &resource::BufferCreateInfo {
-                    size: create_info.scene.vertex_data.len() as _,
+                    size: (size_of::<VertexType>() * create_info.scene.vertex_data.len()) as _,
                     usage: vk::BufferUsageFlagBits::AccelerationStructureBuildInputReadOnlyKHR
                         .into(),
                     property_flags: vk::MemoryPropertyFlagBits::HostVisible
                         | vk::MemoryPropertyFlagBits::HostCoherent,
                 },
             )?;
-            let index_buffer = IndexBuffer::create(
+            let mut index_buffer = IndexBuffer::create(
                 gpu,
                 &resource::BufferCreateInfo {
-                    size: create_info.scene.index_data.len() as _,
+                    size: (size_of::<IndexType>() * create_info.scene.index_data.len()) as _,
                     usage: vk::BufferUsageFlagBits::AccelerationStructureBuildInputReadOnlyKHR
                         .into(),
                     property_flags: vk::MemoryPropertyFlagBits::HostVisible
                         | vk::MemoryPropertyFlagBits::HostCoherent,
                 },
             )?;
-            let transform_buffer = TransformBuffer::create(
+            let mut transform_buffer = TransformBuffer::create(
                 gpu,
                 &resource::BufferCreateInfo {
-                    size: create_info.scene.transform_data.len() as _,
+                    size: (size_of::<TransformType>() * create_info.scene.transform_data.len())
+                        as _,
                     usage: vk::BufferUsageFlagBits::AccelerationStructureBuildInputReadOnlyKHR
                         .into(),
                     property_flags: vk::MemoryPropertyFlagBits::HostVisible
                         | vk::MemoryPropertyFlagBits::HostCoherent,
                 },
             )?;
-            vertex_buffer.ptr.copy_from_nonoverlapping(
-                create_info.scene.vertex_data.as_ptr(),
-                create_info.scene.vertex_data.len(),
-            );
-            index_buffer.ptr.copy_from_nonoverlapping(
-                create_info.scene.index_data.as_ptr(),
-                create_info.scene.index_data.len(),
-            );
-            transform_buffer.ptr.copy_from_nonoverlapping(
-                create_info.scene.transform_data.as_ptr(),
-                create_info.scene.transform_data.len(),
-            );
+            vertex_buffer
+                .memory_mut()
+                .as_mut_slice(create_info.scene.vertex_data.len())
+                .copy_from_slice(&create_info.scene.vertex_data);
+            index_buffer
+                .memory_mut()
+                .as_mut_slice(create_info.scene.index_data.len())
+                .copy_from_slice(&create_info.scene.index_data);
+            transform_buffer
+                .memory_mut()
+                .as_mut_slice(create_info.scene.transform_data.len())
+                .copy_from_slice(&create_info.scene.transform_data);
 
             (vertex_buffer, index_buffer, transform_buffer)
         };
@@ -228,16 +234,16 @@ impl GpuResource for Blas {
                 p_next: null(),
                 vertex_format: vk::Format::R32g32b32Sfloat,
                 vertex_data: vk::DeviceOrHostAddressConstKHR {
-                    device_address: vertex_buffer.device_address,
+                    device_address: vertex_buffer.memory().device_address(),
                 },
                 vertex_stride: size_of::<Vertex>() as _,
                 max_vertex: create_info.scene.vertex_data.len() as _,
                 index_type: vk::IndexType::Uint32,
                 index_data: vk::DeviceOrHostAddressConstKHR {
-                    device_address: index_buffer.device_address,
+                    device_address: index_buffer.memory().device_address(),
                 },
                 transform_data: vk::DeviceOrHostAddressConstKHR {
-                    device_address: transform_buffer.device_address,
+                    device_address: transform_buffer.memory().device_address(),
                 },
             };
         let acceleration_structure_geometry_khr = vk::AccelerationStructureGeometryKHR {
@@ -304,7 +310,7 @@ impl GpuResource for Blas {
                 s_type: vk::StructureType::AccelerationStructureCreateInfoKHR,
                 p_next: null(),
                 create_flags: vk::AccelerationStructureCreateFlagsKHR::empty(),
-                buffer: blas_buffer.buffer,
+                buffer: blas_buffer.handle(),
                 offset: 0,
                 size: acceleration_structure_size as _,
                 ty: vk::AccelerationStructureTypeKHR::BottomLevelKHR,
@@ -341,7 +347,7 @@ impl GpuResource for Blas {
                     p_geometries: &acceleration_structure_geometry_khr,
                     pp_geometries: null(),
                     scratch_data: vk::DeviceOrHostAddressKHR {
-                        device_address: blas_scratch_buffer.device_address,
+                        device_address: blas_scratch_buffer.memory().device_address(),
                     },
                 };
             let acceleration_structure_build_range_info_khr =
@@ -428,7 +434,7 @@ impl GpuResource for Tlas {
         Self: Sized,
     {
         // Types.
-        type InstanceBuffer = resource::Buffer<vk::AccelerationStructureInstanceKHR>;
+        type InstanceBuffer = resource::Buffer;
 
         // Instance.
         let instance_buffer = {
@@ -452,10 +458,10 @@ impl GpuResource for Tlas {
                 acceleration_structure_reference: create_info.blas.blas_address,
             };
 
-            let instance_buffer = InstanceBuffer::create(
+            let mut instance_buffer = InstanceBuffer::create(
                 gpu,
                 &resource::BufferCreateInfo {
-                    size: 1,
+                    size: size_of::<vk::AccelerationStructureInstanceKHR>() as _,
                     usage: vk::BufferUsageFlagBits::AccelerationStructureBuildInputReadOnlyKHR
                         .into(),
                     property_flags: vk::MemoryPropertyFlagBits::HostVisible
@@ -463,8 +469,9 @@ impl GpuResource for Tlas {
                 },
             )?;
             instance_buffer
-                .ptr
-                .copy_from_nonoverlapping(addr_of!(instance), 1);
+                .memory_mut()
+                .as_mut_slice(1)
+                .copy_from_slice(&[instance]);
 
             instance_buffer
         };
@@ -476,7 +483,7 @@ impl GpuResource for Tlas {
                 p_next: null(),
                 array_of_pointers: vk::FALSE,
                 data: vk::DeviceOrHostAddressConstKHR {
-                    device_address: instance_buffer.device_address,
+                    device_address: instance_buffer.memory().device_address(),
                 },
             };
         let acceleration_structure_geometry_khr = vk::AccelerationStructureGeometryKHR {
@@ -543,7 +550,7 @@ impl GpuResource for Tlas {
                 s_type: vk::StructureType::AccelerationStructureCreateInfoKHR,
                 p_next: null(),
                 create_flags: vk::AccelerationStructureCreateFlagsKHR::empty(),
-                buffer: tlas_buffer.buffer,
+                buffer: tlas_buffer.handle(),
                 offset: 0,
                 size: acceleration_structure_size as _,
                 ty: vk::AccelerationStructureTypeKHR::TopLevelKHR,
@@ -580,7 +587,7 @@ impl GpuResource for Tlas {
                     p_geometries: &acceleration_structure_geometry_khr,
                     pp_geometries: null(),
                     scratch_data: vk::DeviceOrHostAddressKHR {
-                        device_address: tlas_scratch_buffer.device_address,
+                        device_address: tlas_scratch_buffer.memory().device_address(),
                     },
                 };
             let acceleration_structure_build_range_info_khr =
@@ -686,7 +693,7 @@ struct StatCounters {
 struct StatsCreateInfo {}
 
 struct Stats {
-    counters: resource::Buffer<StatCounters>,
+    counters: resource::Buffer,
 }
 
 impl GpuResource for Stats {
@@ -699,7 +706,7 @@ impl GpuResource for Stats {
         let counters = resource::Buffer::create(
             gpu,
             &resource::BufferCreateInfo {
-                size: 1,
+                size: size_of::<StatCounters>() as _,
                 usage: vk::BufferUsageFlagBits::StorageBuffer.into(),
                 property_flags: vk::MemoryPropertyFlagBits::HostVisible
                     | vk::MemoryPropertyFlagBits::HostCoherent,
@@ -759,7 +766,7 @@ impl GpuResource for Descriptors {
                     descriptor::DescriptorStorageBinding {
                         descriptor_type: vk::DescriptorType::StorageBuffer,
                         stage_flags,
-                        descriptors: &[create_info.stats.counters.descriptor],
+                        descriptors: &[create_info.stats.counters.descriptor()],
                     },
                 ],
             },
@@ -1076,10 +1083,10 @@ impl GpuResource for Sbt {
         // Create binding tables.
         let mut binding_tables = vec![];
         for first_group in 0..create_info.pipeline.groups.len() {
-            let buffer = ShaderBindingTableBuffer::create(
+            let mut buffer = ShaderBindingTableBuffer::create(
                 gpu,
                 &resource::BufferCreateInfo {
-                    size: shader_group_handle_size as _,
+                    size: u64::from(shader_group_handle_size),
                     usage: vk::BufferUsageFlagBits::ShaderBindingTableKHR.into(),
                     property_flags: vk::MemoryPropertyFlagBits::HostVisible
                         | vk::MemoryPropertyFlagBits::HostCoherent,
@@ -1090,7 +1097,7 @@ impl GpuResource for Sbt {
                 first_group as _,
                 1,
                 shader_group_handle_size as _,
-                buffer.ptr.cast(),
+                buffer.memory_mut().as_mut_ptr(),
             )?;
             binding_tables.push(buffer);
         }
@@ -1114,7 +1121,7 @@ impl GpuResource for Sbt {
 struct OutputCreateInfo {}
 
 struct Output {
-    buffer: resource::Buffer<u32>,
+    buffer: resource::Buffer,
 }
 
 impl GpuResource for Output {
@@ -1127,7 +1134,7 @@ impl GpuResource for Output {
         let buffer = resource::Buffer::create(
             gpu,
             &resource::BufferCreateInfo {
-                size: DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE as _,
+                size: DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE,
                 usage: vk::BufferUsageFlagBits::TransferDst.into(),
                 property_flags: vk::MemoryPropertyFlagBits::HostVisible.into(),
             },
@@ -1242,17 +1249,17 @@ unsafe fn dispatch(
 
     // Trace rays.
     let raygen_sbt = vk::StridedDeviceAddressRegionKHR {
-        device_address: sbt.binding_tables[0].device_address,
+        device_address: sbt.binding_tables[0].memory().device_address(),
         stride: sbt.shader_group_handle_size,
         size: sbt.shader_group_handle_size,
     };
     let miss_sbt = vk::StridedDeviceAddressRegionKHR {
-        device_address: sbt.binding_tables[1].device_address,
+        device_address: sbt.binding_tables[1].memory().device_address(),
         stride: sbt.shader_group_handle_size,
         size: sbt.shader_group_handle_size,
     };
     let hit_sbt = vk::StridedDeviceAddressRegionKHR {
-        device_address: sbt.binding_tables[2].device_address,
+        device_address: sbt.binding_tables[2].memory().device_address(),
         stride: sbt.shader_group_handle_size,
         size: sbt.shader_group_handle_size,
     };
@@ -1305,7 +1312,7 @@ unsafe fn dispatch(
             p_next: null(),
             src_image: render_image.image.image,
             src_image_layout: vk::ImageLayout::TransferSrcOptimal,
-            dst_buffer: output.buffer.buffer,
+            dst_buffer: output.buffer.handle(),
             region_count: 1,
             p_regions: &(vk::BufferImageCopy2 {
                 s_type: vk::StructureType::BufferImageCopy2,
@@ -1378,7 +1385,7 @@ unsafe fn dispatch(
         info!("Rendering took {:?}", queries.elapsed(gpu)?);
         info!("Rendering statistics: {:?}", queries.statistics(gpu)?);
 
-        let stats = &std::slice::from_raw_parts(stats.counters.ptr, 1)[0];
+        let stats = &stats.counters.memory().as_slice::<StatCounters>(1)[0];
         info!("Raytracing statistics: {stats:?}",);
         ensure!(
             stats.rays == u64::from(DEFAULT_RENDER_TARGET_WIDTH * DEFAULT_RENDER_TARGET_HEIGHT)
@@ -1393,11 +1400,7 @@ unsafe fn dispatch(
         let height = render_image.image.height();
         let pixels_byte_size = render_image.image.byte_size();
         let mut pixels = vec![0_u8; pixels_byte_size as _];
-        std::ptr::copy_nonoverlapping(
-            output.buffer.ptr.cast::<u8>(),
-            pixels.as_mut_ptr(),
-            pixels_byte_size as _,
-        );
+        pixels.copy_from_slice(output.buffer.memory().as_slice(pixels_byte_size as _));
         let image = RgbaImage::from_raw(width, height, pixels)
             .context("Creating image from output buffer")?;
         let image_path = work_dir_or_create()?.join(format!("{demo_name}.png"));

@@ -71,7 +71,7 @@ impl DemoCallbacks for Demo {
 struct IndirectBufferCreateInfo {}
 
 struct IndirectBuffer {
-    buffer: resource::Buffer<vk::DispatchIndirectCommand>,
+    buffer: resource::Buffer,
 }
 
 impl GpuResource for IndirectBuffer {
@@ -84,7 +84,7 @@ impl GpuResource for IndirectBuffer {
         let buffer = resource::Buffer::create(
             gpu,
             &resource::BufferCreateInfo {
-                size: 1,
+                size: size_of::<vk::DispatchIndirectCommand>() as _,
                 usage: vk::BufferUsageFlagBits::StorageBuffer
                     | vk::BufferUsageFlagBits::IndirectBuffer,
                 property_flags: vk::MemoryPropertyFlagBits::HostVisible
@@ -142,7 +142,7 @@ impl GpuResource for ComputeImage {
 struct OutputCreateInfo {}
 
 struct Output {
-    buffer: resource::Buffer<u32>,
+    buffer: resource::Buffer,
 }
 
 impl GpuResource for Output {
@@ -155,7 +155,7 @@ impl GpuResource for Output {
         let buffer = resource::Buffer::create(
             gpu,
             &resource::BufferCreateInfo {
-                size: DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE as _,
+                size: DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE,
                 usage: vk::BufferUsageFlagBits::TransferDst.into(),
                 property_flags: vk::MemoryPropertyFlagBits::HostVisible.into(),
             },
@@ -198,7 +198,7 @@ impl GpuResource for Descriptors {
                     descriptor::DescriptorStorageBinding {
                         descriptor_type: vk::DescriptorType::StorageBuffer,
                         stage_flags,
-                        descriptors: &[create_info.indirect_buffer.buffer.descriptor],
+                        descriptors: &[create_info.indirect_buffer.buffer.descriptor()],
                     },
                     descriptor::DescriptorStorageBinding {
                         descriptor_type: vk::DescriptorType::StorageImage,
@@ -437,7 +437,7 @@ unsafe fn dispatch(
     // Dispatch compute shader.
     {
         shaders.compute.bind(&gpu.device, cmd);
-        device.cmd_dispatch_indirect(cmd, indirect_buffer.buffer.buffer, 0);
+        device.cmd_dispatch_indirect(cmd, indirect_buffer.buffer.handle(), 0);
     }
 
     // Transition compute image.
@@ -477,7 +477,7 @@ unsafe fn dispatch(
             p_next: null(),
             src_image: compute_image.image.image,
             src_image_layout: vk::ImageLayout::TransferSrcOptimal,
-            dst_buffer: output.buffer.buffer,
+            dst_buffer: output.buffer.handle(),
             region_count: 1,
             p_regions: &(vk::BufferImageCopy2 {
                 s_type: vk::StructureType::BufferImageCopy2,
@@ -565,11 +565,10 @@ unsafe fn dispatch(
         struct Output<'a> {
             indirect: &'a [DispatchIndirectCommand],
         }
-        #[allow(clippy::cast_ptr_alignment)]
-        let indirect = std::slice::from_raw_parts(
-            indirect_buffer.buffer.ptr.cast::<DispatchIndirectCommand>(),
-            indirect_buffer.buffer.size,
-        );
+        let indirect = indirect_buffer
+            .buffer
+            .memory()
+            .as_slice::<DispatchIndirectCommand>(1);
 
         let output =
             ron::ser::to_string_pretty(&Output { indirect }, ron::ser::PrettyConfig::default())?;
@@ -585,11 +584,7 @@ unsafe fn dispatch(
         let height = compute_image.image.height();
         let pixels_byte_size = compute_image.image.byte_size();
         let mut pixels = vec![0_u8; pixels_byte_size as _];
-        std::ptr::copy_nonoverlapping(
-            output.buffer.ptr.cast::<u8>(),
-            pixels.as_mut_ptr(),
-            pixels_byte_size as _,
-        );
+        pixels.copy_from_slice(output.buffer.memory().as_slice(pixels_byte_size as _));
         let image = RgbaImage::from_raw(width, height, pixels)
             .context("Creating image from output buffer")?;
         let image_path = work_dir_or_create()?.join(format!("{demo_name}.png"));

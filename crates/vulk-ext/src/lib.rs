@@ -25,12 +25,12 @@
 //
 
 use std::collections::HashMap;
-use std::ffi::CString;
+use std::ffi::{c_void, CString};
 use std::mem::zeroed;
 use std::ptr::{addr_of, addr_of_mut, null, null_mut};
 
 use anyhow::{bail, ensure, Context, Result};
-use log::{error, log};
+use log::{debug, error, log};
 use vulk::vk;
 
 //

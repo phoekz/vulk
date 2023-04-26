@@ -226,7 +226,7 @@ impl GpuResource for RenderTargets {
 struct OutputCreateInfo {}
 
 struct Output {
-    buffer: resource::Buffer<u32>,
+    buffer: resource::Buffer,
 }
 
 impl GpuResource for Output {
@@ -239,7 +239,7 @@ impl GpuResource for Output {
         let buffer = resource::Buffer::create(
             gpu,
             &resource::BufferCreateInfo {
-                size: DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE as _,
+                size: DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE,
                 usage: vk::BufferUsageFlagBits::TransferDst.into(),
                 property_flags: vk::MemoryPropertyFlagBits::HostVisible.into(),
             },
@@ -401,7 +401,7 @@ unsafe fn draw(
             p_next: null(),
             src_image: render_targets.color.image,
             src_image_layout: vk::ImageLayout::TransferSrcOptimal,
-            dst_buffer: output.buffer.buffer,
+            dst_buffer: output.buffer.handle(),
             region_count: 1,
             p_regions: &(vk::BufferImageCopy2 {
                 s_type: vk::StructureType::BufferImageCopy2,
@@ -482,11 +482,7 @@ unsafe fn draw(
         let height = render_targets.color.height();
         let pixels_byte_size = render_targets.color.byte_size();
         let mut pixels = vec![0_u8; pixels_byte_size as _];
-        std::ptr::copy_nonoverlapping(
-            output.buffer.ptr.cast::<u8>(),
-            pixels.as_mut_ptr(),
-            pixels_byte_size as _,
-        );
+        pixels.copy_from_slice(output.buffer.memory().as_slice(pixels_byte_size as _));
         let image = RgbaImage::from_raw(width, height, pixels)
             .context("Creating image from output buffer")?;
         let image_path = work_dir_or_create()?.join(format!("{demo_name}.png"));

@@ -27,9 +27,9 @@ pub const DEFAULT_RENDER_TARGET_HEIGHT: u32 = 256;
 pub const DEFAULT_RENDER_TARGET_COLOR_FORMAT: vk::Format = vk::Format::R8g8b8a8Unorm;
 pub const DEFAULT_RENDER_TARGET_DEPTH_FORMAT: vk::Format = vk::Format::D32Sfloat;
 pub const DEFAULT_RENDER_TARGET_RESOLVE_FORMAT: vk::Format = vk::Format::R8g8b8a8Unorm;
-pub const DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE: u32 = DEFAULT_RENDER_TARGET_COLOR_FORMAT
-    .block_size()
-    * DEFAULT_RENDER_TARGET_WIDTH
-    * DEFAULT_RENDER_TARGET_HEIGHT;
+pub const DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE: vk::DeviceSize =
+    (DEFAULT_RENDER_TARGET_COLOR_FORMAT.block_size() as vk::DeviceSize)
+        * (DEFAULT_RENDER_TARGET_WIDTH as vk::DeviceSize)
+        * (DEFAULT_RENDER_TARGET_HEIGHT as vk::DeviceSize);
 pub const DEFAULT_RENDER_TARGET_SAMPLES: vk::SampleCountFlagBits = vk::SampleCountFlagBits::Count8;
 pub const DEFAULT_RENDER_TARGET_CLEAR_COLOR: [f32; 4] = [0.2, 0.2, 0.2, 1.0];

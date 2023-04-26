@@ -7,6 +7,7 @@ use super::*;
 mod debug_utils;
 mod device;
 mod instance;
+mod memory;
 mod physical_device;
 mod shader;
 mod surface;
@@ -17,6 +18,7 @@ mod surface;
 
 pub use device::Device;
 pub use instance::{Instance, InstanceCreateInfo};
+pub use memory::{BufferAllocation, BufferAllocations};
 pub use physical_device::PhysicalDevice;
 pub use shader::{Shader, ShaderBinary, ShaderCompiler, ShaderCreateInfo, ShaderType};
 pub use surface::Surface;

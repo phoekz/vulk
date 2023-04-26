@@ -208,8 +208,8 @@ impl GuiData {
 // Geometry
 //
 
-type VertexBuffer = resource::Buffer<imgui::DrawVert>;
-type IndexBuffer = resource::Buffer<u16>;
+type VertexBuffer = resource::Buffer;
+type IndexBuffer = resource::Buffer;
 
 struct Geometry {
     vertex_buffer: VertexBuffer,
@@ -219,19 +219,19 @@ struct Geometry {
 impl Geometry {
     unsafe fn create(gpu: &Gpu, gui: &GuiData) -> Result<Self> {
         // Buffers.
-        let vertex_buffer = VertexBuffer::create(
+        let mut vertex_buffer = VertexBuffer::create(
             gpu,
             &resource::BufferCreateInfo {
-                size: gui.vertex_data.len(),
+                size: (size_of::<imgui::DrawVert>() * gui.vertex_data.len()) as _,
                 usage: vk::BufferUsageFlagBits::StorageBuffer.into(),
                 property_flags: vk::MemoryPropertyFlagBits::HostVisible
                     | vk::MemoryPropertyFlagBits::HostCoherent,
             },
         )?;
-        let index_buffer = IndexBuffer::create(
+        let mut index_buffer = IndexBuffer::create(
             gpu,
             &resource::BufferCreateInfo {
-                size: gui.index_data.len(),
+                size: (size_of::<u16>() * gui.index_data.len()) as _,
                 usage: vk::BufferUsageFlagBits::StorageBuffer.into(),
                 property_flags: vk::MemoryPropertyFlagBits::HostVisible
                     | vk::MemoryPropertyFlagBits::HostCoherent,
@@ -239,16 +239,14 @@ impl Geometry {
         )?;
 
         // Copy.
-        std::ptr::copy_nonoverlapping(
-            gui.vertex_data.as_ptr(),
-            vertex_buffer.ptr,
-            gui.vertex_data.len(),
-        );
-        std::ptr::copy_nonoverlapping(
-            gui.index_data.as_ptr(),
-            index_buffer.ptr,
-            gui.index_data.len(),
-        );
+        vertex_buffer
+            .memory_mut()
+            .as_mut_slice(gui.vertex_data.len())
+            .copy_from_slice(&gui.vertex_data);
+        index_buffer
+            .memory_mut()
+            .as_mut_slice(gui.index_data.len())
+            .copy_from_slice(&gui.index_data);
 
         Ok(Self {
             vertex_buffer,
@@ -343,12 +341,12 @@ impl Descriptors {
                     descriptor::DescriptorStorageBinding {
                         descriptor_type: vk::DescriptorType::StorageBuffer,
                         stage_flags,
-                        descriptors: &[geometry.vertex_buffer.descriptor],
+                        descriptors: &[geometry.vertex_buffer.descriptor()],
                     },
                     descriptor::DescriptorStorageBinding {
                         descriptor_type: vk::DescriptorType::StorageBuffer,
                         stage_flags,
-                        descriptors: &[geometry.index_buffer.descriptor],
+                        descriptors: &[geometry.index_buffer.descriptor()],
                     },
                     descriptor::DescriptorStorageBinding {
                         descriptor_type: vk::DescriptorType::SampledImage,
@@ -603,7 +601,7 @@ impl RenderTargets {
 // Output
 //
 
-type OutputBuffer = resource::Buffer<u32>;
+type OutputBuffer = resource::Buffer;
 
 struct Output {
     buffer: OutputBuffer,
@@ -614,7 +612,7 @@ impl Output {
         let buffer = OutputBuffer::create(
             gpu,
             &resource::BufferCreateInfo {
-                size: DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE as _,
+                size: DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE,
                 usage: vk::BufferUsageFlagBits::TransferDst.into(),
                 property_flags: vk::MemoryPropertyFlagBits::HostVisible.into(),
             },
@@ -830,7 +828,7 @@ unsafe fn draw(
             p_next: null(),
             src_image: render_targets.color.image,
             src_image_layout: vk::ImageLayout::TransferSrcOptimal,
-            dst_buffer: output.buffer.buffer,
+            dst_buffer: output.buffer.handle(),
             region_count: 1,
             p_regions: &(vk::BufferImageCopy2 {
                 s_type: vk::StructureType::BufferImageCopy2,
@@ -914,11 +912,7 @@ unsafe fn draw(
         let height = render_targets.color.height();
         let pixels_byte_size = render_targets.color.byte_size();
         let mut pixels = vec![0_u8; pixels_byte_size as _];
-        std::ptr::copy_nonoverlapping(
-            output.buffer.ptr.cast::<u8>(),
-            pixels.as_mut_ptr(),
-            pixels_byte_size as _,
-        );
+        pixels.copy_from_slice(output.buffer.memory().as_slice(pixels_byte_size as _));
         let image = RgbaImage::from_raw(width, height, pixels)
             .context("Creating image from output buffer")?;
         let image_path = work_dir_or_create()?.join(format!("{demo_name}.png"));

@@ -160,7 +160,7 @@ pub struct DescriptorStorageCreateInfo<'a> {
     pub bindings: &'a [DescriptorStorageBinding<'a>],
 }
 
-pub type DescriptorBuffer = resource::Buffer<u8>;
+pub type DescriptorBuffer = resource::Buffer;
 
 #[derive(Debug)]
 pub struct DescriptorStorage {
@@ -228,7 +228,7 @@ impl GpuResource for DescriptorStorage {
                     | vk::MemoryPropertyFlagBits::HostCoherent,
             },
         )?;
-        debug!("set_layout={}", buffer.size);
+        debug!("set_layout={}", buffer.memory().size());
 
         // Write.
         for (binding_index, binding) in create_info.bindings.iter().enumerate() {
@@ -247,7 +247,7 @@ impl GpuResource for DescriptorStorage {
                 );
                 std::ptr::copy_nonoverlapping(
                     descriptor.as_ptr(),
-                    buffer.ptr.add(dst_offset),
+                    buffer.memory().as_mut_ptr::<u8>().add(dst_offset),
                     descriptor.byte_size(),
                 );
             }
@@ -274,8 +274,8 @@ impl DescriptorStorage {
             &vk::DescriptorBufferBindingInfoEXT {
                 s_type: vk::StructureType::DescriptorBufferBindingInfoEXT,
                 p_next: null_mut(),
-                address: self.buffer.device_address,
-                usage: self.buffer.buffer_create_info.usage,
+                address: self.buffer.memory().device_address(),
+                usage: self.buffer.usage(),
             },
         );
     }

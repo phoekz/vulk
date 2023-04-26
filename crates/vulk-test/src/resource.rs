@@ -4,32 +4,26 @@ use super::*;
 // Buffer
 //
 
+// Todo: Re-design with the new batch allocator.
+// Todo: The batch allocator could create the descriptor handle too.
+
 #[derive(Debug)]
 pub struct BufferCreateInfo {
-    pub size: usize,
+    pub size: vk::DeviceSize,
     pub usage: vk::BufferUsageFlags,
     pub property_flags: vk::MemoryPropertyFlags,
 }
 
 #[derive(Debug)]
-pub struct Buffer<T> {
-    pub buffer_create_info: vk::BufferCreateInfo,
-    pub buffer: vk::Buffer,
-
-    pub memory_requirements: vk::MemoryRequirements,
-    pub memory_allocate_info: vk::MemoryAllocateInfo,
-    pub device_memory: vk::DeviceMemory,
-    pub bind_buffer_memory_info: vk::BindBufferMemoryInfo,
-
-    pub device_address: vk::DeviceAddress,
-    pub size: usize,
-    pub byte_size: usize,
-    pub ptr: *mut T,
-
-    pub descriptor: descriptor::Descriptor,
+pub struct Buffer {
+    buffer: vk::Buffer,
+    allocations: vkx::BufferAllocations,
+    allocation: vkx::BufferAllocation,
+    descriptor: descriptor::Descriptor,
+    usage: vk::BufferUsageFlags,
 }
 
-impl<T> GpuResource for Buffer<T> {
+impl GpuResource for Buffer {
     type CreateInfo<'a> = BufferCreateInfo;
 
     unsafe fn create(
@@ -40,137 +34,75 @@ impl<T> GpuResource for Buffer<T> {
         }: &Gpu,
         create_info: &Self::CreateInfo<'_>,
     ) -> Result<Self> {
-        // Size.
-        let byte_size = (create_info.size * size_of::<T>()) as vk::DeviceSize;
-
-        // Force SHADER_DEVICE_ADDRESS flag.
+        // Buffer usage.
         let usage = create_info.usage | vk::BufferUsageFlagBits::ShaderDeviceAddress;
 
-        // Buffer info.
+        // Buffer.
         let buffer_create_info = vk::BufferCreateInfo {
             s_type: vk::StructureType::BufferCreateInfo,
             p_next: null(),
             flags: vk::BufferCreateFlags::empty(),
-            size: byte_size,
+            size: create_info.size,
             usage,
             sharing_mode: vk::SharingMode::Exclusive,
             queue_family_index_count: 0,
             p_queue_family_indices: null(),
         };
-
-        // Buffer.
         let buffer = device
             .create_buffer(&buffer_create_info)
             .context("Creating buffer object")?;
 
-        // Requirements.
-        let memory_requirements = {
-            let device_buffer_memory_requirements = vk::DeviceBufferMemoryRequirements {
-                s_type: vk::StructureType::DeviceBufferMemoryRequirements,
-                p_next: null(),
-                p_create_info: addr_of!(buffer_create_info).cast(),
-            };
-            let mut memory_requirements2 = vk::MemoryRequirements2 {
-                s_type: vk::StructureType::MemoryRequirements2,
-                p_next: null_mut(),
-                memory_requirements: zeroed(),
-            };
-            device.get_device_buffer_memory_requirements(
-                &device_buffer_memory_requirements,
-                &mut memory_requirements2,
-            );
-            memory_requirements2.memory_requirements
-        };
-
-        // Allocation.
-        let memory_allocate_flags_info = vk::MemoryAllocateFlagsInfo {
-            s_type: vk::StructureType::MemoryAllocateFlagsInfo,
-            p_next: null(),
-            flags: vk::MemoryAllocateFlagBits::DeviceAddress.into(),
-            device_mask: 0,
-        };
-        let memory_allocate_info = vk::MemoryAllocateInfo {
-            s_type: vk::StructureType::MemoryAllocateInfo,
-            p_next: addr_of!(memory_allocate_flags_info).cast(),
-            allocation_size: memory_requirements.size,
-            memory_type_index: memory_type_index(
-                &physical_device.memory_properties,
-                create_info.property_flags,
-                &memory_requirements,
-            ),
-        };
-        let device_memory = device
-            .allocate_memory(&memory_allocate_info)
-            .context("Allocating device memory for buffer")?;
-
-        // Bind.
-        let bind_buffer_memory_info = vk::BindBufferMemoryInfo {
-            s_type: vk::StructureType::BindBufferMemoryInfo,
-            p_next: null(),
-            buffer,
-            memory: device_memory,
-            memory_offset: 0,
-        };
-        device
-            .bind_buffer_memory2(1, &bind_buffer_memory_info)
-            .context("Binding device memory to buffer")?;
-
-        // Device address.
-        let device_address = device.get_buffer_device_address(
-            &(vk::BufferDeviceAddressInfo {
-                s_type: vk::StructureType::BufferDeviceAddressInfo,
-                p_next: null(),
-                buffer,
-            }),
-        );
-
-        // Memory map.
-        let ptr = if create_info
-            .property_flags
-            .contains(vk::MemoryPropertyFlagBits::HostVisible.into())
-        {
-            device
-                .map_memory2_khr(
-                    &(vk::MemoryMapInfoKHR {
-                        s_type: vk::StructureType::MemoryMapInfoKHR,
-                        p_next: null(),
-                        flags: vk::MemoryMapFlags::empty(),
-                        memory: device_memory,
-                        offset: 0,
-                        size: byte_size as _,
-                    }),
-                )
-                .context("Mapping device memory")?
-                .cast()
-        } else {
-            null_mut()
-        };
+        // Allocate.
+        let allocations = vkx::BufferAllocations::allocate(
+            physical_device,
+            device,
+            &[buffer],
+            &[buffer_create_info],
+            create_info.property_flags,
+        )?;
+        let allocation = allocations.allocations()[0];
 
         // Descriptor.
-        let descriptor =
-            descriptor::Descriptor::create_storage_buffer(gpu, device_address, byte_size);
+        let descriptor = descriptor::Descriptor::create_storage_buffer(
+            gpu,
+            allocation.device_address(),
+            create_info.size,
+        );
 
-        Ok(Buffer {
-            buffer_create_info,
+        Ok(Self {
             buffer,
-
-            memory_requirements,
-            memory_allocate_info,
-            device_memory,
-            bind_buffer_memory_info,
-
-            device_address,
-            byte_size: byte_size as _,
-            size: create_info.size,
-            ptr,
-
+            allocations,
+            allocation,
             descriptor,
+            usage,
         })
     }
 
     unsafe fn destroy(self, Gpu { device, .. }: &Gpu) {
         device.destroy_buffer(self.buffer);
-        device.free_memory(self.device_memory);
+        self.allocations.free(device);
+    }
+}
+
+impl Buffer {
+    pub fn handle(&self) -> vk::Buffer {
+        self.buffer
+    }
+
+    pub fn memory(&self) -> &vkx::BufferAllocation {
+        &self.allocation
+    }
+
+    pub fn memory_mut(&mut self) -> &mut vkx::BufferAllocation {
+        &mut self.allocation
+    }
+
+    pub fn descriptor(&self) -> descriptor::Descriptor {
+        self.descriptor
+    }
+
+    pub fn usage(&self) -> vk::BufferUsageFlags {
+        self.usage
     }
 }
 
@@ -494,8 +426,8 @@ pub unsafe fn multi_upload_images(
         .all(|(img, p)| img.byte_size() as usize == p.len()));
 
     // Staging buffer.
-    let byte_size = datas.iter().map(Vec::len).sum::<usize>();
-    let staging = resource::Buffer::<u8>::create(
+    let byte_size = datas.iter().map(Vec::len).sum::<usize>() as vk::DeviceSize;
+    let staging = resource::Buffer::create(
         gpu,
         &BufferCreateInfo {
             size: byte_size,
@@ -509,7 +441,7 @@ pub unsafe fn multi_upload_images(
         // Copy.
         std::ptr::copy_nonoverlapping(
             image_data.as_ptr(),
-            staging.ptr.add(dst_offset),
+            staging.memory().as_mut_ptr::<u8>().add(dst_offset),
             image_data.len(),
         );
 
