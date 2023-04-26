@@ -70,39 +70,39 @@ impl BufferAllocations {
         physical_device: &vkx::PhysicalDevice,
         device: &vkx::Device,
         buffers: &[vk::Buffer],
-        create_infos: &[vk::BufferCreateInfo],
+        buffer_create_infos: &[vk::BufferCreateInfo],
         property_flags: vk::MemoryPropertyFlags,
     ) -> Result<Self> {
         // Validation.
         ensure!(!buffers.is_empty());
-        ensure!(!create_infos.is_empty());
-        ensure!(buffers.len() == create_infos.len());
-        ensure!(create_infos
+        ensure!(!buffer_create_infos.is_empty());
+        ensure!(buffers.len() == buffer_create_infos.len());
+        ensure!(buffer_create_infos
             .iter()
             .all(|info| info.s_type == vk::StructureType::BufferCreateInfo));
-        ensure!(create_infos.iter().all(|info| info.p_next.is_null()));
-        ensure!(create_infos
+        ensure!(buffer_create_infos.iter().all(|info| info.p_next.is_null()));
+        ensure!(buffer_create_infos
             .iter()
             .all(|info| info.flags == vk::BufferCreateFlags::empty()));
-        ensure!(create_infos.iter().all(|info| info.size > 0));
-        ensure!(create_infos.iter().all(|info| info
+        ensure!(buffer_create_infos.iter().all(|info| info.size > 0));
+        ensure!(buffer_create_infos.iter().all(|info| info
             .usage
             .contains(vk::BufferUsageFlagBits::ShaderDeviceAddress.into())));
-        ensure!(create_infos
+        ensure!(buffer_create_infos
             .iter()
             .all(|info| info.sharing_mode == vk::SharingMode::Exclusive));
-        ensure!(create_infos.iter().all(
+        ensure!(buffer_create_infos.iter().all(
             |info| info.queue_family_index_count == 0 && info.p_queue_family_indices.is_null()
         ));
         ensure!(property_flags != vk::MemoryPropertyFlags::empty());
 
         // Requirements.
         let mut memory_requirements = vec![];
-        for &create_info in create_infos {
+        for &buffer_create_info in buffer_create_infos {
             let device_buffer_memory_requirements = vk::DeviceBufferMemoryRequirements {
                 s_type: vk::StructureType::DeviceBufferMemoryRequirements,
                 p_next: null(),
-                p_create_info: addr_of!(create_info).cast(),
+                p_create_info: addr_of!(buffer_create_info).cast(),
             };
             let mut memory_requirements2 = vk::MemoryRequirements2 {
                 s_type: vk::StructureType::MemoryRequirements2,
@@ -254,45 +254,45 @@ impl ImageAllocations {
         physical_device: &vkx::PhysicalDevice,
         device: &vkx::Device,
         images: &[vk::Image],
-        create_infos: &[vk::ImageCreateInfo],
+        image_create_infos: &[vk::ImageCreateInfo],
         property_flags: vk::MemoryPropertyFlags,
     ) -> Result<Self> {
         // Validation.
         ensure!(!images.is_empty());
-        ensure!(!create_infos.is_empty());
-        ensure!(images.len() == create_infos.len());
-        ensure!(create_infos
+        ensure!(!image_create_infos.is_empty());
+        ensure!(images.len() == image_create_infos.len());
+        ensure!(image_create_infos
             .iter()
             .all(|info| info.s_type == vk::StructureType::ImageCreateInfo));
-        ensure!(create_infos.iter().all(|info| info.p_next.is_null()));
-        ensure!(create_infos
+        ensure!(image_create_infos.iter().all(|info| info.p_next.is_null()));
+        ensure!(image_create_infos
             .iter()
             .all(|info| info.flags == vk::ImageCreateFlags::empty()));
-        ensure!(create_infos
+        ensure!(image_create_infos
             .iter()
             .all(|info| info.extent.width > 0 && info.extent.height > 0 && info.extent.depth > 0));
-        ensure!(create_infos.iter().all(|info| info.mip_levels > 0));
-        ensure!(create_infos.iter().all(|info| info.array_layers > 0));
-        ensure!(create_infos
+        ensure!(image_create_infos.iter().all(|info| info.mip_levels > 0));
+        ensure!(image_create_infos.iter().all(|info| info.array_layers > 0));
+        ensure!(image_create_infos
             .iter()
             .all(|info| info.tiling == vk::ImageTiling::Optimal));
-        ensure!(create_infos
+        ensure!(image_create_infos
             .iter()
             .all(|info| info.sharing_mode == vk::SharingMode::Exclusive));
-        ensure!(create_infos.iter().all(
+        ensure!(image_create_infos.iter().all(
             |info| info.queue_family_index_count == 0 && info.p_queue_family_indices.is_null()
         ));
-        ensure!(create_infos
+        ensure!(image_create_infos
             .iter()
             .all(|info| info.initial_layout == vk::ImageLayout::Undefined));
 
         // Requirements.
         let mut memory_requirements = vec![];
-        for &create_info in create_infos {
+        for &image_create_info in image_create_infos {
             let device_image_memory_requirements = vk::DeviceImageMemoryRequirements {
                 s_type: vk::StructureType::DeviceImageMemoryRequirements,
                 p_next: null(),
-                p_create_info: &create_info,
+                p_create_info: &image_create_info,
                 plane_aspect: zeroed(),
             };
             let mut memory_requirements2 = vk::MemoryRequirements2 {
