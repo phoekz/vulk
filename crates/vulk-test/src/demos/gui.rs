@@ -31,7 +31,7 @@ impl DemoCallbacks for Demo {
         let descriptors = Descriptors::create(gpu, &geometry, &textures)?;
         let shaders = Shaders::create(gpu, &descriptors)?;
         let render_targets = RenderTargets::create(gpu)?;
-        let output = Output::create(gpu)?;
+        let output = Output::create(gpu, &OutputCreateInfo {})?;
 
         Ok(Self {
             gui,
@@ -208,34 +208,27 @@ impl GuiData {
 // Geometry
 //
 
-type VertexBuffer = resource::Buffer;
-type IndexBuffer = resource::Buffer;
-
 struct Geometry {
-    vertex_buffer: VertexBuffer,
-    index_buffer: IndexBuffer,
+    vertex_buffer: vkx::BufferDedicatedResource,
+    index_buffer: vkx::BufferDedicatedResource,
 }
 
 impl Geometry {
     unsafe fn create(gpu: &Gpu, gui: &GuiData) -> Result<Self> {
         // Buffers.
-        let mut vertex_buffer = VertexBuffer::create(
-            gpu,
-            &resource::BufferCreateInfo {
-                size: (size_of::<imgui::DrawVert>() * gui.vertex_data.len()) as _,
-                usage: vk::BufferUsageFlagBits::StorageBuffer.into(),
-                property_flags: vk::MemoryPropertyFlagBits::HostVisible
-                    | vk::MemoryPropertyFlagBits::HostCoherent,
-            },
+        let mut vertex_buffer = vkx::BufferDedicatedResource::create(
+            &gpu.physical_device,
+            &gpu.device,
+            (size_of::<imgui::DrawVert>() * gui.vertex_data.len()) as _,
+            vk::BufferUsageFlagBits::StorageBuffer.into(),
+            vk::MemoryPropertyFlagBits::HostVisible | vk::MemoryPropertyFlagBits::HostCoherent,
         )?;
-        let mut index_buffer = IndexBuffer::create(
-            gpu,
-            &resource::BufferCreateInfo {
-                size: (size_of::<u16>() * gui.index_data.len()) as _,
-                usage: vk::BufferUsageFlagBits::StorageBuffer.into(),
-                property_flags: vk::MemoryPropertyFlagBits::HostVisible
-                    | vk::MemoryPropertyFlagBits::HostCoherent,
-            },
+        let mut index_buffer = vkx::BufferDedicatedResource::create(
+            &gpu.physical_device,
+            &gpu.device,
+            (size_of::<u16>() * gui.index_data.len()) as _,
+            vk::BufferUsageFlagBits::StorageBuffer.into(),
+            vk::MemoryPropertyFlagBits::HostVisible | vk::MemoryPropertyFlagBits::HostCoherent,
         )?;
 
         // Copy.
@@ -255,8 +248,8 @@ impl Geometry {
     }
 
     unsafe fn destroy(self, gpu: &Gpu) {
-        self.vertex_buffer.destroy(gpu);
-        self.index_buffer.destroy(gpu);
+        self.vertex_buffer.destroy(&gpu.device);
+        self.index_buffer.destroy(&gpu.device);
     }
 }
 
@@ -600,27 +593,31 @@ impl RenderTargets {
 // Output
 //
 
-type OutputBuffer = resource::Buffer;
+struct OutputCreateInfo {}
 
 struct Output {
-    buffer: OutputBuffer,
+    buffer: vkx::BufferDedicatedTransfer,
 }
 
-impl Output {
-    unsafe fn create(gpu: &Gpu) -> Result<Self> {
-        let buffer = OutputBuffer::create(
-            gpu,
-            &resource::BufferCreateInfo {
-                size: DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE,
-                usage: vk::BufferUsageFlagBits::TransferDst.into(),
-                property_flags: vk::MemoryPropertyFlagBits::HostVisible.into(),
-            },
+impl GpuResource for Output {
+    type CreateInfo<'a> = OutputCreateInfo;
+
+    unsafe fn create(gpu: &Gpu, _: &Self::CreateInfo<'_>) -> Result<Self>
+    where
+        Self: Sized,
+    {
+        let buffer = vkx::BufferDedicatedTransfer::create(
+            &gpu.physical_device,
+            &gpu.device,
+            DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE,
+            vk::BufferUsageFlagBits::TransferDst.into(),
+            vk::MemoryPropertyFlagBits::HostVisible.into(),
         )?;
         Ok(Self { buffer })
     }
 
     unsafe fn destroy(self, gpu: &Gpu) {
-        self.buffer.destroy(gpu);
+        self.buffer.destroy(&gpu.device);
     }
 }
 

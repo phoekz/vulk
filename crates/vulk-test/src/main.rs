@@ -13,6 +13,7 @@
     clippy::missing_safety_doc,
     clippy::module_name_repetitions,
     clippy::needless_pass_by_value,
+    clippy::needless_range_loop,
     clippy::similar_names,
     clippy::too_many_arguments,
     clippy::too_many_lines,

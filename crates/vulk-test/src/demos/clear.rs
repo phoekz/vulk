@@ -88,7 +88,7 @@ impl GpuResource for RenderTargets {
 struct OutputCreateInfo {}
 
 struct Output {
-    buffer: resource::Buffer,
+    buffer: vkx::BufferDedicatedTransfer,
 }
 
 impl GpuResource for Output {
@@ -98,19 +98,19 @@ impl GpuResource for Output {
     where
         Self: Sized,
     {
-        let buffer = resource::Buffer::create(
-            gpu,
-            &resource::BufferCreateInfo {
-                size: DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE,
-                usage: vk::BufferUsageFlagBits::TransferDst.into(),
-                property_flags: vk::MemoryPropertyFlagBits::HostVisible.into(),
-            },
+        let buffer = vkx::BufferDedicatedTransfer::create(
+            &gpu.physical_device,
+            &gpu.device,
+            DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE,
+            vk::BufferUsageFlagBits::TransferDst.into(),
+            vk::MemoryPropertyFlagBits::HostVisible.into(),
         )?;
+        dbg!(&buffer);
         Ok(Self { buffer })
     }
 
     unsafe fn destroy(self, gpu: &Gpu) {
-        self.buffer.destroy(gpu);
+        self.buffer.destroy(&gpu.device);
     }
 }
 

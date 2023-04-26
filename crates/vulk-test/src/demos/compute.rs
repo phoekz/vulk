@@ -71,7 +71,7 @@ impl DemoCallbacks for Demo {
 struct IndirectBufferCreateInfo {}
 
 struct IndirectBuffer {
-    buffer: resource::Buffer,
+    buffer: vkx::BufferDedicatedResource,
 }
 
 impl GpuResource for IndirectBuffer {
@@ -81,21 +81,18 @@ impl GpuResource for IndirectBuffer {
     where
         Self: Sized,
     {
-        let buffer = resource::Buffer::create(
-            gpu,
-            &resource::BufferCreateInfo {
-                size: size_of::<vk::DispatchIndirectCommand>() as _,
-                usage: vk::BufferUsageFlagBits::StorageBuffer
-                    | vk::BufferUsageFlagBits::IndirectBuffer,
-                property_flags: vk::MemoryPropertyFlagBits::HostVisible
-                    | vk::MemoryPropertyFlagBits::HostCoherent,
-            },
+        let buffer = vkx::BufferDedicatedResource::create(
+            &gpu.physical_device,
+            &gpu.device,
+            size_of::<vk::DispatchIndirectCommand>() as _,
+            vk::BufferUsageFlagBits::StorageBuffer | vk::BufferUsageFlagBits::IndirectBuffer,
+            vk::MemoryPropertyFlagBits::HostVisible | vk::MemoryPropertyFlagBits::HostCoherent,
         )?;
         Ok(Self { buffer })
     }
 
     unsafe fn destroy(self, gpu: &Gpu) {
-        self.buffer.destroy(gpu);
+        self.buffer.destroy(&gpu.device);
     }
 }
 
@@ -142,7 +139,7 @@ impl GpuResource for ComputeImage {
 struct OutputCreateInfo {}
 
 struct Output {
-    buffer: resource::Buffer,
+    buffer: vkx::BufferDedicatedTransfer,
 }
 
 impl GpuResource for Output {
@@ -152,19 +149,18 @@ impl GpuResource for Output {
     where
         Self: Sized,
     {
-        let buffer = resource::Buffer::create(
-            gpu,
-            &resource::BufferCreateInfo {
-                size: DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE,
-                usage: vk::BufferUsageFlagBits::TransferDst.into(),
-                property_flags: vk::MemoryPropertyFlagBits::HostVisible.into(),
-            },
+        let buffer = vkx::BufferDedicatedTransfer::create(
+            &gpu.physical_device,
+            &gpu.device,
+            DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE,
+            vk::BufferUsageFlagBits::TransferDst.into(),
+            vk::MemoryPropertyFlagBits::HostVisible.into(),
         )?;
         Ok(Self { buffer })
     }
 
     unsafe fn destroy(self, gpu: &Gpu) {
-        self.buffer.destroy(gpu);
+        self.buffer.destroy(&gpu.device);
     }
 }
 

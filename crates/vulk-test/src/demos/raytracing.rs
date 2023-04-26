@@ -93,17 +93,6 @@ impl DemoCallbacks for Demo {
 }
 
 //
-// Types
-//
-
-type VertexBuffer = resource::Buffer;
-type IndexBuffer = resource::Buffer;
-type TransformBuffer = resource::Buffer;
-type AccelerationStructureBuffer = resource::Buffer;
-type AccelerationStructureScratchBuffer = resource::Buffer;
-type ShaderBindingTableBuffer = resource::Buffer;
-
-//
 // Scene
 //
 
@@ -157,10 +146,9 @@ struct BlasCreateInfo<'a> {
     scene: &'a Scene,
 }
 
-#[derive(Debug)]
 struct Blas {
     blas: vk::AccelerationStructureKHR,
-    blas_buffer: AccelerationStructureBuffer,
+    blas_buffer: vkx::BufferDedicatedResource,
     blas_address: vk::DeviceAddress,
 }
 
@@ -180,36 +168,26 @@ impl GpuResource for Blas {
             type IndexType = u32;
             type TransformType = vk::TransformMatrixKHR;
 
-            let mut vertex_buffer = VertexBuffer::create(
-                gpu,
-                &resource::BufferCreateInfo {
-                    size: (size_of::<VertexType>() * create_info.scene.vertex_data.len()) as _,
-                    usage: vk::BufferUsageFlagBits::AccelerationStructureBuildInputReadOnlyKHR
-                        .into(),
-                    property_flags: vk::MemoryPropertyFlagBits::HostVisible
-                        | vk::MemoryPropertyFlagBits::HostCoherent,
-                },
+            let mut vertex_buffer = vkx::BufferDedicatedTransfer::create(
+                &gpu.physical_device,
+                &gpu.device,
+                (size_of::<VertexType>() * create_info.scene.vertex_data.len()) as _,
+                vk::BufferUsageFlagBits::AccelerationStructureBuildInputReadOnlyKHR.into(),
+                vk::MemoryPropertyFlagBits::HostVisible | vk::MemoryPropertyFlagBits::HostCoherent,
             )?;
-            let mut index_buffer = IndexBuffer::create(
-                gpu,
-                &resource::BufferCreateInfo {
-                    size: (size_of::<IndexType>() * create_info.scene.index_data.len()) as _,
-                    usage: vk::BufferUsageFlagBits::AccelerationStructureBuildInputReadOnlyKHR
-                        .into(),
-                    property_flags: vk::MemoryPropertyFlagBits::HostVisible
-                        | vk::MemoryPropertyFlagBits::HostCoherent,
-                },
+            let mut index_buffer = vkx::BufferDedicatedTransfer::create(
+                &gpu.physical_device,
+                &gpu.device,
+                (size_of::<IndexType>() * create_info.scene.index_data.len()) as _,
+                vk::BufferUsageFlagBits::AccelerationStructureBuildInputReadOnlyKHR.into(),
+                vk::MemoryPropertyFlagBits::HostVisible | vk::MemoryPropertyFlagBits::HostCoherent,
             )?;
-            let mut transform_buffer = TransformBuffer::create(
-                gpu,
-                &resource::BufferCreateInfo {
-                    size: (size_of::<TransformType>() * create_info.scene.transform_data.len())
-                        as _,
-                    usage: vk::BufferUsageFlagBits::AccelerationStructureBuildInputReadOnlyKHR
-                        .into(),
-                    property_flags: vk::MemoryPropertyFlagBits::HostVisible
-                        | vk::MemoryPropertyFlagBits::HostCoherent,
-                },
+            let mut transform_buffer = vkx::BufferDedicatedTransfer::create(
+                &gpu.physical_device,
+                &gpu.device,
+                (size_of::<TransformType>() * create_info.scene.transform_data.len()) as _,
+                vk::BufferUsageFlagBits::AccelerationStructureBuildInputReadOnlyKHR.into(),
+                vk::MemoryPropertyFlagBits::HostVisible | vk::MemoryPropertyFlagBits::HostCoherent,
             )?;
             vertex_buffer
                 .memory_mut()
@@ -295,13 +273,12 @@ impl GpuResource for Blas {
         };
 
         // Buffer.
-        let blas_buffer = AccelerationStructureBuffer::create(
-            gpu,
-            &resource::BufferCreateInfo {
-                size: acceleration_structure_size as _,
-                usage: vk::BufferUsageFlagBits::AccelerationStructureStorageKHR.into(),
-                property_flags: vk::MemoryPropertyFlagBits::DeviceLocal.into(),
-            },
+        let blas_buffer = vkx::BufferDedicatedResource::create(
+            &gpu.physical_device,
+            &gpu.device,
+            acceleration_structure_size as _,
+            vk::BufferUsageFlagBits::AccelerationStructureStorageKHR.into(),
+            vk::MemoryPropertyFlagBits::DeviceLocal.into(),
         )?;
 
         // Create.
@@ -321,13 +298,12 @@ impl GpuResource for Blas {
         };
 
         // Scratch buffer.
-        let blas_scratch_buffer = AccelerationStructureScratchBuffer::create(
-            gpu,
-            &resource::BufferCreateInfo {
-                size: build_scratch_size as _,
-                usage: vk::BufferUsageFlagBits::StorageBuffer.into(),
-                property_flags: vk::MemoryPropertyFlagBits::DeviceLocal.into(),
-            },
+        let blas_scratch_buffer = vkx::BufferDedicatedResource::create(
+            &gpu.physical_device,
+            &gpu.device,
+            build_scratch_size as _,
+            vk::BufferUsageFlagBits::StorageBuffer.into(),
+            vk::MemoryPropertyFlagBits::DeviceLocal.into(),
         )?;
 
         // Build.
@@ -389,10 +365,10 @@ impl GpuResource for Blas {
         };
 
         // Cleanup.
-        vertex_buffer.destroy(gpu);
-        index_buffer.destroy(gpu);
-        transform_buffer.destroy(gpu);
-        blas_scratch_buffer.destroy(gpu);
+        vertex_buffer.destroy(&gpu.device);
+        index_buffer.destroy(&gpu.device);
+        transform_buffer.destroy(&gpu.device);
+        blas_scratch_buffer.destroy(&gpu.device);
 
         Ok(Self {
             blas,
@@ -402,7 +378,7 @@ impl GpuResource for Blas {
     }
 
     unsafe fn destroy(self, gpu: &Gpu) {
-        self.blas_buffer.destroy(gpu);
+        self.blas_buffer.destroy(&gpu.device);
         gpu.device.destroy_acceleration_structure_khr(self.blas);
     }
 }
@@ -416,10 +392,9 @@ struct TlasCreateInfo<'a> {
     blas: &'a Blas,
 }
 
-#[derive(Debug)]
 struct Tlas {
     tlas: vk::AccelerationStructureKHR,
-    tlas_buffer: AccelerationStructureBuffer,
+    tlas_buffer: vkx::BufferDedicatedResource,
     tlas_descriptor: vkx::Descriptor,
 }
 
@@ -433,9 +408,6 @@ impl GpuResource for Tlas {
     where
         Self: Sized,
     {
-        // Types.
-        type InstanceBuffer = resource::Buffer;
-
         // Instance.
         let instance_buffer = {
             let transform_data = vk::TransformMatrixKHR {
@@ -458,15 +430,12 @@ impl GpuResource for Tlas {
                 acceleration_structure_reference: create_info.blas.blas_address,
             };
 
-            let mut instance_buffer = InstanceBuffer::create(
-                gpu,
-                &resource::BufferCreateInfo {
-                    size: size_of::<vk::AccelerationStructureInstanceKHR>() as _,
-                    usage: vk::BufferUsageFlagBits::AccelerationStructureBuildInputReadOnlyKHR
-                        .into(),
-                    property_flags: vk::MemoryPropertyFlagBits::HostVisible
-                        | vk::MemoryPropertyFlagBits::HostCoherent,
-                },
+            let mut instance_buffer = vkx::BufferDedicatedTransfer::create(
+                &gpu.physical_device,
+                &gpu.device,
+                size_of::<vk::AccelerationStructureInstanceKHR>() as _,
+                vk::BufferUsageFlagBits::AccelerationStructureBuildInputReadOnlyKHR.into(),
+                vk::MemoryPropertyFlagBits::HostVisible | vk::MemoryPropertyFlagBits::HostCoherent,
             )?;
             instance_buffer
                 .memory_mut()
@@ -535,13 +504,12 @@ impl GpuResource for Tlas {
         };
 
         // Buffer.
-        let tlas_buffer = AccelerationStructureBuffer::create(
-            gpu,
-            &resource::BufferCreateInfo {
-                size: acceleration_structure_size as _,
-                usage: vk::BufferUsageFlagBits::AccelerationStructureStorageKHR.into(),
-                property_flags: vk::MemoryPropertyFlagBits::DeviceLocal.into(),
-            },
+        let tlas_buffer = vkx::BufferDedicatedResource::create(
+            &gpu.physical_device,
+            &gpu.device,
+            acceleration_structure_size as _,
+            vk::BufferUsageFlagBits::AccelerationStructureStorageKHR.into(),
+            vk::MemoryPropertyFlagBits::DeviceLocal.into(),
         )?;
 
         // Create.
@@ -561,13 +529,12 @@ impl GpuResource for Tlas {
         };
 
         // Scratch buffer.
-        let tlas_scratch_buffer = AccelerationStructureScratchBuffer::create(
-            gpu,
-            &resource::BufferCreateInfo {
-                size: build_scratch_size as _,
-                usage: vk::BufferUsageFlagBits::StorageBuffer.into(),
-                property_flags: vk::MemoryPropertyFlagBits::DeviceLocal.into(),
-            },
+        let tlas_scratch_buffer = vkx::BufferDedicatedResource::create(
+            &gpu.physical_device,
+            &gpu.device,
+            build_scratch_size as _,
+            vk::BufferUsageFlagBits::StorageBuffer.into(),
+            vk::MemoryPropertyFlagBits::DeviceLocal.into(),
         )?;
 
         // Build.
@@ -629,8 +596,8 @@ impl GpuResource for Tlas {
         );
 
         // Cleanup.
-        instance_buffer.destroy(gpu);
-        tlas_scratch_buffer.destroy(gpu);
+        instance_buffer.destroy(&gpu.device);
+        tlas_scratch_buffer.destroy(&gpu.device);
 
         Ok(Self {
             tlas,
@@ -640,7 +607,7 @@ impl GpuResource for Tlas {
     }
 
     unsafe fn destroy(self, gpu: &Gpu) {
-        self.tlas_buffer.destroy(gpu);
+        self.tlas_buffer.destroy(&gpu.device);
         gpu.device.destroy_acceleration_structure_khr(self.tlas);
     }
 }
@@ -696,7 +663,7 @@ struct StatCounters {
 struct StatsCreateInfo {}
 
 struct Stats {
-    counters: resource::Buffer,
+    counters: vkx::BufferDedicatedResource,
 }
 
 impl GpuResource for Stats {
@@ -706,20 +673,18 @@ impl GpuResource for Stats {
     where
         Self: Sized,
     {
-        let counters = resource::Buffer::create(
-            gpu,
-            &resource::BufferCreateInfo {
-                size: size_of::<StatCounters>() as _,
-                usage: vk::BufferUsageFlagBits::StorageBuffer.into(),
-                property_flags: vk::MemoryPropertyFlagBits::HostVisible
-                    | vk::MemoryPropertyFlagBits::HostCoherent,
-            },
+        let counters = vkx::BufferDedicatedResource::create(
+            &gpu.physical_device,
+            &gpu.device,
+            size_of::<StatCounters>() as _,
+            vk::BufferUsageFlagBits::StorageBuffer.into(),
+            vk::MemoryPropertyFlagBits::HostVisible | vk::MemoryPropertyFlagBits::HostCoherent,
         )?;
         Ok(Self { counters })
     }
 
     unsafe fn destroy(self, gpu: &Gpu) {
-        self.counters.destroy(gpu);
+        self.counters.destroy(&gpu.device);
     }
 }
 
@@ -1055,7 +1020,8 @@ struct SbtCreateInfo<'a> {
 }
 
 struct Sbt {
-    binding_tables: Vec<ShaderBindingTableBuffer>,
+    shader_binding_tables: Vec<vkx::BufferShaderBindingTable>,
+    buffer_allocations: vkx::BufferAllocations,
     shader_group_handle_size: vk::DeviceSize,
 }
 
@@ -1063,7 +1029,7 @@ impl GpuResource for Sbt {
     type CreateInfo<'a> = SbtCreateInfo<'a>;
 
     unsafe fn create(
-        gpu @ Gpu {
+        Gpu {
             device,
             physical_device,
             ..
@@ -1082,37 +1048,57 @@ impl GpuResource for Sbt {
             .shader_group_handle_alignment;
         ensure!(shader_group_handle_size == shader_group_handle_alignment);
 
-        // Create binding tables.
-        let mut binding_tables = vec![];
+        // Buffers.
+        let mut buffers = vec![];
+        let mut buffer_create_infos = vec![];
+        for _ in 0..create_info.pipeline.groups.len() {
+            // Buffer.
+            let (buffer, buffer_create_info) = vkx::BufferCreator::new(
+                u64::from(shader_group_handle_size),
+                vk::BufferUsageFlagBits::ShaderBindingTableKHR.into(),
+            )
+            .create(device)?;
+            buffers.push(buffer);
+            buffer_create_infos.push(buffer_create_info);
+        }
+
+        // Allocation.
+        let buffer_allocations = vkx::BufferAllocations::allocate(
+            physical_device,
+            device,
+            &buffers,
+            &buffer_create_infos,
+            vk::MemoryPropertyFlagBits::HostVisible | vk::MemoryPropertyFlagBits::HostCoherent,
+        )?;
+
+        // Shader binding tables.
+        let mut shader_binding_tables = vkx::BufferShaderBindingTable::create(
+            &buffers,
+            &buffer_create_infos,
+            buffer_allocations.allocations(),
+        )?;
         for first_group in 0..create_info.pipeline.groups.len() {
-            let mut buffer = ShaderBindingTableBuffer::create(
-                gpu,
-                &resource::BufferCreateInfo {
-                    size: u64::from(shader_group_handle_size),
-                    usage: vk::BufferUsageFlagBits::ShaderBindingTableKHR.into(),
-                    property_flags: vk::MemoryPropertyFlagBits::HostVisible
-                        | vk::MemoryPropertyFlagBits::HostCoherent,
-                },
-            )?;
             device.get_ray_tracing_shader_group_handles_khr(
                 create_info.pipeline.pipeline,
                 first_group as _,
                 1,
                 shader_group_handle_size as _,
-                buffer.memory_mut().as_mut_ptr(),
+                shader_binding_tables[first_group].memory_mut().as_mut_ptr(),
             )?;
-            binding_tables.push(buffer);
         }
+
         Ok(Self {
-            binding_tables,
+            shader_binding_tables,
+            buffer_allocations,
             shader_group_handle_size: shader_group_handle_size.into(),
         })
     }
 
     unsafe fn destroy(self, gpu: &Gpu) {
-        for binding_table in self.binding_tables {
-            binding_table.destroy(gpu);
+        for shader_binding_table in self.shader_binding_tables {
+            shader_binding_table.destroy(&gpu.device);
         }
+        self.buffer_allocations.free(&gpu.device);
     }
 }
 
@@ -1123,7 +1109,7 @@ impl GpuResource for Sbt {
 struct OutputCreateInfo {}
 
 struct Output {
-    buffer: resource::Buffer,
+    buffer: vkx::BufferDedicatedTransfer,
 }
 
 impl GpuResource for Output {
@@ -1133,19 +1119,18 @@ impl GpuResource for Output {
     where
         Self: Sized,
     {
-        let buffer = resource::Buffer::create(
-            gpu,
-            &resource::BufferCreateInfo {
-                size: DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE,
-                usage: vk::BufferUsageFlagBits::TransferDst.into(),
-                property_flags: vk::MemoryPropertyFlagBits::HostVisible.into(),
-            },
+        let buffer = vkx::BufferDedicatedTransfer::create(
+            &gpu.physical_device,
+            &gpu.device,
+            DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE,
+            vk::BufferUsageFlagBits::TransferDst.into(),
+            vk::MemoryPropertyFlagBits::HostVisible.into(),
         )?;
         Ok(Self { buffer })
     }
 
     unsafe fn destroy(self, gpu: &Gpu) {
-        self.buffer.destroy(gpu);
+        self.buffer.destroy(&gpu.device);
     }
 }
 
@@ -1251,17 +1236,17 @@ unsafe fn dispatch(
 
     // Trace rays.
     let raygen_sbt = vk::StridedDeviceAddressRegionKHR {
-        device_address: sbt.binding_tables[0].memory().device_address(),
+        device_address: sbt.shader_binding_tables[0].memory().device_address(),
         stride: sbt.shader_group_handle_size,
         size: sbt.shader_group_handle_size,
     };
     let miss_sbt = vk::StridedDeviceAddressRegionKHR {
-        device_address: sbt.binding_tables[1].memory().device_address(),
+        device_address: sbt.shader_binding_tables[1].memory().device_address(),
         stride: sbt.shader_group_handle_size,
         size: sbt.shader_group_handle_size,
     };
     let hit_sbt = vk::StridedDeviceAddressRegionKHR {
-        device_address: sbt.binding_tables[2].memory().device_address(),
+        device_address: sbt.shader_binding_tables[2].memory().device_address(),
         stride: sbt.shader_group_handle_size,
         size: sbt.shader_group_handle_size,
     };

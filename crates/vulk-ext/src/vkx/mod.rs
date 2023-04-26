@@ -21,7 +21,10 @@ mod swapchain;
 // Re-exports
 //
 
-pub use buffer::BufferCreator;
+pub use buffer::{
+    BufferCreator, BufferDedicatedResource, BufferDedicatedTransfer, BufferResource,
+    BufferShaderBindingTable,
+};
 pub use descriptor::{Descriptor, DescriptorBinding, DescriptorCreateInfo, DescriptorStorage};
 pub use device::Device;
 pub use image::{ImageCreator, ImageViewCreator};

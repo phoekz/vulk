@@ -159,6 +159,22 @@ impl BufferAllocations {
                 })?
         };
 
+        // Map memory.
+        let mut memory_ptr = None;
+        if property_flags.contains(vk::MemoryPropertyFlagBits::HostVisible.into()) {
+            let ptr = device
+                .map_memory2_khr(&vk::MemoryMapInfoKHR {
+                    s_type: vk::StructureType::MemoryMapInfoKHR,
+                    p_next: null(),
+                    flags: vk::MemoryMapFlags::empty(),
+                    memory: device_memory,
+                    offset: 0,
+                    size: allocation_size,
+                })
+                .with_context(|| format!("Mapping buffer size={allocation_size}"))?;
+            memory_ptr = Some(ptr);
+        }
+
         // Sub-allocations.
         let mut allocations = vec![];
         let mut memory_offset = 0;
@@ -196,22 +212,7 @@ impl BufferAllocations {
             });
 
             // Map memory.
-            let mut buffer_ptr = None;
-            if property_flags.contains(vk::MemoryPropertyFlagBits::HostVisible.into()) {
-                let ptr = device
-                    .map_memory2_khr(&vk::MemoryMapInfoKHR {
-                        s_type: vk::StructureType::MemoryMapInfoKHR,
-                        p_next: null(),
-                        flags: vk::MemoryMapFlags::empty(),
-                        memory: device_memory,
-                        offset: memory_offset,
-                        size: aligned_size,
-                    })
-                    .with_context(|| {
-                        format!("Mapping buffer {buffer_index} size={aligned_size}")
-                    })?;
-                buffer_ptr = Some(ptr);
-            }
+            let buffer_ptr = memory_ptr.map(|ptr| ptr.add(memory_offset as _));
 
             // Advance.
             memory_offset += aligned_size;

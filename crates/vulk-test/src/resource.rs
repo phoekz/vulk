@@ -1,97 +1,6 @@
 use super::*;
 
 //
-// Buffer
-//
-
-// Todo: Re-design with the new batch allocator.
-// Todo: The batch allocator could create the descriptor handle too.
-
-#[derive(Debug)]
-pub struct BufferCreateInfo {
-    pub size: vk::DeviceSize,
-    pub usage: vk::BufferUsageFlags,
-    pub property_flags: vk::MemoryPropertyFlags,
-}
-
-#[derive(Debug)]
-pub struct Buffer {
-    buffer: vk::Buffer,
-    allocations: vkx::BufferAllocations,
-    allocation: vkx::BufferAllocation,
-    descriptor: vkx::Descriptor,
-}
-
-impl GpuResource for Buffer {
-    type CreateInfo<'a> = BufferCreateInfo;
-
-    unsafe fn create(
-        Gpu {
-            device,
-            physical_device,
-            ..
-        }: &Gpu,
-        create_info: &Self::CreateInfo<'_>,
-    ) -> Result<Self> {
-        // Buffer.
-        let (buffer, buffer_create_info) =
-            vkx::BufferCreator::new(create_info.size, create_info.usage)
-                .create(device)
-                .context("Creating buffer object")?;
-
-        // Allocate.
-        let allocations = vkx::BufferAllocations::allocate(
-            physical_device,
-            device,
-            &[buffer],
-            &[buffer_create_info],
-            create_info.property_flags,
-        )?;
-        let allocation = allocations.allocations()[0];
-
-        // Descriptor.
-        let descriptor = vkx::Descriptor::create(
-            physical_device,
-            device,
-            vkx::DescriptorCreateInfo::StorageBuffer {
-                address: allocation.device_address(),
-                range: create_info.size,
-            },
-        );
-
-        Ok(Self {
-            buffer,
-            allocations,
-            allocation,
-            descriptor,
-        })
-    }
-
-    unsafe fn destroy(self, Gpu { device, .. }: &Gpu) {
-        device.destroy_buffer(self.buffer);
-        self.allocations.free(device);
-    }
-}
-
-impl Buffer {
-    pub fn handle(&self) -> vk::Buffer {
-        self.buffer
-    }
-
-    pub fn memory(&self) -> &vkx::BufferAllocation {
-        &self.allocation
-    }
-
-    pub fn memory_mut(&mut self) -> &mut vkx::BufferAllocation {
-        &mut self.allocation
-    }
-
-    pub fn descriptor(&self) -> vkx::Descriptor {
-        self.descriptor
-    }
-}
-
-//
 // Texture
 //
 
@@ -318,7 +227,11 @@ impl GpuResource for Sampler {
 //
 
 pub unsafe fn multi_upload_images(
-    gpu @ Gpu { device, .. }: &Gpu,
+    gpu @ Gpu {
+        physical_device,
+        device,
+        ..
+    }: &Gpu,
     images: &[Image2d],
     datas: &[Vec<u8>],
 ) -> Result<()> {
@@ -334,22 +247,24 @@ pub unsafe fn multi_upload_images(
         .all(|(img, p)| img.byte_size() as usize == p.len()));
 
     // Staging buffer.
-    let byte_size = datas.iter().map(Vec::len).sum::<usize>() as vk::DeviceSize;
-    let staging = resource::Buffer::create(
-        gpu,
-        &BufferCreateInfo {
-            size: byte_size,
-            usage: vk::BufferUsageFlagBits::TransferSrc.into(),
-            property_flags: vk::MemoryPropertyFlagBits::HostVisible
-                | vk::MemoryPropertyFlagBits::HostCoherent,
-        },
+    let mut staging_buffer = vkx::BufferDedicatedTransfer::create(
+        physical_device,
+        device,
+        datas.iter().map(Vec::len).sum::<usize>() as vk::DeviceSize,
+        vk::BufferUsageFlagBits::TransferSrc.into(),
+        vk::MemoryPropertyFlagBits::HostVisible | vk::MemoryPropertyFlagBits::HostCoherent,
     )?;
+
+    // Stage datas.
     let mut dst_offset = 0;
     for image_data in datas {
         // Copy.
         std::ptr::copy_nonoverlapping(
             image_data.as_ptr(),
-            staging.memory().as_mut_ptr::<u8>().add(dst_offset),
+            staging_buffer
+                .memory_mut()
+                .as_mut_ptr::<u8>()
+                .add(dst_offset),
             image_data.len(),
         );
 
@@ -397,7 +312,7 @@ pub unsafe fn multi_upload_images(
             &(vk::CopyBufferToImageInfo2 {
                 s_type: vk::StructureType::CopyBufferToImageInfo2,
                 p_next: null(),
-                src_buffer: staging.buffer,
+                src_buffer: staging_buffer.handle(),
                 dst_image: image.image,
                 dst_image_layout: vk::ImageLayout::TransferDstOptimal,
                 region_count: 1,
@@ -490,7 +405,7 @@ pub unsafe fn multi_upload_images(
 
     // Cleanup.
     commands.destroy(gpu);
-    staging.destroy(gpu);
+    staging_buffer.destroy(device);
 
     Ok(())
 }
