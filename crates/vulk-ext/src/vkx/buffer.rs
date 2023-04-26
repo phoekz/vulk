@@ -25,7 +25,7 @@ impl BufferCreator {
             p_next: null(),
             flags: vk::BufferCreateFlags::empty(),
             size,
-            usage,
+            usage: usage | vk::BufferUsageFlagBits::ShaderDeviceAddress,
             sharing_mode: vk::SharingMode::Exclusive,
             queue_family_index_count: 0,
             p_queue_family_indices: null(),

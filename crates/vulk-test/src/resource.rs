@@ -33,13 +33,11 @@ impl GpuResource for Buffer {
         }: &Gpu,
         create_info: &Self::CreateInfo<'_>,
     ) -> Result<Self> {
-        // Buffer usage.
-        let usage = create_info.usage | vk::BufferUsageFlagBits::ShaderDeviceAddress;
-
         // Buffer.
-        let (buffer, buffer_create_info) = vkx::BufferCreator::new(create_info.size, usage)
-            .create(device)
-            .context("Creating buffer object")?;
+        let (buffer, buffer_create_info) =
+            vkx::BufferCreator::new(create_info.size, create_info.usage)
+                .create(device)
+                .context("Creating buffer object")?;
 
         // Allocate.
         let allocations = vkx::BufferAllocations::allocate(

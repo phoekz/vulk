@@ -233,7 +233,6 @@ pub struct DescriptorStorage {
 fn descriptor_buffer_usage() -> vk::BufferUsageFlags {
     vk::BufferUsageFlagBits::ResourceDescriptorBufferEXT
         | vk::BufferUsageFlagBits::SamplerDescriptorBufferEXT
-        | vk::BufferUsageFlagBits::ShaderDeviceAddress
 }
 
 impl DescriptorStorage {
