@@ -12,7 +12,7 @@ impl std::fmt::Display for {{rs_ident}} {
 }
 "#;
 
-const TEMPLATE_MEMBER: &str = r#"{{vk_member_attr}}{{rs_member_ident}} = {{rs_member_value}},"#;
+const TEMPLATE_MEMBER: &str = r#"{{rs_member_ident}} = {{rs_member_value}},"#;
 
 const TEMPLATE_FORMAT_ASPECT_MASK: &str = r#"
 impl Format {
@@ -44,6 +44,51 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
         for format in &ctx.registry.formats {
             map.insert(format.name.as_str(), format);
         }
+        map
+    };
+
+    let deprecations = {
+        let mut map = HashMap::new();
+        map.insert(
+            "VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL",
+            "Replace with: `vk::ImageLayout::AttachmentOptimal`",
+        );
+        map.insert(
+            "VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL",
+            "Replace with: `vk::ImageLayout::AttachmentOptimal`",
+        );
+        map.insert(
+            "VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_STENCIL_ATTACHMENT_OPTIMAL",
+            "Replace with: `vk::ImageLayout::AttachmentOptimal`",
+        );
+        map.insert(
+            "VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL",
+            "Replace with: `vk::ImageLayout::AttachmentOptimal`",
+        );
+        map.insert(
+            "VK_IMAGE_LAYOUT_STENCIL_ATTACHMENT_OPTIMAL",
+            "Replace with: `vk::ImageLayout::AttachmentOptimal`",
+        );
+        map.insert(
+            "VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL",
+            "Replace with: `vk::ImageLayout::ReadOnlyOptimal`",
+        );
+        map.insert(
+            "VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL",
+            "Replace with: `vk::ImageLayout::ReadOnlyOptimal`",
+        );
+        map.insert(
+            "VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_OPTIMAL",
+            "Replace with: `vk::ImageLayout::ReadOnlyOptimal`",
+        );
+        map.insert(
+            "VK_IMAGE_LAYOUT_DEPTH_READ_ONLY_OPTIMAL",
+            "Replace with: `vk::ImageLayout::ReadOnlyOptimal`",
+        );
+        map.insert(
+            "VK_IMAGE_LAYOUT_STENCIL_READ_ONLY_OPTIMAL",
+            "Replace with: `vk::ImageLayout::ReadOnlyOptimal`",
+        );
         map
     };
 
@@ -85,11 +130,15 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
                 format!("Missing value, enum={vk_ident}, member={vk_member_ident}")
             })?;
             let rs_member_value = vk_member_value;
+
+            writeln!(rs_members, "{vk_member_attr}")?;
+            if let Some(deprecation) = deprecations.get(vk_member_ident.as_str()) {
+                writeln!(rs_members, r#"#[deprecated(note = "{deprecation}")]"#)?;
+            }
             writeln!(
                 rs_members,
                 "{}",
                 TEMPLATE_MEMBER
-                    .replace("{{vk_member_attr}}", &vk_member_attr)
                     .replace("{{rs_member_ident}}", rs_member_ident)
                     .replace("{{rs_member_value}}", rs_member_value)
             )?;
