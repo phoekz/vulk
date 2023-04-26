@@ -37,18 +37,8 @@ impl GpuResource for Buffer {
         let usage = create_info.usage | vk::BufferUsageFlagBits::ShaderDeviceAddress;
 
         // Buffer.
-        let buffer_create_info = vk::BufferCreateInfo {
-            s_type: vk::StructureType::BufferCreateInfo,
-            p_next: null(),
-            flags: vk::BufferCreateFlags::empty(),
-            size: create_info.size,
-            usage,
-            sharing_mode: vk::SharingMode::Exclusive,
-            queue_family_index_count: 0,
-            p_queue_family_indices: null(),
-        };
-        let buffer = device
-            .create_buffer(&buffer_create_info)
+        let (buffer, buffer_create_info) = vkx::BufferCreator::new(create_info.size, usage)
+            .create(device)
             .context("Creating buffer object")?;
 
         // Allocate.
@@ -141,33 +131,16 @@ impl GpuResource for Image2d {
         }: &Gpu,
         create_info: &Self::CreateInfo<'_>,
     ) -> Result<Self> {
-        // Image info.
-        let image_create_info = vk::ImageCreateInfo {
-            s_type: vk::StructureType::ImageCreateInfo,
-            p_next: null(),
-            flags: vk::ImageCreateFlags::empty(),
-            image_type: vk::ImageType::Type2d,
-            format: create_info.format,
-            extent: vk::Extent3D {
-                width: create_info.width,
-                height: create_info.height,
-                depth: 1,
-            },
-            mip_levels: 1,
-            array_layers: 1,
-            samples: create_info.samples,
-            tiling: vk::ImageTiling::Optimal,
-            usage: create_info.usage,
-            sharing_mode: vk::SharingMode::Exclusive,
-            queue_family_index_count: 0,
-            p_queue_family_indices: null(),
-            initial_layout: vk::ImageLayout::Undefined,
-        };
-
         // Image.
-        let image = device
-            .create_image(&image_create_info)
-            .context("Creating image")?;
+        let (image, image_create_info) = vkx::ImageCreator::new_2d(
+            create_info.width,
+            create_info.height,
+            create_info.format,
+            create_info.usage,
+        )
+        .samples(create_info.samples)
+        .create(device)
+        .context("Creating image")?;
 
         // Allocate.
         let allocations = vkx::ImageAllocations::allocate(
@@ -178,31 +151,11 @@ impl GpuResource for Image2d {
             create_info.property_flags,
         )?;
 
-        // Image view info.
-        let image_view_create_info = vk::ImageViewCreateInfo {
-            s_type: vk::StructureType::ImageViewCreateInfo,
-            p_next: null(),
-            flags: vk::ImageViewCreateFlags::empty(),
-            image,
-            view_type: vk::ImageViewType::Type2d,
-            format: image_create_info.format,
-            components: vk::ComponentMapping {
-                r: vk::ComponentSwizzle::Identity,
-                g: vk::ComponentSwizzle::Identity,
-                b: vk::ComponentSwizzle::Identity,
-                a: vk::ComponentSwizzle::Identity,
-            },
-            subresource_range: vk::ImageSubresourceRange {
-                aspect_mask: create_info.format.aspect_mask(),
-                base_mip_level: 0,
-                level_count: 1,
-                base_array_layer: 0,
-                layer_count: 1,
-            },
-        };
-
         // Image view.
-        let image_view = device.create_image_view(&image_view_create_info)?;
+        let (image_view, image_view_create_info) =
+            vkx::ImageViewCreator::new_2d(image, image_create_info.format)
+                .create(device)
+                .context("Creating image view")?;
 
         // Descriptor.
         let descriptor = if create_info
@@ -334,30 +287,14 @@ impl GpuResource for Sampler {
         }: &Gpu,
         create_info: &Self::CreateInfo<'_>,
     ) -> Result<Self> {
-        // Sampler info.
-        let sampler_create_info = vk::SamplerCreateInfo {
-            s_type: vk::StructureType::SamplerCreateInfo,
-            p_next: null(),
-            flags: vk::SamplerCreateFlags::empty(),
-            mag_filter: create_info.mag_filter,
-            min_filter: create_info.min_filter,
-            mipmap_mode: create_info.mipmap_mode,
-            address_mode_u: create_info.address_mode,
-            address_mode_v: create_info.address_mode,
-            address_mode_w: create_info.address_mode,
-            mip_lod_bias: 0.0,
-            anisotropy_enable: vk::FALSE,
-            max_anisotropy: 0.0,
-            compare_enable: vk::FALSE,
-            compare_op: vk::CompareOp::Always,
-            min_lod: 0.0,
-            max_lod: 0.0,
-            border_color: vk::BorderColor::FloatTransparentBlack,
-            unnormalized_coordinates: vk::FALSE,
-        };
-
         // Sampler.
-        let sampler = device.create_sampler(&sampler_create_info)?;
+        let (sampler, sampler_create_info) = vkx::SamplerCreator::new()
+            .mag_filter(create_info.mag_filter)
+            .min_filter(create_info.min_filter)
+            .mipmap_mode(create_info.mipmap_mode)
+            .address_mode_uvw(create_info.address_mode)
+            .create(device)
+            .context("Creating sampler")?;
 
         // Descriptor.
         let descriptor = vkx::Descriptor::create(

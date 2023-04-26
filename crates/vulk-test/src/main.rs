@@ -26,7 +26,7 @@
 use std::{
     mem::{size_of, transmute, zeroed, MaybeUninit},
     path::PathBuf,
-    ptr::{addr_of, addr_of_mut, null, null_mut},
+    ptr::{addr_of, addr_of_mut, null},
     time::{Duration, Instant, SystemTime},
 };
 
