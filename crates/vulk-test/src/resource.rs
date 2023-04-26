@@ -122,10 +122,7 @@ pub struct Image2d {
     pub image_create_info: vk::ImageCreateInfo,
     pub image: vk::Image,
 
-    pub memory_requirements: vk::MemoryRequirements,
-    pub memory_allocate_info: vk::MemoryAllocateInfo,
-    pub device_memory: vk::DeviceMemory,
-    pub bind_image_memory_info: vk::BindImageMemoryInfo,
+    allocations: vkx::ImageAllocations,
 
     pub image_view: vk::ImageView,
     pub image_view_create_info: vk::ImageViewCreateInfo,
@@ -172,50 +169,14 @@ impl GpuResource for Image2d {
             .create_image(&image_create_info)
             .context("Creating image")?;
 
-        // Requirements.
-        let device_image_memory_requirements = vk::DeviceImageMemoryRequirements {
-            s_type: vk::StructureType::DeviceImageMemoryRequirements,
-            p_next: null(),
-            p_create_info: &image_create_info,
-            plane_aspect: zeroed(),
-        };
-        let mut memory_requirements2 = vk::MemoryRequirements2 {
-            s_type: vk::StructureType::MemoryRequirements2,
-            p_next: null_mut(),
-            memory_requirements: zeroed(),
-        };
-        device.get_device_image_memory_requirements(
-            &device_image_memory_requirements,
-            &mut memory_requirements2,
-        );
-        let memory_requirements = memory_requirements2.memory_requirements;
-
-        // Allocation.
-        let memory_allocate_info = vk::MemoryAllocateInfo {
-            s_type: vk::StructureType::MemoryAllocateInfo,
-            p_next: null(),
-            allocation_size: memory_requirements.size,
-            memory_type_index: memory_type_index(
-                &physical_device.memory_properties,
-                create_info.property_flags,
-                &memory_requirements,
-            ),
-        };
-        let device_memory = device
-            .allocate_memory(&memory_allocate_info)
-            .context("Allocating device memory for image")?;
-
-        // Bind.
-        let bind_image_memory_info = vk::BindImageMemoryInfo {
-            s_type: vk::StructureType::BindImageMemoryInfo,
-            p_next: null(),
-            image,
-            memory: device_memory,
-            memory_offset: 0,
-        };
-        device
-            .bind_image_memory2(1, &bind_image_memory_info)
-            .context("Binding device memory to image")?;
+        // Allocate.
+        let allocations = vkx::ImageAllocations::allocate(
+            physical_device,
+            device,
+            &[image],
+            &[image_create_info],
+            create_info.property_flags,
+        )?;
 
         // Image view info.
         let image_view_create_info = vk::ImageViewCreateInfo {
@@ -271,10 +232,7 @@ impl GpuResource for Image2d {
             image_create_info,
             image,
 
-            memory_requirements,
-            memory_allocate_info,
-            device_memory,
-            bind_image_memory_info,
+            allocations,
 
             image_view,
             image_view_create_info,
@@ -286,7 +244,7 @@ impl GpuResource for Image2d {
     unsafe fn destroy(self, Gpu { device, .. }: &Gpu) {
         device.destroy_image_view(self.image_view);
         device.destroy_image(self.image);
-        device.free_memory(self.device_memory);
+        self.allocations.free(device);
     }
 }
 
@@ -600,25 +558,4 @@ pub unsafe fn multi_upload_images(
     staging.destroy(gpu);
 
     Ok(())
-}
-
-//
-// Utilities
-//
-
-fn memory_type_index(
-    memory: &vk::PhysicalDeviceMemoryProperties,
-    property_flags: vk::MemoryPropertyFlags,
-    requirements: &vk::MemoryRequirements,
-) -> u32 {
-    let memory_type_bits = requirements.memory_type_bits;
-    for memory_type_index in 0..memory.memory_type_count {
-        let memory_type = memory.memory_types[memory_type_index as usize];
-        let type_matches = (1 << memory_type_index) & memory_type_bits != 0;
-        let property_matches = memory_type.property_flags.contains(property_flags);
-        if type_matches && property_matches {
-            return memory_type_index;
-        }
-    }
-    panic!("Unable to find suitable memory type for the buffer, memory_type_bits=0b{memory_type_bits:b}");
 }

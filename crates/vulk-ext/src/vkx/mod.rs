@@ -20,7 +20,7 @@ mod surface;
 pub use descriptor::{Descriptor, DescriptorBinding, DescriptorCreateInfo, DescriptorStorage};
 pub use device::Device;
 pub use instance::{Instance, InstanceCreateInfo};
-pub use memory::{BufferAllocation, BufferAllocations};
+pub use memory::{BufferAllocation, BufferAllocations, ImageAllocations};
 pub use physical_device::PhysicalDevice;
 pub use shader::{Shader, ShaderBinary, ShaderCompiler, ShaderCreateInfo, ShaderType};
 pub use surface::Surface;

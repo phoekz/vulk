@@ -134,9 +134,9 @@ impl BufferAllocations {
         );
 
         // Allocation size.
-        let allocation_size = create_infos
+        let allocation_size = memory_requirements
             .iter()
-            .map(|info| aligned_size(info.size, alignment))
+            .map(|req| aligned_size(req.size, alignment))
             .sum::<vk::DeviceSize>();
 
         // Allocation.
@@ -162,23 +162,31 @@ impl BufferAllocations {
         // Sub-allocations.
         let mut allocations = vec![];
         let mut memory_offset = 0;
-        for (buffer_index, (buffer, create_info)) in buffers.iter().zip(create_infos).enumerate() {
+        for (buffer_index, (buffer, requirements)) in
+            buffers.iter().zip(memory_requirements).enumerate()
+        {
             // Aligned size.
-            let aligned_size = aligned_size(create_info.size, alignment);
+            let aligned_size = aligned_size(requirements.size, alignment);
 
             // Bind buffer memory.
             device
-            .bind_buffer_memory2(
-                1,
-                &vk::BindBufferMemoryInfo {
-                    s_type: vk::StructureType::BindBufferMemoryInfo,
-                    p_next: null(),
-                    buffer: *buffer,
-                    memory: device_memory,
-                    memory_offset,
-                },
-            )
-            .with_context(|| format!("Binding buffer {buffer_index} size={aligned_size} into device memory offset={memory_offset}"))?;
+                .bind_buffer_memory2(
+                    1,
+                    &vk::BindBufferMemoryInfo {
+                        s_type: vk::StructureType::BindBufferMemoryInfo,
+                        p_next: null(),
+                        buffer: *buffer,
+                        memory: device_memory,
+                        memory_offset,
+                    },
+                )
+                .with_context(|| {
+                    format!(
+                        "Binding buffer {buffer_index} \
+                        size={aligned_size} into \
+                        device memory offset={memory_offset}"
+                    )
+                })?;
 
             // Device address.
             let device_address = device.get_buffer_device_address(&vk::BufferDeviceAddressInfo {
@@ -211,7 +219,7 @@ impl BufferAllocations {
             // Output.
             allocations.push(BufferAllocation {
                 address: device_address,
-                size: create_info.size,
+                size: requirements.size,
                 ptr: buffer_ptr,
             });
         }
@@ -229,6 +237,155 @@ impl BufferAllocations {
     #[must_use]
     pub fn allocations(&self) -> &[BufferAllocation] {
         &self.allocations
+    }
+}
+
+//
+// Images
+//
+
+#[derive(Debug)]
+pub struct ImageAllocations {
+    memory: vk::DeviceMemory,
+}
+
+impl ImageAllocations {
+    pub unsafe fn allocate(
+        physical_device: &vkx::PhysicalDevice,
+        device: &vkx::Device,
+        images: &[vk::Image],
+        create_infos: &[vk::ImageCreateInfo],
+        property_flags: vk::MemoryPropertyFlags,
+    ) -> Result<Self> {
+        // Validation.
+        ensure!(!images.is_empty());
+        ensure!(!create_infos.is_empty());
+        ensure!(images.len() == create_infos.len());
+        ensure!(create_infos
+            .iter()
+            .all(|info| info.s_type == vk::StructureType::ImageCreateInfo));
+        ensure!(create_infos.iter().all(|info| info.p_next.is_null()));
+        ensure!(create_infos
+            .iter()
+            .all(|info| info.flags == vk::ImageCreateFlags::empty()));
+        ensure!(create_infos
+            .iter()
+            .all(|info| info.extent.width > 0 && info.extent.height > 0 && info.extent.depth > 0));
+        ensure!(create_infos.iter().all(|info| info.mip_levels > 0));
+        ensure!(create_infos.iter().all(|info| info.array_layers > 0));
+        ensure!(create_infos
+            .iter()
+            .all(|info| info.tiling == vk::ImageTiling::Optimal));
+        ensure!(create_infos
+            .iter()
+            .all(|info| info.sharing_mode == vk::SharingMode::Exclusive));
+        ensure!(create_infos.iter().all(
+            |info| info.queue_family_index_count == 0 && info.p_queue_family_indices.is_null()
+        ));
+        ensure!(create_infos
+            .iter()
+            .all(|info| info.initial_layout == vk::ImageLayout::Undefined));
+
+        // Requirements.
+        let mut memory_requirements = vec![];
+        for &create_info in create_infos {
+            let device_image_memory_requirements = vk::DeviceImageMemoryRequirements {
+                s_type: vk::StructureType::DeviceImageMemoryRequirements,
+                p_next: null(),
+                p_create_info: &create_info,
+                plane_aspect: zeroed(),
+            };
+            let mut memory_requirements2 = vk::MemoryRequirements2 {
+                s_type: vk::StructureType::MemoryRequirements2,
+                p_next: null_mut(),
+                memory_requirements: zeroed(),
+            };
+            device.get_device_image_memory_requirements(
+                &device_image_memory_requirements,
+                &mut memory_requirements2,
+            );
+            memory_requirements.push(memory_requirements2.memory_requirements);
+        }
+
+        // Images must be compatible with the allocation we make.
+        ensure!(memory_requirements
+            .iter()
+            .all(|req| req.alignment == memory_requirements[0].alignment));
+        ensure!(memory_requirements
+            .iter()
+            .all(|req| req.memory_type_bits == memory_requirements[0].memory_type_bits));
+        let alignment = memory_requirements[0].alignment;
+        let memory_type_bits = memory_requirements[0].memory_type_bits;
+
+        // Memory type index.
+        let memory_type_index = memory_type_index(
+            &physical_device.memory_properties,
+            property_flags,
+            memory_type_bits,
+        );
+
+        // Allocation size.
+        let allocation_size = memory_requirements
+            .iter()
+            .map(|req| aligned_size(req.size, alignment))
+            .sum::<vk::DeviceSize>();
+
+        // Allocation.
+        let device_memory = device
+            .allocate_memory(&vk::MemoryAllocateInfo {
+                s_type: vk::StructureType::MemoryAllocateInfo,
+                p_next: null(),
+                allocation_size,
+                memory_type_index,
+            })
+            .with_context(|| {
+                format!(
+                    "\
+                    Allocating device memory for {} images",
+                    images.len()
+                )
+            })?;
+
+        // Sub-allocations.
+        let mut memory_offset = 0;
+        for (image_index, (image, requirements)) in
+            images.iter().zip(memory_requirements).enumerate()
+        {
+            // Aligned size.
+            let aligned_size = aligned_size(requirements.size, alignment);
+
+            // Bind image memory.
+            device
+                .bind_image_memory2(
+                    1,
+                    &vk::BindImageMemoryInfo {
+                        s_type: vk::StructureType::BindImageMemoryInfo,
+                        p_next: null(),
+                        image: *image,
+                        memory: device_memory,
+                        memory_offset,
+                    },
+                )
+                .with_context(|| {
+                    format!(
+                        "\
+                        Binding image {image_index} \
+                        size={aligned_size} into \
+                        device memory offset={memory_offset}"
+                    )
+                })?;
+
+            // Advance.
+            memory_offset += aligned_size;
+        }
+
+        Ok(Self {
+            memory: device_memory,
+        })
+    }
+
+    pub unsafe fn free(self, device: &vkx::Device) {
+        device.free_memory(self.memory);
     }
 }
 
