@@ -86,7 +86,7 @@ struct RendererCreateInfo<'a> {
 
 struct Renderer {
     surface: vkx::Surface,
-    swapchain: Swapchain,
+    swapchain: vkx::Swapchain,
     commands: Commands,
 }
 
@@ -102,7 +102,7 @@ impl GpuResource for Renderer {
             &gpu.physical_device,
             &create_info.window_system.window,
         )?;
-        let swapchain = Swapchain::create(gpu, &SwapchainCreateInfo { surface: &surface })?;
+        let swapchain = vkx::Swapchain::create(&gpu.device, &surface)?;
         let commands = Commands::create(
             gpu,
             &CommandsCreateInfo {
@@ -118,92 +118,8 @@ impl GpuResource for Renderer {
 
     unsafe fn destroy(self, gpu: &Gpu) {
         self.commands.destroy(gpu);
-        self.swapchain.destroy(gpu);
+        self.swapchain.destroy(&gpu.device);
         self.surface.destroy(&gpu.instance);
-    }
-}
-
-//
-// Swapchain
-//
-
-struct SwapchainCreateInfo<'a> {
-    surface: &'a vkx::Surface,
-}
-
-struct Swapchain {
-    swapchain: vk::SwapchainKHR,
-    swapchain_images: Vec<(vk::Image, vk::ImageView)>,
-    swapchain_create_info_khr: vk::SwapchainCreateInfoKHR,
-}
-
-impl GpuResource for Swapchain {
-    type CreateInfo<'a> = SwapchainCreateInfo<'a>;
-
-    unsafe fn create(
-        Gpu { device, .. }: &Gpu,
-        Self::CreateInfo { surface }: &Self::CreateInfo<'_>,
-    ) -> Result<Self>
-    where
-        Self: Sized,
-    {
-        // Swapchain.
-        let swapchain_create_info_khr = surface.swapchain_create_info_khr();
-        let swapchain = device.create_swapchain_khr(&swapchain_create_info_khr)?;
-
-        // Swapchain images.
-        let mut swapchain_images = vec![];
-        for image in vulk::read_to_vec(
-            |count, ptr| device.get_swapchain_images_khr(swapchain, count, ptr),
-            None,
-        )? {
-            let image_view = device.create_image_view(&surface.image_view_create_info(image))?;
-            swapchain_images.push((image, image_view));
-        }
-
-        Ok(Self {
-            swapchain,
-            swapchain_images,
-            swapchain_create_info_khr,
-        })
-    }
-
-    unsafe fn destroy(self, Gpu { device, .. }: &Gpu) {
-        device.destroy_swapchain_khr(self.swapchain);
-        for &(_, image_view) in &self.swapchain_images {
-            device.destroy_image_view(image_view);
-        }
-    }
-}
-
-impl Swapchain {
-    fn image_count(&self) -> u64 {
-        self.swapchain_images.len() as u64
-    }
-
-    fn image(&self, image_index: u32) -> vk::Image {
-        self.swapchain_images[image_index as usize].0
-    }
-
-    fn image_view(&self, image_index: u32) -> vk::ImageView {
-        self.swapchain_images[image_index as usize].1
-    }
-
-    fn image_subresource_range(&self) -> vk::ImageSubresourceRange {
-        vk::ImageSubresourceRange {
-            aspect_mask: self.swapchain_create_info_khr.image_format.aspect_mask(),
-            base_mip_level: 0,
-            level_count: 1,
-            base_array_layer: 0,
-            layer_count: 1,
-        }
-    }
-
-    fn render_area(&self) -> vk::Rect2D {
-        vk::Rect2D {
-            offset: vk::Offset2D { x: 0, y: 0 },
-            extent: self.swapchain_create_info_khr.image_extent,
-        }
     }
 }
 
@@ -445,7 +361,7 @@ unsafe fn redraw(
         &(vk::AcquireNextImageInfoKHR {
             s_type: vk::StructureType::AcquireNextImageInfoKHR,
             p_next: null(),
-            swapchain: swapchain.swapchain,
+            swapchain: swapchain.handle(),
             timeout: u64::MAX,
             semaphore: commands.present_complete(frame_index),
             fence: vk::Fence::null(),
@@ -627,7 +543,7 @@ unsafe fn redraw(
             wait_semaphore_count: 1,
             p_wait_semaphores: &commands.rendering_complete(frame_index),
             swapchain_count: 1,
-            p_swapchains: &swapchain.swapchain,
+            p_swapchains: &swapchain.handle(),
             p_image_indices: &image_index,
             p_results: result.as_mut_ptr(),
         };

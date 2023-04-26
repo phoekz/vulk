@@ -10,7 +10,6 @@ pub mod cube;
 pub mod gui;
 pub mod raytracing;
 pub mod triangle;
-#[cfg(target_family = "windows")]
 pub mod window;
 
 pub use clear::Demo as ClearDemo;

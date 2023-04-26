@@ -15,6 +15,7 @@ mod physical_device;
 mod sampler;
 mod shader;
 mod surface;
+mod swapchain;
 
 //
 // Re-exports
@@ -30,5 +31,6 @@ pub use physical_device::PhysicalDevice;
 pub use sampler::SamplerCreator;
 pub use shader::{Shader, ShaderBinary, ShaderCompiler, ShaderCreateInfo, ShaderType};
 pub use surface::Surface;
+pub use swapchain::Swapchain;
 
 pub(crate) use debug_utils::DebugUtils;
