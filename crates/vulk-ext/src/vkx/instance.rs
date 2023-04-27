@@ -19,7 +19,7 @@ impl Default for InstanceCreateInfo<'_> {
 pub struct Instance {
     _init: vulk::Init,
     instance: vulk::Instance,
-    debug_utils: DebugUtils,
+    debug_utils: Option<DebugUtils>,
     validation_layers: bool,
 }
 
@@ -86,7 +86,11 @@ impl Instance {
         let instance = vulk::Instance::load(&init, instance)?;
 
         // Debug utils.
-        let debug_utils = debug_utils::DebugUtils::create(&instance)?;
+        let debug_utils = if create_info.validation_layers {
+            Some(debug_utils::DebugUtils::create(&instance)?)
+        } else {
+            None
+        };
 
         Ok(Self {
             _init: init,
@@ -97,7 +101,9 @@ impl Instance {
     }
 
     pub unsafe fn destroy(self) {
-        self.debug_utils.destroy(&self.instance);
+        if let Some(debug_utils) = self.debug_utils {
+            debug_utils.destroy(&self.instance);
+        }
         self.instance.destroy_instance();
     }
 

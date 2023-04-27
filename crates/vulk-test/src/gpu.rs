@@ -12,8 +12,11 @@ pub struct Gpu {
 
 impl Gpu {
     pub unsafe fn create() -> Result<Self> {
-        let instance = vkx::Instance::create(&vkx::InstanceCreateInfo::default())
-            .context("Creating instance")?;
+        let instance = vkx::Instance::create(&vkx::InstanceCreateInfo {
+            validation_layers: false,
+            ..Default::default()
+        })
+        .context("Creating instance")?;
         let physical_device =
             vkx::PhysicalDevice::create(&instance).context("Creating physical device")?;
         let device =
