@@ -58,22 +58,6 @@ impl Builder {
 
     #[inline]
     #[must_use]
-    pub fn cfg(self, key: impl AsRef<str>, value: impl AsRef<str>) -> Self {
-        self.line(format!(
-            r#"#[cfg({} = "{}")]"#,
-            key.as_ref(),
-            value.as_ref()
-        ))
-    }
-
-    #[inline]
-    #[must_use]
-    pub fn cfg_target_family(self, value: impl AsRef<str>) -> Self {
-        self.cfg("target_family", value)
-    }
-
-    #[inline]
-    #[must_use]
     pub fn doc_str(self, str: impl AsRef<str>) -> Self {
         self.line(format!("#[doc = \"{}\"]", str.as_ref()))
     }

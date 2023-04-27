@@ -53,7 +53,10 @@ fn generate_struct_members(
     Ok(str)
 }
 
-fn generate_loaders(ctx: &GeneratorContext<'_>, commands: &[&registry::Command]) -> Result<String> {
+fn generate_loaders(
+    _ctx: &GeneratorContext<'_>,
+    commands: &[&registry::Command],
+) -> Result<String> {
     let mut str = String::new();
 
     for command in commands {

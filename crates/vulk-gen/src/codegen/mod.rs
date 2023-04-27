@@ -23,7 +23,6 @@ pub struct GeneratorContext<'a> {
     c_type_map: &'a CtypeMap,
     provided_by_map: &'a ProvidedByMap,
     empty_flag_bits_map: &'a EmptyFlagBitsMap,
-    extension_platform_map: &'a ExtensionPlatformMap,
     vkspec: &'a docs::Vkspec,
     manifest: &'a manifest::Manifest,
 }
@@ -38,14 +37,12 @@ pub fn generate(
     let c_type_map = registry::c_type_map();
     let provided_by_map = ProvidedByMap::new(registry);
     let empty_flag_bits_map = EmptyFlagBitsMap::new(registry);
-    let extension_platform_map = ExtensionPlatformMap::new(registry);
     let command_groups = commands::analysis::group_by_loader(registry);
     let ctx = GeneratorContext {
         registry,
         c_type_map: &c_type_map,
         provided_by_map: &provided_by_map,
         empty_flag_bits_map: &empty_flag_bits_map,
-        extension_platform_map: &extension_platform_map,
         vkspec,
         manifest,
     };
@@ -232,29 +229,5 @@ impl EmptyFlagBitsMap {
 
     pub fn contains(&self, name: impl AsRef<str>) -> bool {
         self.0.contains(name.as_ref())
-    }
-}
-
-struct ExtensionPlatformMap(HashMap<String, String>);
-
-impl ExtensionPlatformMap {
-    pub fn new(registry: &Registry) -> Self {
-        let mut map = HashMap::new();
-
-        for extension in &registry.extensions {
-            if let Some(platform) = &extension.platform {
-                map.insert(extension.name.clone(), platform.to_string());
-            }
-        }
-
-        Self(map)
-    }
-
-    pub fn get(&self, ident: impl AsRef<str>) -> Option<&str> {
-        if let Some(platform) = self.0.get(ident.as_ref()) {
-            Some(platform.as_str())
-        } else {
-            None
-        }
     }
 }
