@@ -13,7 +13,7 @@ pub struct Gpu {
 impl Gpu {
     pub unsafe fn create() -> Result<Self> {
         let instance = vkx::Instance::create(&vkx::InstanceCreateInfo {
-            validation_layers: false,
+            validation_layers: true,
             ..Default::default()
         })
         .context("Creating instance")?;

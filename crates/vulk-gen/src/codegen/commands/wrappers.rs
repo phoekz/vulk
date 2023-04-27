@@ -9,17 +9,17 @@ const TEMPLATE_PARAM: &str = r#"{{rs_param_ident}}: {{rs_param_type}}"#;
 const TEMPLATE_PARAM_IDENT: &str = r#"{{rs_param_ident}}"#;
 const TEMPLATE_IDENTITY: &str = r#"{{vk_attr}}
 pub unsafe fn {{rs_ident}}(&self, {{rs_params}}) -> {{rs_return_type}} {
-    (self.fns.{{rs_ident}})({{rs_params_idents}})
+    (self.fns.{{rs_ident}}.unwrap_unchecked())({{rs_params_idents}})
 }
 "#;
 const TEMPLATE_IDENTITY_VOID: &str = r#"{{vk_attr}}
 pub unsafe fn {{rs_ident}}(&self, {{rs_params}}) {
-    (self.fns.{{rs_ident}})({{rs_params_idents}});
+    (self.fns.{{rs_ident}}.unwrap_unchecked())({{rs_params_idents}});
 }
 "#;
 const TEMPLATE_UNIT_RESULT: &str = r#"{{vk_attr}}
 pub unsafe fn {{rs_ident}}(&self, {{rs_params}}) -> Result<(), Error> {
-    match (self.fns.{{rs_ident}})({{rs_params_idents}}) {
+    match (self.fns.{{rs_ident}}.unwrap_unchecked())({{rs_params_idents}}) {
         vk::Result::Success => Ok(()),
         result => Err(Error::Vulkan(result)),
     }
@@ -28,7 +28,7 @@ pub unsafe fn {{rs_ident}}(&self, {{rs_params}}) -> Result<(), Error> {
 const TEMPLATE_OUTPUT_RESULT: &str = r#"{{vk_attr}}
 pub unsafe fn {{rs_ident}}(&self, {{rs_params}}) -> Result<{{rs_output_type}}, Error> {
     let mut {{rs_output_ident}} = std::mem::MaybeUninit::uninit();
-    match (self.fns.{{rs_ident}})({{rs_params_idents}}, {{rs_output_ident}}.as_mut_ptr()) {
+    match (self.fns.{{rs_ident}}.unwrap_unchecked())({{rs_params_idents}}, {{rs_output_ident}}.as_mut_ptr()) {
         vk::Result::Success => Ok({{rs_output_ident}}.assume_init()),
         result => Err(Error::Vulkan(result)),
     }
@@ -37,7 +37,7 @@ pub unsafe fn {{rs_ident}}(&self, {{rs_params}}) -> Result<{{rs_output_type}}, E
 const TEMPLATE_OUTPUT: &str = r#"{{vk_attr}}
 pub unsafe fn {{rs_ident}}(&self, {{rs_params}}) -> {{rs_output_type}} {
     let mut {{rs_output_ident}} = std::mem::MaybeUninit::uninit();
-    (self.fns.{{rs_ident}})({{rs_params_idents}}, {{rs_output_ident}}.as_mut_ptr());
+    (self.fns.{{rs_ident}}.unwrap_unchecked())({{rs_params_idents}}, {{rs_output_ident}}.as_mut_ptr());
     {{rs_output_ident}}.assume_init()
 }
 "#;
@@ -207,9 +207,6 @@ fn generate_wrappers(
                 None
             };
 
-        if let Some(attr) = command_only_targets_windows(ctx, vk_ident) {
-            writeln!(str, "{attr}")?;
-        }
         match analysis::wrapper_type(
             ctx.c_type_map,
             base_type_map,

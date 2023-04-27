@@ -35,12 +35,12 @@ impl Init {
             let pfn = if let Ok(symbol) = library.get::<*const c_void>(name) {
                 *symbol
             } else {
-                return Err(Error::FunctionLoad(String::from_utf8_lossy(name)));
+                return None;
             };
             if pfn as usize == 0 {
-                return Err(Error::FunctionLoad(String::from_utf8_lossy(name)));
+                return None;
             }
-            Ok(pfn)
+            Some(pfn)
         };
 
         Ok(Self {
@@ -77,9 +77,9 @@ impl Instance {
         let load = |name: &'static [u8]| {
             let pfn = init.get_instance_proc_addr(instance, name.as_ptr().cast());
             if pfn as usize == 0 {
-                return Err(Error::FunctionLoad(String::from_utf8_lossy(name)));
+                return None;
             }
-            Ok(pfn)
+            Some(pfn)
         };
 
         Ok(Self {
@@ -121,9 +121,9 @@ impl Device {
         let load = |name: &'static [u8]| {
             let pfn = instance.get_device_proc_addr(device, name.as_ptr().cast());
             if pfn as usize == 0 {
-                return Err(Error::FunctionLoad(String::from_utf8_lossy(name)));
+                return None;
             }
-            Ok(pfn)
+            Some(pfn)
         };
 
         Ok(Self {
