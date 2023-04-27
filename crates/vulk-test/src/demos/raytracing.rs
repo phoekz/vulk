@@ -350,7 +350,7 @@ impl GpuResource for Blas {
                 [addr_of!(acceleration_structure_build_range_info_khr)].as_ptr(),
             );
             commands.end(gpu)?;
-            commands.submit_and_wait(gpu, vk::PipelineStageFlagBits2::AllCommands.into())?;
+            commands.submit_and_wait(gpu, 1, vk::PipelineStageFlagBits2::AllCommands.into())?;
             commands.destroy(gpu);
         }
 
@@ -587,7 +587,7 @@ impl GpuResource for Tlas {
                 [addr_of!(acceleration_structure_build_range_info_khr)].as_ptr(),
             );
             commands.end(gpu)?;
-            commands.submit_and_wait(gpu, vk::PipelineStageFlagBits2::AllCommands.into())?;
+            commands.submit_and_wait(gpu, 1, vk::PipelineStageFlagBits2::AllCommands.into())?;
             commands.destroy(gpu);
         }
 
@@ -1361,7 +1361,7 @@ unsafe fn dispatch(
             p_signal_semaphore_infos: &(vk::SemaphoreSubmitInfo {
                 s_type: vk::StructureType::SemaphoreSubmitInfo,
                 p_next: null(),
-                semaphore: commands.semaphore,
+                semaphore: commands.semaphore.handle(),
                 value: 1,
                 stage_mask: vk::PipelineStageFlagBits2::AllCommands.into(),
                 device_index: 0,
@@ -1371,21 +1371,7 @@ unsafe fn dispatch(
     )?;
 
     // Wait for semaphore.
-    {
-        let semaphores = [commands.semaphore];
-        let values = [1];
-        device.wait_semaphores(
-            &(vk::SemaphoreWaitInfo {
-                s_type: vk::StructureType::SemaphoreWaitInfo,
-                p_next: null(),
-                flags: vk::SemaphoreWaitFlagBits::Any.into(),
-                semaphore_count: semaphores.len() as _,
-                p_semaphores: semaphores.as_ptr(),
-                p_values: values.as_ptr(),
-            }),
-            u64::MAX,
-        )?;
-    }
+    commands.semaphore.wait(device, 1, u64::MAX)?;
 
     // Query results.
     {

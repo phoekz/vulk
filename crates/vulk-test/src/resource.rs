@@ -163,7 +163,7 @@ pub unsafe fn multi_upload_images(
             p_signal_semaphore_infos: &(vk::SemaphoreSubmitInfo {
                 s_type: vk::StructureType::SemaphoreSubmitInfo,
                 p_next: null(),
-                semaphore: commands.semaphore,
+                semaphore: commands.semaphore.handle(),
                 value: 1,
                 stage_mask: vk::PipelineStageFlagBits2::AllCommands.into(),
                 device_index: 0,
@@ -171,17 +171,7 @@ pub unsafe fn multi_upload_images(
         }),
         vk::Fence::null(),
     )?;
-    device.wait_semaphores(
-        &(vk::SemaphoreWaitInfo {
-            s_type: vk::StructureType::SemaphoreWaitInfo,
-            p_next: null(),
-            flags: vk::SemaphoreWaitFlagBits::Any.into(),
-            semaphore_count: 1,
-            p_semaphores: [commands.semaphore].as_ptr(),
-            p_values: [1].as_ptr(),
-        }),
-        u64::MAX,
-    )?;
+    commands.semaphore.wait(device, 1, u64::MAX)?;
 
     // Cleanup.
     commands.destroy(gpu);

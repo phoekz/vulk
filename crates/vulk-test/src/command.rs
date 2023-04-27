@@ -5,7 +5,7 @@ pub struct CommandsCreateInfo;
 pub struct Commands {
     pub command_pool: vk::CommandPool,
     pub command_buffer: vk::CommandBuffer,
-    pub semaphore: vk::Semaphore,
+    pub semaphore: vkx::TimelineSemaphore,
 }
 
 impl GpuResource for Commands {
@@ -39,21 +39,8 @@ impl GpuResource for Commands {
             command_buffer.assume_init()
         };
 
-        // Semaphore
-        let semaphore = {
-            let semaphore_type_create_info = vk::SemaphoreTypeCreateInfo {
-                s_type: vk::StructureType::SemaphoreTypeCreateInfo,
-                p_next: null(),
-                semaphore_type: vk::SemaphoreType::Timeline,
-                initial_value: 0,
-            };
-            let semaphore_create_info = vk::SemaphoreCreateInfo {
-                s_type: vk::StructureType::SemaphoreCreateInfo,
-                p_next: addr_of!(semaphore_type_create_info).cast(),
-                flags: vk::SemaphoreCreateFlags::empty(),
-            };
-            device.create_semaphore(addr_of!(semaphore_create_info).cast())?
-        };
+        // Semaphore.
+        let semaphore = vkx::TimelineSemaphore::create(device, 0)?;
 
         Ok(Self {
             command_pool,
@@ -63,7 +50,7 @@ impl GpuResource for Commands {
     }
 
     unsafe fn destroy(self, Gpu { device, .. }: &Gpu) {
-        device.destroy_semaphore(self.semaphore);
+        self.semaphore.destroy(device);
         device.free_command_buffers(self.command_pool, 1, addr_of!(self.command_buffer).cast());
         device.destroy_command_pool(self.command_pool);
     }
@@ -92,6 +79,7 @@ impl Commands {
     pub unsafe fn submit_and_wait(
         &self,
         Gpu { device, .. }: &Gpu,
+        value: u64,
         signal_stage_mask: vk::PipelineStageFlags2,
     ) -> Result<()> {
         device.queue_submit2(
@@ -114,28 +102,15 @@ impl Commands {
                 p_signal_semaphore_infos: &(vk::SemaphoreSubmitInfo {
                     s_type: vk::StructureType::SemaphoreSubmitInfo,
                     p_next: null(),
-                    semaphore: self.semaphore,
-                    value: 1,
+                    semaphore: self.semaphore.handle(),
+                    value,
                     stage_mask: signal_stage_mask,
                     device_index: 0,
                 }),
             }),
             vk::Fence::null(),
         )?;
-
-        let semaphores = [self.semaphore];
-        let values = [1];
-        device.wait_semaphores(
-            &(vk::SemaphoreWaitInfo {
-                s_type: vk::StructureType::SemaphoreWaitInfo,
-                p_next: null(),
-                flags: vk::SemaphoreWaitFlagBits::Any.into(),
-                semaphore_count: semaphores.len() as _,
-                p_semaphores: semaphores.as_ptr(),
-                p_values: values.as_ptr(),
-            }),
-            u64::MAX,
-        )?;
+        self.semaphore.wait(device, value, u64::MAX)?;
 
         Ok(())
     }

@@ -133,10 +133,10 @@ struct CommandsCreateInfo {
 
 struct Commands {
     command_pool: vk::CommandPool,
-    command_buffer_available: vk::Semaphore,
+    command_buffer_available: vkx::TimelineSemaphore,
     command_buffers: Vec<vk::CommandBuffer>,
-    present_completes: Vec<vk::Semaphore>,
-    rendering_completes: Vec<vk::Semaphore>,
+    present_completes: Vec<vkx::BinarySemaphore>,
+    rendering_completes: Vec<vkx::BinarySemaphore>,
 }
 
 impl GpuResource for Commands {
@@ -157,19 +157,7 @@ impl GpuResource for Commands {
         )?;
 
         // Command buffer available -semaphore.
-        let command_buffer_available = {
-            let semaphore_type_create_info = vk::SemaphoreTypeCreateInfo {
-                s_type: vk::StructureType::SemaphoreTypeCreateInfo,
-                p_next: null(),
-                semaphore_type: vk::SemaphoreType::Timeline,
-                initial_value: 0,
-            };
-            device.create_semaphore(&vk::SemaphoreCreateInfo {
-                s_type: vk::StructureType::SemaphoreCreateInfo,
-                p_next: addr_of!(semaphore_type_create_info).cast(),
-                flags: vk::SemaphoreCreateFlags::empty(),
-            })?
-        };
+        let command_buffer_available = vkx::TimelineSemaphore::create(device, 0)?;
 
         // Per-frame resources.
         let mut command_buffers = vec![];
@@ -193,18 +181,10 @@ impl GpuResource for Commands {
             });
 
             // Present complete -semaphore.
-            present_complete.push(device.create_semaphore(&vk::SemaphoreCreateInfo {
-                s_type: vk::StructureType::SemaphoreCreateInfo,
-                p_next: null(),
-                flags: vk::SemaphoreCreateFlags::empty(),
-            })?);
+            present_complete.push(vkx::BinarySemaphore::create(device)?);
 
             // Rendering complete -semaphore.
-            rendering_complete.push(device.create_semaphore(&vk::SemaphoreCreateInfo {
-                s_type: vk::StructureType::SemaphoreCreateInfo,
-                p_next: null(),
-                flags: vk::SemaphoreCreateFlags::empty(),
-            })?);
+            rendering_complete.push(vkx::BinarySemaphore::create(device)?);
         }
 
         Ok(Self {
@@ -218,31 +198,31 @@ impl GpuResource for Commands {
 
     unsafe fn destroy(self, Gpu { device, .. }: &Gpu) {
         device.destroy_command_pool(self.command_pool);
-        device.destroy_semaphore(self.command_buffer_available);
-        for &present_complete in &self.present_completes {
-            device.destroy_semaphore(present_complete);
+        self.command_buffer_available.destroy(device);
+        for present_complete in self.present_completes {
+            present_complete.destroy(device);
         }
-        for &rendering_complete in &self.rendering_completes {
-            device.destroy_semaphore(rendering_complete);
+        for rendering_complete in self.rendering_completes {
+            rendering_complete.destroy(device);
         }
     }
 }
 
 impl Commands {
-    fn command_buffer_available(&self) -> vk::Semaphore {
-        self.command_buffer_available
+    fn command_buffer_available(&self) -> &vkx::TimelineSemaphore {
+        &self.command_buffer_available
     }
 
     fn command_buffer(&self, frame_index: u64) -> vk::CommandBuffer {
         self.command_buffers[frame_index as usize]
     }
 
-    fn present_complete(&self, frame_index: u64) -> vk::Semaphore {
-        self.present_completes[frame_index as usize]
+    fn present_complete(&self, frame_index: u64) -> &vkx::BinarySemaphore {
+        &self.present_completes[frame_index as usize]
     }
 
-    fn rendering_complete(&self, frame_index: u64) -> vk::Semaphore {
-        self.rendering_completes[frame_index as usize]
+    fn rendering_complete(&self, frame_index: u64) -> &vkx::BinarySemaphore {
+        &self.rendering_completes[frame_index as usize]
     }
 }
 
@@ -344,17 +324,9 @@ unsafe fn redraw(
     frame_count: u64,
 ) -> Result<()> {
     // Wait until a command buffer is available.
-    device.wait_semaphores(
-        &vk::SemaphoreWaitInfo {
-            s_type: vk::StructureType::SemaphoreWaitInfo,
-            p_next: null(),
-            flags: vk::SemaphoreWaitFlagBits::Any.into(),
-            semaphore_count: 1,
-            p_semaphores: &commands.command_buffer_available(),
-            p_values: &frame_count,
-        },
-        u64::MAX,
-    )?;
+    commands
+        .command_buffer_available()
+        .wait(device, frame_count, u64::MAX)?;
 
     // Acquire image.
     let image_index = device.acquire_next_image2_khr(
@@ -363,7 +335,7 @@ unsafe fn redraw(
             p_next: null(),
             swapchain: swapchain.handle(),
             timeout: u64::MAX,
-            semaphore: commands.present_complete(frame_index),
+            semaphore: commands.present_complete(frame_index).handle(),
             fence: vk::Fence::null(),
             device_mask: 1,
         }),
@@ -498,7 +470,7 @@ unsafe fn redraw(
             p_wait_semaphore_infos: &vk::SemaphoreSubmitInfo {
                 s_type: vk::StructureType::SemaphoreSubmitInfo,
                 p_next: null(),
-                semaphore: commands.present_complete(frame_index),
+                semaphore: commands.present_complete(frame_index).handle(),
                 value: 0,
                 stage_mask: vk::PipelineStageFlagBits2::ColorAttachmentOutput.into(),
                 device_index: 0,
@@ -515,7 +487,7 @@ unsafe fn redraw(
                 vk::SemaphoreSubmitInfo {
                     s_type: vk::StructureType::SemaphoreSubmitInfo,
                     p_next: null(),
-                    semaphore: commands.rendering_complete(frame_index),
+                    semaphore: commands.rendering_complete(frame_index).handle(),
                     value: 0,
                     stage_mask: vk::PipelineStageFlagBits2::AllCommands.into(),
                     device_index: 0,
@@ -523,7 +495,7 @@ unsafe fn redraw(
                 vk::SemaphoreSubmitInfo {
                     s_type: vk::StructureType::SemaphoreSubmitInfo,
                     p_next: null(),
-                    semaphore: commands.command_buffer_available(),
+                    semaphore: commands.command_buffer_available().handle(),
                     value: frame_count + 1,
                     stage_mask: vk::PipelineStageFlagBits2::AllCommands.into(),
                     device_index: 0,
@@ -541,7 +513,7 @@ unsafe fn redraw(
             s_type: vk::StructureType::PresentInfoKHR,
             p_next: null(),
             wait_semaphore_count: 1,
-            p_wait_semaphores: &commands.rendering_complete(frame_index),
+            p_wait_semaphores: &commands.rendering_complete(frame_index).handle(),
             swapchain_count: 1,
             p_swapchains: &swapchain.handle(),
             p_image_indices: &image_index,
