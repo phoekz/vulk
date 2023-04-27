@@ -46,7 +46,6 @@ mod command;
 mod demos;
 mod gpu;
 mod query;
-mod resource;
 
 //
 // Main
@@ -55,7 +54,7 @@ mod resource;
 fn main() -> Result<()> {
     // Logging.
     env_logger::builder()
-        .filter_level(log::LevelFilter::Info)
+        .filter_level(log::LevelFilter::Debug)
         .try_init()?;
 
     // Vulkan.

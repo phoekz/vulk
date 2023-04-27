@@ -209,51 +209,63 @@ impl GuiData {
 //
 
 struct Geometry {
-    vertex_buffer: vkx::BufferDedicatedResource,
-    index_buffer: vkx::BufferDedicatedResource,
+    vertex_buffer: vkx::BufferResource,
+    index_buffer: vkx::BufferResource,
+    buffer_allocations: vkx::BufferAllocations,
 }
 
 impl Geometry {
     unsafe fn create(gpu: &Gpu, gui: &GuiData) -> Result<Self> {
-        // Buffers.
-        let mut vertex_buffer = vkx::BufferDedicatedResource::create(
+        // Sizes.
+        let vertex_buffer_size = size_of::<imgui::DrawVert>() * gui.vertex_data.len();
+        let index_buffer_size = size_of::<u16>() * gui.index_data.len();
+
+        // Flags.
+        let usage = vk::BufferUsageFlagBits::StorageBuffer | vk::BufferUsageFlagBits::TransferDst;
+        let property_flags = vk::MemoryPropertyFlagBits::DeviceLocal.into();
+
+        // Creators.
+        let vertex_buffer_creator = vkx::BufferCreator::new(vertex_buffer_size as _, usage);
+        let index_buffer_creator = vkx::BufferCreator::new(index_buffer_size as _, usage);
+
+        // Buffer resources.
+        let (mut buffer_resources, buffer_allocations) = vkx::BufferResource::create(
             &gpu.physical_device,
             &gpu.device,
-            vkx::BufferCreator::new(
-                (size_of::<imgui::DrawVert>() * gui.vertex_data.len()) as _,
-                vk::BufferUsageFlagBits::StorageBuffer.into(),
-            ),
-            vk::MemoryPropertyFlagBits::HostVisible | vk::MemoryPropertyFlagBits::HostCoherent,
-        )?;
-        let mut index_buffer = vkx::BufferDedicatedResource::create(
-            &gpu.physical_device,
-            &gpu.device,
-            vkx::BufferCreator::new(
-                (size_of::<u16>() * gui.index_data.len()) as _,
-                vk::BufferUsageFlagBits::StorageBuffer.into(),
-            ),
-            vk::MemoryPropertyFlagBits::HostVisible | vk::MemoryPropertyFlagBits::HostCoherent,
+            &[vertex_buffer_creator, index_buffer_creator],
+            property_flags,
         )?;
 
-        // Copy.
-        vertex_buffer
-            .memory_mut()
-            .as_mut_slice(gui.vertex_data.len())
-            .copy_from_slice(&gui.vertex_data);
-        index_buffer
-            .memory_mut()
-            .as_mut_slice(gui.index_data.len())
-            .copy_from_slice(&gui.index_data);
+        // Buffer datas.
+        let vertex_data =
+            std::slice::from_raw_parts(gui.vertex_data.as_ptr().cast::<u8>(), vertex_buffer_size);
+        let index_data =
+            std::slice::from_raw_parts(gui.index_data.as_ptr().cast::<u8>(), index_buffer_size);
+
+        // Transfer.
+        vkx::transfer_resources(
+            &gpu.physical_device,
+            &gpu.device,
+            &buffer_resources,
+            &[vertex_data, index_data],
+            &[],
+            &[],
+        )?;
+
+        let vertex_buffer = buffer_resources.remove(0);
+        let index_buffer = buffer_resources.remove(0);
 
         Ok(Self {
             vertex_buffer,
             index_buffer,
+            buffer_allocations,
         })
     }
 
     unsafe fn destroy(self, gpu: &Gpu) {
         self.vertex_buffer.destroy(&gpu.device);
         self.index_buffer.destroy(&gpu.device);
+        self.buffer_allocations.free(&gpu.device);
     }
 }
 
@@ -269,7 +281,7 @@ struct Textures {
 
 impl Textures {
     unsafe fn create(gpu: &Gpu, gui: &GuiData) -> Result<Self> {
-        // Image resources.
+        // Images.
         let (mut image_resources, image_allocations) = vkx::ImageResource::create(
             &gpu.physical_device,
             &gpu.device,
@@ -281,9 +293,17 @@ impl Textures {
             )],
             vk::MemoryPropertyFlagBits::DeviceLocal.into(),
         )?;
-        resource::multi_upload_images(gpu, &image_resources, &[&gui.texture_data])?;
+        vkx::transfer_resources(
+            &gpu.physical_device,
+            &gpu.device,
+            &[],
+            &[],
+            &image_resources,
+            &[&gui.texture_data],
+        )?;
         let image_resource = image_resources.swap_remove(0);
 
+        // Sampler.
         let (sampler, sampler_create_info) = vkx::SamplerCreator::new()
             .mag_filter(vk::Filter::Linear)
             .min_filter(vk::Filter::Linear)
@@ -297,6 +317,7 @@ impl Textures {
             &[sampler_create_info],
         )?;
         let sampler = samplers.swap_remove(0);
+
         Ok(Self {
             image: image_resource,
             image_allocations,

@@ -142,8 +142,11 @@ impl GpuResource for Textures {
         )?;
 
         // Upload.
-        resource::multi_upload_images(
-            gpu,
+        vkx::transfer_resources(
+            &gpu.physical_device,
+            &gpu.device,
+            &[],
+            &[],
             &image_resources,
             &image_datas.iter().map(Vec::as_slice).collect::<Vec<_>>(),
         )?;

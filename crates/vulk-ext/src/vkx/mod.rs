@@ -17,6 +17,7 @@ mod semaphore;
 mod shader;
 mod surface;
 mod swapchain;
+mod transfer;
 
 //
 // Re-exports
@@ -37,6 +38,7 @@ pub use semaphore::{BinarySemaphore, TimelineSemaphore};
 pub use shader::{Shader, ShaderBinary, ShaderCompiler, ShaderCreateInfo, ShaderType};
 pub use surface::Surface;
 pub use swapchain::Swapchain;
+pub use transfer::transfer_resources;
 
 pub(crate) use debug_utils::DebugUtils;
 

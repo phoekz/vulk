@@ -27,9 +27,16 @@ impl BufferCreator {
 
 pub trait BufferOps {
     fn buffer_handle(&self) -> vk::Buffer;
+
     fn create_info(&self) -> &vk::BufferCreateInfo;
+
     fn memory(&self) -> &BufferAllocation;
+
     fn memory_mut(&mut self) -> &mut BufferAllocation;
+
+    fn size(&self) -> vk::DeviceSize {
+        self.create_info().size
+    }
 }
 
 pub trait BufferResourceOps {

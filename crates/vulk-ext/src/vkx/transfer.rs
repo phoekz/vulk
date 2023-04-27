@@ -1,67 +1,121 @@
 use super::*;
 
-//
-// Upload
-//
-
-pub unsafe fn multi_upload_images(
-    gpu @ Gpu {
-        physical_device,
-        device,
-        ..
-    }: &Gpu,
-    images: &[vkx::ImageResource],
-    datas: &[&[u8]],
+pub unsafe fn transfer_resources(
+    physical_device: &PhysicalDevice,
+    device: &Device,
+    buffers: &[BufferResource],
+    buffers_bytes: &[&[u8]],
+    images: &[ImageResource],
+    images_bytes: &[&[u8]],
 ) -> Result<()> {
-    // Validation.
-    ensure!(!images.is_empty());
-    ensure!(!datas.is_empty());
-    ensure!(images.len() == datas.len());
-    ensure!(images.iter().all(|img| img.byte_size() > 0));
-    ensure!(datas.iter().all(|p| !p.is_empty()));
-    ensure!(images
+    // Total size.
+    let staging_buffer_byte_size = buffers_bytes
         .iter()
-        .zip(datas)
-        .all(|(img, p)| img.byte_size() as usize == p.len()));
+        .chain(images_bytes)
+        .map(|bytes| bytes.len() as vk::DeviceSize)
+        .sum();
+    debug!("Staging buffer size {staging_buffer_byte_size}");
 
     // Staging buffer.
     let mut staging_buffer = vkx::BufferDedicatedTransfer::create(
         physical_device,
         device,
         vkx::BufferCreator::new(
-            datas.iter().map(|data| data.len()).sum::<usize>() as vk::DeviceSize,
+            staging_buffer_byte_size,
             vk::BufferUsageFlagBits::TransferSrc.into(),
         ),
         vk::MemoryPropertyFlagBits::HostVisible | vk::MemoryPropertyFlagBits::HostCoherent,
     )?;
 
-    // Stage datas.
+    // Copy into staging buffer.
     let mut dst_offset = 0;
-    for image_data in datas {
-        // Copy.
+    for bytes in buffers_bytes.iter().chain(images_bytes) {
         std::ptr::copy_nonoverlapping(
-            image_data.as_ptr(),
+            bytes.as_ptr(),
             staging_buffer
                 .memory_mut()
                 .as_mut_ptr::<u8>()
                 .add(dst_offset),
-            image_data.len(),
+            bytes.len(),
+        );
+        dst_offset += bytes.len();
+    }
+
+    // Command pool.
+    let command_pool = device.create_command_pool(&vk::CommandPoolCreateInfo {
+        s_type: vk::StructureType::CommandPoolCreateInfo,
+        p_next: null(),
+        flags: vk::CommandPoolCreateFlags::empty(),
+        queue_family_index: device.queue_family_index,
+    })?;
+
+    // Command buffer.
+    let command_buffer = {
+        let command_buffer_allocate_info = vk::CommandBufferAllocateInfo {
+            s_type: vk::StructureType::CommandBufferAllocateInfo,
+            p_next: null(),
+            command_pool,
+            level: vk::CommandBufferLevel::Primary,
+            command_buffer_count: 1,
+        };
+        let mut command_buffer = std::mem::MaybeUninit::uninit();
+        device
+            .allocate_command_buffers(&command_buffer_allocate_info, command_buffer.as_mut_ptr())?;
+        command_buffer.assume_init()
+    };
+
+    // Semaphore.
+    let semaphore = vkx::TimelineSemaphore::create(device, 0)?;
+
+    // Begin.
+    device.begin_command_buffer(
+        command_buffer,
+        &vk::CommandBufferBeginInfo {
+            s_type: vk::StructureType::CommandBufferBeginInfo,
+            p_next: null(),
+            flags: vk::CommandBufferUsageFlagBits::OneTimeSubmit.into(),
+            p_inheritance_info: null(),
+        },
+    )?;
+
+    // Buffer copy commands.
+    let mut src_offset = 0;
+    for (buffer, buffer_bytes) in buffers.iter().zip(buffers_bytes) {
+        // Copy.
+        device.cmd_copy_buffer2(
+            command_buffer,
+            &vk::CopyBufferInfo2 {
+                s_type: vk::StructureType::CopyBufferInfo2,
+                p_next: null(),
+                src_buffer: staging_buffer.buffer_handle(),
+                dst_buffer: buffer.buffer_handle(),
+                region_count: 1,
+                p_regions: &vk::BufferCopy2 {
+                    s_type: vk::StructureType::BufferCopy2,
+                    p_next: null(),
+                    src_offset,
+                    dst_offset: 0,
+                    size: buffer.size(),
+                },
+            },
+        );
+
+        // Log.
+        debug!(
+            "Transfering buffer from offset {} of size {}",
+            src_offset,
+            buffer_bytes.len()
         );
 
         // Advance.
-        dst_offset += image_data.len();
+        src_offset += buffer_bytes.len() as vk::DeviceSize;
     }
 
-    // Begin staging.
-    let commands = command::Commands::create(gpu, &command::CommandsCreateInfo)?;
-    let cmd = commands.begin(gpu)?;
-
-    // Transfer commands.
-    let mut src_offset = 0;
-    for (image, image_data) in images.iter().zip(datas) {
+    // Image copy commands.
+    for (image, image_bytes) in images.iter().zip(images_bytes) {
         // Transition Undefined -> TransferDstOptimal.
         device.cmd_pipeline_barrier2(
-            cmd,
+            command_buffer,
             &vk::DependencyInfo {
                 s_type: vk::StructureType::DependencyInfo,
                 p_next: null(),
@@ -80,15 +134,17 @@ pub unsafe fn multi_upload_images(
                     dst_access_mask: vk::AccessFlagBits2::TransferWrite.into(),
                     old_layout: vk::ImageLayout::Undefined,
                     new_layout: vk::ImageLayout::TransferDstOptimal,
-                    src_queue_family_index: 0,
-                    dst_queue_family_index: 0,
+                    src_queue_family_index: vk::QUEUE_FAMILY_IGNORED,
+                    dst_queue_family_index: vk::QUEUE_FAMILY_IGNORED,
                     image: image.image_handle(),
                     subresource_range: image.subresource_range(),
                 },
             },
         );
+
+        // Copy.
         device.cmd_copy_buffer_to_image2(
-            cmd,
+            command_buffer,
             &vk::CopyBufferToImageInfo2 {
                 s_type: vk::StructureType::CopyBufferToImageInfo2,
                 p_next: null(),
@@ -108,9 +164,10 @@ pub unsafe fn multi_upload_images(
                 },
             },
         );
+
         // Transition TransferDstOptimal -> ShaderReadOnly.
         device.cmd_pipeline_barrier2(
-            cmd,
+            command_buffer,
             &vk::DependencyInfo {
                 s_type: vk::StructureType::DependencyInfo,
                 p_next: null(),
@@ -125,24 +182,34 @@ pub unsafe fn multi_upload_images(
                     p_next: null(),
                     src_stage_mask: vk::PipelineStageFlagBits2::AllTransfer.into(),
                     src_access_mask: vk::AccessFlagBits2::TransferWrite.into(),
-                    dst_stage_mask: vk::PipelineStageFlagBits2::FragmentShader.into(),
+                    dst_stage_mask: vk::PipelineStageFlagBits2::TaskShaderEXT
+                        | vk::PipelineStageFlagBits2::MeshShaderEXT
+                        | vk::PipelineStageFlagBits2::FragmentShader
+                        | vk::PipelineStageFlagBits2::RayTracingShaderKHR,
                     dst_access_mask: vk::AccessFlagBits2::ShaderRead.into(),
                     new_layout: vk::ImageLayout::ReadOnlyOptimal,
                     old_layout: vk::ImageLayout::TransferDstOptimal,
-                    src_queue_family_index: 0,
-                    dst_queue_family_index: 0,
+                    src_queue_family_index: vk::QUEUE_FAMILY_IGNORED,
+                    dst_queue_family_index: vk::QUEUE_FAMILY_IGNORED,
                     image: image.image_handle(),
                     subresource_range: image.subresource_range(),
                 },
             },
         );
 
+        // Log.
+        debug!(
+            "Transfering image from offset {} of size {}",
+            src_offset,
+            image_bytes.len()
+        );
+
         // Advance.
-        src_offset += image_data.len();
+        src_offset += image_bytes.len() as vk::DeviceSize;
     }
 
-    // End staging.
-    commands.end(gpu)?;
+    // Submit.
+    device.end_command_buffer(command_buffer)?;
     device.queue_submit2(
         device.queue,
         1,
@@ -156,14 +223,14 @@ pub unsafe fn multi_upload_images(
             p_command_buffer_infos: &vk::CommandBufferSubmitInfo {
                 s_type: vk::StructureType::CommandBufferSubmitInfo,
                 p_next: null(),
-                command_buffer: cmd,
+                command_buffer,
                 device_mask: 0,
             },
             signal_semaphore_info_count: 1,
             p_signal_semaphore_infos: &vk::SemaphoreSubmitInfo {
                 s_type: vk::StructureType::SemaphoreSubmitInfo,
                 p_next: null(),
-                semaphore: commands.semaphore.handle(),
+                semaphore: semaphore.handle(),
                 value: 1,
                 stage_mask: vk::PipelineStageFlagBits2::AllCommands.into(),
                 device_index: 0,
@@ -171,10 +238,11 @@ pub unsafe fn multi_upload_images(
         },
         vk::Fence::null(),
     )?;
-    commands.semaphore.wait(device, 1, u64::MAX)?;
+    semaphore.wait(device, 1, u64::MAX)?;
 
     // Cleanup.
-    commands.destroy(gpu);
+    semaphore.destroy(device);
+    device.destroy_command_pool(command_pool);
     staging_buffer.destroy(device);
 
     Ok(())
