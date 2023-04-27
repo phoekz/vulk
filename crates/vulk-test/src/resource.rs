@@ -89,14 +89,14 @@ pub unsafe fn multi_upload_images(
         );
         device.cmd_copy_buffer_to_image2(
             cmd,
-            &(vk::CopyBufferToImageInfo2 {
+            &vk::CopyBufferToImageInfo2 {
                 s_type: vk::StructureType::CopyBufferToImageInfo2,
                 p_next: null(),
                 src_buffer: staging_buffer.buffer_handle(),
                 dst_image: image.image_handle(),
                 dst_image_layout: vk::ImageLayout::TransferDstOptimal,
                 region_count: 1,
-                p_regions: &(vk::BufferImageCopy2 {
+                p_regions: &vk::BufferImageCopy2 {
                     s_type: vk::StructureType::BufferImageCopy2,
                     p_next: null(),
                     buffer_offset: src_offset as _,
@@ -105,8 +105,8 @@ pub unsafe fn multi_upload_images(
                     image_subresource: image.subresource_layers(),
                     image_offset: vk::Offset3D { x: 0, y: 0, z: 0 },
                     image_extent: image.extent_3d(),
-                }),
-            }),
+                },
+            },
         );
         // Transition TransferDstOptimal -> ShaderReadOnly.
         device.cmd_pipeline_barrier2(
@@ -146,29 +146,29 @@ pub unsafe fn multi_upload_images(
     device.queue_submit2(
         device.queue,
         1,
-        &(vk::SubmitInfo2 {
+        &vk::SubmitInfo2 {
             s_type: vk::StructureType::SubmitInfo2,
             p_next: null(),
             flags: vk::SubmitFlags::empty(),
             wait_semaphore_info_count: 0,
             p_wait_semaphore_infos: null(),
             command_buffer_info_count: 1,
-            p_command_buffer_infos: &(vk::CommandBufferSubmitInfo {
+            p_command_buffer_infos: &vk::CommandBufferSubmitInfo {
                 s_type: vk::StructureType::CommandBufferSubmitInfo,
                 p_next: null(),
                 command_buffer: cmd,
                 device_mask: 0,
-            }),
+            },
             signal_semaphore_info_count: 1,
-            p_signal_semaphore_infos: &(vk::SemaphoreSubmitInfo {
+            p_signal_semaphore_infos: &vk::SemaphoreSubmitInfo {
                 s_type: vk::StructureType::SemaphoreSubmitInfo,
                 p_next: null(),
                 semaphore: commands.semaphore.handle(),
                 value: 1,
                 stage_mask: vk::PipelineStageFlagBits2::AllCommands.into(),
                 device_index: 0,
-            }),
-        }),
+            },
+        },
         vk::Fence::null(),
     )?;
     commands.semaphore.wait(device, 1, u64::MAX)?;

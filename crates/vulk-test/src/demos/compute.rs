@@ -209,8 +209,9 @@ impl GpuResource for Descriptors {
         )?;
 
         // Pipeline layout.
-        let pipeline_layout = gpu.device.create_pipeline_layout(
-            &(vk::PipelineLayoutCreateInfo {
+        let pipeline_layout = gpu
+            .device
+            .create_pipeline_layout(&vk::PipelineLayoutCreateInfo {
                 s_type: vk::StructureType::PipelineLayoutCreateInfo,
                 p_next: null(),
                 flags: vk::PipelineLayoutCreateFlags::empty(),
@@ -218,8 +219,7 @@ impl GpuResource for Descriptors {
                 p_set_layouts: &storage.set_layout(),
                 push_constant_range_count: 0,
                 p_push_constant_ranges: null(),
-            }),
-        )?;
+            })?;
 
         Ok(Self {
             storage,
@@ -383,24 +383,24 @@ unsafe fn dispatch(
     {
         device.cmd_pipeline_barrier2(
             cmd,
-            &(vk::DependencyInfo {
+            &vk::DependencyInfo {
                 s_type: vk::StructureType::DependencyInfo,
                 p_next: null(),
                 dependency_flags: vk::DependencyFlags::empty(),
                 memory_barrier_count: 1,
-                p_memory_barriers: &(vk::MemoryBarrier2 {
+                p_memory_barriers: &vk::MemoryBarrier2 {
                     s_type: vk::StructureType::MemoryBarrier2,
                     p_next: null(),
                     src_stage_mask: vk::PipelineStageFlagBits2::ComputeShader.into(),
                     src_access_mask: vk::AccessFlagBits2::ShaderWrite.into(),
                     dst_stage_mask: vk::PipelineStageFlagBits2::DrawIndirect.into(),
                     dst_access_mask: vk::AccessFlagBits2::IndirectCommandRead.into(),
-                }),
+                },
                 buffer_memory_barrier_count: 0,
                 p_buffer_memory_barriers: null(),
                 image_memory_barrier_count: 0,
                 p_image_memory_barriers: null(),
-            }),
+            },
         );
     }
 
@@ -471,14 +471,14 @@ unsafe fn dispatch(
     // Copy to output.
     device.cmd_copy_image_to_buffer2(
         cmd,
-        &(vk::CopyImageToBufferInfo2 {
+        &vk::CopyImageToBufferInfo2 {
             s_type: vk::StructureType::CopyImageToBufferInfo2,
             p_next: null(),
             src_image: compute_image.image.image_handle(),
             src_image_layout: vk::ImageLayout::TransferSrcOptimal,
             dst_buffer: output.buffer.buffer_handle(),
             region_count: 1,
-            p_regions: &(vk::BufferImageCopy2 {
+            p_regions: &vk::BufferImageCopy2 {
                 s_type: vk::StructureType::BufferImageCopy2,
                 p_next: null(),
                 buffer_offset: 0,
@@ -487,8 +487,8 @@ unsafe fn dispatch(
                 image_subresource: compute_image.image.subresource_layers(),
                 image_offset: vk::Offset3D { x: 0, y: 0, z: 0 },
                 image_extent: compute_image.image.extent_3d(),
-            }),
-        }),
+            },
+        },
     );
 
     // End queries.
@@ -501,29 +501,29 @@ unsafe fn dispatch(
     device.queue_submit2(
         device.queue,
         1,
-        &(vk::SubmitInfo2 {
+        &vk::SubmitInfo2 {
             s_type: vk::StructureType::SubmitInfo2,
             p_next: null(),
             flags: vk::SubmitFlags::empty(),
             wait_semaphore_info_count: 0,
             p_wait_semaphore_infos: null(),
             command_buffer_info_count: 1,
-            p_command_buffer_infos: &(vk::CommandBufferSubmitInfo {
+            p_command_buffer_infos: &vk::CommandBufferSubmitInfo {
                 s_type: vk::StructureType::CommandBufferSubmitInfo,
                 p_next: null(),
                 command_buffer: cmd,
                 device_mask: 0,
-            }),
+            },
             signal_semaphore_info_count: 1,
-            p_signal_semaphore_infos: &(vk::SemaphoreSubmitInfo {
+            p_signal_semaphore_infos: &vk::SemaphoreSubmitInfo {
                 s_type: vk::StructureType::SemaphoreSubmitInfo,
                 p_next: null(),
                 semaphore: commands.semaphore.handle(),
                 value: 1,
                 stage_mask: vk::PipelineStageFlagBits2::ComputeShader.into(),
                 device_index: 0,
-            }),
-        }),
+            },
+        },
         vk::Fence::null(),
     )?;
 

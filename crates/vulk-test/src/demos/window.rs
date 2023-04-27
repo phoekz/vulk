@@ -147,14 +147,12 @@ impl GpuResource for Commands {
         Self: Sized,
     {
         // Command pool.
-        let command_pool = device.create_command_pool(
-            &(vk::CommandPoolCreateInfo {
-                s_type: vk::StructureType::CommandPoolCreateInfo,
-                p_next: null(),
-                flags: vk::CommandPoolCreateFlagBits::ResetCommandBuffer.into(),
-                queue_family_index: device.queue_family_index,
-            }),
-        )?;
+        let command_pool = device.create_command_pool(&vk::CommandPoolCreateInfo {
+            s_type: vk::StructureType::CommandPoolCreateInfo,
+            p_next: null(),
+            flags: vk::CommandPoolCreateFlagBits::ResetCommandBuffer.into(),
+            queue_family_index: device.queue_family_index,
+        })?;
 
         // Command buffer available -semaphore.
         let command_buffer_available = vkx::TimelineSemaphore::create(device, 0)?;
@@ -329,29 +327,27 @@ unsafe fn redraw(
         .wait(device, frame_count, u64::MAX)?;
 
     // Acquire image.
-    let image_index = device.acquire_next_image2_khr(
-        &(vk::AcquireNextImageInfoKHR {
-            s_type: vk::StructureType::AcquireNextImageInfoKHR,
-            p_next: null(),
-            swapchain: swapchain.handle(),
-            timeout: u64::MAX,
-            semaphore: commands.present_complete(frame_index).handle(),
-            fence: vk::Fence::null(),
-            device_mask: 1,
-        }),
-    )?;
+    let image_index = device.acquire_next_image2_khr(&vk::AcquireNextImageInfoKHR {
+        s_type: vk::StructureType::AcquireNextImageInfoKHR,
+        p_next: null(),
+        swapchain: swapchain.handle(),
+        timeout: u64::MAX,
+        semaphore: commands.present_complete(frame_index).handle(),
+        fence: vk::Fence::null(),
+        device_mask: 1,
+    })?;
 
     // Begin command buffer.
     let command_buffer = commands.command_buffer(frame_index);
     device.reset_command_buffer(command_buffer, vk::CommandBufferResetFlags::empty())?;
     device.begin_command_buffer(
         command_buffer,
-        &(vk::CommandBufferBeginInfo {
+        &vk::CommandBufferBeginInfo {
             s_type: vk::StructureType::CommandBufferBeginInfo,
             p_next: null(),
             flags: vk::CommandBufferUsageFlagBits::OneTimeSubmit.into(),
             p_inheritance_info: null(),
-        }),
+        },
     )?;
 
     // Transition swapchain image.
@@ -394,7 +390,7 @@ unsafe fn redraw(
     };
     device.cmd_begin_rendering(
         command_buffer,
-        &(vk::RenderingInfo {
+        &vk::RenderingInfo {
             s_type: vk::StructureType::RenderingInfo,
             p_next: null(),
             flags: vk::RenderingFlags::empty(),
@@ -402,7 +398,7 @@ unsafe fn redraw(
             layer_count: 1,
             view_mask: 0,
             color_attachment_count: 1,
-            p_color_attachments: &(vk::RenderingAttachmentInfo {
+            p_color_attachments: &vk::RenderingAttachmentInfo {
                 s_type: vk::StructureType::RenderingAttachmentInfo,
                 p_next: null(),
                 image_view: swapchain.image_view(image_index),
@@ -417,10 +413,10 @@ unsafe fn redraw(
                         float32: clear_color,
                     },
                 },
-            }),
+            },
             p_depth_attachment: null(),
             p_stencil_attachment: null(),
-        }),
+        },
     );
 
     // End rendering.
@@ -462,7 +458,7 @@ unsafe fn redraw(
     device.queue_submit2(
         device.queue,
         1,
-        &(vk::SubmitInfo2 {
+        &vk::SubmitInfo2 {
             s_type: vk::StructureType::SubmitInfo2,
             p_next: null(),
             flags: vk::SubmitFlags::empty(),
@@ -502,7 +498,7 @@ unsafe fn redraw(
                 },
             ]
             .as_ptr(),
-        }),
+        },
         vk::Fence::null(),
     )?;
 

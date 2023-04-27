@@ -263,7 +263,7 @@ impl Device {
         // Device.
         let device = instance.create_device(
             physical_device.handle(),
-            &(vk::DeviceCreateInfo {
+            &vk::DeviceCreateInfo {
                 s_type: vk::StructureType::DeviceCreateInfo,
                 p_next: addr_of!(physical_device_features2).cast(),
                 flags: vk::DeviceCreateFlags::empty(),
@@ -281,20 +281,18 @@ impl Device {
                 enabled_extension_count: vulk::REQUIRED_DEVICE_EXTENSIONS.len() as _,
                 pp_enabled_extension_names: vulk::REQUIRED_DEVICE_EXTENSIONS.as_ptr(),
                 p_enabled_features: null(),
-            }),
+            },
         )?;
         let device = vulk::Device::load(instance, device)?;
 
         // Queue.
-        let queue = device.get_device_queue2(
-            &(vk::DeviceQueueInfo2 {
-                s_type: vk::StructureType::DeviceQueueInfo2,
-                p_next: null(),
-                flags: vk::DeviceQueueCreateFlags::empty(),
-                queue_family_index,
-                queue_index: 0,
-            }),
-        );
+        let queue = device.get_device_queue2(&vk::DeviceQueueInfo2 {
+            s_type: vk::StructureType::DeviceQueueInfo2,
+            p_next: null(),
+            flags: vk::DeviceQueueCreateFlags::empty(),
+            queue_family_index,
+            queue_index: 0,
+        });
 
         // Timestamp calibration support.
         let time_domains = vulk::read_to_vec(

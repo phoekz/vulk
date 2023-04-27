@@ -293,15 +293,14 @@ impl DescriptorStorage {
                 p_immutable_samplers: null(),
             })
             .collect::<Vec<_>>();
-        let set_layout = device.create_descriptor_set_layout(
-            &(vk::DescriptorSetLayoutCreateInfo {
+        let set_layout =
+            device.create_descriptor_set_layout(&vk::DescriptorSetLayoutCreateInfo {
                 s_type: vk::StructureType::DescriptorSetLayoutCreateInfo,
                 p_next: null(),
                 flags: vk::DescriptorSetLayoutCreateFlagBits::DescriptorBufferEXT.into(),
                 binding_count: set_layout_bindings.len() as _,
                 p_bindings: set_layout_bindings.as_ptr(),
-            }),
-        )?;
+            })?;
         let set_count = 1;
         let buffer_indices = vec![0];
         let offsets = vec![0];

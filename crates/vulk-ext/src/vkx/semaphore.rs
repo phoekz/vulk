@@ -28,14 +28,14 @@ impl TimelineSemaphore {
 
     pub unsafe fn wait(&self, device: &Device, value: u64, timeout: u64) -> Result<()> {
         device.wait_semaphores(
-            &(vk::SemaphoreWaitInfo {
+            &vk::SemaphoreWaitInfo {
                 s_type: vk::StructureType::SemaphoreWaitInfo,
                 p_next: null(),
                 flags: vk::SemaphoreWaitFlagBits::Any.into(),
                 semaphore_count: 1,
                 p_semaphores: &self.semaphore,
                 p_values: [value].as_ptr(),
-            }),
+            },
             timeout,
         )?;
         Ok(())

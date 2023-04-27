@@ -27,7 +27,7 @@ impl Gpu {
     }
 
     pub unsafe fn destroy(self) {
-        self.device.destroy_device();
+        self.device.destroy();
         self.instance.destroy();
     }
 }

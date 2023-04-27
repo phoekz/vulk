@@ -167,7 +167,7 @@ unsafe fn draw(
     // Begin rendering.
     device.cmd_begin_rendering(
         cmd,
-        &(vk::RenderingInfo {
+        &vk::RenderingInfo {
             s_type: vk::StructureType::RenderingInfo,
             p_next: null(),
             flags: vk::RenderingFlags::empty(),
@@ -175,7 +175,7 @@ unsafe fn draw(
             layer_count: 1,
             view_mask: 0,
             color_attachment_count: 1,
-            p_color_attachments: &(vk::RenderingAttachmentInfo {
+            p_color_attachments: &vk::RenderingAttachmentInfo {
                 s_type: vk::StructureType::RenderingAttachmentInfo,
                 p_next: null(),
                 image_view: render_targets.color.image_view_handle(),
@@ -190,10 +190,10 @@ unsafe fn draw(
                         float32: DEFAULT_RENDER_TARGET_CLEAR_COLOR,
                     },
                 },
-            }),
+            },
             p_depth_attachment: null(),
             p_stencil_attachment: null(),
-        }),
+        },
     );
 
     // End rendering.
@@ -231,14 +231,14 @@ unsafe fn draw(
     // Copy to output.
     device.cmd_copy_image_to_buffer2(
         cmd,
-        &(vk::CopyImageToBufferInfo2 {
+        &vk::CopyImageToBufferInfo2 {
             s_type: vk::StructureType::CopyImageToBufferInfo2,
             p_next: null(),
             src_image: render_targets.color.image_handle(),
             src_image_layout: vk::ImageLayout::TransferSrcOptimal,
             dst_buffer: output.buffer.buffer_handle(),
             region_count: 1,
-            p_regions: &(vk::BufferImageCopy2 {
+            p_regions: &vk::BufferImageCopy2 {
                 s_type: vk::StructureType::BufferImageCopy2,
                 p_next: null(),
                 buffer_offset: 0,
@@ -247,8 +247,8 @@ unsafe fn draw(
                 image_subresource: render_targets.color.subresource_layers(),
                 image_offset: vk::Offset3D { x: 0, y: 0, z: 0 },
                 image_extent: render_targets.color.extent_3d(),
-            }),
-        }),
+            },
+        },
     );
 
     // End queries.
@@ -261,29 +261,29 @@ unsafe fn draw(
     device.queue_submit2(
         device.queue,
         1,
-        &(vk::SubmitInfo2 {
+        &vk::SubmitInfo2 {
             s_type: vk::StructureType::SubmitInfo2,
             p_next: null(),
             flags: vk::SubmitFlags::empty(),
             wait_semaphore_info_count: 0,
             p_wait_semaphore_infos: null(),
             command_buffer_info_count: 1,
-            p_command_buffer_infos: &(vk::CommandBufferSubmitInfo {
+            p_command_buffer_infos: &vk::CommandBufferSubmitInfo {
                 s_type: vk::StructureType::CommandBufferSubmitInfo,
                 p_next: null(),
                 command_buffer: cmd,
                 device_mask: 0,
-            }),
+            },
             signal_semaphore_info_count: 1,
-            p_signal_semaphore_infos: &(vk::SemaphoreSubmitInfo {
+            p_signal_semaphore_infos: &vk::SemaphoreSubmitInfo {
                 s_type: vk::StructureType::SemaphoreSubmitInfo,
                 p_next: null(),
                 semaphore: commands.semaphore.handle(),
                 value: 1,
                 stage_mask: vk::PipelineStageFlagBits2::AllCommands.into(),
                 device_index: 0,
-            }),
-        }),
+            },
+        },
         vk::Fence::null(),
     )?;
 

@@ -13,14 +13,12 @@ impl GpuResource for Commands {
 
     unsafe fn create(Gpu { device, .. }: &Gpu, _: &Self::CreateInfo<'_>) -> Result<Self> {
         // Command pool.
-        let command_pool = device.create_command_pool(
-            &(vk::CommandPoolCreateInfo {
-                s_type: vk::StructureType::CommandPoolCreateInfo,
-                p_next: null(),
-                flags: vk::CommandPoolCreateFlags::empty(),
-                queue_family_index: device.queue_family_index,
-            }),
-        )?;
+        let command_pool = device.create_command_pool(&vk::CommandPoolCreateInfo {
+            s_type: vk::StructureType::CommandPoolCreateInfo,
+            p_next: null(),
+            flags: vk::CommandPoolCreateFlags::empty(),
+            queue_family_index: device.queue_family_index,
+        })?;
 
         // Command buffer.
         let command_buffer = {
@@ -51,7 +49,7 @@ impl GpuResource for Commands {
 
     unsafe fn destroy(self, Gpu { device, .. }: &Gpu) {
         self.semaphore.destroy(device);
-        device.free_command_buffers(self.command_pool, 1, addr_of!(self.command_buffer).cast());
+        device.free_command_buffers(self.command_pool, 1, &self.command_buffer);
         device.destroy_command_pool(self.command_pool);
     }
 }
@@ -61,12 +59,12 @@ impl Commands {
         device.reset_command_pool(self.command_pool, vk::CommandPoolResetFlags::empty())?;
         device.begin_command_buffer(
             self.command_buffer,
-            &(vk::CommandBufferBeginInfo {
+            &vk::CommandBufferBeginInfo {
                 s_type: vk::StructureType::CommandBufferBeginInfo,
                 p_next: null(),
                 flags: vk::CommandBufferUsageFlagBits::OneTimeSubmit.into(),
                 p_inheritance_info: null(),
-            }),
+            },
         )?;
         Ok(self.command_buffer)
     }
@@ -85,29 +83,29 @@ impl Commands {
         device.queue_submit2(
             device.queue,
             1,
-            &(vk::SubmitInfo2 {
+            &vk::SubmitInfo2 {
                 s_type: vk::StructureType::SubmitInfo2,
                 p_next: null(),
                 flags: vk::SubmitFlags::empty(),
                 wait_semaphore_info_count: 0,
                 p_wait_semaphore_infos: null(),
                 command_buffer_info_count: 1,
-                p_command_buffer_infos: &(vk::CommandBufferSubmitInfo {
+                p_command_buffer_infos: &vk::CommandBufferSubmitInfo {
                     s_type: vk::StructureType::CommandBufferSubmitInfo,
                     p_next: null(),
                     command_buffer: self.command_buffer,
                     device_mask: 0,
-                }),
+                },
                 signal_semaphore_info_count: 1,
-                p_signal_semaphore_infos: &(vk::SemaphoreSubmitInfo {
+                p_signal_semaphore_infos: &vk::SemaphoreSubmitInfo {
                     s_type: vk::StructureType::SemaphoreSubmitInfo,
                     p_next: null(),
                     semaphore: self.semaphore.handle(),
                     value,
                     stage_mask: signal_stage_mask,
                     device_index: 0,
-                }),
-            }),
+                },
+            },
             vk::Fence::null(),
         )?;
         self.semaphore.wait(device, value, u64::MAX)?;
