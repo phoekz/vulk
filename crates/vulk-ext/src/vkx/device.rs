@@ -260,6 +260,16 @@ impl Device {
             },
         };
 
+        // Extensions.
+        let mut enabled_extension_names = vec![];
+        enabled_extension_names.extend_from_slice(&vulk::REQUIRED_DEVICE_EXTENSIONS);
+        if instance.validation_layers() {
+            enabled_extension_names.extend_from_slice(&vulk::DEBUGGING_DEVICE_EXTENSIONS);
+        }
+        if cfg!(windows) {
+            enabled_extension_names.extend_from_slice(&vulk::WIN32_DEVICE_EXTENSIONS);
+        }
+
         // Device.
         let device = instance.create_device(
             physical_device.handle(),
@@ -278,8 +288,8 @@ impl Device {
                 },
                 enabled_layer_count: 0,
                 pp_enabled_layer_names: null(),
-                enabled_extension_count: vulk::REQUIRED_DEVICE_EXTENSIONS.len() as _,
-                pp_enabled_extension_names: vulk::REQUIRED_DEVICE_EXTENSIONS.as_ptr(),
+                enabled_extension_count: enabled_extension_names.len() as _,
+                pp_enabled_extension_names: enabled_extension_names.as_ptr(),
                 p_enabled_features: null(),
             },
         )?;

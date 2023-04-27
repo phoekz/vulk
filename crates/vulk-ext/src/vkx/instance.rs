@@ -20,6 +20,7 @@ pub struct Instance {
     _init: vulk::Init,
     instance: vulk::Instance,
     debug_utils: DebugUtils,
+    validation_layers: bool,
 }
 
 impl Instance {
@@ -45,6 +46,16 @@ impl Instance {
             p_disabled_validation_features: null(),
         };
 
+        // Extensions.
+        let mut enabled_extension_names = vec![];
+        enabled_extension_names.extend_from_slice(&vulk::REQUIRED_INSTANCE_EXTENSIONS);
+        if create_info.validation_layers {
+            enabled_extension_names.extend_from_slice(&vulk::DEBUGGING_INSTANCE_EXTENSIONS);
+        }
+        if cfg!(windows) {
+            enabled_extension_names.extend_from_slice(&vulk::WIN32_INSTANCE_EXTENSIONS);
+        }
+
         // Layers.
         let mut enabled_layer_names = vec![];
         if create_info.validation_layers {
@@ -69,8 +80,8 @@ impl Instance {
             },
             enabled_layer_count: enabled_layer_names.len() as _,
             pp_enabled_layer_names: enabled_layer_names.as_ptr(),
-            enabled_extension_count: vulk::REQUIRED_INSTANCE_EXTENSIONS.len() as _,
-            pp_enabled_extension_names: vulk::REQUIRED_INSTANCE_EXTENSIONS.as_ptr(),
+            enabled_extension_count: enabled_extension_names.len() as _,
+            pp_enabled_extension_names: enabled_extension_names.as_ptr(),
         })?;
         let instance = vulk::Instance::load(&init, instance)?;
 
@@ -81,12 +92,18 @@ impl Instance {
             _init: init,
             instance,
             debug_utils,
+            validation_layers: create_info.validation_layers,
         })
     }
 
     pub unsafe fn destroy(self) {
         self.debug_utils.destroy(&self.instance);
         self.instance.destroy_instance();
+    }
+
+    #[must_use]
+    pub fn validation_layers(&self) -> bool {
+        self.validation_layers
     }
 }
 
