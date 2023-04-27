@@ -482,6 +482,8 @@ pub struct DeviceFunctions {
     pub cmd_end_query: Option<vk::CmdEndQuery>,
     pub get_query_pool_results: Option<vk::GetQueryPoolResults>,
     pub cmd_write_timestamp2: Option<vk::CmdWriteTimestamp2>,
+    pub cmd_copy_buffer2: Option<vk::CmdCopyBuffer2>,
+    pub cmd_copy_image2: Option<vk::CmdCopyImage2>,
     pub cmd_copy_buffer_to_image2: Option<vk::CmdCopyBufferToImage2>,
     pub cmd_copy_image_to_buffer2: Option<vk::CmdCopyImageToBuffer2>,
     pub cmd_draw_mesh_tasks_ext: Option<vk::CmdDrawMeshTasksEXT>,
@@ -596,6 +598,8 @@ impl Device {
                 cmd_end_query: load(b"vkCmdEndQuery\0").map(|f| std::mem::transmute(f)),
                 get_query_pool_results: load(b"vkGetQueryPoolResults\0").map(|f| std::mem::transmute(f)),
                 cmd_write_timestamp2: load(b"vkCmdWriteTimestamp2\0").map(|f| std::mem::transmute(f)),
+                cmd_copy_buffer2: load(b"vkCmdCopyBuffer2\0").map(|f| std::mem::transmute(f)),
+                cmd_copy_image2: load(b"vkCmdCopyImage2\0").map(|f| std::mem::transmute(f)),
                 cmd_copy_buffer_to_image2: load(b"vkCmdCopyBufferToImage2\0").map(|f| std::mem::transmute(f)),
                 cmd_copy_image_to_buffer2: load(b"vkCmdCopyImageToBuffer2\0").map(|f| std::mem::transmute(f)),
                 cmd_draw_mesh_tasks_ext: load(b"vkCmdDrawMeshTasksEXT\0").map(|f| std::mem::transmute(f)),
@@ -1621,6 +1625,30 @@ impl Device {
     #[doc = "**Reference**: [`vkCmdWriteTimestamp2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdWriteTimestamp2.html)"]
     pub unsafe fn cmd_write_timestamp2(&self, command_buffer: vk::CommandBuffer, stage: vk::PipelineStageFlags2, query_pool: vk::QueryPool, query: u32) {
         (self.fns.cmd_write_timestamp2.unwrap_unchecked())(command_buffer, stage, query_pool, query);
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Copy Commands"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Copy data between buffer regions"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkCmdCopyBuffer2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdCopyBuffer2.html)"]
+    pub unsafe fn cmd_copy_buffer2(&self, command_buffer: vk::CommandBuffer, p_copy_buffer_info: *const vk::CopyBufferInfo2) {
+        (self.fns.cmd_copy_buffer2.unwrap_unchecked())(command_buffer, p_copy_buffer_info);
+    }
+
+    #[inline]
+    #[doc = "**Chapter**: Copy Commands"]
+    #[doc = "<br>"]
+    #[doc = "**Description**: Copy data between images"]
+    #[doc = "<br>"]
+    #[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
+    #[doc = "<br>"]
+    #[doc = "**Reference**: [`vkCmdCopyImage2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdCopyImage2.html)"]
+    pub unsafe fn cmd_copy_image2(&self, command_buffer: vk::CommandBuffer, p_copy_image_info: *const vk::CopyImageInfo2) {
+        (self.fns.cmd_copy_image2.unwrap_unchecked())(command_buffer, p_copy_image_info);
     }
 
     #[inline]

@@ -11942,6 +11942,68 @@ pub struct ClearDepthStencilValue {
 #[derive(Clone, Copy, Debug)]
 #[doc = "**Chapter**: Copy Commands"]
 #[doc = "<br>"]
+#[doc = "**Description**: Structure specifying parameters of a buffer copy command"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkCopyBufferInfo2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkCopyBufferInfo2.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
+let copy_buffer_info2 = vk::CopyBufferInfo2 {
+    s_type: vk::StructureType::CopyBufferInfo2,
+    p_next: null(),
+    src_buffer: todo!("vk::Buffer"),
+    dst_buffer: todo!("vk::Buffer"),
+    region_count: todo!("u32"),
+    p_regions: todo!("*const vk::BufferCopy2"),
+};
+```"#]
+pub struct CopyBufferInfo2 {
+    pub s_type: StructureType,
+    pub p_next: *const c_void,
+    pub src_buffer: Buffer,
+    pub dst_buffer: Buffer,
+    pub region_count: u32,
+    pub p_regions: *const BufferCopy2,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Copy Commands"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure specifying a buffer copy operation"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkBufferCopy2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkBufferCopy2.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
+let buffer_copy2 = vk::BufferCopy2 {
+    s_type: vk::StructureType::BufferCopy2,
+    p_next: null(),
+    src_offset: todo!("vk::DeviceSize"),
+    dst_offset: todo!("vk::DeviceSize"),
+    size: todo!("vk::DeviceSize"),
+};
+```"#]
+pub struct BufferCopy2 {
+    pub s_type: StructureType,
+    pub p_next: *const c_void,
+    pub src_offset: DeviceSize,
+    pub dst_offset: DeviceSize,
+    pub size: DeviceSize,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Copy Commands"]
+#[doc = "<br>"]
 #[doc = "**Description**: Structure specifying an image subresource layers"]
 #[doc = "<br>"]
 #[doc = "**Provided by**: [`VK_VERSION_1_0`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_0.html)"]
@@ -11964,6 +12026,76 @@ pub struct ImageSubresourceLayers {
     pub mip_level: u32,
     pub base_array_layer: u32,
     pub layer_count: u32,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Copy Commands"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure specifying parameters of an image copy command"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkCopyImageInfo2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkCopyImageInfo2.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
+let copy_image_info2 = vk::CopyImageInfo2 {
+    s_type: vk::StructureType::CopyImageInfo2,
+    p_next: null(),
+    src_image: todo!("vk::Image"),
+    src_image_layout: todo!("vk::ImageLayout"),
+    dst_image: todo!("vk::Image"),
+    dst_image_layout: todo!("vk::ImageLayout"),
+    region_count: todo!("u32"),
+    p_regions: todo!("*const vk::ImageCopy2"),
+};
+```"#]
+pub struct CopyImageInfo2 {
+    pub s_type: StructureType,
+    pub p_next: *const c_void,
+    pub src_image: Image,
+    pub src_image_layout: ImageLayout,
+    pub dst_image: Image,
+    pub dst_image_layout: ImageLayout,
+    pub region_count: u32,
+    pub p_regions: *const ImageCopy2,
+}
+
+#[repr(C)]
+#[derive(Clone, Copy, Debug)]
+#[doc = "**Chapter**: Copy Commands"]
+#[doc = "<br>"]
+#[doc = "**Description**: Structure specifying an image copy operation"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`VkImageCopy2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VkImageCopy2.html)"]
+#[doc = "<br>"]
+#[doc = "**Initialization template**:"]
+#[doc = r#"```no_run
+# use vulk::vk as vk;
+# use std::ptr::{null, null_mut};
+let image_copy2 = vk::ImageCopy2 {
+    s_type: vk::StructureType::ImageCopy2,
+    p_next: null(),
+    src_subresource: todo!("vk::ImageSubresourceLayers"),
+    src_offset: todo!("vk::Offset3D"),
+    dst_subresource: todo!("vk::ImageSubresourceLayers"),
+    dst_offset: todo!("vk::Offset3D"),
+    extent: todo!("vk::Extent3D"),
+};
+```"#]
+pub struct ImageCopy2 {
+    pub s_type: StructureType,
+    pub p_next: *const c_void,
+    pub src_subresource: ImageSubresourceLayers,
+    pub src_offset: Offset3D,
+    pub dst_subresource: ImageSubresourceLayers,
+    pub dst_offset: Offset3D,
+    pub extent: Extent3D,
 }
 
 #[repr(C)]
@@ -15190,6 +15322,30 @@ pub type CmdWriteTimestamp2 = unsafe extern "C" fn(
     stage: PipelineStageFlags2,    //
     query_pool: QueryPool,         //
     query: u32,                    //
+);
+
+#[doc = "**Chapter**: Copy Commands"]
+#[doc = "<br>"]
+#[doc = "**Description**: Copy data between buffer regions"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkCmdCopyBuffer2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdCopyBuffer2.html)"]
+pub type CmdCopyBuffer2 = unsafe extern "C" fn(
+    command_buffer: CommandBuffer,              //
+    p_copy_buffer_info: *const CopyBufferInfo2, //
+);
+
+#[doc = "**Chapter**: Copy Commands"]
+#[doc = "<br>"]
+#[doc = "**Description**: Copy data between images"]
+#[doc = "<br>"]
+#[doc = "**Provided by**: [`VK_VERSION_1_3`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_VERSION_1_3.html)"]
+#[doc = "<br>"]
+#[doc = "**Reference**: [`vkCmdCopyImage2`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/vkCmdCopyImage2.html)"]
+pub type CmdCopyImage2 = unsafe extern "C" fn(
+    command_buffer: CommandBuffer,            //
+    p_copy_image_info: *const CopyImageInfo2, //
 );
 
 #[doc = "**Chapter**: Copy Commands"]

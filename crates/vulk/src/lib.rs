@@ -91,6 +91,8 @@
 //! - [`vk::GetQueryPoolResults`] Copy results of queries in a query pool to a host memory region
 //! - [`vk::CmdWriteTimestamp2`] Write a device timestamp into a query object
 //! ### Copy Commands
+//! - [`vk::CmdCopyBuffer2`] Copy data between buffer regions
+//! - [`vk::CmdCopyImage2`] Copy data between images
 //! - [`vk::CmdCopyBufferToImage2`] Copy data from a buffer into an image
 //! - [`vk::CmdCopyImageToBuffer2`] Copy image data into a buffer
 //! ### Drawing Commands
@@ -155,6 +157,10 @@
 //! - [`VK_EXT_mesh_shader`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_mesh_shader.html)
 //! - [`VK_KHR_ray_tracing_maintenance1`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_ray_tracing_maintenance1.html)
 //! - [`VK_EXT_shader_object`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)
+
+//
+// Lints
+//
 
 #![deny(future_incompatible)]
 #![deny(nonstandard_style)]

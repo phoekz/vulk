@@ -91,6 +91,8 @@
         "vkGetQueryPoolResults",
         "vkCmdWriteTimestamp2",
         // Copy Commands
+        "vkCmdCopyBuffer2",
+        "vkCmdCopyImage2",
         "vkCmdCopyBufferToImage2",
         "vkCmdCopyImageToBuffer2",
         // Drawing Commands
