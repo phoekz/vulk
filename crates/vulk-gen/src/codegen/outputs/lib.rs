@@ -1,5 +1,10 @@
 pub const TEMPLATE: &str = r#"//! # `vulk`
 {{toc}}
+
+//
+// Lints
+//
+
 #![deny(future_incompatible)]
 #![deny(nonstandard_style)]
 #![deny(clippy::pedantic)]
