@@ -201,13 +201,14 @@ impl GpuResource for RenderTargets {
         let color = vkx::ImageDedicatedResource::create_2d(
             &gpu.physical_device,
             &gpu.device,
-            DEFAULT_RENDER_TARGET_COLOR_FORMAT,
-            DEFAULT_RENDER_TARGET_WIDTH,
-            DEFAULT_RENDER_TARGET_HEIGHT,
-            vk::SampleCountFlagBits::Count1,
-            vk::ImageUsageFlagBits::InputAttachment
-                | vk::ImageUsageFlagBits::ColorAttachment
-                | vk::ImageUsageFlagBits::TransferSrc,
+            vkx::ImageCreator::new_2d(
+                DEFAULT_RENDER_TARGET_WIDTH,
+                DEFAULT_RENDER_TARGET_HEIGHT,
+                DEFAULT_RENDER_TARGET_COLOR_FORMAT,
+                vk::ImageUsageFlagBits::InputAttachment
+                    | vk::ImageUsageFlagBits::ColorAttachment
+                    | vk::ImageUsageFlagBits::TransferSrc,
+            ),
             vk::MemoryPropertyFlagBits::DeviceLocal.into(),
         )?;
         Ok(Self { color })
@@ -238,8 +239,10 @@ impl GpuResource for Output {
         let buffer = vkx::BufferDedicatedTransfer::create(
             &gpu.physical_device,
             &gpu.device,
-            DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE,
-            vk::BufferUsageFlagBits::TransferDst.into(),
+            vkx::BufferCreator::new(
+                DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE,
+                vk::BufferUsageFlagBits::TransferDst.into(),
+            ),
             vk::MemoryPropertyFlagBits::HostVisible.into(),
         )?;
         Ok(Self { buffer })
@@ -399,7 +402,7 @@ unsafe fn draw(
             p_next: null(),
             src_image: render_targets.color.image_handle(),
             src_image_layout: vk::ImageLayout::TransferSrcOptimal,
-            dst_buffer: output.buffer.handle(),
+            dst_buffer: output.buffer.buffer_handle(),
             region_count: 1,
             p_regions: &(vk::BufferImageCopy2 {
                 s_type: vk::StructureType::BufferImageCopy2,

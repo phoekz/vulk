@@ -171,22 +171,28 @@ impl GpuResource for Blas {
             let mut vertex_buffer = vkx::BufferDedicatedTransfer::create(
                 &gpu.physical_device,
                 &gpu.device,
-                (size_of::<VertexType>() * create_info.scene.vertex_data.len()) as _,
-                vk::BufferUsageFlagBits::AccelerationStructureBuildInputReadOnlyKHR.into(),
+                vkx::BufferCreator::new(
+                    (size_of::<VertexType>() * create_info.scene.vertex_data.len()) as _,
+                    vk::BufferUsageFlagBits::AccelerationStructureBuildInputReadOnlyKHR.into(),
+                ),
                 vk::MemoryPropertyFlagBits::HostVisible | vk::MemoryPropertyFlagBits::HostCoherent,
             )?;
             let mut index_buffer = vkx::BufferDedicatedTransfer::create(
                 &gpu.physical_device,
                 &gpu.device,
-                (size_of::<IndexType>() * create_info.scene.index_data.len()) as _,
-                vk::BufferUsageFlagBits::AccelerationStructureBuildInputReadOnlyKHR.into(),
+                vkx::BufferCreator::new(
+                    (size_of::<IndexType>() * create_info.scene.index_data.len()) as _,
+                    vk::BufferUsageFlagBits::AccelerationStructureBuildInputReadOnlyKHR.into(),
+                ),
                 vk::MemoryPropertyFlagBits::HostVisible | vk::MemoryPropertyFlagBits::HostCoherent,
             )?;
             let mut transform_buffer = vkx::BufferDedicatedTransfer::create(
                 &gpu.physical_device,
                 &gpu.device,
-                (size_of::<TransformType>() * create_info.scene.transform_data.len()) as _,
-                vk::BufferUsageFlagBits::AccelerationStructureBuildInputReadOnlyKHR.into(),
+                vkx::BufferCreator::new(
+                    (size_of::<TransformType>() * create_info.scene.transform_data.len()) as _,
+                    vk::BufferUsageFlagBits::AccelerationStructureBuildInputReadOnlyKHR.into(),
+                ),
                 vk::MemoryPropertyFlagBits::HostVisible | vk::MemoryPropertyFlagBits::HostCoherent,
             )?;
             vertex_buffer
@@ -276,8 +282,10 @@ impl GpuResource for Blas {
         let blas_buffer = vkx::BufferDedicatedResource::create(
             &gpu.physical_device,
             &gpu.device,
-            acceleration_structure_size as _,
-            vk::BufferUsageFlagBits::AccelerationStructureStorageKHR.into(),
+            vkx::BufferCreator::new(
+                acceleration_structure_size as _,
+                vk::BufferUsageFlagBits::AccelerationStructureStorageKHR.into(),
+            ),
             vk::MemoryPropertyFlagBits::DeviceLocal.into(),
         )?;
 
@@ -287,7 +295,7 @@ impl GpuResource for Blas {
                 s_type: vk::StructureType::AccelerationStructureCreateInfoKHR,
                 p_next: null(),
                 create_flags: vk::AccelerationStructureCreateFlagsKHR::empty(),
-                buffer: blas_buffer.handle(),
+                buffer: blas_buffer.buffer_handle(),
                 offset: 0,
                 size: acceleration_structure_size as _,
                 ty: vk::AccelerationStructureTypeKHR::BottomLevelKHR,
@@ -301,8 +309,10 @@ impl GpuResource for Blas {
         let blas_scratch_buffer = vkx::BufferDedicatedResource::create(
             &gpu.physical_device,
             &gpu.device,
-            build_scratch_size as _,
-            vk::BufferUsageFlagBits::StorageBuffer.into(),
+            vkx::BufferCreator::new(
+                build_scratch_size as _,
+                vk::BufferUsageFlagBits::StorageBuffer.into(),
+            ),
             vk::MemoryPropertyFlagBits::DeviceLocal.into(),
         )?;
 
@@ -433,8 +443,10 @@ impl GpuResource for Tlas {
             let mut instance_buffer = vkx::BufferDedicatedTransfer::create(
                 &gpu.physical_device,
                 &gpu.device,
-                size_of::<vk::AccelerationStructureInstanceKHR>() as _,
-                vk::BufferUsageFlagBits::AccelerationStructureBuildInputReadOnlyKHR.into(),
+                vkx::BufferCreator::new(
+                    size_of::<vk::AccelerationStructureInstanceKHR>() as _,
+                    vk::BufferUsageFlagBits::AccelerationStructureBuildInputReadOnlyKHR.into(),
+                ),
                 vk::MemoryPropertyFlagBits::HostVisible | vk::MemoryPropertyFlagBits::HostCoherent,
             )?;
             instance_buffer
@@ -507,8 +519,10 @@ impl GpuResource for Tlas {
         let tlas_buffer = vkx::BufferDedicatedResource::create(
             &gpu.physical_device,
             &gpu.device,
-            acceleration_structure_size as _,
-            vk::BufferUsageFlagBits::AccelerationStructureStorageKHR.into(),
+            vkx::BufferCreator::new(
+                acceleration_structure_size as _,
+                vk::BufferUsageFlagBits::AccelerationStructureStorageKHR.into(),
+            ),
             vk::MemoryPropertyFlagBits::DeviceLocal.into(),
         )?;
 
@@ -518,7 +532,7 @@ impl GpuResource for Tlas {
                 s_type: vk::StructureType::AccelerationStructureCreateInfoKHR,
                 p_next: null(),
                 create_flags: vk::AccelerationStructureCreateFlagsKHR::empty(),
-                buffer: tlas_buffer.handle(),
+                buffer: tlas_buffer.buffer_handle(),
                 offset: 0,
                 size: acceleration_structure_size as _,
                 ty: vk::AccelerationStructureTypeKHR::TopLevelKHR,
@@ -532,8 +546,10 @@ impl GpuResource for Tlas {
         let tlas_scratch_buffer = vkx::BufferDedicatedResource::create(
             &gpu.physical_device,
             &gpu.device,
-            build_scratch_size as _,
-            vk::BufferUsageFlagBits::StorageBuffer.into(),
+            vkx::BufferCreator::new(
+                build_scratch_size as _,
+                vk::BufferUsageFlagBits::StorageBuffer.into(),
+            ),
             vk::MemoryPropertyFlagBits::DeviceLocal.into(),
         )?;
 
@@ -632,11 +648,12 @@ impl GpuResource for RenderImage {
         let image = vkx::ImageDedicatedResource::create_2d(
             &gpu.physical_device,
             &gpu.device,
-            DEFAULT_RENDER_TARGET_COLOR_FORMAT,
-            DEFAULT_RENDER_TARGET_WIDTH,
-            DEFAULT_RENDER_TARGET_HEIGHT,
-            vk::SampleCountFlagBits::Count1,
-            vk::ImageUsageFlagBits::Storage | vk::ImageUsageFlagBits::TransferSrc,
+            vkx::ImageCreator::new_2d(
+                DEFAULT_RENDER_TARGET_WIDTH,
+                DEFAULT_RENDER_TARGET_HEIGHT,
+                DEFAULT_RENDER_TARGET_COLOR_FORMAT,
+                vk::ImageUsageFlagBits::Storage | vk::ImageUsageFlagBits::TransferSrc,
+            ),
             vk::MemoryPropertyFlagBits::DeviceLocal.into(),
         )?;
         Ok(Self { image })
@@ -675,8 +692,10 @@ impl GpuResource for Stats {
         let counters = vkx::BufferDedicatedResource::create(
             &gpu.physical_device,
             &gpu.device,
-            size_of::<StatCounters>() as _,
-            vk::BufferUsageFlagBits::StorageBuffer.into(),
+            vkx::BufferCreator::new(
+                size_of::<StatCounters>() as _,
+                vk::BufferUsageFlagBits::StorageBuffer.into(),
+            ),
             vk::MemoryPropertyFlagBits::HostVisible | vk::MemoryPropertyFlagBits::HostCoherent,
         )?;
         Ok(Self { counters })
@@ -1121,8 +1140,10 @@ impl GpuResource for Output {
         let buffer = vkx::BufferDedicatedTransfer::create(
             &gpu.physical_device,
             &gpu.device,
-            DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE,
-            vk::BufferUsageFlagBits::TransferDst.into(),
+            vkx::BufferCreator::new(
+                DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE,
+                vk::BufferUsageFlagBits::TransferDst.into(),
+            ),
             vk::MemoryPropertyFlagBits::HostVisible.into(),
         )?;
         Ok(Self { buffer })
@@ -1298,7 +1319,7 @@ unsafe fn dispatch(
             p_next: null(),
             src_image: render_image.image.image_handle(),
             src_image_layout: vk::ImageLayout::TransferSrcOptimal,
-            dst_buffer: output.buffer.handle(),
+            dst_buffer: output.buffer.buffer_handle(),
             region_count: 1,
             p_regions: &(vk::BufferImageCopy2 {
                 s_type: vk::StructureType::BufferImageCopy2,

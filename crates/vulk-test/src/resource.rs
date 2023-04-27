@@ -28,8 +28,10 @@ pub unsafe fn multi_upload_images(
     let mut staging_buffer = vkx::BufferDedicatedTransfer::create(
         physical_device,
         device,
-        datas.iter().map(|data| data.len()).sum::<usize>() as vk::DeviceSize,
-        vk::BufferUsageFlagBits::TransferSrc.into(),
+        vkx::BufferCreator::new(
+            datas.iter().map(|data| data.len()).sum::<usize>() as vk::DeviceSize,
+            vk::BufferUsageFlagBits::TransferSrc.into(),
+        ),
         vk::MemoryPropertyFlagBits::HostVisible | vk::MemoryPropertyFlagBits::HostCoherent,
     )?;
 
@@ -90,7 +92,7 @@ pub unsafe fn multi_upload_images(
             &(vk::CopyBufferToImageInfo2 {
                 s_type: vk::StructureType::CopyBufferToImageInfo2,
                 p_next: null(),
-                src_buffer: staging_buffer.handle(),
+                src_buffer: staging_buffer.buffer_handle(),
                 dst_image: image.image_handle(),
                 dst_image_layout: vk::ImageLayout::TransferDstOptimal,
                 region_count: 1,

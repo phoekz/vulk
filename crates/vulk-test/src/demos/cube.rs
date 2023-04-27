@@ -85,7 +85,7 @@ impl GpuResource for Textures {
         Self: Sized,
     {
         // Generate textures.
-        let (images, image_create_infos, image_datas) = {
+        let (image_creators, image_datas) = {
             use palette::{FromColor, Hsl, Srgb};
             use rand::prelude::*;
 
@@ -97,19 +97,15 @@ impl GpuResource for Textures {
             let height = 16;
             let count = 6;
 
-            let mut images = vec![];
-            let mut image_create_infos = vec![];
+            let mut image_creators = vec![];
             let mut image_datas = vec![];
             for image_index in 0..count {
-                let (image, image_create_info) = vkx::ImageCreator::new_2d(
+                image_creators.push(vkx::ImageCreator::new_2d(
                     width,
                     height,
                     vk::Format::R8g8b8a8Unorm,
                     vk::ImageUsageFlagBits::TransferDst | vk::ImageUsageFlagBits::Sampled,
-                )
-                .create(&gpu.device)?;
-                images.push(image);
-                image_create_infos.push(image_create_info);
+                ));
 
                 let image_data = {
                     let hue = (image_index as f32 + 0.5) / count as f32;
@@ -134,37 +130,15 @@ impl GpuResource for Textures {
                 image_datas.push(image_data);
             }
 
-            (images, image_create_infos, image_datas)
+            (image_creators, image_datas)
         };
 
-        // Allocation.
-        let image_allocations = vkx::ImageAllocations::allocate(
-            &gpu.physical_device,
-            &gpu.device,
-            &images,
-            &image_create_infos,
-            vk::MemoryPropertyFlagBits::DeviceLocal.into(),
-        )?;
-
-        // Image views.
-        let mut image_views = vec![];
-        let mut image_view_create_infos = vec![];
-        for (&image, image_create_info) in images.iter().zip(&image_create_infos) {
-            let (image_view, image_view_create_info) =
-                vkx::ImageViewCreator::new_2d(image, image_create_info.format)
-                    .create(&gpu.device)?;
-            image_views.push(image_view);
-            image_view_create_infos.push(image_view_create_info);
-        }
-
         // Image resources.
-        let image_resources = vkx::ImageResource::create(
+        let (image_resources, image_allocations) = vkx::ImageResource::create(
             &gpu.physical_device,
             &gpu.device,
-            &images,
-            &image_views,
-            &image_create_infos,
-            &image_view_create_infos,
+            &image_creators,
+            vk::MemoryPropertyFlagBits::DeviceLocal.into(),
         )?;
 
         // Upload.
@@ -516,34 +490,39 @@ impl GpuResource for RenderTargets {
         let color = vkx::ImageDedicatedResource::create_2d(
             &gpu.physical_device,
             &gpu.device,
-            DEFAULT_RENDER_TARGET_COLOR_FORMAT,
-            DEFAULT_RENDER_TARGET_WIDTH,
-            DEFAULT_RENDER_TARGET_HEIGHT,
-            DEFAULT_RENDER_TARGET_SAMPLES,
-            vk::ImageUsageFlagBits::InputAttachment | vk::ImageUsageFlagBits::ColorAttachment,
+            vkx::ImageCreator::new_2d_samples(
+                DEFAULT_RENDER_TARGET_WIDTH,
+                DEFAULT_RENDER_TARGET_HEIGHT,
+                DEFAULT_RENDER_TARGET_COLOR_FORMAT,
+                vk::ImageUsageFlagBits::InputAttachment | vk::ImageUsageFlagBits::ColorAttachment,
+                DEFAULT_RENDER_TARGET_SAMPLES,
+            ),
             vk::MemoryPropertyFlagBits::DeviceLocal.into(),
         )?;
         let depth = vkx::ImageDedicatedResource::create_2d(
             &gpu.physical_device,
             &gpu.device,
-            DEFAULT_RENDER_TARGET_DEPTH_FORMAT,
-            DEFAULT_RENDER_TARGET_WIDTH,
-            DEFAULT_RENDER_TARGET_HEIGHT,
-            DEFAULT_RENDER_TARGET_SAMPLES,
-            vk::ImageUsageFlagBits::InputAttachment
-                | vk::ImageUsageFlagBits::DepthStencilAttachment,
+            vkx::ImageCreator::new_2d_samples(
+                DEFAULT_RENDER_TARGET_WIDTH,
+                DEFAULT_RENDER_TARGET_HEIGHT,
+                DEFAULT_RENDER_TARGET_DEPTH_FORMAT,
+                vk::ImageUsageFlagBits::InputAttachment
+                    | vk::ImageUsageFlagBits::DepthStencilAttachment,
+                DEFAULT_RENDER_TARGET_SAMPLES,
+            ),
             vk::MemoryPropertyFlagBits::DeviceLocal.into(),
         )?;
         let resolve = vkx::ImageDedicatedResource::create_2d(
             &gpu.physical_device,
             &gpu.device,
-            DEFAULT_RENDER_TARGET_RESOLVE_FORMAT,
-            DEFAULT_RENDER_TARGET_WIDTH,
-            DEFAULT_RENDER_TARGET_HEIGHT,
-            vk::SampleCountFlagBits::Count1,
-            vk::ImageUsageFlagBits::InputAttachment
-                | vk::ImageUsageFlagBits::ColorAttachment
-                | vk::ImageUsageFlagBits::TransferSrc,
+            vkx::ImageCreator::new_2d(
+                DEFAULT_RENDER_TARGET_WIDTH,
+                DEFAULT_RENDER_TARGET_HEIGHT,
+                DEFAULT_RENDER_TARGET_RESOLVE_FORMAT,
+                vk::ImageUsageFlagBits::InputAttachment
+                    | vk::ImageUsageFlagBits::ColorAttachment
+                    | vk::ImageUsageFlagBits::TransferSrc,
+            ),
             vk::MemoryPropertyFlagBits::DeviceLocal.into(),
         )?;
         Ok(Self {
@@ -580,8 +559,10 @@ impl GpuResource for Output {
         let buffer = vkx::BufferDedicatedTransfer::create(
             &gpu.physical_device,
             &gpu.device,
-            DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE,
-            vk::BufferUsageFlagBits::TransferDst.into(),
+            vkx::BufferCreator::new(
+                DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE,
+                vk::BufferUsageFlagBits::TransferDst.into(),
+            ),
             vk::MemoryPropertyFlagBits::HostVisible.into(),
         )?;
         Ok(Self { buffer })
@@ -802,7 +783,7 @@ unsafe fn draw(
             p_next: null(),
             src_image: render_targets.resolve.image_handle(),
             src_image_layout: vk::ImageLayout::TransferSrcOptimal,
-            dst_buffer: output.buffer.handle(),
+            dst_buffer: output.buffer.buffer_handle(),
             region_count: 1,
             p_regions: &(vk::BufferImageCopy2 {
                 s_type: vk::StructureType::BufferImageCopy2,

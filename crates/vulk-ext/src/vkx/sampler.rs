@@ -1,26 +1,5 @@
 use super::*;
 
-/// **Example**:
-///
-/// ```no_run
-/// # use vulk::vk as vk;
-/// # use vulk_ext::vkx as vkx;
-/// # unsafe {
-/// # let device = todo!();
-/// # let mag_filter = todo!();
-/// # let min_filter = todo!();
-/// # let mipmap_mode = todo!();
-/// # let address_mode = todo!();
-/// let (sampler, sampler_create_info) =
-///     vkx::SamplerCreator::new()
-///         .mag_filter(mag_filter)
-///         .min_filter(min_filter)
-///         .mipmap_mode(mipmap_mode)
-///         .address_mode_uvw(address_mode)
-///         .create(device)
-///         .unwrap();
-/// # }
-/// ```
 pub struct SamplerCreator(vk::SamplerCreateInfo);
 
 impl SamplerCreator {
@@ -119,10 +98,10 @@ impl SamplerResource {
         for i in 0..samplers.len() {
             let sampler = samplers[i];
             let sampler_create_info = sampler_create_infos[i];
-            let descriptor = vkx::Descriptor::create(
+            let descriptor = Descriptor::create(
                 physical_device,
                 device,
-                vkx::DescriptorCreateInfo::Sampler(sampler),
+                DescriptorCreateInfo::Sampler(sampler),
             );
             sampler_resources.push(Self {
                 sampler,

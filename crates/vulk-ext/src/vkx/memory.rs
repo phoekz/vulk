@@ -67,8 +67,8 @@ pub struct BufferAllocations {
 
 impl BufferAllocations {
     pub unsafe fn allocate(
-        physical_device: &vkx::PhysicalDevice,
-        device: &vkx::Device,
+        physical_device: &PhysicalDevice,
+        device: &Device,
         buffers: &[vk::Buffer],
         buffer_create_infos: &[vk::BufferCreateInfo],
         property_flags: vk::MemoryPropertyFlags,
@@ -231,7 +231,7 @@ impl BufferAllocations {
         })
     }
 
-    pub unsafe fn free(self, device: &vkx::Device) {
+    pub unsafe fn free(self, device: &Device) {
         device.free_memory(self.memory);
     }
 
@@ -252,8 +252,8 @@ pub struct ImageAllocations {
 
 impl ImageAllocations {
     pub unsafe fn allocate(
-        physical_device: &vkx::PhysicalDevice,
-        device: &vkx::Device,
+        physical_device: &PhysicalDevice,
+        device: &Device,
         images: &[vk::Image],
         image_create_infos: &[vk::ImageCreateInfo],
         property_flags: vk::MemoryPropertyFlags,
@@ -385,7 +385,7 @@ impl ImageAllocations {
         })
     }
 
-    pub unsafe fn free(self, device: &vkx::Device) {
+    pub unsafe fn free(self, device: &Device) {
         device.free_memory(self.memory);
     }
 }

@@ -1,22 +1,6 @@
 use super::*;
 
-/// **Example**:
-///
-/// ```no_run
-/// # use vulk::vk as vk;
-/// # use vulk_ext::vkx as vkx;
-/// # unsafe {
-/// # let device = todo!();
-/// # let width = todo!();
-/// # let height = todo!();
-/// # let format = todo!();
-/// # let usage = todo!();
-/// let (image, image_create_info) =
-///     vkx::ImageCreator::new_2d(width, height, format, usage)
-///         .create(device)
-///         .unwrap();
-/// # }
-/// ```
+#[derive(Clone, Copy, Debug)]
 pub struct ImageCreator(vk::ImageCreateInfo);
 
 impl ImageCreator {
@@ -46,6 +30,17 @@ impl ImageCreator {
     }
 
     #[must_use]
+    pub fn new_2d_samples(
+        width: u32,
+        height: u32,
+        format: vk::Format,
+        usage: vk::ImageUsageFlags,
+        samples: vk::SampleCountFlagBits,
+    ) -> Self {
+        Self::new_2d(width, height, format, usage).samples(samples)
+    }
+
+    #[must_use]
     pub fn samples(self, samples: vk::SampleCountFlagBits) -> Self {
         Self(vk::ImageCreateInfo { samples, ..self.0 })
     }
@@ -57,21 +52,7 @@ impl ImageCreator {
     }
 }
 
-/// **Example**:
-///
-/// ```no_run
-/// # use vulk::vk as vk;
-/// # use vulk_ext::vkx as vkx;
-/// # unsafe {
-/// # let device = todo!();
-/// # let image = todo!();
-/// # let format = todo!();
-/// let (image_view, image_view_create_info) =
-///     vkx::ImageViewCreator::new_2d(image, format)
-///         .create(device)
-///         .unwrap();
-/// # }
-/// ```
+#[derive(Clone, Copy, Debug)]
 pub struct ImageViewCreator(vk::ImageViewCreateInfo);
 
 impl ImageViewCreator {
@@ -188,56 +169,69 @@ impl ImageResource {
     pub unsafe fn create(
         physical_device: &PhysicalDevice,
         device: &Device,
-        images: &[vk::Image],
-        image_views: &[vk::ImageView],
-        image_create_infos: &[vk::ImageCreateInfo],
-        image_view_create_infos: &[vk::ImageViewCreateInfo],
-    ) -> Result<Vec<Self>> {
+        image_creators: &[ImageCreator],
+        property_flags: vk::MemoryPropertyFlags,
+    ) -> Result<(Vec<Self>, ImageAllocations)> {
         // Constants.
         const SAMPLED_IMAGE: vk::ImageUsageFlagBits = vk::ImageUsageFlagBits::Sampled;
         const STORAGE_IMAGE: vk::ImageUsageFlagBits = vk::ImageUsageFlagBits::Storage;
         const INPUT_ATTACHMENT: vk::ImageUsageFlagBits = vk::ImageUsageFlagBits::InputAttachment;
 
-        // Validation.
-        ensure!(!images.is_empty());
-        ensure!(!image_views.is_empty());
-        ensure!(!image_create_infos.is_empty());
-        ensure!(!image_view_create_infos.is_empty());
-        ensure!(images.len() == image_views.len());
-        ensure!(images.len() == image_create_infos.len());
-        ensure!(images.len() == image_view_create_infos.len());
+        // Images.
+        let mut images = Vec::with_capacity(image_creators.len());
+        let mut image_create_infos = Vec::with_capacity(image_creators.len());
+        for &image_creator in image_creators {
+            let (image, image_create_info) = image_creator.create(device)?;
+            images.push(image);
+            image_create_infos.push(image_create_info);
+        }
 
-        // Image resources.
-        let mut image_resources = vec![];
-        for i in 0..images.len() {
-            let image = images[i];
-            let image_view = image_views[i];
-            let image_create_info = image_create_infos[i];
-            let image_view_create_info = image_view_create_infos[i];
+        // Image allocations.
+        let image_allocations = ImageAllocations::allocate(
+            physical_device,
+            device,
+            &images,
+            &image_create_infos,
+            property_flags,
+        )?;
+
+        // Image views.
+        let mut image_views = Vec::with_capacity(image_creators.len());
+        let mut image_view_create_infos = Vec::with_capacity(image_creators.len());
+        for (&image, image_create_info) in images.iter().zip(&image_create_infos) {
+            let (image_view, image_view_create_info) =
+                ImageViewCreator::new_2d(image, image_create_info.format).create(device)?;
+            image_views.push(image_view);
+            image_view_create_infos.push(image_view_create_info);
+        }
+
+        // Descriptors.
+        let mut descriptors = Vec::with_capacity(image_creators.len());
+        for (&image_view, image_create_info) in image_views.iter().zip(&image_create_infos) {
             let usage = image_create_info.usage;
             let descriptor = if usage.contains(SAMPLED_IMAGE.into()) {
-                vkx::Descriptor::create(
+                Descriptor::create(
                     physical_device,
                     device,
-                    vkx::DescriptorCreateInfo::SampledImage {
+                    DescriptorCreateInfo::SampledImage {
                         image_view,
                         image_layout: vk::ImageLayout::ReadOnlyOptimal,
                     },
                 )
             } else if usage.contains(STORAGE_IMAGE.into()) {
-                vkx::Descriptor::create(
+                Descriptor::create(
                     physical_device,
                     device,
-                    vkx::DescriptorCreateInfo::StorageImage {
+                    DescriptorCreateInfo::StorageImage {
                         image_view,
                         image_layout: vk::ImageLayout::General,
                     },
                 )
             } else if usage.contains(INPUT_ATTACHMENT.into()) {
-                vkx::Descriptor::create(
+                Descriptor::create(
                     physical_device,
                     device,
-                    vkx::DescriptorCreateInfo::InputAttachment {
+                    DescriptorCreateInfo::InputAttachment {
                         image_view,
                         image_layout: vk::ImageLayout::ReadOnlyOptimal,
                     },
@@ -251,6 +245,17 @@ impl ImageResource {
                     got {usage}"
                 );
             };
+            descriptors.push(descriptor);
+        }
+
+        // Resources.
+        let mut image_resources = Vec::with_capacity(image_creators.len());
+        for i in 0..image_creators.len() {
+            let image = images[i];
+            let image_create_info = image_create_infos[i];
+            let image_view = image_views[i];
+            let image_view_create_info = image_view_create_infos[i];
+            let descriptor = descriptors[i];
             image_resources.push(Self {
                 image,
                 image_view,
@@ -259,7 +264,7 @@ impl ImageResource {
                 descriptor,
             });
         }
-        Ok(image_resources)
+        Ok((image_resources, image_allocations))
     }
 
     pub unsafe fn destroy(self, device: &Device) {
@@ -301,42 +306,12 @@ impl ImageDedicatedResource {
     pub unsafe fn create_2d(
         physical_device: &PhysicalDevice,
         device: &Device,
-        format: vk::Format,
-        width: u32,
-        height: u32,
-        samples: vk::SampleCountFlagBits,
-        usage: vk::ImageUsageFlags,
+        image_creator: ImageCreator,
         property_flags: vk::MemoryPropertyFlags,
     ) -> Result<Self> {
-        // Image.
-        let (image, image_create_info) = ImageCreator::new_2d(width, height, format, usage)
-            .samples(samples)
-            .create(device)?;
-
-        // Allocation.
-        let image_allocations = ImageAllocations::allocate(
-            physical_device,
-            device,
-            &[image],
-            &[image_create_info],
-            property_flags,
-        )?;
-
-        // Image view.
-        let (image_view, image_view_create_info) =
-            ImageViewCreator::new_2d(image, image_create_info.format).create(device)?;
-
-        // Image resource.
-        let mut image_resources = ImageResource::create(
-            physical_device,
-            device,
-            &[image],
-            &[image_view],
-            &[image_create_info],
-            &[image_view_create_info],
-        )?;
+        let (mut image_resources, image_allocations) =
+            ImageResource::create(physical_device, device, &[image_creator], property_flags)?;
         let image_resource = image_resources.swap_remove(0);
-
         Ok(Self {
             image_resource,
             image_allocations,

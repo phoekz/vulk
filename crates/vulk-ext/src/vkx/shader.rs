@@ -171,7 +171,7 @@ pub struct Shader {
 }
 
 impl Shader {
-    pub unsafe fn create(device: &vkx::Device, create_info: &ShaderCreateInfo<'_>) -> Result<Self> {
+    pub unsafe fn create(device: &Device, create_info: &ShaderCreateInfo<'_>) -> Result<Self> {
         let create_infos = create_info
             .shader_binaries
             .iter()
@@ -219,7 +219,7 @@ impl Shader {
         Ok(Self { stages, shaders })
     }
 
-    pub unsafe fn destroy(self, device: &vkx::Device) {
+    pub unsafe fn destroy(self, device: &Device) {
         for &shader in &self.shaders {
             device.destroy_shader_ext(shader);
         }
@@ -227,7 +227,7 @@ impl Shader {
 }
 
 impl Shader {
-    pub unsafe fn bind(&self, device: &vkx::Device, cmd: vk::CommandBuffer) {
+    pub unsafe fn bind(&self, device: &Device, cmd: vk::CommandBuffer) {
         device.cmd_bind_shaders_ext(
             cmd,
             self.stages.len() as _,

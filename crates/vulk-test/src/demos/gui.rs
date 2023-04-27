@@ -219,15 +219,19 @@ impl Geometry {
         let mut vertex_buffer = vkx::BufferDedicatedResource::create(
             &gpu.physical_device,
             &gpu.device,
-            (size_of::<imgui::DrawVert>() * gui.vertex_data.len()) as _,
-            vk::BufferUsageFlagBits::StorageBuffer.into(),
+            vkx::BufferCreator::new(
+                (size_of::<imgui::DrawVert>() * gui.vertex_data.len()) as _,
+                vk::BufferUsageFlagBits::StorageBuffer.into(),
+            ),
             vk::MemoryPropertyFlagBits::HostVisible | vk::MemoryPropertyFlagBits::HostCoherent,
         )?;
         let mut index_buffer = vkx::BufferDedicatedResource::create(
             &gpu.physical_device,
             &gpu.device,
-            (size_of::<u16>() * gui.index_data.len()) as _,
-            vk::BufferUsageFlagBits::StorageBuffer.into(),
+            vkx::BufferCreator::new(
+                (size_of::<u16>() * gui.index_data.len()) as _,
+                vk::BufferUsageFlagBits::StorageBuffer.into(),
+            ),
             vk::MemoryPropertyFlagBits::HostVisible | vk::MemoryPropertyFlagBits::HostCoherent,
         )?;
 
@@ -265,36 +269,20 @@ struct Textures {
 
 impl Textures {
     unsafe fn create(gpu: &Gpu, gui: &GuiData) -> Result<Self> {
-        let (image, image_create_info) = vkx::ImageCreator::new_2d(
-            gui.texture_width,
-            gui.texture_height,
-            vk::Format::R8g8b8a8Unorm,
-            vk::ImageUsageFlagBits::TransferDst | vk::ImageUsageFlagBits::Sampled,
-        )
-        .create(&gpu.device)?;
-        let image_allocations = vkx::ImageAllocations::allocate(
+        // Image resources.
+        let (mut image_resources, image_allocations) = vkx::ImageResource::create(
             &gpu.physical_device,
             &gpu.device,
-            &[image],
-            &[image_create_info],
+            &[vkx::ImageCreator::new_2d(
+                gui.texture_width,
+                gui.texture_height,
+                vk::Format::R8g8b8a8Unorm,
+                vk::ImageUsageFlagBits::TransferDst | vk::ImageUsageFlagBits::Sampled,
+            )],
             vk::MemoryPropertyFlagBits::DeviceLocal.into(),
         )?;
-        let (image_view, image_view_create_info) =
-            vkx::ImageViewCreator::new_2d(image, image_create_info.format).create(&gpu.device)?;
-        let mut image_resources = vkx::ImageResource::create(
-            &gpu.physical_device,
-            &gpu.device,
-            &[image],
-            &[image_view],
-            &[image_create_info],
-            &[image_view_create_info],
-        )?;
+        resource::multi_upload_images(gpu, &image_resources, &[&gui.texture_data])?;
         let image_resource = image_resources.swap_remove(0);
-        resource::multi_upload_images(
-            gpu,
-            std::slice::from_ref(&image_resource),
-            &[&gui.texture_data],
-        )?;
 
         let (sampler, sampler_create_info) = vkx::SamplerCreator::new()
             .mag_filter(vk::Filter::Linear)
@@ -597,13 +585,14 @@ impl RenderTargets {
         let color = vkx::ImageDedicatedResource::create_2d(
             &gpu.physical_device,
             &gpu.device,
-            DEFAULT_RENDER_TARGET_COLOR_FORMAT,
-            DEFAULT_RENDER_TARGET_WIDTH,
-            DEFAULT_RENDER_TARGET_HEIGHT,
-            vk::SampleCountFlagBits::Count1,
-            vk::ImageUsageFlagBits::InputAttachment
-                | vk::ImageUsageFlagBits::ColorAttachment
-                | vk::ImageUsageFlagBits::TransferSrc,
+            vkx::ImageCreator::new_2d(
+                DEFAULT_RENDER_TARGET_WIDTH,
+                DEFAULT_RENDER_TARGET_HEIGHT,
+                DEFAULT_RENDER_TARGET_COLOR_FORMAT,
+                vk::ImageUsageFlagBits::InputAttachment
+                    | vk::ImageUsageFlagBits::ColorAttachment
+                    | vk::ImageUsageFlagBits::TransferSrc,
+            ),
             vk::MemoryPropertyFlagBits::DeviceLocal.into(),
         )?;
         Ok(Self { color })
@@ -634,8 +623,10 @@ impl GpuResource for Output {
         let buffer = vkx::BufferDedicatedTransfer::create(
             &gpu.physical_device,
             &gpu.device,
-            DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE,
-            vk::BufferUsageFlagBits::TransferDst.into(),
+            vkx::BufferCreator::new(
+                DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE,
+                vk::BufferUsageFlagBits::TransferDst.into(),
+            ),
             vk::MemoryPropertyFlagBits::HostVisible.into(),
         )?;
         Ok(Self { buffer })
@@ -849,7 +840,7 @@ unsafe fn draw(
             p_next: null(),
             src_image: render_targets.color.image_handle(),
             src_image_layout: vk::ImageLayout::TransferSrcOptimal,
-            dst_buffer: output.buffer.handle(),
+            dst_buffer: output.buffer.buffer_handle(),
             region_count: 1,
             p_regions: &(vk::BufferImageCopy2 {
                 s_type: vk::StructureType::BufferImageCopy2,

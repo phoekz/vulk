@@ -308,12 +308,12 @@ impl DescriptorStorage {
         let size = device.get_descriptor_set_layout_size_ext(set_layout);
 
         // Buffer.
-        let (buffer, buffer_create_info) = vkx::BufferCreator::new(size, descriptor_buffer_usage())
+        let (buffer, buffer_create_info) = BufferCreator::new(size, descriptor_buffer_usage())
             .create(device)
             .context("Creating buffer object")?;
 
         // Allocate.
-        let allocations = vkx::BufferAllocations::allocate(
+        let allocations = BufferAllocations::allocate(
             physical_device,
             device,
             &[buffer],

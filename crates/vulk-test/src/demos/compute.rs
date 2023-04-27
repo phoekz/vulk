@@ -84,8 +84,10 @@ impl GpuResource for IndirectBuffer {
         let buffer = vkx::BufferDedicatedResource::create(
             &gpu.physical_device,
             &gpu.device,
-            size_of::<vk::DispatchIndirectCommand>() as _,
-            vk::BufferUsageFlagBits::StorageBuffer | vk::BufferUsageFlagBits::IndirectBuffer,
+            vkx::BufferCreator::new(
+                size_of::<vk::DispatchIndirectCommand>() as _,
+                vk::BufferUsageFlagBits::StorageBuffer | vk::BufferUsageFlagBits::IndirectBuffer,
+            ),
             vk::MemoryPropertyFlagBits::HostVisible | vk::MemoryPropertyFlagBits::HostCoherent,
         )?;
         Ok(Self { buffer })
@@ -116,11 +118,12 @@ impl GpuResource for ComputeImage {
         let image = vkx::ImageDedicatedResource::create_2d(
             &gpu.physical_device,
             &gpu.device,
-            DEFAULT_RENDER_TARGET_COLOR_FORMAT,
-            DEFAULT_RENDER_TARGET_WIDTH,
-            DEFAULT_RENDER_TARGET_HEIGHT,
-            vk::SampleCountFlagBits::Count1,
-            vk::ImageUsageFlagBits::Storage | vk::ImageUsageFlagBits::TransferSrc,
+            vkx::ImageCreator::new_2d(
+                DEFAULT_RENDER_TARGET_WIDTH,
+                DEFAULT_RENDER_TARGET_HEIGHT,
+                DEFAULT_RENDER_TARGET_COLOR_FORMAT,
+                vk::ImageUsageFlagBits::Storage | vk::ImageUsageFlagBits::TransferSrc,
+            ),
             vk::MemoryPropertyFlagBits::DeviceLocal.into(),
         )?;
         Ok(Self { image })
@@ -151,8 +154,10 @@ impl GpuResource for Output {
         let buffer = vkx::BufferDedicatedTransfer::create(
             &gpu.physical_device,
             &gpu.device,
-            DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE,
-            vk::BufferUsageFlagBits::TransferDst.into(),
+            vkx::BufferCreator::new(
+                DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE,
+                vk::BufferUsageFlagBits::TransferDst.into(),
+            ),
             vk::MemoryPropertyFlagBits::HostVisible.into(),
         )?;
         Ok(Self { buffer })
@@ -431,7 +436,7 @@ unsafe fn dispatch(
     // Dispatch compute shader.
     {
         shaders.compute.bind(&gpu.device, cmd);
-        device.cmd_dispatch_indirect(cmd, indirect_buffer.buffer.handle(), 0);
+        device.cmd_dispatch_indirect(cmd, indirect_buffer.buffer.buffer_handle(), 0);
     }
 
     // Transition compute image.
@@ -471,7 +476,7 @@ unsafe fn dispatch(
             p_next: null(),
             src_image: compute_image.image.image_handle(),
             src_image_layout: vk::ImageLayout::TransferSrcOptimal,
-            dst_buffer: output.buffer.handle(),
+            dst_buffer: output.buffer.buffer_handle(),
             region_count: 1,
             p_regions: &(vk::BufferImageCopy2 {
                 s_type: vk::StructureType::BufferImageCopy2,

@@ -1,20 +1,6 @@
 use super::*;
 
-/// **Example**:
-///
-/// ```no_run
-/// # use vulk::vk as vk;
-/// # use vulk_ext::vkx as vkx;
-/// # unsafe {
-/// # let device = todo!();
-/// # let size = todo!();
-/// # let usage = todo!();
-/// let (buffer, buffer_create_info) =
-///     vkx::BufferCreator::new(size, usage)
-///         .create(device)
-///         .unwrap();
-/// # }
-/// ```
+#[derive(Clone, Copy, Debug)]
 pub struct BufferCreator(vk::BufferCreateInfo);
 
 impl BufferCreator {
@@ -39,6 +25,17 @@ impl BufferCreator {
     }
 }
 
+pub trait BufferOps {
+    fn buffer_handle(&self) -> vk::Buffer;
+    fn create_info(&self) -> &vk::BufferCreateInfo;
+    fn memory(&self) -> &BufferAllocation;
+    fn memory_mut(&mut self) -> &mut BufferAllocation;
+}
+
+pub trait BufferResourceOps {
+    fn descriptor(&self) -> Descriptor;
+}
+
 /// [`BufferResource`] is meant to be used by a shader.
 #[derive(Debug)]
 pub struct BufferResource {
@@ -52,44 +49,85 @@ impl BufferResource {
     pub unsafe fn create(
         physical_device: &PhysicalDevice,
         device: &Device,
-        buffers: &[vk::Buffer],
-        buffer_create_infos: &[vk::BufferCreateInfo],
-        buffer_allocations: &[BufferAllocation],
-    ) -> Result<Vec<Self>> {
+        buffer_creators: &[BufferCreator],
+        property_flags: vk::MemoryPropertyFlags,
+    ) -> Result<(Vec<Self>, BufferAllocations)> {
         // Constants.
         const UNIFORM_BUFFER: vk::BufferUsageFlagBits = vk::BufferUsageFlagBits::UniformBuffer;
         const STORAGE_BUFFER: vk::BufferUsageFlagBits = vk::BufferUsageFlagBits::StorageBuffer;
         const AS_BUFFER: vk::BufferUsageFlagBits =
             vk::BufferUsageFlagBits::AccelerationStructureStorageKHR;
 
-        // Validation.
-        ensure!(!buffers.is_empty());
-        ensure!(buffers.len() == buffer_create_infos.len());
-        ensure!(buffers.len() == buffer_allocations.len());
+        // Buffers.
+        let mut buffers = Vec::with_capacity(buffer_creators.len());
+        let mut buffer_create_infos = Vec::with_capacity(buffer_creators.len());
+        for &buffer_creator in buffer_creators {
+            let (buffer, buffer_create_info) = buffer_creator.create(device)?;
+            buffers.push(buffer);
+            buffer_create_infos.push(buffer_create_info);
+        }
 
-        // Buffer resources.
-        let mut buffer_resources = vec![];
-        for i in 0..buffers.len() {
+        // Buffer allocations.
+        let buffer_allocations = BufferAllocations::allocate(
+            physical_device,
+            device,
+            &buffers,
+            &buffer_create_infos,
+            property_flags,
+        )?;
+
+        // Descriptors.
+        let mut descriptors = Vec::with_capacity(buffer_creators.len());
+        for (buffer_allocation, buffer_create_info) in buffer_allocations
+            .allocations()
+            .iter()
+            .zip(&buffer_create_infos)
+        {
+            let usage = buffer_create_info.usage;
+            let descriptor = if usage.contains(UNIFORM_BUFFER.into()) {
+                // assert buffer_allocation == buffer_create_info.size
+                Descriptor::create(
+                    physical_device,
+                    device,
+                    DescriptorCreateInfo::UniformBuffer {
+                        address: buffer_allocation.device_address(),
+                        range: buffer_create_info.size,
+                    },
+                )
+            } else if usage.contains(STORAGE_BUFFER.into()) {
+                Descriptor::create(
+                    physical_device,
+                    device,
+                    DescriptorCreateInfo::StorageBuffer {
+                        address: buffer_allocation.device_address(),
+                        range: buffer_create_info.size,
+                    },
+                )
+            } else if usage.contains(AS_BUFFER.into()) {
+                Descriptor::create(
+                    physical_device,
+                    device,
+                    DescriptorCreateInfo::AccelerationStructure(buffer_allocation.device_address()),
+                )
+            } else {
+                bail!(
+                    "Buffer resource must be \
+                    {UNIFORM_BUFFER} or \
+                    {STORAGE_BUFFER} or \
+                    {AS_BUFFER}, \
+                    got {usage}"
+                );
+            };
+            descriptors.push(descriptor);
+        }
+
+        // Resources.
+        let mut buffer_resources = Vec::with_capacity(buffer_creators.len());
+        for i in 0..buffer_creators.len() {
             let buffer = buffers[i];
             let buffer_create_info = buffer_create_infos[i];
-            let buffer_allocation = buffer_allocations[i];
-            let buffer_usage = buffer_create_info.usage;
-            let descriptor_create_info = if buffer_usage.contains(UNIFORM_BUFFER.into()) {
-                DescriptorCreateInfo::UniformBuffer {
-                    address: buffer_allocation.device_address(),
-                    range: buffer_create_info.size,
-                }
-            } else if buffer_usage.contains(STORAGE_BUFFER.into()) {
-                DescriptorCreateInfo::StorageBuffer {
-                    address: buffer_allocation.device_address(),
-                    range: buffer_create_info.size,
-                }
-            } else if buffer_usage.contains(AS_BUFFER.into()) {
-                DescriptorCreateInfo::AccelerationStructure(buffer_allocation.device_address())
-            } else {
-                bail!("Buffer resource must be {UNIFORM_BUFFER} or {STORAGE_BUFFER}, got {buffer_usage}");
-            };
-            let descriptor = Descriptor::create(physical_device, device, descriptor_create_info);
+            let buffer_allocation = buffer_allocations.allocations()[i];
+            let descriptor = descriptors[i];
             buffer_resources.push(Self {
                 buffer,
                 buffer_create_info,
@@ -97,35 +135,34 @@ impl BufferResource {
                 descriptor,
             });
         }
-        Ok(buffer_resources)
+        Ok((buffer_resources, buffer_allocations))
     }
 
     pub unsafe fn destroy(self, device: &Device) {
         device.destroy_buffer(self.buffer);
     }
+}
 
-    #[must_use]
-    pub fn handle(&self) -> vk::Buffer {
+impl BufferOps for BufferResource {
+    fn buffer_handle(&self) -> vk::Buffer {
         self.buffer
     }
 
-    #[must_use]
-    pub fn create_info(&self) -> &vk::BufferCreateInfo {
+    fn create_info(&self) -> &vk::BufferCreateInfo {
         &self.buffer_create_info
     }
 
-    #[must_use]
-    pub fn memory(&self) -> &BufferAllocation {
+    fn memory(&self) -> &BufferAllocation {
         &self.buffer_allocation
     }
 
-    #[must_use]
-    pub fn memory_mut(&mut self) -> &mut BufferAllocation {
+    fn memory_mut(&mut self) -> &mut BufferAllocation {
         &mut self.buffer_allocation
     }
+}
 
-    #[must_use]
-    pub fn descriptor(&self) -> Descriptor {
+impl BufferResourceOps for BufferResource {
+    fn descriptor(&self) -> Descriptor {
         self.descriptor
     }
 }
@@ -141,32 +178,12 @@ impl BufferDedicatedResource {
     pub unsafe fn create(
         physical_device: &PhysicalDevice,
         device: &Device,
-        size: vk::DeviceSize,
-        usage: vk::BufferUsageFlags,
+        buffer_creator: BufferCreator,
         property_flags: vk::MemoryPropertyFlags,
     ) -> Result<Self> {
-        // Buffer.
-        let (buffer, buffer_create_info) = BufferCreator::new(size, usage).create(device)?;
-
-        // Allocation.
-        let buffer_allocations = BufferAllocations::allocate(
-            physical_device,
-            device,
-            &[buffer],
-            &[buffer_create_info],
-            property_flags,
-        )?;
-
-        // Resource.
-        let mut buffer_resources = BufferResource::create(
-            physical_device,
-            device,
-            &[buffer],
-            &[buffer_create_info],
-            buffer_allocations.allocations(),
-        )?;
+        let (mut buffer_resources, buffer_allocations) =
+            BufferResource::create(physical_device, device, &[buffer_creator], property_flags)?;
         let buffer_resource = buffer_resources.swap_remove(0);
-
         Ok(Self {
             buffer_resource,
             buffer_allocations,
@@ -177,29 +194,28 @@ impl BufferDedicatedResource {
         self.buffer_resource.destroy(device);
         self.buffer_allocations.free(device);
     }
+}
 
-    #[must_use]
-    pub fn handle(&self) -> vk::Buffer {
+impl BufferOps for BufferDedicatedResource {
+    fn buffer_handle(&self) -> vk::Buffer {
         self.buffer_resource.buffer
     }
 
-    #[must_use]
-    pub fn create_info(&self) -> &vk::BufferCreateInfo {
+    fn create_info(&self) -> &vk::BufferCreateInfo {
         &self.buffer_resource.buffer_create_info
     }
 
-    #[must_use]
-    pub fn memory(&self) -> &BufferAllocation {
+    fn memory(&self) -> &BufferAllocation {
         &self.buffer_resource.buffer_allocation
     }
 
-    #[must_use]
-    pub fn memory_mut(&mut self) -> &mut BufferAllocation {
+    fn memory_mut(&mut self) -> &mut BufferAllocation {
         &mut self.buffer_resource.buffer_allocation
     }
+}
 
-    #[must_use]
-    pub fn descriptor(&self) -> Descriptor {
+impl BufferResourceOps for BufferDedicatedResource {
+    fn descriptor(&self) -> Descriptor {
         self.buffer_resource.descriptor
     }
 }
@@ -218,8 +234,7 @@ impl BufferDedicatedTransfer {
     pub unsafe fn create(
         physical_device: &PhysicalDevice,
         device: &Device,
-        size: vk::DeviceSize,
-        usage: vk::BufferUsageFlags,
+        buffer_creator: BufferCreator,
         property_flags: vk::MemoryPropertyFlags,
     ) -> Result<Self> {
         // Validation.
@@ -227,17 +242,19 @@ impl BufferDedicatedTransfer {
         const TRANSFER_DST: vk::BufferUsageFlagBits = vk::BufferUsageFlagBits::TransferDst;
         const AS_BUILD_ONLY: vk::BufferUsageFlagBits =
             vk::BufferUsageFlagBits::AccelerationStructureBuildInputReadOnlyKHR;
-        ensure!(size > 0);
+
+        ensure!(buffer_creator.0.size > 0);
         ensure!(
-            usage.contains(TRANSFER_SRC.into())
-                || usage.contains(TRANSFER_DST.into())
-                || usage.contains(AS_BUILD_ONLY.into()),
-            "got {usage}"
+            buffer_creator.0.usage.contains(TRANSFER_SRC.into())
+                || buffer_creator.0.usage.contains(TRANSFER_DST.into())
+                || buffer_creator.0.usage.contains(AS_BUILD_ONLY.into()),
+            "got {}",
+            buffer_creator.0.usage
         );
         ensure!(property_flags.contains(vk::MemoryPropertyFlagBits::HostVisible.into()));
 
         // Buffer.
-        let (buffer, buffer_create_info) = BufferCreator::new(size, usage).create(device)?;
+        let (buffer, buffer_create_info) = buffer_creator.create(device)?;
 
         // Allocation.
         let buffer_allocations = BufferAllocations::allocate(
@@ -261,24 +278,22 @@ impl BufferDedicatedTransfer {
         device.destroy_buffer(self.buffer);
         self.buffer_allocations.free(device);
     }
+}
 
-    #[must_use]
-    pub fn handle(&self) -> vk::Buffer {
+impl BufferOps for BufferDedicatedTransfer {
+    fn buffer_handle(&self) -> vk::Buffer {
         self.buffer
     }
 
-    #[must_use]
-    pub fn create_info(&self) -> &vk::BufferCreateInfo {
+    fn create_info(&self) -> &vk::BufferCreateInfo {
         &self.buffer_create_info
     }
 
-    #[must_use]
-    pub fn memory(&self) -> &BufferAllocation {
+    fn memory(&self) -> &BufferAllocation {
         &self.buffer_allocation
     }
 
-    #[must_use]
-    pub fn memory_mut(&mut self) -> &mut BufferAllocation {
+    fn memory_mut(&mut self) -> &mut BufferAllocation {
         &mut self.buffer_allocation
     }
 }
@@ -320,24 +335,22 @@ impl BufferShaderBindingTable {
     pub unsafe fn destroy(self, device: &Device) {
         device.destroy_buffer(self.buffer);
     }
+}
 
-    #[must_use]
-    pub fn handle(&self) -> vk::Buffer {
+impl BufferOps for BufferShaderBindingTable {
+    fn buffer_handle(&self) -> vk::Buffer {
         self.buffer
     }
 
-    #[must_use]
-    pub fn create_info(&self) -> &vk::BufferCreateInfo {
+    fn create_info(&self) -> &vk::BufferCreateInfo {
         &self.buffer_create_info
     }
 
-    #[must_use]
-    pub fn memory(&self) -> &BufferAllocation {
+    fn memory(&self) -> &BufferAllocation {
         &self.buffer_allocation
     }
 
-    #[must_use]
-    pub fn memory_mut(&mut self) -> &mut BufferAllocation {
+    fn memory_mut(&mut self) -> &mut BufferAllocation {
         &mut self.buffer_allocation
     }
 }

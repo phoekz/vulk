@@ -22,8 +22,8 @@ mod swapchain;
 //
 
 pub use buffer::{
-    BufferCreator, BufferDedicatedResource, BufferDedicatedTransfer, BufferResource,
-    BufferShaderBindingTable,
+    BufferCreator, BufferDedicatedResource, BufferDedicatedTransfer, BufferOps, BufferResource,
+    BufferResourceOps, BufferShaderBindingTable,
 };
 pub use descriptor::{Descriptor, DescriptorBinding, DescriptorCreateInfo, DescriptorStorage};
 pub use device::Device;
@@ -41,5 +41,6 @@ pub(crate) use debug_utils::DebugUtils;
 pub mod prelude {
     use super::*;
 
+    pub use buffer::{BufferOps, BufferResourceOps};
     pub use image::ImageOps;
 }
