@@ -26,7 +26,7 @@
 
 use std::collections::HashMap;
 use std::ffi::{c_void, CString};
-use std::mem::{size_of, zeroed, MaybeUninit};
+use std::mem::{size_of, size_of_val, zeroed, MaybeUninit};
 use std::ptr::{addr_of, addr_of_mut, null, null_mut};
 
 use anyhow::{bail, ensure, Context, Result};

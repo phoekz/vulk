@@ -101,6 +101,10 @@ unsafe extern "C" fn debug_utils_messenger_callback(
         // (Current threshold is 1048576 bytes.)
         return vk::FALSE;
     }
+    if message_id_name == "UNASSIGNED-BestPractices-pipeline-stage-flags" &&
+        message.contains("You are using VK_PIPELINE_STAGE_2_ALL_COMMANDS_BIT_KHR when vkCmdWriteTimestamp2 is called") {
+        return vk::FALSE;
+    }
 
     // Severity.
     let level = match message_severity {

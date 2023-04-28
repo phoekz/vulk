@@ -1,5 +1,24 @@
 use super::*;
 
+pub trait SemaphoreOps {
+    fn handle(&self) -> vk::Semaphore;
+
+    fn submit_info(
+        &self,
+        value: u64,
+        stage_mask: impl Into<vk::PipelineStageFlags2>,
+    ) -> vk::SemaphoreSubmitInfo {
+        vk::SemaphoreSubmitInfo {
+            s_type: vk::StructureType::SemaphoreSubmitInfo,
+            p_next: null(),
+            semaphore: self.handle(),
+            value,
+            stage_mask: stage_mask.into(),
+            device_index: 0,
+        }
+    }
+}
+
 #[derive(Debug)]
 pub struct TimelineSemaphore {
     semaphore: vk::Semaphore,
@@ -40,9 +59,10 @@ impl TimelineSemaphore {
         )?;
         Ok(())
     }
+}
 
-    #[must_use]
-    pub fn handle(&self) -> vk::Semaphore {
+impl SemaphoreOps for TimelineSemaphore {
+    fn handle(&self) -> vk::Semaphore {
         self.semaphore
     }
 }
@@ -74,9 +94,10 @@ impl BinarySemaphore {
     pub unsafe fn destroy(self, device: &Device) {
         device.destroy_semaphore(self.semaphore);
     }
+}
 
-    #[must_use]
-    pub fn handle(&self) -> vk::Semaphore {
+impl SemaphoreOps for BinarySemaphore {
+    fn handle(&self) -> vk::Semaphore {
         self.semaphore
     }
 }

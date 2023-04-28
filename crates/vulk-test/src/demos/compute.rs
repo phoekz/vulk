@@ -5,23 +5,27 @@ use super::*;
 //
 
 pub struct Demo {
-    commands: command::Commands,
-    queries: query::Queries,
+    command_buffer: vkx::CommandBuffer,
+    command_buffer_done: vkx::TimelineSemaphore,
+    timestamps: vkx::TimestampQuery,
+    statistics: vkx::StatisticsQuery,
     indirect_buffer: IndirectBuffer,
     compute_image: ComputeImage,
     descriptors: Descriptors,
     shaders: Shaders,
-    output: Output,
+    output: OutputImage,
 }
 
 impl DemoCallbacks for Demo {
     const NAME: &'static str = "compute";
 
     unsafe fn create(gpu: &Gpu) -> Result<Self> {
-        let commands = command::Commands::create(gpu, &command::CommandsCreateInfo)?;
-        let queries = query::Queries::create(gpu, &query::QueriesCreateInfo)?;
-        let indirect_buffer = IndirectBuffer::create(gpu, &IndirectBufferCreateInfo {})?;
-        let compute_image = ComputeImage::create(gpu, &ComputeImageCreateInfo {})?;
+        let command_buffer = vkx::CommandBuffer::create(&gpu.device)?;
+        let command_buffer_done = vkx::TimelineSemaphore::create(&gpu.device, 0)?;
+        let timestamps = vkx::TimestampQuery::create(&gpu.physical_device, &gpu.device, 2)?;
+        let statistics = vkx::StatisticsQuery::create(&gpu.device)?;
+        let indirect_buffer = IndirectBuffer::create(gpu, &())?;
+        let compute_image = ComputeImage::create(gpu, &())?;
         let descriptors = Descriptors::create(
             gpu,
             &DescriptorsCreateInfo {
@@ -35,11 +39,13 @@ impl DemoCallbacks for Demo {
                 descriptors: &descriptors,
             },
         )?;
-        let output = Output::create(gpu, &OutputCreateInfo {})?;
+        let output = OutputImage::create(&gpu.physical_device, &gpu.device)?;
 
         Ok(Self {
-            commands,
-            queries,
+            command_buffer,
+            command_buffer_done,
+            timestamps,
+            statistics,
             indirect_buffer,
             compute_image,
             descriptors,
@@ -53,13 +59,15 @@ impl DemoCallbacks for Demo {
     }
 
     unsafe fn destroy(gpu: &Gpu, state: Self) -> Result<()> {
-        state.output.destroy(gpu);
+        state.output.destroy(&gpu.device);
         state.shaders.destroy(gpu);
         state.descriptors.destroy(gpu);
         state.compute_image.destroy(gpu);
         state.indirect_buffer.destroy(gpu);
-        state.queries.destroy(gpu);
-        state.commands.destroy(gpu);
+        state.statistics.destroy(&gpu.device);
+        state.timestamps.destroy(&gpu.device);
+        state.command_buffer_done.destroy(&gpu.device);
+        state.command_buffer.destroy(&gpu.device);
         Ok(())
     }
 }
@@ -68,14 +76,12 @@ impl DemoCallbacks for Demo {
 // Indirect buffer
 //
 
-struct IndirectBufferCreateInfo {}
-
 struct IndirectBuffer {
     buffer: vkx::BufferDedicatedResource,
 }
 
 impl GpuResource for IndirectBuffer {
-    type CreateInfo<'a> = IndirectBufferCreateInfo;
+    type CreateInfo<'a> = ();
 
     unsafe fn create(gpu: &Gpu, _: &Self::CreateInfo<'_>) -> Result<Self>
     where
@@ -102,14 +108,12 @@ impl GpuResource for IndirectBuffer {
 // Compute image
 //
 
-struct ComputeImageCreateInfo {}
-
 struct ComputeImage {
     image: vkx::ImageDedicatedResource,
 }
 
 impl GpuResource for ComputeImage {
-    type CreateInfo<'a> = ComputeImageCreateInfo;
+    type CreateInfo<'a> = ();
 
     unsafe fn create(gpu: &Gpu, _: &Self::CreateInfo<'_>) -> Result<Self>
     where
@@ -131,40 +135,6 @@ impl GpuResource for ComputeImage {
 
     unsafe fn destroy(self, gpu: &Gpu) {
         self.image.destroy(&gpu.device);
-    }
-}
-
-//
-// Output
-//
-
-struct OutputCreateInfo {}
-
-struct Output {
-    buffer: vkx::BufferDedicatedTransfer,
-}
-
-impl GpuResource for Output {
-    type CreateInfo<'a> = OutputCreateInfo;
-
-    unsafe fn create(gpu: &Gpu, _: &Self::CreateInfo<'_>) -> Result<Self>
-    where
-        Self: Sized,
-    {
-        let buffer = vkx::BufferDedicatedTransfer::create(
-            &gpu.physical_device,
-            &gpu.device,
-            vkx::BufferCreator::new(
-                DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE,
-                vk::BufferUsageFlagBits::TransferDst.into(),
-            ),
-            vk::MemoryPropertyFlagBits::HostVisible.into(),
-        )?;
-        Ok(Self { buffer })
-    }
-
-    unsafe fn destroy(self, gpu: &Gpu) {
-        self.buffer.destroy(&gpu.device);
     }
 }
 
@@ -329,10 +299,12 @@ impl GpuResource for Shaders {
 //
 
 unsafe fn dispatch(
-    gpu @ Gpu { device, .. }: &Gpu,
+    Gpu { device, .. }: &Gpu,
     Demo {
-        commands,
-        queries,
+        command_buffer,
+        command_buffer_done,
+        timestamps,
+        statistics,
         indirect_buffer,
         compute_image,
         descriptors,
@@ -341,179 +313,70 @@ unsafe fn dispatch(
     }: &Demo,
     demo_name: &str,
 ) -> Result<()> {
-    // Begin command buffer.
-    let cmd = commands.begin(gpu)?;
+    // Record commands.
+    command_buffer.begin(device)?;
+    command_buffer.write_timestamp(device, timestamps, 0);
+    command_buffer.begin_statistics(device, statistics);
 
-    // Begin queries.
-    queries.begin(gpu, cmd, vk::PipelineStageFlagBits2::None.into());
-
-    // Bind descriptors.
-    descriptors.storage.bind(device, cmd);
-    descriptors
-        .storage
-        .set_offsets(&gpu.device, cmd, vk::PipelineBindPoint::Compute);
-
-    // Dispatch indirect shader.
-    {
-        shaders.indirect.bind(&gpu.device, cmd);
-        device.cmd_dispatch(cmd, 1, 1, 1);
-    }
-
-    // Synchronize.
-    {
-        device.cmd_pipeline_barrier2(
-            cmd,
-            &vk::DependencyInfo {
-                s_type: vk::StructureType::DependencyInfo,
-                p_next: null(),
-                dependency_flags: vk::DependencyFlags::empty(),
-                memory_barrier_count: 1,
-                p_memory_barriers: &vk::MemoryBarrier2 {
-                    s_type: vk::StructureType::MemoryBarrier2,
-                    p_next: null(),
-                    src_stage_mask: vk::PipelineStageFlagBits2::ComputeShader.into(),
-                    src_access_mask: vk::AccessFlagBits2::ShaderWrite.into(),
-                    dst_stage_mask: vk::PipelineStageFlagBits2::DrawIndirect.into(),
-                    dst_access_mask: vk::AccessFlagBits2::IndirectCommandRead.into(),
-                },
-                buffer_memory_barrier_count: 0,
-                p_buffer_memory_barriers: null(),
-                image_memory_barrier_count: 0,
-                p_image_memory_barriers: null(),
-            },
-        );
-    }
-
-    // Transition compute image.
-    device.cmd_pipeline_barrier2(
-        cmd,
-        &vk::DependencyInfo {
-            s_type: vk::StructureType::DependencyInfo,
-            p_next: null(),
-            dependency_flags: vk::DependencyFlags::empty(),
-            memory_barrier_count: 0,
-            p_memory_barriers: null(),
-            buffer_memory_barrier_count: 0,
-            p_buffer_memory_barriers: null(),
-            image_memory_barrier_count: 1,
-            p_image_memory_barriers: &vk::ImageMemoryBarrier2 {
-                s_type: vk::StructureType::ImageMemoryBarrier2,
-                p_next: null(),
-                src_stage_mask: vk::PipelineStageFlagBits2::None.into(),
-                src_access_mask: vk::AccessFlags2::empty(),
-                dst_stage_mask: vk::PipelineStageFlagBits2::ComputeShader.into(),
-                dst_access_mask: vk::AccessFlagBits2::ShaderWrite.into(),
-                old_layout: vk::ImageLayout::Undefined,
-                new_layout: vk::ImageLayout::General,
-                src_queue_family_index: vk::QUEUE_FAMILY_IGNORED,
-                dst_queue_family_index: vk::QUEUE_FAMILY_IGNORED,
-                image: compute_image.image.image_handle(),
-                subresource_range: compute_image.image.subresource_range(),
-            },
-        },
+    command_buffer.bind_descriptor_storage(
+        device,
+        &descriptors.storage,
+        vk::PipelineBindPoint::Compute,
     );
+    command_buffer.bind_shader(device, &shaders.indirect);
+    command_buffer.dispatch(device, 1, 1, 1);
 
-    // Dispatch compute shader.
-    {
-        shaders.compute.bind(&gpu.device, cmd);
-        device.cmd_dispatch_indirect(cmd, indirect_buffer.buffer.buffer_handle(), 0);
-    }
-
-    // Transition compute image.
-    device.cmd_pipeline_barrier2(
-        cmd,
-        &vk::DependencyInfo {
-            s_type: vk::StructureType::DependencyInfo,
-            p_next: null(),
-            dependency_flags: vk::DependencyFlags::empty(),
-            memory_barrier_count: 0,
-            p_memory_barriers: null(),
-            buffer_memory_barrier_count: 0,
-            p_buffer_memory_barriers: null(),
-            image_memory_barrier_count: 1,
-            p_image_memory_barriers: &vk::ImageMemoryBarrier2 {
-                s_type: vk::StructureType::ImageMemoryBarrier2,
-                p_next: null(),
-                src_stage_mask: vk::PipelineStageFlagBits2::ComputeShader.into(),
-                src_access_mask: vk::AccessFlagBits2::ShaderWrite.into(),
-                dst_stage_mask: vk::PipelineStageFlagBits2::Copy.into(),
-                dst_access_mask: vk::AccessFlagBits2::TransferRead.into(),
-                old_layout: vk::ImageLayout::General,
-                new_layout: vk::ImageLayout::TransferSrcOptimal,
-                src_queue_family_index: vk::QUEUE_FAMILY_IGNORED,
-                dst_queue_family_index: vk::QUEUE_FAMILY_IGNORED,
-                image: compute_image.image.image_handle(),
-                subresource_range: compute_image.image.subresource_range(),
-            },
-        },
+    command_buffer.barrier(
+        device,
+        vk::PipelineStageFlagBits2::ComputeShader,
+        vk::AccessFlagBits2::ShaderWrite,
+        vk::PipelineStageFlagBits2::DrawIndirect,
+        vk::AccessFlagBits2::IndirectCommandRead,
     );
-
-    // Copy to output.
-    device.cmd_copy_image_to_buffer2(
-        cmd,
-        &vk::CopyImageToBufferInfo2 {
-            s_type: vk::StructureType::CopyImageToBufferInfo2,
-            p_next: null(),
-            src_image: compute_image.image.image_handle(),
-            src_image_layout: vk::ImageLayout::TransferSrcOptimal,
-            dst_buffer: output.buffer.buffer_handle(),
-            region_count: 1,
-            p_regions: &vk::BufferImageCopy2 {
-                s_type: vk::StructureType::BufferImageCopy2,
-                p_next: null(),
-                buffer_offset: 0,
-                buffer_row_length: 0,
-                buffer_image_height: 0,
-                image_subresource: compute_image.image.subresource_layers(),
-                image_offset: vk::Offset3D { x: 0, y: 0, z: 0 },
-                image_extent: compute_image.image.extent_3d(),
-            },
-        },
+    command_buffer.image_barrier(
+        device,
+        &compute_image.image,
+        vk::PipelineStageFlagBits2::None,
+        vk::AccessFlags2::empty(),
+        vk::PipelineStageFlagBits2::ComputeShader,
+        vk::AccessFlagBits2::ShaderWrite,
+        vk::ImageLayout::Undefined,
+        vk::ImageLayout::General,
     );
+    command_buffer.bind_shader(device, &shaders.compute);
+    command_buffer.dispatch_indirect(device, &indirect_buffer.buffer, 0);
 
-    // End queries.
-    queries.end(gpu, cmd, vk::PipelineStageFlagBits2::ComputeShader.into());
+    command_buffer.image_barrier(
+        device,
+        &compute_image.image,
+        vk::PipelineStageFlagBits2::ComputeShader,
+        vk::AccessFlagBits2::ShaderWrite,
+        vk::PipelineStageFlagBits2::Copy,
+        vk::AccessFlagBits2::TransferRead,
+        vk::ImageLayout::General,
+        vk::ImageLayout::TransferSrcOptimal,
+    );
+    command_buffer.copy_image_to_buffer(device, &compute_image.image, (&output.buffer, 0));
 
-    // End command buffer.
-    commands.end(gpu)?;
+    command_buffer.end_statistics(device, statistics);
+    command_buffer.write_timestamp(device, timestamps, 1);
+    command_buffer.end(device)?;
 
-    // Queue submit.
-    device.queue_submit2(
-        device.queue,
-        1,
-        &vk::SubmitInfo2 {
-            s_type: vk::StructureType::SubmitInfo2,
-            p_next: null(),
-            flags: vk::SubmitFlags::empty(),
-            wait_semaphore_info_count: 0,
-            p_wait_semaphore_infos: null(),
-            command_buffer_info_count: 1,
-            p_command_buffer_infos: &vk::CommandBufferSubmitInfo {
-                s_type: vk::StructureType::CommandBufferSubmitInfo,
-                p_next: null(),
-                command_buffer: cmd,
-                device_mask: 0,
-            },
-            signal_semaphore_info_count: 1,
-            p_signal_semaphore_infos: &vk::SemaphoreSubmitInfo {
-                s_type: vk::StructureType::SemaphoreSubmitInfo,
-                p_next: null(),
-                semaphore: commands.semaphore.handle(),
-                value: 1,
-                stage_mask: vk::PipelineStageFlagBits2::ComputeShader.into(),
-                device_index: 0,
-            },
-        },
-        vk::Fence::null(),
+    // Submit & wait.
+    vkx::queue_submit(
+        device,
+        command_buffer,
+        &[],
+        &[command_buffer_done.submit_info(1, vk::PipelineStageFlagBits2::AllCommands)],
     )?;
-
-    // Wait for semaphore.
-    commands.semaphore.wait(device, 1, u64::MAX)?;
+    command_buffer_done.wait(device, 1, u64::MAX)?;
 
     // Query results.
     {
-        info!("Compute took {:?}", queries.elapsed(gpu)?);
-        info!("Compute statistics: {:?}", queries.statistics(gpu)?);
+        let timestamp_differences = timestamps.get_differences(device)?[0];
+        let statistics = statistics.get_statistics(device)?;
+        println!("Compute took: {timestamp_differences:?}");
+        println!("Compute statistics: {statistics:?}");
     }
 
     // Write output.
@@ -543,19 +406,7 @@ unsafe fn dispatch(
     }
 
     // Write image.
-    {
-        use imagelib::{ImageFormat, RgbaImage};
-        let width = compute_image.image.width();
-        let height = compute_image.image.height();
-        let pixels_byte_size = compute_image.image.byte_size();
-        let mut pixels = vec![0_u8; pixels_byte_size as _];
-        pixels.copy_from_slice(output.buffer.memory().as_slice(pixels_byte_size as _));
-        let image = RgbaImage::from_raw(width, height, pixels)
-            .context("Creating image from output buffer")?;
-        let image_path = work_dir_or_create()?.join(format!("{demo_name}.png"));
-        image.save_with_format(&image_path, ImageFormat::Png)?;
-        info!("Wrote image to {}", image_path.display());
-    }
+    output.write_to_path(&work_dir_or_create()?.join(format!("{demo_name}.png")))?;
 
     Ok(())
 }

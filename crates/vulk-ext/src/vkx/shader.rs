@@ -166,8 +166,8 @@ pub struct ShaderCreateInfo<'a> {
 }
 
 pub struct Shader {
-    stages: Vec<vk::ShaderStageFlagBits>,
-    shaders: Vec<vk::ShaderEXT>,
+    pub(super) stages: Vec<vk::ShaderStageFlagBits>,
+    pub(super) shaders: Vec<vk::ShaderEXT>,
 }
 
 impl Shader {

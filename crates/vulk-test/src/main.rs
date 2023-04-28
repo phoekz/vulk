@@ -26,13 +26,12 @@
 
 use std::{
     mem::{size_of, transmute, zeroed, MaybeUninit},
-    path::PathBuf,
-    ptr::{addr_of, addr_of_mut, null},
+    path::{Path, PathBuf},
+    ptr::null,
     time::{Duration, Instant, SystemTime},
 };
 
 use anyhow::{ensure, Context, Result};
-use gpu::Gpu;
 use log::info;
 use vkx::prelude::*;
 use vulk::vk;
@@ -42,10 +41,7 @@ use vulk_ext::vkx;
 // Modules
 //
 
-mod command;
 mod demos;
-mod gpu;
-mod query;
 
 //
 // Main
@@ -74,6 +70,41 @@ fn main() -> Result<()> {
     info!("Done");
 
     Ok(())
+}
+
+//
+// Gpu
+//
+
+pub struct Gpu {
+    pub instance: vkx::Instance,
+    pub physical_device: vkx::PhysicalDevice,
+    pub device: vkx::Device,
+}
+
+impl Gpu {
+    pub unsafe fn create() -> Result<Self> {
+        let instance = vkx::Instance::create(&vkx::InstanceCreateInfo {
+            validation_layers: true,
+            ..Default::default()
+        })
+        .context("Creating instance")?;
+        let physical_device =
+            vkx::PhysicalDevice::create(&instance).context("Creating physical device")?;
+        let device =
+            vkx::Device::create(&instance, &physical_device, None).context("Creating device")?;
+
+        Ok(Self {
+            instance,
+            physical_device,
+            device,
+        })
+    }
+
+    pub unsafe fn destroy(self) {
+        self.device.destroy();
+        self.instance.destroy();
+    }
 }
 
 //

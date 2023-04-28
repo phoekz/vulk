@@ -5,11 +5,13 @@ use super::*;
 //
 
 pub struct Demo {
-    commands: command::Commands,
-    queries: query::Queries,
+    command_buffer: vkx::CommandBuffer,
+    command_buffer_done: vkx::TimelineSemaphore,
+    timestamps: vkx::TimestampQuery,
+    statistics: vkx::StatisticsQuery,
     shaders: Shaders,
     render_targets: RenderTargets,
-    output: Output,
+    output: OutputImage,
 }
 
 impl DemoCallbacks for Demo {
@@ -19,14 +21,18 @@ impl DemoCallbacks for Demo {
     where
         Self: Sized,
     {
-        let commands = command::Commands::create(gpu, &command::CommandsCreateInfo)?;
-        let queries = query::Queries::create(gpu, &query::QueriesCreateInfo)?;
-        let shaders = Shaders::create(gpu, &ShadersCreateInfo {})?;
-        let render_targets = RenderTargets::create(gpu, &RenderTargetsCreateInfo {})?;
-        let output = Output::create(gpu, &OutputCreateInfo {})?;
+        let command_buffer = vkx::CommandBuffer::create(&gpu.device)?;
+        let command_buffer_done = vkx::TimelineSemaphore::create(&gpu.device, 0)?;
+        let timestamps = vkx::TimestampQuery::create(&gpu.physical_device, &gpu.device, 2)?;
+        let statistics = vkx::StatisticsQuery::create(&gpu.device)?;
+        let shaders = Shaders::create(gpu, &())?;
+        let render_targets = RenderTargets::create(gpu, &())?;
+        let output = OutputImage::create(&gpu.physical_device, &gpu.device)?;
         Ok(Self {
-            commands,
-            queries,
+            command_buffer,
+            command_buffer_done,
+            timestamps,
+            statistics,
             shaders,
             render_targets,
             output,
@@ -38,11 +44,13 @@ impl DemoCallbacks for Demo {
     }
 
     unsafe fn destroy(gpu: &Gpu, state: Self) -> Result<()> {
-        state.output.destroy(gpu);
+        state.output.destroy(&gpu.device);
         state.render_targets.destroy(gpu);
         state.shaders.destroy(gpu);
-        state.queries.destroy(gpu);
-        state.commands.destroy(gpu);
+        state.statistics.destroy(&gpu.device);
+        state.timestamps.destroy(&gpu.device);
+        state.command_buffer_done.destroy(&gpu.device);
+        state.command_buffer.destroy(&gpu.device);
         Ok(())
     }
 }
@@ -51,14 +59,12 @@ impl DemoCallbacks for Demo {
 // Shaders
 //
 
-struct ShadersCreateInfo {}
-
 struct Shaders {
     shader: vkx::Shader,
 }
 
 impl GpuResource for Shaders {
-    type CreateInfo<'a> = ShadersCreateInfo;
+    type CreateInfo<'a> = ();
 
     unsafe fn create(gpu: &Gpu, _: &Self::CreateInfo<'_>) -> Result<Self>
     where
@@ -185,14 +191,12 @@ impl GpuResource for Shaders {
 // Render targets
 //
 
-struct RenderTargetsCreateInfo {}
-
 struct RenderTargets {
     color: vkx::ImageDedicatedResource,
 }
 
 impl GpuResource for RenderTargets {
-    type CreateInfo<'a> = RenderTargetsCreateInfo;
+    type CreateInfo<'a> = ();
 
     unsafe fn create(gpu: &Gpu, _: &Self::CreateInfo<'_>) -> Result<Self>
     where
@@ -223,14 +227,12 @@ impl GpuResource for RenderTargets {
 // Output
 //
 
-struct OutputCreateInfo {}
-
 struct Output {
     buffer: vkx::BufferDedicatedTransfer,
 }
 
 impl GpuResource for Output {
-    type CreateInfo<'a> = OutputCreateInfo;
+    type CreateInfo<'a> = ();
 
     unsafe fn create(gpu: &Gpu, _: &Self::CreateInfo<'_>) -> Result<Self>
     where
@@ -258,224 +260,90 @@ impl GpuResource for Output {
 //
 
 unsafe fn draw(
-    gpu @ Gpu { device, .. }: &Gpu,
+    Gpu { device, .. }: &Gpu,
     Demo {
-        commands,
-        queries,
+        command_buffer,
+        command_buffer_done,
+        timestamps,
+        statistics,
         shaders,
         render_targets,
         output,
     }: &Demo,
     demo_name: &str,
 ) -> Result<()> {
-    // Begin command buffer.
-    let cmd = commands.begin(gpu)?;
-
-    // Begin queries.
-    queries.begin(gpu, cmd, vk::PipelineStageFlagBits2::None.into());
-
-    // Transition render target.
-    device.cmd_pipeline_barrier2(
-        cmd,
-        &vk::DependencyInfo {
-            s_type: vk::StructureType::DependencyInfo,
-            p_next: null(),
-            dependency_flags: vk::DependencyFlags::empty(),
-            memory_barrier_count: 0,
-            p_memory_barriers: null(),
-            buffer_memory_barrier_count: 0,
-            p_buffer_memory_barriers: null(),
-            image_memory_barrier_count: 1,
-            p_image_memory_barriers: &vk::ImageMemoryBarrier2 {
-                s_type: vk::StructureType::ImageMemoryBarrier2,
-                p_next: null(),
-                src_stage_mask: vk::PipelineStageFlagBits2::None.into(),
-                src_access_mask: vk::AccessFlags2::empty(),
-                dst_stage_mask: vk::PipelineStageFlagBits2::ColorAttachmentOutput.into(),
-                dst_access_mask: vk::AccessFlagBits2::ColorAttachmentWrite.into(),
-                old_layout: vk::ImageLayout::Undefined,
-                new_layout: vk::ImageLayout::AttachmentOptimal,
-                src_queue_family_index: vk::QUEUE_FAMILY_IGNORED,
-                dst_queue_family_index: vk::QUEUE_FAMILY_IGNORED,
-                image: render_targets.color.image_handle(),
-                subresource_range: render_targets.color.subresource_range(),
-            },
-        },
+    // Record commands.
+    command_buffer.begin(device)?;
+    command_buffer.write_timestamp(device, timestamps, 0);
+    command_buffer.begin_statistics(device, statistics);
+    command_buffer.image_barrier(
+        device,
+        &render_targets.color,
+        vk::PipelineStageFlagBits2::None,
+        vk::AccessFlags2::empty(),
+        vk::PipelineStageFlagBits2::ColorAttachmentOutput,
+        vk::AccessFlagBits2::ColorAttachmentWrite,
+        vk::ImageLayout::Undefined,
+        vk::ImageLayout::AttachmentOptimal,
     );
 
-    // Begin rendering.
-    device.cmd_begin_rendering(
-        cmd,
-        &vk::RenderingInfo {
-            s_type: vk::StructureType::RenderingInfo,
-            p_next: null(),
-            flags: vk::RenderingFlags::empty(),
-            render_area: render_targets.color.rect_2d(),
-            layer_count: 1,
-            view_mask: 0,
-            color_attachment_count: 1,
-            p_color_attachments: &vk::RenderingAttachmentInfo {
-                s_type: vk::StructureType::RenderingAttachmentInfo,
-                p_next: null(),
-                image_view: render_targets.color.image_view_handle(),
-                image_layout: vk::ImageLayout::AttachmentOptimal,
-                resolve_mode: vk::ResolveModeFlagBits::None,
-                resolve_image_view: vk::ImageView::null(),
-                resolve_image_layout: vk::ImageLayout::Undefined,
-                load_op: vk::AttachmentLoadOp::Clear,
-                store_op: vk::AttachmentStoreOp::Store,
-                clear_value: vk::ClearValue {
-                    color: vk::ClearColorValue {
-                        float32: DEFAULT_RENDER_TARGET_CLEAR_COLOR,
-                    },
-                },
-            },
-            p_depth_attachment: null(),
-            p_stencil_attachment: null(),
+    command_buffer.begin_rendering(
+        device,
+        (&render_targets.color, DEFAULT_RENDER_TARGET_CLEAR_COLOR),
+        None,
+        None,
+    );
+    command_buffer.set_cull_mode(device, vk::CullModeFlagBits::Back);
+    command_buffer.set_front_face(device, vk::FrontFace::Clockwise);
+    command_buffer.set_viewport(
+        device,
+        &vk::Viewport {
+            x: 0.0,
+            y: render_targets.color.height() as f32,
+            width: render_targets.color.width() as f32,
+            height: -(render_targets.color.height() as f32),
+            min_depth: 0.0,
+            max_depth: 1.0,
         },
     );
+    command_buffer.bind_shader(device, &shaders.shader);
+    command_buffer.draw_mesh_tasks(device, 1, 1, 1);
+    command_buffer.end_rendering(device);
 
-    // Set rasterizer state.
-    {
-        let width = render_targets.color.width() as f32;
-        let height = render_targets.color.height() as f32;
-
-        device.cmd_set_cull_mode(cmd, vk::CullModeFlagBits::Back.into());
-        device.cmd_set_front_face(cmd, vk::FrontFace::Clockwise);
-        device.cmd_set_viewport_with_count(
-            cmd,
-            1,
-            &vk::Viewport {
-                x: 0.0,
-                y: height,
-                width,
-                height: -height,
-                min_depth: 0.0,
-                max_depth: 1.0,
-            },
-        );
-    }
-
-    // Bind shaders.
-    shaders.shader.bind(&gpu.device, cmd);
-
-    // Draw.
-    device.cmd_draw_mesh_tasks_ext(cmd, 1, 1, 1);
-
-    // End rendering.
-    device.cmd_end_rendering(cmd);
-
-    // Transition render target.
-    device.cmd_pipeline_barrier2(
-        cmd,
-        &vk::DependencyInfo {
-            s_type: vk::StructureType::DependencyInfo,
-            p_next: null(),
-            dependency_flags: vk::DependencyFlags::empty(),
-            memory_barrier_count: 0,
-            p_memory_barriers: null(),
-            buffer_memory_barrier_count: 0,
-            p_buffer_memory_barriers: null(),
-            image_memory_barrier_count: 1,
-            p_image_memory_barriers: &vk::ImageMemoryBarrier2 {
-                s_type: vk::StructureType::ImageMemoryBarrier2,
-                p_next: null(),
-                src_stage_mask: vk::PipelineStageFlagBits2::ColorAttachmentOutput.into(),
-                src_access_mask: vk::AccessFlagBits2::ColorAttachmentWrite.into(),
-                dst_stage_mask: vk::PipelineStageFlagBits2::Copy.into(),
-                dst_access_mask: vk::AccessFlagBits2::TransferRead.into(),
-                old_layout: vk::ImageLayout::AttachmentOptimal,
-                new_layout: vk::ImageLayout::TransferSrcOptimal,
-                src_queue_family_index: vk::QUEUE_FAMILY_IGNORED,
-                dst_queue_family_index: vk::QUEUE_FAMILY_IGNORED,
-                image: render_targets.color.image_handle(),
-                subresource_range: render_targets.color.subresource_range(),
-            },
-        },
+    command_buffer.image_barrier(
+        device,
+        &render_targets.color,
+        vk::PipelineStageFlagBits2::ColorAttachmentOutput,
+        vk::AccessFlagBits2::ColorAttachmentWrite,
+        vk::PipelineStageFlagBits2::Copy,
+        vk::AccessFlagBits2::TransferRead,
+        vk::ImageLayout::AttachmentOptimal,
+        vk::ImageLayout::TransferSrcOptimal,
     );
+    command_buffer.copy_image_to_buffer(device, &render_targets.color, (&output.buffer, 0));
+    command_buffer.end_statistics(device, statistics);
+    command_buffer.write_timestamp(device, timestamps, 1);
+    command_buffer.end(device)?;
 
-    // Copy to output.
-    device.cmd_copy_image_to_buffer2(
-        cmd,
-        &vk::CopyImageToBufferInfo2 {
-            s_type: vk::StructureType::CopyImageToBufferInfo2,
-            p_next: null(),
-            src_image: render_targets.color.image_handle(),
-            src_image_layout: vk::ImageLayout::TransferSrcOptimal,
-            dst_buffer: output.buffer.buffer_handle(),
-            region_count: 1,
-            p_regions: &vk::BufferImageCopy2 {
-                s_type: vk::StructureType::BufferImageCopy2,
-                p_next: null(),
-                buffer_offset: 0,
-                buffer_row_length: 0,
-                buffer_image_height: 0,
-                image_subresource: render_targets.color.subresource_layers(),
-                image_offset: vk::Offset3D { x: 0, y: 0, z: 0 },
-                image_extent: render_targets.color.extent_3d(),
-            },
-        },
-    );
-
-    // End queries.
-    queries.end(gpu, cmd, vk::PipelineStageFlagBits2::AllTransfer.into());
-
-    // End command buffer.
-    commands.end(gpu)?;
-
-    // Queue submit.
-    device.queue_submit2(
-        device.queue,
-        1,
-        &vk::SubmitInfo2 {
-            s_type: vk::StructureType::SubmitInfo2,
-            p_next: null(),
-            flags: vk::SubmitFlags::empty(),
-            wait_semaphore_info_count: 0,
-            p_wait_semaphore_infos: null(),
-            command_buffer_info_count: 1,
-            p_command_buffer_infos: &vk::CommandBufferSubmitInfo {
-                s_type: vk::StructureType::CommandBufferSubmitInfo,
-                p_next: null(),
-                command_buffer: cmd,
-                device_mask: 0,
-            },
-            signal_semaphore_info_count: 1,
-            p_signal_semaphore_infos: &vk::SemaphoreSubmitInfo {
-                s_type: vk::StructureType::SemaphoreSubmitInfo,
-                p_next: null(),
-                semaphore: commands.semaphore.handle(),
-                value: 1,
-                stage_mask: vk::PipelineStageFlagBits2::AllCommands.into(),
-                device_index: 0,
-            },
-        },
-        vk::Fence::null(),
+    // Submit & wait.
+    vkx::queue_submit(
+        device,
+        command_buffer,
+        &[],
+        &[command_buffer_done.submit_info(1, vk::PipelineStageFlagBits2::AllCommands)],
     )?;
-
-    // Wait for semaphore.
-    commands.semaphore.wait(device, 1, u64::MAX)?;
+    command_buffer_done.wait(device, 1, u64::MAX)?;
 
     // Query results.
     {
-        info!("Rendering took {:?}", queries.elapsed(gpu)?);
-        info!("Rendering statistics: {:?}", queries.statistics(gpu)?);
+        let timestamp_differences = timestamps.get_differences(device)?[0];
+        let statistics = statistics.get_statistics(device)?;
+        println!("Rendering took: {timestamp_differences:?}");
+        println!("Rendering statistics: {statistics:?}");
     }
 
     // Write image.
-    {
-        use imagelib::{ImageFormat, RgbaImage};
-        let width = render_targets.color.width();
-        let height = render_targets.color.height();
-        let pixels_byte_size = render_targets.color.byte_size();
-        let mut pixels = vec![0_u8; pixels_byte_size as _];
-        pixels.copy_from_slice(output.buffer.memory().as_slice(pixels_byte_size as _));
-        let image = RgbaImage::from_raw(width, height, pixels)
-            .context("Creating image from output buffer")?;
-        let image_path = work_dir_or_create()?.join(format!("{demo_name}.png"));
-        image.save_with_format(&image_path, ImageFormat::Png)?;
-        info!("Wrote image to {}", image_path.display());
-    }
+    output.write_to_path(&work_dir_or_create()?.join(format!("{demo_name}.png")))?;
 
     Ok(())
 }

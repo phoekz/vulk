@@ -242,18 +242,14 @@ pub struct DescriptorBinding<'a> {
 pub struct DescriptorStorage {
     buffer: vk::Buffer,
     allocations: BufferAllocations,
-    allocation: BufferAllocation,
+    pub(super) allocation: BufferAllocation,
     set_layout: vk::DescriptorSetLayout,
-    set_count: u32,
-    buffer_indices: Vec<u32>,
-    offsets: Vec<vk::DeviceSize>,
-    push_constant_range: Option<vk::PushConstantRange>,
-    pipeline_layout: vk::PipelineLayout,
-}
-
-fn descriptor_buffer_usage() -> vk::BufferUsageFlags {
-    vk::BufferUsageFlagBits::ResourceDescriptorBufferEXT
-        | vk::BufferUsageFlagBits::SamplerDescriptorBufferEXT
+    pub(super) set_count: u32,
+    pub(super) buffer_indices: Vec<u32>,
+    pub(super) offsets: Vec<vk::DeviceSize>,
+    pub(super) push_constant_range: Option<vk::PushConstantRange>,
+    pub(super) pipeline_layout: vk::PipelineLayout,
+    pub(super) usage: vk::BufferUsageFlags,
 }
 
 impl DescriptorStorage {
@@ -307,8 +303,12 @@ impl DescriptorStorage {
         let offsets = vec![0];
         let size = device.get_descriptor_set_layout_size_ext(set_layout);
 
+        // Buffer usage.
+        let usage = vk::BufferUsageFlagBits::ResourceDescriptorBufferEXT
+            | vk::BufferUsageFlagBits::SamplerDescriptorBufferEXT;
+
         // Buffer.
-        let (buffer, buffer_create_info) = BufferCreator::new(size, descriptor_buffer_usage())
+        let (buffer, buffer_create_info) = BufferCreator::new(size, usage)
             .create(device)
             .context("Creating buffer object")?;
 
@@ -370,6 +370,7 @@ impl DescriptorStorage {
             offsets,
             push_constant_range,
             pipeline_layout,
+            usage,
         })
     }
 
@@ -388,7 +389,7 @@ impl DescriptorStorage {
                 s_type: vk::StructureType::DescriptorBufferBindingInfoEXT,
                 p_next: null_mut(),
                 address: self.allocation.device_address(),
-                usage: descriptor_buffer_usage(),
+                usage: self.usage,
             },
         );
     }
