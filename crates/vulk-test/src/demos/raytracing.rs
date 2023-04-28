@@ -718,8 +718,6 @@ struct DescriptorsCreateInfo<'a> {
 
 struct Descriptors {
     storage: vkx::DescriptorStorage,
-    pipeline_layout: vk::PipelineLayout,
-    push_constant_ranges: vk::PushConstantRange,
 }
 
 impl GpuResource for Descriptors {
@@ -755,37 +753,17 @@ impl GpuResource for Descriptors {
                     descriptors: &[create_info.stats.counters.descriptor()],
                 },
             ],
+            Some(vk::PushConstantRange {
+                stage_flags: stages,
+                offset: 0,
+                size: (2 * size_of::<Mat4>()) as _,
+            }),
         )?;
 
-        // Push constants.
-        let push_constant_ranges = vk::PushConstantRange {
-            stage_flags: stages,
-            offset: 0,
-            size: (2 * size_of::<Mat4>()) as _,
-        };
-
-        // Pipeline layout.
-        let pipeline_layout = gpu
-            .device
-            .create_pipeline_layout(&vk::PipelineLayoutCreateInfo {
-                s_type: vk::StructureType::PipelineLayoutCreateInfo,
-                p_next: null(),
-                flags: vk::PipelineLayoutCreateFlags::empty(),
-                set_layout_count: 1,
-                p_set_layouts: &storage.set_layout(),
-                push_constant_range_count: 1,
-                p_push_constant_ranges: &push_constant_ranges,
-            })?;
-
-        Ok(Self {
-            storage,
-            pipeline_layout,
-            push_constant_ranges,
-        })
+        Ok(Self { storage })
     }
 
     unsafe fn destroy(self, gpu: &Gpu) {
-        gpu.device.destroy_pipeline_layout(self.pipeline_layout);
         self.storage.destroy(&gpu.device);
     }
 }
@@ -1000,7 +978,7 @@ impl GpuResource for Pipeline {
             p_library_info: null(),
             p_library_interface: null(),
             p_dynamic_state: null(),
-            layout: create_info.descriptors.pipeline_layout,
+            layout: create_info.descriptors.storage.pipeline_layout(),
             base_pipeline_handle: vk::Pipeline::null(),
             base_pipeline_index: 0,
         };
@@ -1210,12 +1188,9 @@ unsafe fn dispatch(
 
     // Bind descriptors.
     descriptors.storage.bind(&gpu.device, cmd);
-    descriptors.storage.set_offsets(
-        &gpu.device,
-        cmd,
-        vk::PipelineBindPoint::RayTracingKHR,
-        descriptors.pipeline_layout,
-    );
+    descriptors
+        .storage
+        .set_offsets(&gpu.device, cmd, vk::PipelineBindPoint::RayTracingKHR);
 
     // Bind pipeline.
     device.cmd_bind_pipeline(cmd, vk::PipelineBindPoint::RayTracingKHR, pipeline.pipeline);
@@ -1244,14 +1219,9 @@ unsafe fn dispatch(
             view_inverse,
             projection_inverse,
         };
-        device.cmd_push_constants(
-            cmd,
-            descriptors.pipeline_layout,
-            descriptors.push_constant_ranges.stage_flags,
-            descriptors.push_constant_ranges.offset,
-            descriptors.push_constant_ranges.size,
-            addr_of!(push_buffer).cast(),
-        );
+        descriptors
+            .storage
+            .push_constants(device, cmd, &push_buffer)?;
     }
 
     // Trace rays.

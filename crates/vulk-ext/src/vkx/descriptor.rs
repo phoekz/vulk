@@ -1,5 +1,3 @@
-use std::mem::MaybeUninit;
-
 use super::*;
 
 const DESCRIPTOR_MAX_SIZE: usize = 16;
@@ -249,6 +247,8 @@ pub struct DescriptorStorage {
     set_count: u32,
     buffer_indices: Vec<u32>,
     offsets: Vec<vk::DeviceSize>,
+    push_constant_range: Option<vk::PushConstantRange>,
+    pipeline_layout: vk::PipelineLayout,
 }
 
 fn descriptor_buffer_usage() -> vk::BufferUsageFlags {
@@ -261,6 +261,7 @@ impl DescriptorStorage {
         physical_device: &PhysicalDevice,
         device: &Device,
         bindings: &[DescriptorBinding],
+        push_constant_range: Option<vk::PushConstantRange>,
     ) -> Result<Self> {
         // Validation.
         ensure!(!bindings.is_empty(), "Expected 1 or more bindings");
@@ -337,6 +338,28 @@ impl DescriptorStorage {
             }
         }
 
+        // Pipeline layout.
+        let pipeline_layout = {
+            let mut create_info = vk::PipelineLayoutCreateInfo {
+                s_type: vk::StructureType::PipelineLayoutCreateInfo,
+                p_next: null(),
+                flags: vk::PipelineLayoutCreateFlags::empty(),
+                set_layout_count: 1,
+                p_set_layouts: &set_layout,
+                push_constant_range_count: 0,
+                p_push_constant_ranges: null(),
+            };
+            let mut pcr: vk::PushConstantRange = zeroed();
+            if let Some(push_constant_range) = &push_constant_range {
+                pcr.stage_flags = push_constant_range.stage_flags;
+                pcr.size = push_constant_range.size;
+                pcr.offset = push_constant_range.offset;
+                create_info.push_constant_range_count = 1;
+                create_info.p_push_constant_ranges = &pcr;
+            }
+            device.create_pipeline_layout(&create_info)?
+        };
+
         Ok(Self {
             buffer,
             allocations,
@@ -345,18 +368,16 @@ impl DescriptorStorage {
             set_count,
             buffer_indices,
             offsets,
+            push_constant_range,
+            pipeline_layout,
         })
     }
 
     pub unsafe fn destroy(self, device: &Device) {
+        device.destroy_pipeline_layout(self.pipeline_layout);
         device.destroy_descriptor_set_layout(self.set_layout);
         device.destroy_buffer(self.buffer);
         self.allocations.free(device);
-    }
-
-    #[must_use]
-    pub fn set_layout(&self) -> vk::DescriptorSetLayout {
-        self.set_layout
     }
 
     pub unsafe fn bind(&self, device: &Device, cmd: vk::CommandBuffer) {
@@ -377,16 +398,55 @@ impl DescriptorStorage {
         device: &Device,
         cmd: vk::CommandBuffer,
         pipeline_bind_point: vk::PipelineBindPoint,
-        layout: vk::PipelineLayout,
     ) {
         device.cmd_set_descriptor_buffer_offsets_ext(
             cmd,
             pipeline_bind_point,
-            layout,
+            self.pipeline_layout,
             0,
             self.set_count,
             self.buffer_indices.as_ptr(),
             self.offsets.as_ptr(),
         );
+    }
+
+    pub unsafe fn push_constants<T>(
+        &self,
+        device: &Device,
+        cmd: vk::CommandBuffer,
+        data: &T,
+    ) -> Result<()> {
+        let Some(pcr) = self.push_constant_range else {
+            bail!("Missing push constant range");
+        };
+        ensure!(pcr.size as usize == size_of::<T>());
+        device.cmd_push_constants(
+            cmd,
+            self.pipeline_layout,
+            pcr.stage_flags,
+            pcr.offset,
+            pcr.size,
+            (data as *const T).cast(),
+        );
+        Ok(())
+    }
+
+    #[must_use]
+    pub fn pipeline_layout(&self) -> vk::PipelineLayout {
+        self.pipeline_layout
+    }
+
+    #[must_use]
+    pub fn set_layouts(&self) -> &[vk::DescriptorSetLayout] {
+        std::slice::from_ref(&self.set_layout)
+    }
+
+    #[must_use]
+    pub fn push_constant_ranges(&self) -> &[vk::PushConstantRange] {
+        if let Some(pcr) = &self.push_constant_range {
+            std::slice::from_ref(pcr)
+        } else {
+            &[]
+        }
     }
 }

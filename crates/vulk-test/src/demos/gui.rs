@@ -347,16 +347,10 @@ struct PushConstants {
 
 struct Descriptors {
     storage: vkx::DescriptorStorage,
-    pipeline_layout: vk::PipelineLayout,
-    push_constant_range: vk::PushConstantRange,
 }
 
 impl Descriptors {
-    unsafe fn create(
-        gpu @ Gpu { device, .. }: &Gpu,
-        geometry: &Geometry,
-        textures: &Textures,
-    ) -> Result<Self> {
+    unsafe fn create(gpu: &Gpu, geometry: &Geometry, textures: &Textures) -> Result<Self> {
         // Descriptor storage.
         let stages = vk::ShaderStageFlagBits::TaskEXT
             | vk::ShaderStageFlagBits::MeshEXT
@@ -386,33 +380,17 @@ impl Descriptors {
                     descriptors: &[textures.sampler.descriptor()],
                 },
             ],
+            Some(vk::PushConstantRange {
+                stage_flags: stages,
+                offset: 0,
+                size: size_of::<PushConstants>() as _,
+            }),
         )?;
 
-        // Pipeline layout.
-        let push_constant_range = vk::PushConstantRange {
-            stage_flags: stages,
-            offset: 0,
-            size: size_of::<PushConstants>() as _,
-        };
-        let pipeline_layout = device.create_pipeline_layout(&vk::PipelineLayoutCreateInfo {
-            s_type: vk::StructureType::PipelineLayoutCreateInfo,
-            p_next: null(),
-            flags: vk::PipelineLayoutCreateFlags::empty(),
-            set_layout_count: 1,
-            p_set_layouts: &storage.set_layout(),
-            push_constant_range_count: 1,
-            p_push_constant_ranges: &push_constant_range,
-        })?;
-
-        Ok(Self {
-            storage,
-            pipeline_layout,
-            push_constant_range,
-        })
+        Ok(Self { storage })
     }
 
-    unsafe fn destroy(self, gpu @ Gpu { device, .. }: &Gpu) {
-        device.destroy_pipeline_layout(self.pipeline_layout);
+    unsafe fn destroy(self, gpu: &Gpu) {
         self.storage.destroy(&gpu.device);
     }
 }
@@ -577,8 +555,8 @@ impl Shaders {
             &gpu.device,
             &vkx::ShaderCreateInfo {
                 shader_binaries: &[task_spirv, mesh_spirv, fragment_spirv],
-                set_layouts: &[descriptors.storage.set_layout()],
-                push_constant_ranges: &[descriptors.push_constant_range],
+                set_layouts: descriptors.storage.set_layouts(),
+                push_constant_ranges: descriptors.storage.push_constant_ranges(),
                 specialization_info: None,
             },
         )?;
@@ -743,12 +721,9 @@ unsafe fn draw(
 
     // Bind descriptors.
     descriptors.storage.bind(&gpu.device, cmd);
-    descriptors.storage.set_offsets(
-        &gpu.device,
-        cmd,
-        vk::PipelineBindPoint::Graphics,
-        descriptors.pipeline_layout,
-    );
+    descriptors
+        .storage
+        .set_offsets(&gpu.device, cmd, vk::PipelineBindPoint::Graphics);
 
     // Set rasterizer state.
     {
@@ -807,14 +782,9 @@ unsafe fn draw(
             index_offset: draw.index_offset,
             primitive_count: draw.primitive_count,
         };
-        device.cmd_push_constants(
-            cmd,
-            descriptors.pipeline_layout,
-            descriptors.push_constant_range.stage_flags,
-            descriptors.push_constant_range.offset,
-            descriptors.push_constant_range.size,
-            addr_of!(push_constants).cast(),
-        );
+        descriptors
+            .storage
+            .push_constants(device, cmd, &push_constants)?;
         device.cmd_set_scissor_with_count(cmd, 1, &draw.scissor);
         device.cmd_draw_mesh_tasks_ext(cmd, 1, 1, 1);
     }

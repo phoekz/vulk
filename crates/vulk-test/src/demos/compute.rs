@@ -179,7 +179,6 @@ struct DescriptorsCreateInfo<'a> {
 
 struct Descriptors {
     storage: vkx::DescriptorStorage,
-    pipeline_layout: vk::PipelineLayout,
 }
 
 impl GpuResource for Descriptors {
@@ -206,29 +205,13 @@ impl GpuResource for Descriptors {
                     descriptors: &[create_info.compute_image.image.descriptor()],
                 },
             ],
+            None,
         )?;
 
-        // Pipeline layout.
-        let pipeline_layout = gpu
-            .device
-            .create_pipeline_layout(&vk::PipelineLayoutCreateInfo {
-                s_type: vk::StructureType::PipelineLayoutCreateInfo,
-                p_next: null(),
-                flags: vk::PipelineLayoutCreateFlags::empty(),
-                set_layout_count: 1,
-                p_set_layouts: &storage.set_layout(),
-                push_constant_range_count: 0,
-                p_push_constant_ranges: null(),
-            })?;
-
-        Ok(Self {
-            storage,
-            pipeline_layout,
-        })
+        Ok(Self { storage })
     }
 
     unsafe fn destroy(self, gpu: &Gpu) {
-        gpu.device.destroy_pipeline_layout(self.pipeline_layout);
         self.storage.destroy(&gpu.device);
     }
 }
@@ -296,7 +279,7 @@ impl GpuResource for Shaders {
             &gpu.device,
             &vkx::ShaderCreateInfo {
                 shader_binaries: &[indirect_spirv],
-                set_layouts: &[create_info.descriptors.storage.set_layout()],
+                set_layouts: create_info.descriptors.storage.set_layouts(),
                 push_constant_ranges: &[],
                 specialization_info: None,
             },
@@ -326,7 +309,7 @@ impl GpuResource for Shaders {
             &gpu.device,
             &vkx::ShaderCreateInfo {
                 shader_binaries: &[compute_spirv],
-                set_layouts: &[create_info.descriptors.storage.set_layout()],
+                set_layouts: create_info.descriptors.storage.set_layouts(),
                 push_constant_ranges: &[],
                 specialization_info: None,
             },
@@ -366,12 +349,9 @@ unsafe fn dispatch(
 
     // Bind descriptors.
     descriptors.storage.bind(device, cmd);
-    descriptors.storage.set_offsets(
-        &gpu.device,
-        cmd,
-        vk::PipelineBindPoint::Compute,
-        descriptors.pipeline_layout,
-    );
+    descriptors
+        .storage
+        .set_offsets(&gpu.device, cmd, vk::PipelineBindPoint::Compute);
 
     // Dispatch indirect shader.
     {

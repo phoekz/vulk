@@ -209,8 +209,6 @@ struct DescriptorsCreateInfo<'a> {
 
 struct Descriptors {
     storage: vkx::DescriptorStorage,
-    pipeline_layout: vk::PipelineLayout,
-    push_constant_ranges: vk::PushConstantRange,
 }
 
 impl GpuResource for Descriptors {
@@ -249,38 +247,18 @@ impl GpuResource for Descriptors {
                     descriptors: &sampler_descriptors,
                 },
             ],
+            Some(vk::PushConstantRange {
+                stage_flags: vk::ShaderStageFlagBits::MeshEXT.into(),
+                offset: 0,
+                size: size_of::<Mat4>() as _,
+            }),
         )?;
 
-        // Push constants.
-        let push_constant_ranges = vk::PushConstantRange {
-            stage_flags: vk::ShaderStageFlagBits::MeshEXT.into(),
-            offset: 0,
-            size: size_of::<Mat4>() as _,
-        };
-
-        // Pipeline layout.
-        let pipeline_layout = gpu
-            .device
-            .create_pipeline_layout(&vk::PipelineLayoutCreateInfo {
-                s_type: vk::StructureType::PipelineLayoutCreateInfo,
-                p_next: null(),
-                flags: vk::PipelineLayoutCreateFlags::empty(),
-                set_layout_count: 1,
-                p_set_layouts: &storage.set_layout(),
-                push_constant_range_count: 1,
-                p_push_constant_ranges: &push_constant_ranges,
-            })?;
-
-        Ok(Self {
-            storage,
-            pipeline_layout,
-            push_constant_ranges,
-        })
+        Ok(Self { storage })
     }
 
     unsafe fn destroy(self, gpu: &Gpu) {
         self.storage.destroy(&gpu.device);
-        gpu.device.destroy_pipeline_layout(self.pipeline_layout);
     }
 }
 
@@ -457,8 +435,8 @@ impl GpuResource for Shaders {
             &gpu.device,
             &vkx::ShaderCreateInfo {
                 shader_binaries: &[task_spirv, mesh_spirv, fragment_spirv],
-                set_layouts: &[create_info.descriptors.storage.set_layout()],
-                push_constant_ranges: &[create_info.descriptors.push_constant_ranges],
+                set_layouts: create_info.descriptors.storage.set_layouts(),
+                push_constant_ranges: create_info.descriptors.storage.push_constant_ranges(),
                 specialization_info: None,
             },
         )?;
@@ -703,12 +681,9 @@ unsafe fn draw(
 
     // Bind descriptors.
     descriptors.storage.bind(&gpu.device, cmd);
-    descriptors.storage.set_offsets(
-        &gpu.device,
-        cmd,
-        vk::PipelineBindPoint::Graphics,
-        descriptors.pipeline_layout,
-    );
+    descriptors
+        .storage
+        .set_offsets(&gpu.device, cmd, vk::PipelineBindPoint::Graphics);
 
     // Bind shaders.
     shaders.shader.bind(&gpu.device, cmd);
@@ -733,14 +708,9 @@ unsafe fn draw(
 
         let transform = projection * view;
 
-        device.cmd_push_constants(
-            cmd,
-            descriptors.pipeline_layout,
-            descriptors.push_constant_ranges.stage_flags,
-            descriptors.push_constant_ranges.offset,
-            descriptors.push_constant_ranges.size,
-            addr_of!(transform).cast(),
-        );
+        descriptors
+            .storage
+            .push_constants(device, cmd, &transform)?;
     }
 
     // Draw.
