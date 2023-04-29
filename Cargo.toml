@@ -15,10 +15,9 @@ version = "0.1.10"
 
 [workspace.dependencies]
 anyhow = "1.0.70"
-bytemuck = "1.13.1"
 clap = { version = "4.2.4", features = ["derive"] }
 env_logger = "0.10.0"
-glam = { version = "0.23.0", features = ["bytemuck"] }
+glam = { version = "0.23.0" }
 heck = "0.4.1"
 imagelib = { version = "0.24.6", default-features = false, features = [
     "png",
@@ -34,7 +33,5 @@ ron = "0.8.0"
 roxmltree = "0.18.0"
 serde = { version = "1.0.160", features = ["derive"] }
 shaderc = "0.8.2"
-tempfile = "3.5.0"
 thiserror = "1.0.40"
-walkdir = "2.3.3"
 winit = "0.28.3"

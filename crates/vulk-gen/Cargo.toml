@@ -20,5 +20,3 @@ log.workspace = true
 ron.workspace = true
 roxmltree.workspace = true
 serde.workspace = true
-tempfile.workspace = true
-walkdir.workspace = true
