@@ -21,7 +21,20 @@ impl PhysicalDevice {
         )?;
 
         // Pick a physical device.
-        let physical_device = physical_devices[0];
+        let physical_device = physical_devices
+            .into_iter()
+            .find(|&physical_device| {
+                let mut props2: vk::PhysicalDeviceProperties2 = zeroed();
+                props2.s_type = vk::StructureType::PhysicalDeviceProperties2;
+                instance.get_physical_device_properties2(physical_device, &mut props2);
+                let props = props2.properties;
+                let device_name = std::ffi::CStr::from_ptr(props.device_name.as_ptr());
+                let device_name = device_name.to_string_lossy();
+                let discrete_gpu = props.device_type == vk::PhysicalDeviceType::DiscreteGpu;
+                let nvidia_gpu = device_name.contains("NVIDIA");
+                discrete_gpu == nvidia_gpu
+            })
+            .context("Failed to find compatible physical device")?;
 
         // Physical device properties.
         let mut as_props: vk::PhysicalDeviceAccelerationStructurePropertiesKHR = zeroed();
