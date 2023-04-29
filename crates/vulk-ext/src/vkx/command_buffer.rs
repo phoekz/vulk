@@ -549,6 +549,24 @@ impl CommandBuffer {
         device.cmd_set_viewport_with_count(self.command_buffer, 1, viewport);
     }
 
+    pub unsafe fn set_viewport_flip_y(&self, device: &Device, viewport: &vk::Viewport) {
+        // VK_KHR_maintenance1: Allow negative height to be specified in the
+        // VkViewport::height field to perform y-inversion of the clip-space to
+        // framebuffer-space transform. This allows apps to avoid having to use
+        // gl_Position.y = -gl_Position.y in shaders also targeting other APIs.
+        self.set_viewport(
+            device,
+            &vk::Viewport {
+                x: viewport.x,
+                y: viewport.y + viewport.height,
+                width: viewport.width,
+                height: -viewport.height,
+                min_depth: viewport.min_depth,
+                max_depth: viewport.max_depth,
+            },
+        );
+    }
+
     pub unsafe fn set_scissor(&self, device: &Device, scissor: &vk::Rect2D) {
         device.cmd_set_scissor_with_count(self.command_buffer, 1, scissor);
     }

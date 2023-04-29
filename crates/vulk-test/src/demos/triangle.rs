@@ -295,13 +295,13 @@ unsafe fn draw(
     );
     command_buffer.set_cull_mode(device, vk::CullModeFlagBits::Back);
     command_buffer.set_front_face(device, vk::FrontFace::Clockwise);
-    command_buffer.set_viewport(
+    command_buffer.set_viewport_flip_y(
         device,
         &vk::Viewport {
             x: 0.0,
-            y: render_targets.color.height() as f32,
+            y: 0.0,
             width: render_targets.color.width() as f32,
-            height: -(render_targets.color.height() as f32),
+            height: render_targets.color.height() as f32,
             min_depth: 0.0,
             max_depth: 1.0,
         },
