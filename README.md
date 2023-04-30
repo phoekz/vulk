@@ -8,4 +8,4 @@
 
 The design of `vulk` is inspired by `ash`, which is also what you should use for production use cases instead of `vulk`.
 
-Currently, the only supported driver is the latest NVIDIA March 31st, 2023 driver.
+Currently, the only supported driver is the latest NVIDIA April 27th, 2023 driver.

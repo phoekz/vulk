@@ -3,7 +3,6 @@ use std::mem::MaybeUninit;
 use super::*;
 
 pub struct CommandBuffer {
-    command_pool: vk::CommandPool,
     command_buffer: vk::CommandBuffer,
 }
 
@@ -13,20 +12,12 @@ impl CommandBuffer {
     //
 
     pub unsafe fn create(device: &Device) -> Result<Self> {
-        // Command pool.
-        let command_pool = device.create_command_pool(&vk::CommandPoolCreateInfo {
-            s_type: vk::StructureType::CommandPoolCreateInfo,
-            p_next: null(),
-            flags: vk::CommandPoolCreateFlags::empty(),
-            queue_family_index: device.queue_family_index,
-        })?;
-
         // Command buffer.
         let command_buffer = {
             let command_buffer_allocate_info = vk::CommandBufferAllocateInfo {
                 s_type: vk::StructureType::CommandBufferAllocateInfo,
                 p_next: null(),
-                command_pool,
+                command_pool: device.command_pool,
                 level: vk::CommandBufferLevel::Primary,
                 command_buffer_count: 1,
             };
@@ -38,20 +29,16 @@ impl CommandBuffer {
             command_buffer.assume_init()
         };
 
-        Ok(Self {
-            command_pool,
-            command_buffer,
-        })
+        Ok(Self { command_buffer })
     }
 
     pub unsafe fn destroy(self, device: &Device) {
-        device.free_command_buffers(self.command_pool, 1, &self.command_buffer);
-        device.destroy_command_pool(self.command_pool);
+        device.free_command_buffers(device.command_pool, 1, &self.command_buffer);
     }
 
     pub unsafe fn begin(&self, device: &Device) -> Result<()> {
         // Reset command buffers by resetting the pool.
-        device.reset_command_pool(self.command_pool, vk::CommandPoolResetFlags::empty())?;
+        device.reset_command_buffer(self.command_buffer, vk::CommandBufferResetFlags::empty())?;
 
         // Begin command buffer.
         device.begin_command_buffer(

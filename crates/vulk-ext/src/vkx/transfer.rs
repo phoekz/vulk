@@ -41,20 +41,12 @@ pub unsafe fn transfer_resources(
         dst_offset += bytes.len();
     }
 
-    // Command pool.
-    let command_pool = device.create_command_pool(&vk::CommandPoolCreateInfo {
-        s_type: vk::StructureType::CommandPoolCreateInfo,
-        p_next: null(),
-        flags: vk::CommandPoolCreateFlags::empty(),
-        queue_family_index: device.queue_family_index,
-    })?;
-
     // Command buffer.
     let command_buffer = {
         let command_buffer_allocate_info = vk::CommandBufferAllocateInfo {
             s_type: vk::StructureType::CommandBufferAllocateInfo,
             p_next: null(),
-            command_pool,
+            command_pool: device.command_pool,
             level: vk::CommandBufferLevel::Primary,
             command_buffer_count: 1,
         };
@@ -211,7 +203,7 @@ pub unsafe fn transfer_resources(
     // Submit.
     device.end_command_buffer(command_buffer)?;
     device.queue_submit2(
-        device.queue,
+        device.queue_handle(),
         1,
         &vk::SubmitInfo2 {
             s_type: vk::StructureType::SubmitInfo2,
@@ -242,7 +234,6 @@ pub unsafe fn transfer_resources(
 
     // Cleanup.
     semaphore.destroy(device);
-    device.destroy_command_pool(command_pool);
     staging_buffer.destroy(device);
 
     Ok(())

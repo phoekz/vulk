@@ -2,9 +2,10 @@ use super::*;
 
 pub struct Device {
     device: vulk::Device,
-    pub queue: vk::Queue,
-    pub queue_family_index: u32,
-    pub queue_family_properties: vk::QueueFamilyProperties,
+    queue: vk::Queue,
+    queue_family_index: u32,
+    queue_family_properties: vk::QueueFamilyProperties,
+    pub(crate) command_pool: vk::CommandPool,
 }
 
 pub struct TimestampCalibration {
@@ -304,6 +305,14 @@ impl Device {
             queue_index: 0,
         });
 
+        // Command pool.
+        let command_pool = device.create_command_pool(&vk::CommandPoolCreateInfo {
+            s_type: vk::StructureType::CommandPoolCreateInfo,
+            p_next: null(),
+            flags: vk::CommandPoolCreateFlagBits::ResetCommandBuffer.into(),
+            queue_family_index,
+        })?;
+
         // Timestamp calibration support.
         let time_domains = vulk::read_to_vec(
             |count, ptr| {
@@ -333,11 +342,28 @@ impl Device {
             queue,
             queue_family_index,
             queue_family_properties,
+            command_pool,
         })
     }
 
     pub unsafe fn destroy(self) {
+        self.device.destroy_command_pool(self.command_pool);
         self.device.destroy_device();
+    }
+
+    #[must_use]
+    pub fn queue_handle(&self) -> vk::Queue {
+        self.queue
+    }
+
+    #[must_use]
+    pub fn queue_family_index(&self) -> u32 {
+        self.queue_family_index
+    }
+
+    #[must_use]
+    pub fn queue_family_properties(&self) -> vk::QueueFamilyProperties {
+        self.queue_family_properties
     }
 
     pub unsafe fn timestamp_calibration(&self) -> Result<TimestampCalibration> {

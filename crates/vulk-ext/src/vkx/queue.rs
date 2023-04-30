@@ -7,7 +7,7 @@ pub unsafe fn queue_submit(
     signal_semaphores: &[vk::SemaphoreSubmitInfo],
 ) -> Result<()> {
     device.queue_submit2(
-        device.queue,
+        device.queue_handle(),
         1,
         &vk::SubmitInfo2 {
             s_type: vk::StructureType::SubmitInfo2,

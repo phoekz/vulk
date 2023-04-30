@@ -151,7 +151,7 @@ impl GpuResource for Commands {
             s_type: vk::StructureType::CommandPoolCreateInfo,
             p_next: null(),
             flags: vk::CommandPoolCreateFlagBits::ResetCommandBuffer.into(),
-            queue_family_index: device.queue_family_index,
+            queue_family_index: device.queue_family_index(),
         })?;
 
         // Command buffer available -semaphore.
@@ -456,7 +456,7 @@ unsafe fn redraw(
 
     // Queue submit.
     device.queue_submit2(
-        device.queue,
+        device.queue_handle(),
         1,
         &vk::SubmitInfo2 {
             s_type: vk::StructureType::SubmitInfo2,
@@ -515,7 +515,7 @@ unsafe fn redraw(
             p_image_indices: &image_index,
             p_results: result.as_mut_ptr(),
         };
-        device.queue_present_khr(device.queue, &present_info_khr)?;
+        device.queue_present_khr(device.queue_handle(), &present_info_khr)?;
         let result = result.assume_init();
         ensure!(result == vk::Result::Success);
     }
