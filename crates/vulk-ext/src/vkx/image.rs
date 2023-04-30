@@ -129,8 +129,12 @@ pub trait ImageOps {
         self.extent_3d().depth
     }
 
-    fn byte_size(&self) -> u32 {
-        self.format().block_size() * self.width() * self.height() * self.depth()
+    fn byte_size(&self) -> vk::DeviceSize {
+        let block_size = vk::DeviceSize::from(self.format().block_size());
+        let width = vk::DeviceSize::from(self.width());
+        let height = vk::DeviceSize::from(self.height());
+        let depth = vk::DeviceSize::from(self.depth());
+        block_size * width * height * depth
     }
 
     fn rect_2d(&self) -> vk::Rect2D {
