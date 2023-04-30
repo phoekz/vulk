@@ -11,7 +11,7 @@ keywords = ["vulkan", "graphics"]
 license = "MIT"
 readme = "README.md"
 repository = "https://github.com/phoekz/vulk"
-version = "0.1.13"
+version = "0.1.14"
 
 [workspace.dependencies]
 anyhow = "1.0.70"
