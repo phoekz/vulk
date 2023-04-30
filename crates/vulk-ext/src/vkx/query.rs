@@ -34,6 +34,10 @@ impl TimestampQuery {
         device.destroy_query_pool(self.query_pool);
     }
 
+    pub unsafe fn reset(&self, device: &Device) {
+        device.reset_query_pool(self.query_pool, 0, self.query_count);
+    }
+
     pub unsafe fn get_raw_timestamps(&self, device: &Device) -> Result<Vec<u64>> {
         let stride = size_of::<u64>() as u64;
         let flags = vk::QueryResultFlagBits::Result64 | vk::QueryResultFlagBits::ResultWait;
@@ -134,6 +138,11 @@ impl StatisticsQuery {
     pub unsafe fn destroy(self, device: &Device) {
         device.destroy_query_pool(self.pipeline_statistic_query_pool);
         device.destroy_query_pool(self.mesh_primitives_generated_query_pool);
+    }
+
+    pub unsafe fn reset(&self, device: &Device) {
+        device.reset_query_pool(self.pipeline_statistic_query_pool, 0, 1);
+        device.reset_query_pool(self.mesh_primitives_generated_query_pool, 0, 1);
     }
 
     pub unsafe fn get_statistics(&self, device: &Device) -> Result<Statistics> {
