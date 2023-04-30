@@ -38,3 +38,12 @@ use vulk::vk;
 //
 
 pub mod vkx;
+
+//
+// Utilities
+//
+
+fn aligned_size(size: vk::DeviceSize, alignment: vk::DeviceSize) -> vk::DeviceSize {
+    assert!(alignment.is_power_of_two());
+    (size + alignment - 1) & !(alignment - 1)
+}

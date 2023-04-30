@@ -8,11 +8,20 @@ pub unsafe fn transfer_resources(
     images: &[ImageResource],
     images_bytes: &[&[u8]],
 ) -> Result<()> {
+    // https://registry.khronos.org/vulkan/specs/1.3-extensions/html/vkspec.html#VUID-VkCopyBufferToImageInfo2-dstImage-07975
+    // "If dstImage does not have either a depth/stencil or a multi-planar
+    // format, then for each element of pRegions, bufferOffset must be a
+    // multiple of the texel block size."
+    //
+    // The largest texel block size (32 bytes) belongs to R64G64B64A64_SFLOAT.
+    // Aligning all byte accesses to this size satisfies this VUID.
+    const MAX_TEXEL_BLOCK_SIZE: vk::DeviceSize = 32;
+
     // Total size.
     let staging_buffer_byte_size = buffers_bytes
         .iter()
         .chain(images_bytes)
-        .map(|bytes| bytes.len() as vk::DeviceSize)
+        .map(|bytes| aligned_size(bytes.len() as _, MAX_TEXEL_BLOCK_SIZE))
         .sum();
     debug!("Staging buffer size {staging_buffer_byte_size}");
 
@@ -28,17 +37,17 @@ pub unsafe fn transfer_resources(
     )?;
 
     // Copy into staging buffer.
-    let mut dst_offset = 0;
+    let mut dst_offset: vk::DeviceSize = 0;
     for bytes in buffers_bytes.iter().chain(images_bytes) {
         std::ptr::copy_nonoverlapping(
             bytes.as_ptr(),
             staging_buffer
                 .memory_mut()
                 .as_mut_ptr::<u8>()
-                .add(dst_offset),
+                .add(dst_offset as usize),
             bytes.len(),
         );
-        dst_offset += bytes.len();
+        dst_offset += aligned_size(bytes.len() as _, MAX_TEXEL_BLOCK_SIZE);
     }
 
     // Command buffer.
@@ -71,7 +80,7 @@ pub unsafe fn transfer_resources(
     )?;
 
     // Buffer copy commands.
-    let mut src_offset = 0;
+    let mut src_offset: vk::DeviceSize = 0;
     for (buffer, buffer_bytes) in buffers.iter().zip(buffers_bytes) {
         // Copy.
         device.cmd_copy_buffer2(
@@ -100,7 +109,7 @@ pub unsafe fn transfer_resources(
         );
 
         // Advance.
-        src_offset += buffer_bytes.len() as vk::DeviceSize;
+        src_offset += aligned_size(buffer_bytes.len() as _, MAX_TEXEL_BLOCK_SIZE);
     }
 
     // Image copy commands.
@@ -197,7 +206,7 @@ pub unsafe fn transfer_resources(
         );
 
         // Advance.
-        src_offset += image_bytes.len() as vk::DeviceSize;
+        src_offset += aligned_size(image_bytes.len() as _, MAX_TEXEL_BLOCK_SIZE);
     }
 
     // Submit.

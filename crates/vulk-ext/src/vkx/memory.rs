@@ -415,7 +415,3 @@ fn memory_type_index(
     }
     panic!("Unable to find suitable memory type for the buffer, memory_type_bits=0b{memory_type_bits:b}");
 }
-
-fn aligned_size(size: vk::DeviceSize, alignment: vk::DeviceSize) -> vk::DeviceSize {
-    (size + alignment - 1) & !(alignment - 1)
-}
