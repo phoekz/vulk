@@ -2,6 +2,7 @@ use super::*;
 
 use raw_window_handle::{HasRawDisplayHandle, HasRawWindowHandle};
 
+#[derive(Debug)]
 pub struct Surface {
     surface: vk::SurfaceKHR,
     pub create_info: vk::Win32SurfaceCreateInfoKHR,

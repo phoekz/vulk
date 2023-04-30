@@ -1,5 +1,6 @@
 use super::*;
 
+#[derive(Debug)]
 pub(crate) struct DebugUtils {
     debug_utils_messenger: vk::DebugUtilsMessengerEXT,
 }

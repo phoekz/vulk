@@ -39,6 +39,7 @@ impl ShaderType {
     }
 }
 
+#[derive(Clone, Debug)]
 pub struct ShaderBinary {
     ty: ShaderType,
     code: Vec<u8>,
@@ -158,6 +159,7 @@ impl ShaderCompiler {
     }
 }
 
+#[derive(Debug)]
 pub struct ShaderCreateInfo<'a> {
     pub shader_binaries: &'a [ShaderBinary],
     pub set_layouts: &'a [vk::DescriptorSetLayout],
@@ -165,6 +167,7 @@ pub struct ShaderCreateInfo<'a> {
     pub specialization_info: Option<&'a vk::SpecializationInfo>,
 }
 
+#[derive(Debug)]
 pub struct Shader {
     pub(super) stages: Vec<vk::ShaderStageFlagBits>,
     pub(super) shaders: Vec<vk::ShaderEXT>,

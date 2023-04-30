@@ -1,5 +1,6 @@
 use super::*;
 
+#[derive(Debug)]
 pub struct PhysicalDevice {
     physical_device: vk::PhysicalDevice,
     pub properties: vk::PhysicalDeviceProperties,

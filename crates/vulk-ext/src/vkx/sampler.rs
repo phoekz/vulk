@@ -1,5 +1,6 @@
 use super::*;
 
+#[derive(Clone, Copy, Debug)]
 pub struct SamplerCreator(vk::SamplerCreateInfo);
 
 impl SamplerCreator {
@@ -75,6 +76,7 @@ impl Default for SamplerCreator {
 }
 
 /// [`SamplerResource`] is meant to be used by a shader.
+#[derive(Debug)]
 pub struct SamplerResource {
     sampler: vk::Sampler,
     sampler_create_info: vk::SamplerCreateInfo,

@@ -1,5 +1,6 @@
 use super::*;
 
+#[derive(Debug)]
 pub struct InstanceCreateInfo<'a> {
     pub application_name: &'a str,
     pub engine_name: &'a str,
@@ -21,6 +22,17 @@ pub struct Instance {
     instance: vulk::Instance,
     debug_utils: Option<DebugUtils>,
     validation_layers: bool,
+}
+
+impl std::fmt::Debug for Instance {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Instance")
+            .field("_init", &"Init {..}")
+            .field("instance", &"Instance {..}")
+            .field("debug_utils", &self.debug_utils)
+            .field("validation_layers", &self.validation_layers)
+            .finish()
+    }
 }
 
 impl Instance {

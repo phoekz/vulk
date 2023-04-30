@@ -2,6 +2,7 @@ use std::mem::MaybeUninit;
 
 use super::*;
 
+#[derive(Debug)]
 pub struct CommandBuffer {
     command_buffer: vk::CommandBuffer,
 }

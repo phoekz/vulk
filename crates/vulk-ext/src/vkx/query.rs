@@ -1,5 +1,6 @@
 use super::*;
 
+#[derive(Debug)]
 pub struct TimestampQuery {
     pub(super) query_pool: vk::QueryPool,
     query_count: u32,
@@ -94,6 +95,7 @@ pub struct MeshPrimitivesGenerated {
     pub mesh_primitives_generated: u64,
 }
 
+#[derive(Debug)]
 pub struct StatisticsQuery {
     pub(super) pipeline_statistic_query_pool: vk::QueryPool,
     pub(super) mesh_primitives_generated_query_pool: vk::QueryPool,

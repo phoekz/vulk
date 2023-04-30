@@ -1,5 +1,6 @@
 use super::*;
 
+#[derive(Debug)]
 pub struct Swapchain {
     swapchain: vk::SwapchainKHR,
     create_info: vk::SwapchainCreateInfoKHR,

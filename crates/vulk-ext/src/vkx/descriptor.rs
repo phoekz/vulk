@@ -27,6 +27,7 @@ pub(crate) fn validate_descriptor_sizes(
     Ok(())
 }
 
+#[derive(Clone, Copy, Debug)]
 pub enum DescriptorCreateInfo {
     UniformBuffer {
         address: vk::DeviceAddress,
@@ -233,6 +234,7 @@ impl std::fmt::Debug for Descriptor {
     }
 }
 
+#[derive(Debug)]
 pub struct DescriptorBinding<'a> {
     pub ty: vk::DescriptorType,
     pub stages: vk::ShaderStageFlags,

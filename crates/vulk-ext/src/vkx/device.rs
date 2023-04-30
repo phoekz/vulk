@@ -8,6 +8,19 @@ pub struct Device {
     pub(crate) command_pool: vk::CommandPool,
 }
 
+impl std::fmt::Debug for Device {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Device")
+            .field("device", &"Device {..}")
+            .field("queue", &self.queue)
+            .field("queue_family_index", &self.queue_family_index)
+            .field("queue_family_properties", &self.queue_family_properties)
+            .field("command_pool", &self.command_pool)
+            .finish()
+    }
+}
+
+#[derive(Debug)]
 pub struct TimestampCalibration {
     // On Posix, host_domain seems to match machine uptime.
     pub host_domain: u64,
