@@ -213,7 +213,7 @@ impl GpuResource for RenderTargets {
                     | vk::ImageUsageFlagBits::ColorAttachment
                     | vk::ImageUsageFlagBits::TransferSrc,
             ),
-            vk::MemoryPropertyFlagBits::DeviceLocal.into(),
+            vk::MemoryPropertyFlagBits::DeviceLocal,
         )?;
         Ok(Self { color })
     }
@@ -243,9 +243,9 @@ impl GpuResource for Output {
             &gpu.device,
             vkx::BufferCreator::new(
                 DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE,
-                vk::BufferUsageFlagBits::TransferDst.into(),
+                vk::BufferUsageFlagBits::TransferDst,
             ),
-            vk::MemoryPropertyFlagBits::HostVisible.into(),
+            vk::MemoryPropertyFlagBits::HostVisible,
         )?;
         Ok(Self { buffer })
     }

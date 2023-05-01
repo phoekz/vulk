@@ -3916,7 +3916,8 @@ impl InstanceCreateFlags {
     }
 
     #[must_use]
-    pub fn contains(self, rhs: Self) -> bool {
+    pub fn contains(self, rhs: impl Into<Self> + Copy) -> bool {
+        let rhs = rhs.into();
         self.0 & rhs.0 == rhs.0
     }
 }
@@ -4013,7 +4014,8 @@ impl QueueFlags {
     }
 
     #[must_use]
-    pub fn contains(self, rhs: Self) -> bool {
+    pub fn contains(self, rhs: impl Into<Self> + Copy) -> bool {
+        let rhs = rhs.into();
         self.0 & rhs.0 == rhs.0
     }
 }
@@ -4147,7 +4149,8 @@ impl DeviceQueueCreateFlags {
     }
 
     #[must_use]
-    pub fn contains(self, rhs: Self) -> bool {
+    pub fn contains(self, rhs: impl Into<Self> + Copy) -> bool {
+        let rhs = rhs.into();
         self.0 & rhs.0 == rhs.0
     }
 }
@@ -4245,7 +4248,8 @@ impl CommandPoolCreateFlags {
     }
 
     #[must_use]
-    pub fn contains(self, rhs: Self) -> bool {
+    pub fn contains(self, rhs: impl Into<Self> + Copy) -> bool {
+        let rhs = rhs.into();
         self.0 & rhs.0 == rhs.0
     }
 }
@@ -4355,7 +4359,8 @@ impl CommandPoolResetFlags {
     }
 
     #[must_use]
-    pub fn contains(self, rhs: Self) -> bool {
+    pub fn contains(self, rhs: impl Into<Self> + Copy) -> bool {
+        let rhs = rhs.into();
         self.0 & rhs.0 == rhs.0
     }
 }
@@ -4453,7 +4458,8 @@ impl CommandBufferResetFlags {
     }
 
     #[must_use]
-    pub fn contains(self, rhs: Self) -> bool {
+    pub fn contains(self, rhs: impl Into<Self> + Copy) -> bool {
+        let rhs = rhs.into();
         self.0 & rhs.0 == rhs.0
     }
 }
@@ -4551,7 +4557,8 @@ impl CommandBufferUsageFlags {
     }
 
     #[must_use]
-    pub fn contains(self, rhs: Self) -> bool {
+    pub fn contains(self, rhs: impl Into<Self> + Copy) -> bool {
+        let rhs = rhs.into();
         self.0 & rhs.0 == rhs.0
     }
 }
@@ -4661,7 +4668,8 @@ impl SubmitFlags {
     }
 
     #[must_use]
-    pub fn contains(self, rhs: Self) -> bool {
+    pub fn contains(self, rhs: impl Into<Self> + Copy) -> bool {
+        let rhs = rhs.into();
         self.0 & rhs.0 == rhs.0
     }
 }
@@ -4759,7 +4767,8 @@ impl PipelineStageFlags2 {
     }
 
     #[must_use]
-    pub fn contains(self, rhs: Self) -> bool {
+    pub fn contains(self, rhs: impl Into<Self> + Copy) -> bool {
+        let rhs = rhs.into();
         self.0 & rhs.0 == rhs.0
     }
 }
@@ -4967,7 +4976,8 @@ impl AccessFlags2 {
     }
 
     #[must_use]
-    pub fn contains(self, rhs: Self) -> bool {
+    pub fn contains(self, rhs: impl Into<Self> + Copy) -> bool {
+        let rhs = rhs.into();
         self.0 & rhs.0 == rhs.0
     }
 }
@@ -5188,7 +5198,8 @@ impl SemaphoreWaitFlags {
     }
 
     #[must_use]
-    pub fn contains(self, rhs: Self) -> bool {
+    pub fn contains(self, rhs: impl Into<Self> + Copy) -> bool {
+        let rhs = rhs.into();
         self.0 & rhs.0 == rhs.0
     }
 }
@@ -5286,7 +5297,8 @@ impl DependencyFlags {
     }
 
     #[must_use]
-    pub fn contains(self, rhs: Self) -> bool {
+    pub fn contains(self, rhs: impl Into<Self> + Copy) -> bool {
+        let rhs = rhs.into();
         self.0 & rhs.0 == rhs.0
     }
 }
@@ -5388,7 +5400,8 @@ impl RenderingFlags {
     }
 
     #[must_use]
-    pub fn contains(self, rhs: Self) -> bool {
+    pub fn contains(self, rhs: impl Into<Self> + Copy) -> bool {
+        let rhs = rhs.into();
         self.0 & rhs.0 == rhs.0
     }
 }
@@ -5494,7 +5507,8 @@ impl ResolveModeFlags {
     }
 
     #[must_use]
-    pub fn contains(self, rhs: Self) -> bool {
+    pub fn contains(self, rhs: impl Into<Self> + Copy) -> bool {
+        let rhs = rhs.into();
         self.0 & rhs.0 == rhs.0
     }
 }
@@ -5610,7 +5624,8 @@ impl ShaderCreateFlagsEXT {
     }
 
     #[must_use]
-    pub fn contains(self, rhs: Self) -> bool {
+    pub fn contains(self, rhs: impl Into<Self> + Copy) -> bool {
+        let rhs = rhs.into();
         self.0 & rhs.0 == rhs.0
     }
 }
@@ -5750,7 +5765,8 @@ impl PipelineShaderStageCreateFlags {
     }
 
     #[must_use]
-    pub fn contains(self, rhs: Self) -> bool {
+    pub fn contains(self, rhs: impl Into<Self> + Copy) -> bool {
+        let rhs = rhs.into();
         self.0 & rhs.0 == rhs.0
     }
 }
@@ -5854,7 +5870,8 @@ impl ShaderStageFlags {
     }
 
     #[must_use]
-    pub fn contains(self, rhs: Self) -> bool {
+    pub fn contains(self, rhs: impl Into<Self> + Copy) -> bool {
+        let rhs = rhs.into();
         self.0 & rhs.0 == rhs.0
     }
 }
@@ -6003,7 +6020,8 @@ impl PipelineCreateFlags {
     }
 
     #[must_use]
-    pub fn contains(self, rhs: Self) -> bool {
+    pub fn contains(self, rhs: impl Into<Self> + Copy) -> bool {
+        let rhs = rhs.into();
         self.0 & rhs.0 == rhs.0
     }
 }
@@ -6170,7 +6188,8 @@ impl MemoryHeapFlags {
     }
 
     #[must_use]
-    pub fn contains(self, rhs: Self) -> bool {
+    pub fn contains(self, rhs: impl Into<Self> + Copy) -> bool {
+        let rhs = rhs.into();
         self.0 & rhs.0 == rhs.0
     }
 }
@@ -6270,7 +6289,8 @@ impl MemoryPropertyFlags {
     }
 
     #[must_use]
-    pub fn contains(self, rhs: Self) -> bool {
+    pub fn contains(self, rhs: impl Into<Self> + Copy) -> bool {
+        let rhs = rhs.into();
         self.0 & rhs.0 == rhs.0
     }
 }
@@ -6389,7 +6409,8 @@ impl MemoryAllocateFlags {
     }
 
     #[must_use]
-    pub fn contains(self, rhs: Self) -> bool {
+    pub fn contains(self, rhs: impl Into<Self> + Copy) -> bool {
+        let rhs = rhs.into();
         self.0 & rhs.0 == rhs.0
     }
 }
@@ -6535,7 +6556,8 @@ impl BufferUsageFlags {
     }
 
     #[must_use]
-    pub fn contains(self, rhs: Self) -> bool {
+    pub fn contains(self, rhs: impl Into<Self> + Copy) -> bool {
+        let rhs = rhs.into();
         self.0 & rhs.0 == rhs.0
     }
 }
@@ -6684,7 +6706,8 @@ impl BufferCreateFlags {
     }
 
     #[must_use]
-    pub fn contains(self, rhs: Self) -> bool {
+    pub fn contains(self, rhs: impl Into<Self> + Copy) -> bool {
+        let rhs = rhs.into();
         self.0 & rhs.0 == rhs.0
     }
 }
@@ -6803,7 +6826,8 @@ impl ImageUsageFlags {
     }
 
     #[must_use]
-    pub fn contains(self, rhs: Self) -> bool {
+    pub fn contains(self, rhs: impl Into<Self> + Copy) -> bool {
+        let rhs = rhs.into();
         self.0 & rhs.0 == rhs.0
     }
 }
@@ -6928,7 +6952,8 @@ impl ImageCreateFlags {
     }
 
     #[must_use]
-    pub fn contains(self, rhs: Self) -> bool {
+    pub fn contains(self, rhs: impl Into<Self> + Copy) -> bool {
+        let rhs = rhs.into();
         self.0 & rhs.0 == rhs.0
     }
 }
@@ -7068,7 +7093,8 @@ impl ImageViewCreateFlags {
     }
 
     #[must_use]
-    pub fn contains(self, rhs: Self) -> bool {
+    pub fn contains(self, rhs: impl Into<Self> + Copy) -> bool {
+        let rhs = rhs.into();
         self.0 & rhs.0 == rhs.0
     }
 }
@@ -7166,7 +7192,8 @@ impl ImageAspectFlags {
     }
 
     #[must_use]
-    pub fn contains(self, rhs: Self) -> bool {
+    pub fn contains(self, rhs: impl Into<Self> + Copy) -> bool {
+        let rhs = rhs.into();
         self.0 & rhs.0 == rhs.0
     }
 }
@@ -7291,7 +7318,8 @@ impl AccelerationStructureCreateFlagsKHR {
     }
 
     #[must_use]
-    pub fn contains(self, rhs: Self) -> bool {
+    pub fn contains(self, rhs: impl Into<Self> + Copy) -> bool {
+        let rhs = rhs.into();
         self.0 & rhs.0 == rhs.0
     }
 }
@@ -7398,7 +7426,8 @@ impl BuildAccelerationStructureFlagsKHR {
     }
 
     #[must_use]
-    pub fn contains(self, rhs: Self) -> bool {
+    pub fn contains(self, rhs: impl Into<Self> + Copy) -> bool {
+        let rhs = rhs.into();
         self.0 & rhs.0 == rhs.0
     }
 }
@@ -7514,7 +7543,8 @@ impl GeometryFlagsKHR {
     }
 
     #[must_use]
-    pub fn contains(self, rhs: Self) -> bool {
+    pub fn contains(self, rhs: impl Into<Self> + Copy) -> bool {
+        let rhs = rhs.into();
         self.0 & rhs.0 == rhs.0
     }
 }
@@ -7614,7 +7644,8 @@ impl SamplerCreateFlags {
     }
 
     #[must_use]
-    pub fn contains(self, rhs: Self) -> bool {
+    pub fn contains(self, rhs: impl Into<Self> + Copy) -> bool {
+        let rhs = rhs.into();
         self.0 & rhs.0 == rhs.0
     }
 }
@@ -7712,7 +7743,8 @@ impl DescriptorSetLayoutCreateFlags {
     }
 
     #[must_use]
-    pub fn contains(self, rhs: Self) -> bool {
+    pub fn contains(self, rhs: impl Into<Self> + Copy) -> bool {
+        let rhs = rhs.into();
         self.0 & rhs.0 == rhs.0
     }
 }
@@ -7822,7 +7854,8 @@ impl PipelineLayoutCreateFlags {
     }
 
     #[must_use]
-    pub fn contains(self, rhs: Self) -> bool {
+    pub fn contains(self, rhs: impl Into<Self> + Copy) -> bool {
+        let rhs = rhs.into();
         self.0 & rhs.0 == rhs.0
     }
 }
@@ -7937,7 +7970,8 @@ impl QueryControlFlags {
     }
 
     #[must_use]
-    pub fn contains(self, rhs: Self) -> bool {
+    pub fn contains(self, rhs: impl Into<Self> + Copy) -> bool {
+        let rhs = rhs.into();
         self.0 & rhs.0 == rhs.0
     }
 }
@@ -8035,7 +8069,8 @@ impl QueryResultFlags {
     }
 
     #[must_use]
-    pub fn contains(self, rhs: Self) -> bool {
+    pub fn contains(self, rhs: impl Into<Self> + Copy) -> bool {
+        let rhs = rhs.into();
         self.0 & rhs.0 == rhs.0
     }
 }
@@ -8148,7 +8183,8 @@ impl QueryPipelineStatisticFlags {
     }
 
     #[must_use]
-    pub fn contains(self, rhs: Self) -> bool {
+    pub fn contains(self, rhs: impl Into<Self> + Copy) -> bool {
+        let rhs = rhs.into();
         self.0 & rhs.0 == rhs.0
     }
 }
@@ -8288,7 +8324,8 @@ impl CullModeFlags {
     }
 
     #[must_use]
-    pub fn contains(self, rhs: Self) -> bool {
+    pub fn contains(self, rhs: impl Into<Self> + Copy) -> bool {
+        let rhs = rhs.into();
         self.0 & rhs.0 == rhs.0
     }
 }
@@ -8392,7 +8429,8 @@ impl ColorComponentFlags {
     }
 
     #[must_use]
-    pub fn contains(self, rhs: Self) -> bool {
+    pub fn contains(self, rhs: impl Into<Self> + Copy) -> bool {
+        let rhs = rhs.into();
         self.0 & rhs.0 == rhs.0
     }
 }
@@ -8514,7 +8552,8 @@ impl SurfaceTransformFlagsKHR {
     }
 
     #[must_use]
-    pub fn contains(self, rhs: Self) -> bool {
+    pub fn contains(self, rhs: impl Into<Self> + Copy) -> bool {
+        let rhs = rhs.into();
         self.0 & rhs.0 == rhs.0
     }
 }
@@ -8642,7 +8681,8 @@ impl CompositeAlphaFlagsKHR {
     }
 
     #[must_use]
-    pub fn contains(self, rhs: Self) -> bool {
+    pub fn contains(self, rhs: impl Into<Self> + Copy) -> bool {
+        let rhs = rhs.into();
         self.0 & rhs.0 == rhs.0
     }
 }
@@ -8755,7 +8795,8 @@ impl SwapchainCreateFlagsKHR {
     }
 
     #[must_use]
-    pub fn contains(self, rhs: Self) -> bool {
+    pub fn contains(self, rhs: impl Into<Self> + Copy) -> bool {
+        let rhs = rhs.into();
         self.0 & rhs.0 == rhs.0
     }
 }
@@ -8855,7 +8896,8 @@ impl GeometryInstanceFlagsKHR {
     }
 
     #[must_use]
-    pub fn contains(self, rhs: Self) -> bool {
+    pub fn contains(self, rhs: impl Into<Self> + Copy) -> bool {
+        let rhs = rhs.into();
         self.0 & rhs.0 == rhs.0
     }
 }
@@ -8968,7 +9010,8 @@ impl SampleCountFlags {
     }
 
     #[must_use]
-    pub fn contains(self, rhs: Self) -> bool {
+    pub fn contains(self, rhs: impl Into<Self> + Copy) -> bool {
+        let rhs = rhs.into();
         self.0 & rhs.0 == rhs.0
     }
 }
@@ -9090,7 +9133,8 @@ impl SubgroupFeatureFlags {
     }
 
     #[must_use]
-    pub fn contains(self, rhs: Self) -> bool {
+    pub fn contains(self, rhs: impl Into<Self> + Copy) -> bool {
+        let rhs = rhs.into();
         self.0 & rhs.0 == rhs.0
     }
 }
@@ -9233,7 +9277,8 @@ impl DebugUtilsMessageSeverityFlagsEXT {
     }
 
     #[must_use]
-    pub fn contains(self, rhs: Self) -> bool {
+    pub fn contains(self, rhs: impl Into<Self> + Copy) -> bool {
+        let rhs = rhs.into();
         self.0 & rhs.0 == rhs.0
     }
 }
@@ -9346,7 +9391,8 @@ impl DebugUtilsMessageTypeFlagsEXT {
     }
 
     #[must_use]
-    pub fn contains(self, rhs: Self) -> bool {
+    pub fn contains(self, rhs: impl Into<Self> + Copy) -> bool {
+        let rhs = rhs.into();
         self.0 & rhs.0 == rhs.0
     }
 }

@@ -183,7 +183,7 @@ impl GpuResource for Blas {
                 &gpu.device,
                 vkx::BufferCreator::new(
                     (size_of::<VertexType>() * create_info.scene.vertex_data.len()) as _,
-                    vk::BufferUsageFlagBits::AccelerationStructureBuildInputReadOnlyKHR.into(),
+                    vk::BufferUsageFlagBits::AccelerationStructureBuildInputReadOnlyKHR,
                 ),
                 vk::MemoryPropertyFlagBits::HostVisible | vk::MemoryPropertyFlagBits::HostCoherent,
             )?;
@@ -192,7 +192,7 @@ impl GpuResource for Blas {
                 &gpu.device,
                 vkx::BufferCreator::new(
                     (size_of::<IndexType>() * create_info.scene.index_data.len()) as _,
-                    vk::BufferUsageFlagBits::AccelerationStructureBuildInputReadOnlyKHR.into(),
+                    vk::BufferUsageFlagBits::AccelerationStructureBuildInputReadOnlyKHR,
                 ),
                 vk::MemoryPropertyFlagBits::HostVisible | vk::MemoryPropertyFlagBits::HostCoherent,
             )?;
@@ -201,7 +201,7 @@ impl GpuResource for Blas {
                 &gpu.device,
                 vkx::BufferCreator::new(
                     (size_of::<TransformType>() * create_info.scene.transform_data.len()) as _,
-                    vk::BufferUsageFlagBits::AccelerationStructureBuildInputReadOnlyKHR.into(),
+                    vk::BufferUsageFlagBits::AccelerationStructureBuildInputReadOnlyKHR,
                 ),
                 vk::MemoryPropertyFlagBits::HostVisible | vk::MemoryPropertyFlagBits::HostCoherent,
             )?;
@@ -294,9 +294,9 @@ impl GpuResource for Blas {
             &gpu.device,
             vkx::BufferCreator::new(
                 acceleration_structure_size as _,
-                vk::BufferUsageFlagBits::AccelerationStructureStorageKHR.into(),
+                vk::BufferUsageFlagBits::AccelerationStructureStorageKHR,
             ),
-            vk::MemoryPropertyFlagBits::DeviceLocal.into(),
+            vk::MemoryPropertyFlagBits::DeviceLocal,
         )?;
 
         // Create.
@@ -321,9 +321,9 @@ impl GpuResource for Blas {
             &gpu.device,
             vkx::BufferCreator::new(
                 build_scratch_size as _,
-                vk::BufferUsageFlagBits::StorageBuffer.into(),
+                vk::BufferUsageFlagBits::StorageBuffer,
             ),
-            vk::MemoryPropertyFlagBits::DeviceLocal.into(),
+            vk::MemoryPropertyFlagBits::DeviceLocal,
         )?;
 
         // Build.
@@ -443,7 +443,7 @@ impl GpuResource for Tlas {
                 &gpu.device,
                 vkx::BufferCreator::new(
                     size_of::<vk::AccelerationStructureInstanceKHR>() as _,
-                    vk::BufferUsageFlagBits::AccelerationStructureBuildInputReadOnlyKHR.into(),
+                    vk::BufferUsageFlagBits::AccelerationStructureBuildInputReadOnlyKHR,
                 ),
                 vk::MemoryPropertyFlagBits::HostVisible | vk::MemoryPropertyFlagBits::HostCoherent,
             )?;
@@ -519,9 +519,9 @@ impl GpuResource for Tlas {
             &gpu.device,
             vkx::BufferCreator::new(
                 acceleration_structure_size as _,
-                vk::BufferUsageFlagBits::AccelerationStructureStorageKHR.into(),
+                vk::BufferUsageFlagBits::AccelerationStructureStorageKHR,
             ),
-            vk::MemoryPropertyFlagBits::DeviceLocal.into(),
+            vk::MemoryPropertyFlagBits::DeviceLocal,
         )?;
 
         // Create.
@@ -546,9 +546,9 @@ impl GpuResource for Tlas {
             &gpu.device,
             vkx::BufferCreator::new(
                 build_scratch_size as _,
-                vk::BufferUsageFlagBits::StorageBuffer.into(),
+                vk::BufferUsageFlagBits::StorageBuffer,
             ),
-            vk::MemoryPropertyFlagBits::DeviceLocal.into(),
+            vk::MemoryPropertyFlagBits::DeviceLocal,
         )?;
 
         // Build.
@@ -640,7 +640,7 @@ impl GpuResource for RenderImage {
                 DEFAULT_RENDER_TARGET_COLOR_FORMAT,
                 vk::ImageUsageFlagBits::Storage | vk::ImageUsageFlagBits::TransferSrc,
             ),
-            vk::MemoryPropertyFlagBits::DeviceLocal.into(),
+            vk::MemoryPropertyFlagBits::DeviceLocal,
         )?;
         Ok(Self { image })
     }
@@ -680,7 +680,7 @@ impl GpuResource for Stats {
             &gpu.device,
             vkx::BufferCreator::new(
                 size_of::<StatCounters>() as _,
-                vk::BufferUsageFlagBits::StorageBuffer.into(),
+                vk::BufferUsageFlagBits::StorageBuffer,
             ),
             vk::MemoryPropertyFlagBits::HostVisible | vk::MemoryPropertyFlagBits::HostCoherent,
         )?;
@@ -1036,7 +1036,7 @@ impl GpuResource for Sbt {
             // Buffer.
             let (buffer, buffer_create_info) = vkx::BufferCreator::new(
                 u64::from(shader_group_handle_size),
-                vk::BufferUsageFlagBits::ShaderBindingTableKHR.into(),
+                vk::BufferUsageFlagBits::ShaderBindingTableKHR,
             )
             .create(device)?;
             buffers.push(buffer);

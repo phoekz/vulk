@@ -21,7 +21,7 @@ fn flag_bits_display_unknown_bits() {
 #[test]
 fn flags_contains() {
     let flags = vk::MemoryPropertyFlagBits::HostVisible | vk::MemoryPropertyFlagBits::HostCoherent;
-    assert!(flags.contains(vk::MemoryPropertyFlagBits::HostVisible.into()));
-    assert!(flags.contains(vk::MemoryPropertyFlagBits::HostCoherent.into()));
-    assert!(!flags.contains(vk::MemoryPropertyFlagBits::DeviceLocal.into()));
+    assert!(flags.contains(vk::MemoryPropertyFlagBits::HostVisible));
+    assert!(flags.contains(vk::MemoryPropertyFlagBits::HostCoherent));
+    assert!(!flags.contains(vk::MemoryPropertyFlagBits::DeviceLocal));
 }

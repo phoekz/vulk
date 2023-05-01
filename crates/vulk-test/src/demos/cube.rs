@@ -144,7 +144,7 @@ impl GpuResource for Textures {
             &gpu.physical_device,
             &gpu.device,
             &image_creators,
-            vk::MemoryPropertyFlagBits::DeviceLocal.into(),
+            vk::MemoryPropertyFlagBits::DeviceLocal,
         )?;
 
         // Upload.
@@ -482,7 +482,7 @@ impl GpuResource for RenderTargets {
                 vk::ImageUsageFlagBits::InputAttachment | vk::ImageUsageFlagBits::ColorAttachment,
                 DEFAULT_RENDER_TARGET_SAMPLES,
             ),
-            vk::MemoryPropertyFlagBits::DeviceLocal.into(),
+            vk::MemoryPropertyFlagBits::DeviceLocal,
         )?;
         let depth = vkx::ImageDedicatedResource::create_2d(
             &gpu.physical_device,
@@ -495,7 +495,7 @@ impl GpuResource for RenderTargets {
                     | vk::ImageUsageFlagBits::DepthStencilAttachment,
                 DEFAULT_RENDER_TARGET_SAMPLES,
             ),
-            vk::MemoryPropertyFlagBits::DeviceLocal.into(),
+            vk::MemoryPropertyFlagBits::DeviceLocal,
         )?;
         let resolve = vkx::ImageDedicatedResource::create_2d(
             &gpu.physical_device,
@@ -508,7 +508,7 @@ impl GpuResource for RenderTargets {
                     | vk::ImageUsageFlagBits::ColorAttachment
                     | vk::ImageUsageFlagBits::TransferSrc,
             ),
-            vk::MemoryPropertyFlagBits::DeviceLocal.into(),
+            vk::MemoryPropertyFlagBits::DeviceLocal,
         )?;
         Ok(Self {
             color,

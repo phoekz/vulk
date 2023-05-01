@@ -64,9 +64,9 @@ impl OutputImage {
                 device,
                 vkx::BufferCreator::new(
                     DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE,
-                    vk::BufferUsageFlagBits::TransferDst.into(),
+                    vk::BufferUsageFlagBits::TransferDst,
                 ),
-                vk::MemoryPropertyFlagBits::HostVisible.into(),
+                vk::MemoryPropertyFlagBits::HostVisible,
             )?,
         })
     }

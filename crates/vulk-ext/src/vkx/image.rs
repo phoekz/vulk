@@ -5,7 +5,12 @@ pub struct ImageCreator(vk::ImageCreateInfo);
 
 impl ImageCreator {
     #[must_use]
-    pub fn new_2d(width: u32, height: u32, format: vk::Format, usage: vk::ImageUsageFlags) -> Self {
+    pub fn new_2d(
+        width: u32,
+        height: u32,
+        format: vk::Format,
+        usage: impl Into<vk::ImageUsageFlags> + Copy,
+    ) -> Self {
         Self(vk::ImageCreateInfo {
             s_type: vk::StructureType::ImageCreateInfo,
             p_next: null(),
@@ -21,7 +26,7 @@ impl ImageCreator {
             array_layers: 1,
             samples: vk::SampleCountFlagBits::Count1,
             tiling: vk::ImageTiling::Optimal,
-            usage,
+            usage: usage.into(),
             sharing_mode: vk::SharingMode::Exclusive,
             queue_family_index_count: 0,
             p_queue_family_indices: null(),
@@ -34,7 +39,7 @@ impl ImageCreator {
         width: u32,
         height: u32,
         format: vk::Format,
-        usage: vk::ImageUsageFlags,
+        usage: impl Into<vk::ImageUsageFlags> + Copy,
         samples: vk::SampleCountFlagBits,
     ) -> Self {
         Self::new_2d(width, height, format, usage).samples(samples)
@@ -174,7 +179,7 @@ impl ImageResource {
         physical_device: &PhysicalDevice,
         device: &Device,
         image_creators: &[ImageCreator],
-        property_flags: vk::MemoryPropertyFlags,
+        property_flags: impl Into<vk::MemoryPropertyFlags> + Copy,
     ) -> Result<(Vec<Self>, ImageAllocations)> {
         // Constants.
         const SAMPLED_IMAGE: vk::ImageUsageFlagBits = vk::ImageUsageFlagBits::Sampled;
@@ -213,7 +218,7 @@ impl ImageResource {
         let mut descriptors = Vec::with_capacity(image_creators.len());
         for (&image_view, image_create_info) in image_views.iter().zip(&image_create_infos) {
             let usage = image_create_info.usage;
-            let descriptor = if usage.contains(SAMPLED_IMAGE.into()) {
+            let descriptor = if usage.contains(SAMPLED_IMAGE) {
                 Descriptor::create(
                     physical_device,
                     device,
@@ -222,7 +227,7 @@ impl ImageResource {
                         image_layout: vk::ImageLayout::ReadOnlyOptimal,
                     },
                 )
-            } else if usage.contains(STORAGE_IMAGE.into()) {
+            } else if usage.contains(STORAGE_IMAGE) {
                 Descriptor::create(
                     physical_device,
                     device,
@@ -231,7 +236,7 @@ impl ImageResource {
                         image_layout: vk::ImageLayout::General,
                     },
                 )
-            } else if usage.contains(INPUT_ATTACHMENT.into()) {
+            } else if usage.contains(INPUT_ATTACHMENT) {
                 Descriptor::create(
                     physical_device,
                     device,
@@ -311,7 +316,7 @@ impl ImageDedicatedResource {
         physical_device: &PhysicalDevice,
         device: &Device,
         image_creator: ImageCreator,
-        property_flags: vk::MemoryPropertyFlags,
+        property_flags: impl Into<vk::MemoryPropertyFlags> + Copy,
     ) -> Result<Self> {
         let (mut image_resources, image_allocations) =
             ImageResource::create(physical_device, device, &[image_creator], property_flags)?;

@@ -31,7 +31,7 @@ pub unsafe fn transfer_resources(
         device,
         vkx::BufferCreator::new(
             staging_buffer_byte_size,
-            vk::BufferUsageFlagBits::TransferSrc.into(),
+            vk::BufferUsageFlagBits::TransferSrc,
         ),
         vk::MemoryPropertyFlagBits::HostVisible | vk::MemoryPropertyFlagBits::HostCoherent,
     )?;

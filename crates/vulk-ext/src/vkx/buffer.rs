@@ -5,13 +5,13 @@ pub struct BufferCreator(vk::BufferCreateInfo);
 
 impl BufferCreator {
     #[must_use]
-    pub fn new(size: vk::DeviceSize, usage: vk::BufferUsageFlags) -> Self {
+    pub fn new(size: vk::DeviceSize, usage: impl Into<vk::BufferUsageFlags> + Copy) -> Self {
         Self(vk::BufferCreateInfo {
             s_type: vk::StructureType::BufferCreateInfo,
             p_next: null(),
             flags: vk::BufferCreateFlags::empty(),
             size,
-            usage: usage | vk::BufferUsageFlagBits::ShaderDeviceAddress,
+            usage: usage.into() | vk::BufferUsageFlagBits::ShaderDeviceAddress,
             sharing_mode: vk::SharingMode::Exclusive,
             queue_family_index_count: 0,
             p_queue_family_indices: null(),
@@ -57,7 +57,7 @@ impl BufferResource {
         physical_device: &PhysicalDevice,
         device: &Device,
         buffer_creators: &[BufferCreator],
-        property_flags: vk::MemoryPropertyFlags,
+        property_flags: impl Into<vk::MemoryPropertyFlags> + Copy,
     ) -> Result<(Vec<Self>, BufferAllocations)> {
         // Constants.
         const UNIFORM_BUFFER: vk::BufferUsageFlagBits = vk::BufferUsageFlagBits::UniformBuffer;
@@ -91,7 +91,7 @@ impl BufferResource {
             .zip(&buffer_create_infos)
         {
             let usage = buffer_create_info.usage;
-            let descriptor = if usage.contains(UNIFORM_BUFFER.into()) {
+            let descriptor = if usage.contains(UNIFORM_BUFFER) {
                 // assert buffer_allocation == buffer_create_info.size
                 Descriptor::create(
                     physical_device,
@@ -101,7 +101,7 @@ impl BufferResource {
                         range: buffer_create_info.size,
                     },
                 )
-            } else if usage.contains(STORAGE_BUFFER.into()) {
+            } else if usage.contains(STORAGE_BUFFER) {
                 Descriptor::create(
                     physical_device,
                     device,
@@ -110,7 +110,7 @@ impl BufferResource {
                         range: buffer_create_info.size,
                     },
                 )
-            } else if usage.contains(AS_BUFFER.into()) {
+            } else if usage.contains(AS_BUFFER) {
                 Descriptor::create(
                     physical_device,
                     device,
@@ -186,7 +186,7 @@ impl BufferDedicatedResource {
         physical_device: &PhysicalDevice,
         device: &Device,
         buffer_creator: BufferCreator,
-        property_flags: vk::MemoryPropertyFlags,
+        property_flags: impl Into<vk::MemoryPropertyFlags> + Copy,
     ) -> Result<Self> {
         let (mut buffer_resources, buffer_allocations) =
             BufferResource::create(physical_device, device, &[buffer_creator], property_flags)?;
@@ -242,7 +242,7 @@ impl BufferDedicatedTransfer {
         physical_device: &PhysicalDevice,
         device: &Device,
         buffer_creator: BufferCreator,
-        property_flags: vk::MemoryPropertyFlags,
+        property_flags: impl Into<vk::MemoryPropertyFlags> + Copy,
     ) -> Result<Self> {
         // Validation.
         const TRANSFER_SRC: vk::BufferUsageFlagBits = vk::BufferUsageFlagBits::TransferSrc;
@@ -252,13 +252,15 @@ impl BufferDedicatedTransfer {
 
         ensure!(buffer_creator.0.size > 0);
         ensure!(
-            buffer_creator.0.usage.contains(TRANSFER_SRC.into())
-                || buffer_creator.0.usage.contains(TRANSFER_DST.into())
-                || buffer_creator.0.usage.contains(AS_BUILD_ONLY.into()),
+            buffer_creator.0.usage.contains(TRANSFER_SRC)
+                || buffer_creator.0.usage.contains(TRANSFER_DST)
+                || buffer_creator.0.usage.contains(AS_BUILD_ONLY),
             "got {}",
             buffer_creator.0.usage
         );
-        ensure!(property_flags.contains(vk::MemoryPropertyFlagBits::HostVisible.into()));
+        ensure!(property_flags
+            .into()
+            .contains(vk::MemoryPropertyFlagBits::HostVisible));
 
         // Buffer.
         let (buffer, buffer_create_info) = buffer_creator.create(device)?;

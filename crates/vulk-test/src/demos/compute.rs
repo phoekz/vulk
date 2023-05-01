@@ -128,7 +128,7 @@ impl GpuResource for ComputeImage {
                 DEFAULT_RENDER_TARGET_COLOR_FORMAT,
                 vk::ImageUsageFlagBits::Storage | vk::ImageUsageFlagBits::TransferSrc,
             ),
-            vk::MemoryPropertyFlagBits::DeviceLocal.into(),
+            vk::MemoryPropertyFlagBits::DeviceLocal,
         )?;
         Ok(Self { image })
     }

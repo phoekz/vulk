@@ -230,7 +230,7 @@ impl Geometry {
 
         // Flags.
         let usage = vk::BufferUsageFlagBits::StorageBuffer | vk::BufferUsageFlagBits::TransferDst;
-        let property_flags = vk::MemoryPropertyFlagBits::DeviceLocal.into();
+        let property_flags = vk::MemoryPropertyFlagBits::DeviceLocal;
 
         // Creators.
         let vertex_buffer_creator = vkx::BufferCreator::new(vertex_buffer_size as _, usage);
@@ -299,7 +299,7 @@ impl Textures {
                 vk::Format::R8g8b8a8Unorm,
                 vk::ImageUsageFlagBits::TransferDst | vk::ImageUsageFlagBits::Sampled,
             )],
-            vk::MemoryPropertyFlagBits::DeviceLocal.into(),
+            vk::MemoryPropertyFlagBits::DeviceLocal,
         )?;
         vkx::transfer_resources(
             &gpu.physical_device,
@@ -598,7 +598,7 @@ impl RenderTargets {
                     | vk::ImageUsageFlagBits::ColorAttachment
                     | vk::ImageUsageFlagBits::TransferSrc,
             ),
-            vk::MemoryPropertyFlagBits::DeviceLocal.into(),
+            vk::MemoryPropertyFlagBits::DeviceLocal,
         )?;
         Ok(Self { color })
     }
@@ -628,9 +628,9 @@ impl GpuResource for Output {
             &gpu.device,
             vkx::BufferCreator::new(
                 DEFAULT_RENDER_TARGET_COLOR_BYTE_SIZE,
-                vk::BufferUsageFlagBits::TransferDst.into(),
+                vk::BufferUsageFlagBits::TransferDst,
             ),
-            vk::MemoryPropertyFlagBits::HostVisible.into(),
+            vk::MemoryPropertyFlagBits::HostVisible,
         )?;
         Ok(Self { buffer })
     }

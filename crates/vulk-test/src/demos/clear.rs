@@ -77,7 +77,7 @@ impl GpuResource for RenderTargets {
                     | vk::ImageUsageFlagBits::ColorAttachment
                     | vk::ImageUsageFlagBits::TransferSrc,
             ),
-            vk::MemoryPropertyFlagBits::DeviceLocal.into(),
+            vk::MemoryPropertyFlagBits::DeviceLocal,
         )?;
         Ok(Self { color })
     }

@@ -6,7 +6,7 @@ pub trait SemaphoreOps {
     fn submit_info(
         &self,
         value: u64,
-        stage_mask: impl Into<vk::PipelineStageFlags2>,
+        stage_mask: impl Into<vk::PipelineStageFlags2> + Copy,
     ) -> vk::SemaphoreSubmitInfo {
         vk::SemaphoreSubmitInfo {
             s_type: vk::StructureType::SemaphoreSubmitInfo,

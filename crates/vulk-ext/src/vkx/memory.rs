@@ -71,7 +71,7 @@ impl BufferAllocations {
         device: &Device,
         buffers: &[vk::Buffer],
         buffer_create_infos: &[vk::BufferCreateInfo],
-        property_flags: vk::MemoryPropertyFlags,
+        property_flags: impl Into<vk::MemoryPropertyFlags> + Copy,
     ) -> Result<Self> {
         // Validation.
         ensure!(!buffers.is_empty());
@@ -87,14 +87,14 @@ impl BufferAllocations {
         ensure!(buffer_create_infos.iter().all(|info| info.size > 0));
         ensure!(buffer_create_infos.iter().all(|info| info
             .usage
-            .contains(vk::BufferUsageFlagBits::ShaderDeviceAddress.into())));
+            .contains(vk::BufferUsageFlagBits::ShaderDeviceAddress)));
         ensure!(buffer_create_infos
             .iter()
             .all(|info| info.sharing_mode == vk::SharingMode::Exclusive));
         ensure!(buffer_create_infos.iter().all(
             |info| info.queue_family_index_count == 0 && info.p_queue_family_indices.is_null()
         ));
-        ensure!(property_flags != vk::MemoryPropertyFlags::empty());
+        ensure!(property_flags.into() != vk::MemoryPropertyFlags::empty());
 
         // Requirements.
         let mut memory_requirements = vec![];
@@ -161,7 +161,10 @@ impl BufferAllocations {
 
         // Map memory.
         let mut memory_ptr = None;
-        if property_flags.contains(vk::MemoryPropertyFlagBits::HostVisible.into()) {
+        if property_flags
+            .into()
+            .contains(vk::MemoryPropertyFlagBits::HostVisible)
+        {
             let ptr = device
                 .map_memory2_khr(&vk::MemoryMapInfoKHR {
                     s_type: vk::StructureType::MemoryMapInfoKHR,
@@ -256,7 +259,7 @@ impl ImageAllocations {
         device: &Device,
         images: &[vk::Image],
         image_create_infos: &[vk::ImageCreateInfo],
-        property_flags: vk::MemoryPropertyFlags,
+        property_flags: impl Into<vk::MemoryPropertyFlags> + Copy,
     ) -> Result<Self> {
         // Validation.
         ensure!(!images.is_empty());
@@ -396,7 +399,7 @@ impl ImageAllocations {
 
 fn memory_type_index(
     memory: &vk::PhysicalDeviceMemoryProperties,
-    property_flags: vk::MemoryPropertyFlags,
+    property_flags: impl Into<vk::MemoryPropertyFlags> + Copy,
     memory_type_bits: u32,
 ) -> u32 {
     for memory_type_index in 0..memory.memory_type_count {

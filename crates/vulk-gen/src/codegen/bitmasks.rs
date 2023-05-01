@@ -11,7 +11,8 @@ impl {{rs_flags_ident}} {
     }
 
     #[must_use]
-    pub fn contains(self, rhs: Self) -> bool {
+    pub fn contains(self, rhs: impl Into<Self> + Copy) -> bool {
+        let rhs = rhs.into();
         self.0 & rhs.0 == rhs.0
     }
 }
