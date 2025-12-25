@@ -97,7 +97,7 @@ impl GpuResource for Textures {
 
             let seed = SystemTime::now().duration_since(SystemTime::UNIX_EPOCH)?;
             let mut state = rand_pcg::Pcg64Mcg::seed_from_u64(seed.as_secs());
-            let noise = rand::distributions::Uniform::new_inclusive(-0.1, 0.1);
+            let noise = rand::distr::Uniform::new_inclusive(-0.1, 0.1)?;
 
             let width = 16;
             let height = 16;

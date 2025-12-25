@@ -14,24 +14,24 @@ repository = "https://github.com/phoekz/vulk"
 version = "0.1.17"
 
 [workspace.dependencies]
-anyhow = "1.0.70"
-clap = { version = "4.2.4", features = ["derive"] }
-env_logger = "0.10.0"
-glam = { version = "0.23.0" }
-heck = "0.4.1"
-imagelib = { version = "0.24.6", default-features = false, features = [
+anyhow = "1.0.100"
+clap = { version = "4.5.53", features = ["derive"] }
+env_logger = "0.11.8"
+glam = { version = "0.30.9" }
+heck = "0.5.0"
+imagelib = { version = "0.25.9", default-features = false, features = [
     "png",
 ], package = "image" }
-imgui = "0.11.0"
-libloading = "0.8.0"
-log = "0.4.17"
-palette = "0.7.1"
-rand = "0.8.5"
-rand_pcg = "0.3.1"
+imgui = "0.12.0"
+libloading = "0.9.0"
+log = "0.4.29"
+palette = "0.7.6"
+rand = "0.9.2"
+rand_pcg = "0.9.0"
 raw-window-handle = "0.5.2"
-ron = "0.8.0"
-roxmltree = "0.18.0"
-serde = { version = "1.0.160", features = ["derive"] }
-shaderc = "0.8.2"
-thiserror = "1.0.40"
+ron = "0.12.0"
+roxmltree = "0.21.1"
+serde = { version = "1.0.228", features = ["derive"] }
+shaderc = "0.10.1"
+thiserror = "2.0.17"
 winit = "0.28.3"
