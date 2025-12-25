@@ -22,7 +22,6 @@ pub(super) fn parse_features<'a>(
             });
         } else {
             debug!("Ignoring feature: api={api}");
-            continue;
         }
     }
 

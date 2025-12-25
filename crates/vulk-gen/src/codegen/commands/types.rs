@@ -31,8 +31,8 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
             let rs_param_type = translation::vk_complex_type(
                 ctx.c_type_map,
                 vk_param_type,
-                &param.text,
-                &None,
+                param.text.as_ref(),
+                None,
                 false,
             )?;
             writeln!(
@@ -45,7 +45,7 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
         }
         let vk_return_type = &command.return_type;
         let rs_return_type =
-            translation::vk_complex_type(ctx.c_type_map, vk_return_type, &None, &None, false)?;
+            translation::vk_complex_type(ctx.c_type_map, vk_return_type, None, None, false)?;
         let rs_return = if rs_return_type == "c_void" {
             String::new()
         } else {

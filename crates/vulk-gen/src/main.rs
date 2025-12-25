@@ -4,6 +4,8 @@
 #![allow(
     clippy::collapsible_match,
     clippy::module_name_repetitions,
+    clippy::needless_raw_string_hashes,
+    clippy::struct_field_names,
     clippy::too_many_lines,
     clippy::unnecessary_wraps,
     clippy::wildcard_imports

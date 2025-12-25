@@ -130,7 +130,8 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
             ty,
             requires,
             bitvalues,
-        } = &registry_type.category else {
+        } = &registry_type.category
+        else {
             continue;
         };
 
@@ -235,8 +236,9 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
 
             // Special: Rust enums must have at least one variant.
             if member_idents.is_empty() {
-                rs_flag_bits_members.push_str("Placeholder = 0b0,");
-                rs_flag_bits_idents.push_str(&format!("{rs_flag_bits_ident}::Placeholder,"));
+                use std::fmt::Write as _;
+                write!(rs_flag_bits_members, "Placeholder = 0b0,")?;
+                write!(rs_flag_bits_idents, "{rs_flag_bits_ident}::Placeholder,",)?;
             }
 
             writeln!(

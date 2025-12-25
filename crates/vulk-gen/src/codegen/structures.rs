@@ -84,8 +84,8 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
                         let rs_type = translation::vk_complex_type(
                             ctx.c_type_map,
                             vk_type,
-                            &member.text,
-                            &member.en,
+                            member.text.as_ref(),
+                            member.en.as_ref(),
                             true,
                         )
                         .with_context(|| format!("Translating type={vk_type}"))?;
@@ -126,8 +126,8 @@ pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
             let rs_member_type = translation::vk_complex_type(
                 ctx.c_type_map,
                 vk_member_type,
-                &member.text,
-                &member.en,
+                member.text.as_ref(),
+                member.en.as_ref(),
                 false,
             )
             .with_context(|| format!("Translating member type={vk_member_type}"))?;

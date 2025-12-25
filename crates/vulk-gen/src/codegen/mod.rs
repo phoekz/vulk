@@ -145,7 +145,7 @@ impl ProvidedByMap {
                         | registry::RequireEntry::Enum { name, .. }
                         | registry::RequireEntry::Command { name } => {
                             assert!(!map.contains_key(name));
-                            map.insert(name.to_string(), feature.name.clone());
+                            map.insert(name.clone(), feature.name.clone());
                         }
                     }
                 }
@@ -159,7 +159,7 @@ impl ProvidedByMap {
                         | registry::RequireEntry::Enum { name, .. }
                         | registry::RequireEntry::Command { name } => {
                             if !map.contains_key(name) {
-                                map.insert(name.to_string(), extension.name.clone());
+                                map.insert(name.clone(), extension.name.clone());
                             }
                         }
                     }
@@ -198,7 +198,8 @@ impl EmptyFlagBitsMap {
                 requires,
                 bitvalues,
                 ..
-            } = &ty.category else {
+            } = &ty.category
+            else {
                 continue;
             };
 

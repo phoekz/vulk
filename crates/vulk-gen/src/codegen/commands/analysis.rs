@@ -11,8 +11,8 @@ pub fn group_by_loader(registry: &Registry) -> CommandGroups<'_> {
     let mut parent_relations = HashMap::new();
     for registry_type in &registry.types {
         let registry::TypeCategory::Handle { parent, .. } = &registry_type.category else {
-                    continue;
-                };
+            continue;
+        };
 
         parent_relations.insert(&registry_type.name, parent);
     }
@@ -93,8 +93,13 @@ pub fn wrapper_type(
         let mut mutable_params = 0;
 
         for param in &command.params {
-            let param_type =
-                translation::vk_complex_type(c_type_map, &param.ty, &param.text, &None, false)?;
+            let param_type = translation::vk_complex_type(
+                c_type_map,
+                &param.ty,
+                param.text.as_ref(),
+                None,
+                false,
+            )?;
             if param_type.contains("*mut") {
                 mutable_params += 1;
             }
@@ -111,8 +116,8 @@ pub fn wrapper_type(
         let param_type = translation::vk_complex_type(
             c_type_map,
             &last_param.ty,
-            &last_param.text,
-            &None,
+            last_param.text.as_ref(),
+            None,
             false,
         )?;
         let _is_c_type = c_type_map.contains_key(last_param.ty.as_str());

@@ -131,7 +131,7 @@ fn generate_wrappers(
         let rs_ident = translation::vk_simple_ident(&rs_ident)?;
         let vk_return_type = &command.return_type;
         let rs_return_type =
-            translation::vk_complex_type(ctx.c_type_map, vk_return_type, &None, &None, true)?;
+            translation::vk_complex_type(ctx.c_type_map, vk_return_type, None, None, true)?;
 
         let inline_handles = {
             let first_type = &command.params[0].ty;
@@ -161,8 +161,8 @@ fn generate_wrappers(
                 let rs_param_type = translation::vk_complex_type(
                     ctx.c_type_map,
                     vk_param_type,
-                    &param.text,
-                    &None,
+                    param.text.as_ref(),
+                    None,
                     true,
                 )?;
 
@@ -254,9 +254,14 @@ fn generate_wrappers(
             }
             analysis::WrapperType::OutputResult => {
                 let (vk_type, vk_text) = vk_params_type_last.unwrap();
-                let vk_text = vk_text_dereference_mut_ptr(vk_text)?;
-                let rs_output_type =
-                    translation::vk_complex_type(ctx.c_type_map, vk_type, &vk_text, &None, true)?;
+                let vk_text = vk_text_dereference_mut_ptr(vk_text.as_ref())?;
+                let rs_output_type = translation::vk_complex_type(
+                    ctx.c_type_map,
+                    vk_type,
+                    vk_text.as_ref(),
+                    None,
+                    true,
+                )?;
                 let rs_output_ident = rs_params_idents_last;
                 writeln!(
                     str,
@@ -274,9 +279,14 @@ fn generate_wrappers(
             analysis::WrapperType::Output => {
                 let vk_attr = attributes::Builder::new().must_use().raw(vk_attr).build();
                 let (vk_type, vk_text) = vk_params_type_last.unwrap();
-                let vk_text = vk_text_dereference_mut_ptr(vk_text)?;
-                let rs_output_type =
-                    translation::vk_complex_type(ctx.c_type_map, vk_type, &vk_text, &None, true)?;
+                let vk_text = vk_text_dereference_mut_ptr(vk_text.as_ref())?;
+                let rs_output_type = translation::vk_complex_type(
+                    ctx.c_type_map,
+                    vk_type,
+                    vk_text.as_ref(),
+                    None,
+                    true,
+                )?;
                 let rs_output_ident = rs_params_idents_last;
                 writeln!(
                     str,
@@ -297,7 +307,7 @@ fn generate_wrappers(
     Ok(str)
 }
 
-fn vk_text_dereference_mut_ptr(vk_text: &Option<String>) -> Result<Option<String>> {
+fn vk_text_dereference_mut_ptr(vk_text: Option<&String>) -> Result<Option<String>> {
     let vk_text = if let Some(vk_text) = vk_text {
         ensure!(vk_text.chars().all(|c| c == '*'));
         ensure!((1..=2).contains(&vk_text.len()));

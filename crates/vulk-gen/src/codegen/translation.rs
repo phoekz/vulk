@@ -67,8 +67,8 @@ pub fn vk_simple_type(vk: &str) -> Result<String> {
 pub fn vk_complex_type(
     c_type_map: &CtypeMap,
     vk_type: &str,
-    vk_text: &Option<String>,
-    vk_enum: &Option<String>,
+    vk_text: Option<&String>,
+    vk_enum: Option<&String>,
     vk_namespace: bool,
 ) -> Result<String> {
     // Base name.
@@ -326,10 +326,11 @@ pub fn vk_bitmask(vk_name: &str, vk_members: &[&str]) -> Result<Vec<String>> {
         .into_iter()
         .zip(members_suffixes)
         .map(|(parts, suffix)| {
-            let mut parts = parts
-                .into_iter()
-                .map(|part| format!("{}", heck::AsPascalCase(&part)))
-                .collect::<String>();
+            use std::fmt::Write as _;
+            let mut parts = parts.into_iter().fold(String::new(), |mut parts, part| {
+                write!(parts, "{}", heck::AsPascalCase(&part)).unwrap();
+                parts
+            });
             if let Some(suffix) = suffix {
                 parts.push_str(&suffix);
             }
