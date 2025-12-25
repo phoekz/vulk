@@ -57,7 +57,7 @@ unsafe extern "C" fn debug_utils_messenger_callback(
     } else {
         std::ffi::CStr::from_ptr(callback_data.p_message).to_string_lossy()
     };
-    let message_id_number: u32 = std::mem::transmute(callback_data.message_id_number);
+    let message_id_number: u32 = i32::cast_unsigned(callback_data.message_id_number);
 
     // Filter.
     if message_id_name == "Loader Message"

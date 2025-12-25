@@ -70,7 +70,7 @@ impl<'a> Node<'a> {
         parent_node.children(tag_name)
     }
 
-    pub(super) fn children_text(self, tag_name: &'a str) -> impl Iterator<Item = String> + '_ {
+    pub(super) fn children_text(self, tag_name: &'a str) -> impl Iterator<Item = String> + 'a {
         self.0
             .children()
             .filter(roxmltree::Node::is_element)

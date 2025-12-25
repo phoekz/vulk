@@ -227,6 +227,7 @@ impl GpuResource for RenderTargets {
 // Output
 //
 
+#[allow(dead_code)]
 struct Output {
     buffer: vkx::BufferDedicatedTransfer,
 }

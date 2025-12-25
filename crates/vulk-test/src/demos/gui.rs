@@ -101,7 +101,7 @@ impl GuiData {
         let mut imgui = {
             let mut imgui = imgui::Context::create();
             imgui.set_ini_filename(None);
-            let mut io = imgui.io_mut();
+            let io = imgui.io_mut();
             io.display_framebuffer_scale = [1.0, 1.0];
             io.display_size = [
                 DEFAULT_RENDER_TARGET_WIDTH as _,
@@ -114,7 +114,7 @@ impl GuiData {
 
         // Font atlas.
         let (texture_width, texture_height, texture_data) = {
-            let mut fonts = imgui.fonts();
+            let fonts = imgui.fonts();
             fonts.tex_id = imgui::TextureId::new(usize::MAX);
             let texture = fonts.build_rgba32_texture();
             let texture_width = texture.width;
@@ -612,6 +612,7 @@ impl RenderTargets {
 // Output
 //
 
+#[allow(dead_code)]
 struct Output {
     buffer: vkx::BufferDedicatedTransfer,
 }
