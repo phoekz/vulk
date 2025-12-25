@@ -24,7 +24,7 @@ impl CommandBuffer {
             };
             let mut command_buffer = MaybeUninit::uninit();
             device.allocate_command_buffers(
-                &command_buffer_allocate_info,
+                &raw const command_buffer_allocate_info,
                 command_buffer.as_mut_ptr(),
             )?;
             command_buffer.assume_init()
@@ -34,7 +34,7 @@ impl CommandBuffer {
     }
 
     pub unsafe fn destroy(self, device: &Device) {
-        device.free_command_buffers(device.command_pool, 1, &self.command_buffer);
+        device.free_command_buffers(device.command_pool, 1, &raw const self.command_buffer);
     }
 
     pub unsafe fn begin(&self, device: &Device) -> Result<()> {
@@ -135,16 +135,16 @@ impl CommandBuffer {
             layer_count: 1,
             view_mask: 0,
             color_attachment_count: 1,
-            p_color_attachments: &color_attachment_info,
+            p_color_attachments: &raw const color_attachment_info,
             p_depth_attachment: null(),
             p_stencil_attachment: null(),
         };
         if depth_attachment.is_some() {
-            rendering_info.p_depth_attachment = &depth_attachment_info;
+            rendering_info.p_depth_attachment = &raw const depth_attachment_info;
         }
 
         // Begin rendering.
-        device.cmd_begin_rendering(self.command_buffer, &rendering_info);
+        device.cmd_begin_rendering(self.command_buffer, &raw const rendering_info);
     }
 
     pub unsafe fn end_rendering(&self, device: &Device) {
@@ -511,7 +511,7 @@ impl CommandBuffer {
             pcr.stage_flags,
             pcr.offset,
             pcr.size,
-            (data as *const T).cast(),
+            std::ptr::from_ref::<T>(data).cast(),
         );
         Ok(())
     }
@@ -691,7 +691,7 @@ impl CommandBuffer {
                 src_acceleration_structure: vk::AccelerationStructureKHR::null(),
                 dst_acceleration_structure,
                 geometry_count,
-                p_geometries: geometries as *const _,
+                p_geometries: std::ptr::from_ref(geometries),
                 pp_geometries: null(),
                 scratch_data: vk::DeviceOrHostAddressKHR {
                     device_address: scratch_data.memory().device_address(),
@@ -708,7 +708,7 @@ impl CommandBuffer {
         device.cmd_build_acceleration_structures_khr(
             self.command_buffer,
             1,
-            &acceleration_structure_build_geometry_info_khr,
+            &raw const acceleration_structure_build_geometry_info_khr,
             [addr_of!(acceleration_structure_build_range_info_khr)].as_ptr(),
         );
     }
@@ -767,10 +767,10 @@ impl CommandBuffer {
 
         device.cmd_trace_rays_khr(
             self.command_buffer,
-            &raygen_sdar,
-            &miss_sdar,
-            &hit_sdar,
-            &callable_sdar,
+            &raw const raygen_sdar,
+            &raw const miss_sdar,
+            &raw const hit_sdar,
+            &raw const callable_sdar,
             width,
             height,
             1,

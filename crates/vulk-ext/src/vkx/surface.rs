@@ -42,7 +42,7 @@ impl Surface {
                 bail!("Unsupported platform: display_handle={display_handle:?}, window_handle={window_handle:?}");
             }
         };
-        let surface = instance.create_win32_surface_khr(&create_info)?;
+        let surface = instance.create_win32_surface_khr(&raw const create_info)?;
 
         // Surface capabilities.
         let surface_capabilities = instance

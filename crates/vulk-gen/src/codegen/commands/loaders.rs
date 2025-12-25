@@ -2,7 +2,7 @@ use super::*;
 
 const TEMPLATE_STRUCT_MEMBER: &str = r#"pub {{rs_ident}}: Option<vk::{{rs_type}}>,"#;
 const TEMPLATE_LOADER: &str =
-    r#"{{rs_ident}}: load(b"{{vk_ident}}\0").map(|f| std::mem::transmute(f)),"#;
+    r#"{{rs_ident}}: load(c"{{vk_ident}}").map(|f| std::mem::transmute(f)),"#;
 
 pub struct Rendered {
     pub init_struct_members: String,

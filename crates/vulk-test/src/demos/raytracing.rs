@@ -262,7 +262,7 @@ impl GpuResource for Blas {
                     src_acceleration_structure: vk::AccelerationStructureKHR::null(),
                     dst_acceleration_structure: vk::AccelerationStructureKHR::null(),
                     geometry_count: create_info.scene.transform_data.len() as _,
-                    p_geometries: &acceleration_structure_geometry_khr,
+                    p_geometries: &raw const acceleration_structure_geometry_khr,
                     pp_geometries: null(),
                     scratch_data: zeroed(),
                 };
@@ -277,9 +277,9 @@ impl GpuResource for Blas {
             let max_primitive_counts = create_info.scene.transform_data.len() as u32;
             device.get_acceleration_structure_build_sizes_khr(
                 vk::AccelerationStructureBuildTypeKHR::DeviceKHR,
-                &acceleration_structure_build_geometry_info_khr,
-                &max_primitive_counts,
-                &mut acceleration_structure_build_sizes_info_khr,
+                &raw const acceleration_structure_build_geometry_info_khr,
+                &raw const max_primitive_counts,
+                &raw mut acceleration_structure_build_sizes_info_khr,
             );
             let acceleration_structure_size =
                 acceleration_structure_build_sizes_info_khr.acceleration_structure_size;
@@ -311,8 +311,9 @@ impl GpuResource for Blas {
                 ty: vk::AccelerationStructureTypeKHR::BottomLevelKHR,
                 device_address: 0,
             };
-            gpu.device
-                .create_acceleration_structure_khr(&acceleration_structure_create_info_khr)?
+            gpu.device.create_acceleration_structure_khr(
+                &raw const acceleration_structure_create_info_khr,
+            )?
         };
 
         // Scratch buffer.
@@ -368,7 +369,7 @@ impl GpuResource for Blas {
                     acceleration_structure: blas,
                 };
             device.get_acceleration_structure_device_address_khr(
-                &acceleration_structure_device_address_info_khr,
+                &raw const acceleration_structure_device_address_info_khr,
             )
         };
 
@@ -487,7 +488,7 @@ impl GpuResource for Tlas {
                     src_acceleration_structure: vk::AccelerationStructureKHR::null(),
                     dst_acceleration_structure: vk::AccelerationStructureKHR::null(),
                     geometry_count: create_info.scene.transform_data.len() as u32 as _,
-                    p_geometries: &acceleration_structure_geometry_khr,
+                    p_geometries: &raw const acceleration_structure_geometry_khr,
                     pp_geometries: null(),
                     scratch_data: zeroed(),
                 };
@@ -502,9 +503,9 @@ impl GpuResource for Tlas {
             let max_primitive_counts = create_info.scene.transform_data.len() as u32;
             device.get_acceleration_structure_build_sizes_khr(
                 vk::AccelerationStructureBuildTypeKHR::DeviceKHR,
-                &acceleration_structure_build_geometry_info_khr,
-                &max_primitive_counts,
-                &mut acceleration_structure_build_sizes_info_khr,
+                &raw const acceleration_structure_build_geometry_info_khr,
+                &raw const max_primitive_counts,
+                &raw mut acceleration_structure_build_sizes_info_khr,
             );
             let acceleration_structure_size =
                 acceleration_structure_build_sizes_info_khr.acceleration_structure_size;
@@ -536,8 +537,9 @@ impl GpuResource for Tlas {
                 ty: vk::AccelerationStructureTypeKHR::TopLevelKHR,
                 device_address: 0,
             };
-            gpu.device
-                .create_acceleration_structure_khr(&acceleration_structure_create_info_khr)?
+            gpu.device.create_acceleration_structure_khr(
+                &raw const acceleration_structure_create_info_khr,
+            )?
         };
 
         // Scratch buffer.
@@ -586,7 +588,7 @@ impl GpuResource for Tlas {
                     acceleration_structure: tlas,
                 };
             device.get_acceleration_structure_device_address_khr(
-                &acceleration_structure_device_address_info_khr,
+                &raw const acceleration_structure_device_address_info_khr,
             )
         };
 
@@ -898,7 +900,7 @@ impl GpuResource for Pipeline {
                 flags: vk::PipelineShaderStageCreateFlags::empty(),
                 stage: vk::ShaderStageFlagBits::RaygenKHR,
                 module: raygen_shader,
-                p_name: b"main\0".as_ptr().cast(),
+                p_name: c"main".as_ptr().cast(),
                 p_specialization_info: null(),
             },
             vk::PipelineShaderStageCreateInfo {
@@ -907,7 +909,7 @@ impl GpuResource for Pipeline {
                 flags: vk::PipelineShaderStageCreateFlags::empty(),
                 stage: vk::ShaderStageFlagBits::MissKHR,
                 module: miss_shader,
-                p_name: b"main\0".as_ptr().cast(),
+                p_name: c"main".as_ptr().cast(),
                 p_specialization_info: null(),
             },
             vk::PipelineShaderStageCreateInfo {
@@ -916,7 +918,7 @@ impl GpuResource for Pipeline {
                 flags: vk::PipelineShaderStageCreateFlags::empty(),
                 stage: vk::ShaderStageFlagBits::ClosestHitKHR,
                 module: closest_hit_shader,
-                p_name: b"main\0".as_ptr().cast(),
+                p_name: c"main".as_ptr().cast(),
                 p_specialization_info: null(),
             },
         ];
@@ -973,7 +975,7 @@ impl GpuResource for Pipeline {
             vk::DeferredOperationKHR::null(),
             vk::PipelineCache::null(),
             1,
-            &ray_tracing_pipeline_create_info_khr,
+            &raw const ray_tracing_pipeline_create_info_khr,
             pipeline.as_mut_ptr(),
         )?;
         let pipeline = pipeline.assume_init();

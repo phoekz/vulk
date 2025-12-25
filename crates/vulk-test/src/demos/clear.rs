@@ -62,7 +62,7 @@ struct RenderTargets {
 impl GpuResource for RenderTargets {
     type CreateInfo<'a> = ();
 
-    unsafe fn create(gpu: &Gpu, _: &Self::CreateInfo<'_>) -> Result<Self>
+    unsafe fn create(gpu: &Gpu, (): &Self::CreateInfo<'_>) -> Result<Self>
     where
         Self: Sized,
     {

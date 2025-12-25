@@ -14,7 +14,9 @@
     clippy::module_name_repetitions,
     clippy::needless_pass_by_value,
     clippy::needless_range_loop,
+    clippy::needless_raw_string_hashes,
     clippy::similar_names,
+    clippy::struct_field_names,
     clippy::too_many_arguments,
     clippy::too_many_lines,
     clippy::wildcard_imports

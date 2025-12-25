@@ -199,7 +199,7 @@ impl Shader {
                 p_specialization_info: if let Some(specialization_info) =
                     create_info.specialization_info
                 {
-                    specialization_info as *const _
+                    std::ptr::from_ref(specialization_info)
                 } else {
                     null()
                 },

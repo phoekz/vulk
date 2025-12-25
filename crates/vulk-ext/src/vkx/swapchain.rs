@@ -35,7 +35,7 @@ impl Swapchain {
         };
 
         // Swapchain.
-        let swapchain = device.create_swapchain_khr(&create_info)?;
+        let swapchain = device.create_swapchain_khr(&raw const create_info)?;
 
         // Swapchain images.
         let mut images = vec![];

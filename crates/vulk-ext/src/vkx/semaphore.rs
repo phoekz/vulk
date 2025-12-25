@@ -37,7 +37,7 @@ impl TimelineSemaphore {
             p_next: addr_of!(semaphore_type_create_info).cast(),
             flags: vk::SemaphoreCreateFlags::empty(),
         };
-        let semaphore = device.create_semaphore(&semaphore_create_info)?;
+        let semaphore = device.create_semaphore(&raw const semaphore_create_info)?;
         Ok(Self { semaphore })
     }
 
@@ -52,7 +52,7 @@ impl TimelineSemaphore {
                 p_next: null(),
                 flags: vk::SemaphoreWaitFlagBits::Any.into(),
                 semaphore_count: 1,
-                p_semaphores: &self.semaphore,
+                p_semaphores: &raw const self.semaphore,
                 p_values: [value].as_ptr(),
             },
             timeout,
@@ -87,7 +87,7 @@ impl BinarySemaphore {
             p_next: addr_of!(semaphore_type_create_info).cast(),
             flags: vk::SemaphoreCreateFlags::empty(),
         };
-        let semaphore = device.create_semaphore(&semaphore_create_info)?;
+        let semaphore = device.create_semaphore(&raw const semaphore_create_info)?;
         Ok(Self { semaphore })
     }
 

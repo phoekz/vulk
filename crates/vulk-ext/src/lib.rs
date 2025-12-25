@@ -10,11 +10,12 @@
     clippy::cast_precision_loss,
     clippy::cast_sign_loss,
     clippy::missing_errors_doc,
-    clippy::missing_safety_doc,
     clippy::missing_panics_doc,
+    clippy::missing_safety_doc,
     clippy::module_name_repetitions,
     clippy::needless_pass_by_value,
     clippy::similar_names,
+    clippy::struct_field_names,
     clippy::too_many_arguments,
     clippy::too_many_lines,
     clippy::wildcard_imports

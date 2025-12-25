@@ -110,8 +110,8 @@ impl BufferAllocations {
                 memory_requirements: zeroed(),
             };
             device.get_device_buffer_memory_requirements(
-                &device_buffer_memory_requirements,
-                &mut memory_requirements2,
+                &raw const device_buffer_memory_requirements,
+                &raw mut memory_requirements2,
             );
             memory_requirements.push(memory_requirements2.memory_requirements);
         }
@@ -296,7 +296,7 @@ impl ImageAllocations {
             let device_image_memory_requirements = vk::DeviceImageMemoryRequirements {
                 s_type: vk::StructureType::DeviceImageMemoryRequirements,
                 p_next: null(),
-                p_create_info: &image_create_info,
+                p_create_info: &raw const image_create_info,
                 plane_aspect: zeroed(),
             };
             let mut memory_requirements2 = vk::MemoryRequirements2 {
@@ -305,8 +305,8 @@ impl ImageAllocations {
                 memory_requirements: zeroed(),
             };
             device.get_device_image_memory_requirements(
-                &device_image_memory_requirements,
-                &mut memory_requirements2,
+                &raw const device_image_memory_requirements,
+                &raw mut memory_requirements2,
             );
             memory_requirements.push(memory_requirements2.memory_requirements);
         }

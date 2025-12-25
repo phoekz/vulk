@@ -64,7 +64,7 @@ impl SamplerCreator {
 
     pub unsafe fn create(self, device: &Device) -> Result<(vk::Sampler, vk::SamplerCreateInfo)> {
         let sampler_create_info = self.0;
-        let sampler = device.create_sampler(&sampler_create_info)?;
+        let sampler = device.create_sampler(&raw const sampler_create_info)?;
         Ok((sampler, sampler_create_info))
     }
 }

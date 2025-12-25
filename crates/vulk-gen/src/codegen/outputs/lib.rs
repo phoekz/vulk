@@ -14,6 +14,7 @@ pub const TEMPLATE: &str = r#"//! # `vulk`
     clippy::missing_panics_doc,
     clippy::missing_safety_doc,
     clippy::module_name_repetitions,
+    clippy::needless_raw_string_hashes,
     clippy::too_many_arguments,
     clippy::too_many_lines,
     clippy::unreadable_literal
@@ -78,7 +79,7 @@ where
 
     // Query the number of elements.
     let mut len_u32 = 0_u32;
-    f(&mut len_u32, std::ptr::null_mut())?;
+    f(&raw mut len_u32, std::ptr::null_mut())?;
     let len = len_u32 as usize;
 
     // Allocate.
@@ -95,7 +96,7 @@ where
     }
 
     // Query elements.
-    f(&mut len_u32, ptr.cast())?;
+    f(&raw mut len_u32, ptr.cast())?;
 
     // Build the Vec.
     let vec = Vec::from_raw_parts(ptr.cast::<T>(), len, len);

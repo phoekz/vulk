@@ -71,7 +71,7 @@ impl Instance {
         // Layers.
         let mut enabled_layer_names = vec![];
         if create_info.validation_layers {
-            enabled_layer_names.push(b"VK_LAYER_KHRONOS_validation\0".as_ptr().cast());
+            enabled_layer_names.push(c"VK_LAYER_KHRONOS_validation".as_ptr().cast());
         }
 
         // Instance.

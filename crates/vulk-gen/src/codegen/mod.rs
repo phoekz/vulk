@@ -125,7 +125,13 @@ pub fn generate(
 fn rustfmt(path: &Path, max_width: u32) -> Result<()> {
     let path = path.to_string_lossy().to_string();
     let output = std::process::Command::new("rustfmt")
-        .args(["--config", &format!("max_width={max_width}"), path.as_str()])
+        .args([
+            "--edition",
+            "2021",
+            "--config",
+            &format!("max_width={max_width}"),
+            path.as_str(),
+        ])
         .output()?;
     let code = output.status.code().unwrap();
     ensure!(code == 0, "{output:?}");

@@ -3,7 +3,7 @@ pub const TEMPLATE: &str = r#"
 // Imports
 //
 
-use std::ffi::{c_char, c_void};
+use std::ffi::{c_char, c_void, CStr};
 use super::{vk, Error};
 
 //
@@ -31,8 +31,8 @@ impl Init {
         let library = libloading::Library::new(VULKAN_LIB_PATH).map_err(|_| Error::LibraryLoad(std::borrow::Cow::Borrowed(VULKAN_LIB_PATH))).map(std::sync::Arc::new)?;
 
         // Load functions.
-        let load = |name: &'static [u8]| {
-            let pfn = if let Ok(symbol) = library.get::<*const c_void>(name) {
+        let load = |name: &'static CStr| {
+            let pfn = if let Ok(symbol) = library.get::<*const c_void>(name.to_bytes()) {
                 *symbol
             } else {
                 return None;
@@ -74,7 +74,7 @@ pub struct Instance {
 
 impl Instance {
     pub unsafe fn load(init: &Init, instance: vk::Instance) -> Result<Self, Error> {
-        let load = |name: &'static [u8]| {
+        let load = |name: &'static CStr| {
             let pfn = init.get_instance_proc_addr(instance, name.as_ptr().cast());
             if pfn as usize == 0 {
                 return None;
@@ -118,7 +118,7 @@ pub struct Device {
 
 impl Device {
     pub unsafe fn load(instance: &Instance, device: vk::Device) -> Result<Self, Error> {
-        let load = |name: &'static [u8]| {
+        let load = |name: &'static CStr| {
             let pfn = instance.get_device_proc_addr(device, name.as_ptr().cast());
             if pfn as usize == 0 {
                 return None;

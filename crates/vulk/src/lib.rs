@@ -171,6 +171,7 @@
     clippy::missing_panics_doc,
     clippy::missing_safety_doc,
     clippy::module_name_repetitions,
+    clippy::needless_raw_string_hashes,
     clippy::too_many_arguments,
     clippy::too_many_lines,
     clippy::unreadable_literal
@@ -220,7 +221,7 @@ pub enum Error {
 #[doc = "**Includes**: [`VK_KHR_surface`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_surface.html)"]
 #[doc = "<br>"]
 pub const REQUIRED_INSTANCE_EXTENSIONS: [*const std::ffi::c_char; 1] =
-    [b"VK_KHR_surface\0".as_ptr().cast()];
+    [c"VK_KHR_surface".as_ptr().cast()];
 
 #[doc = "**Includes**: [`VK_KHR_swapchain`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_swapchain.html)"]
 #[doc = "<br>"]
@@ -249,25 +250,25 @@ pub const REQUIRED_INSTANCE_EXTENSIONS: [*const std::ffi::c_char; 1] =
 #[doc = "**Includes**: [`VK_EXT_shader_object`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_shader_object.html)"]
 #[doc = "<br>"]
 pub const REQUIRED_DEVICE_EXTENSIONS: [*const std::ffi::c_char; 13] = [
-    b"VK_KHR_swapchain\0".as_ptr().cast(),
-    b"VK_KHR_acceleration_structure\0".as_ptr().cast(),
-    b"VK_KHR_ray_tracing_pipeline\0".as_ptr().cast(),
-    b"VK_KHR_ray_query\0".as_ptr().cast(),
-    b"VK_EXT_calibrated_timestamps\0".as_ptr().cast(),
-    b"VK_KHR_deferred_host_operations\0".as_ptr().cast(),
-    b"VK_KHR_map_memory2\0".as_ptr().cast(),
-    b"VK_KHR_pipeline_library\0".as_ptr().cast(),
-    b"VK_KHR_synchronization2\0".as_ptr().cast(),
-    b"VK_EXT_descriptor_buffer\0".as_ptr().cast(),
-    b"VK_EXT_mesh_shader\0".as_ptr().cast(),
-    b"VK_KHR_ray_tracing_maintenance1\0".as_ptr().cast(),
-    b"VK_EXT_shader_object\0".as_ptr().cast(),
+    c"VK_KHR_swapchain".as_ptr().cast(),
+    c"VK_KHR_acceleration_structure".as_ptr().cast(),
+    c"VK_KHR_ray_tracing_pipeline".as_ptr().cast(),
+    c"VK_KHR_ray_query".as_ptr().cast(),
+    c"VK_EXT_calibrated_timestamps".as_ptr().cast(),
+    c"VK_KHR_deferred_host_operations".as_ptr().cast(),
+    c"VK_KHR_map_memory2".as_ptr().cast(),
+    c"VK_KHR_pipeline_library".as_ptr().cast(),
+    c"VK_KHR_synchronization2".as_ptr().cast(),
+    c"VK_EXT_descriptor_buffer".as_ptr().cast(),
+    c"VK_EXT_mesh_shader".as_ptr().cast(),
+    c"VK_KHR_ray_tracing_maintenance1".as_ptr().cast(),
+    c"VK_EXT_shader_object".as_ptr().cast(),
 ];
 
 #[doc = "**Includes**: [`VK_KHR_win32_surface`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_KHR_win32_surface.html)"]
 #[doc = "<br>"]
 pub const WIN32_INSTANCE_EXTENSIONS: [*const std::ffi::c_char; 1] =
-    [b"VK_KHR_win32_surface\0".as_ptr().cast()];
+    [c"VK_KHR_win32_surface".as_ptr().cast()];
 
 pub const WIN32_DEVICE_EXTENSIONS: [*const std::ffi::c_char; 0] = [];
 
@@ -276,8 +277,8 @@ pub const WIN32_DEVICE_EXTENSIONS: [*const std::ffi::c_char; 0] = [];
 #[doc = "**Includes**: [`VK_EXT_validation_features`](https://www.khronos.org/registry/vulkan/specs/1.3-extensions/man/html/VK_EXT_validation_features.html)"]
 #[doc = "<br>"]
 pub const DEBUGGING_INSTANCE_EXTENSIONS: [*const std::ffi::c_char; 2] = [
-    b"VK_EXT_debug_utils\0".as_ptr().cast(),
-    b"VK_EXT_validation_features\0".as_ptr().cast(),
+    c"VK_EXT_debug_utils".as_ptr().cast(),
+    c"VK_EXT_validation_features".as_ptr().cast(),
 ];
 
 pub const DEBUGGING_DEVICE_EXTENSIONS: [*const std::ffi::c_char; 0] = [];
@@ -301,7 +302,7 @@ where
 
     // Query the number of elements.
     let mut len_u32 = 0_u32;
-    f(&mut len_u32, std::ptr::null_mut())?;
+    f(&raw mut len_u32, std::ptr::null_mut())?;
     let len = len_u32 as usize;
 
     // Allocate.
@@ -318,7 +319,7 @@ where
     }
 
     // Query elements.
-    f(&mut len_u32, ptr.cast())?;
+    f(&raw mut len_u32, ptr.cast())?;
 
     // Build the Vec.
     let vec = Vec::from_raw_parts(ptr.cast::<T>(), len, len);

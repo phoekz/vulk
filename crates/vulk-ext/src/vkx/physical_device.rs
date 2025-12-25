@@ -27,7 +27,7 @@ impl PhysicalDevice {
             .find(|&physical_device| {
                 let mut props2: vk::PhysicalDeviceProperties2 = zeroed();
                 props2.s_type = vk::StructureType::PhysicalDeviceProperties2;
-                instance.get_physical_device_properties2(physical_device, &mut props2);
+                instance.get_physical_device_properties2(physical_device, &raw mut props2);
                 let props = props2.properties;
                 let device_name = std::ffi::CStr::from_ptr(props.device_name.as_ptr());
                 let device_name = device_name.to_string_lossy();
@@ -57,7 +57,7 @@ impl PhysicalDevice {
             p_next: addr_of_mut!(db_props).cast(),
             properties: zeroed(),
         };
-        instance.get_physical_device_properties2(physical_device, &mut props2);
+        instance.get_physical_device_properties2(physical_device, &raw mut props2);
 
         // Queue family properties.
         let qf_props = {
@@ -81,7 +81,7 @@ impl PhysicalDevice {
                 p_next: null_mut(),
                 memory_properties: zeroed(),
             };
-            instance.get_physical_device_memory_properties2(physical_device, &mut mem_props2);
+            instance.get_physical_device_memory_properties2(physical_device, &raw mut mem_props2);
             mem_props2.memory_properties
         };
 

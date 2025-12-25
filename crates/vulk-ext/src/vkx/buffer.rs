@@ -20,7 +20,7 @@ impl BufferCreator {
 
     pub unsafe fn create(self, device: &Device) -> Result<(vk::Buffer, vk::BufferCreateInfo)> {
         let buffer_create_info = self.0;
-        let buffer = device.create_buffer(&buffer_create_info)?;
+        let buffer = device.create_buffer(&raw const buffer_create_info)?;
         Ok((buffer, buffer_create_info))
     }
 }

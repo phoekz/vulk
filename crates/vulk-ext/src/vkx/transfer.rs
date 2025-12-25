@@ -60,8 +60,10 @@ pub unsafe fn transfer_resources(
             command_buffer_count: 1,
         };
         let mut command_buffer = std::mem::MaybeUninit::uninit();
-        device
-            .allocate_command_buffers(&command_buffer_allocate_info, command_buffer.as_mut_ptr())?;
+        device.allocate_command_buffers(
+            &raw const command_buffer_allocate_info,
+            command_buffer.as_mut_ptr(),
+        )?;
         command_buffer.assume_init()
     };
 

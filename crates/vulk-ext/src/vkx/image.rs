@@ -52,7 +52,7 @@ impl ImageCreator {
 
     pub unsafe fn create(self, device: &Device) -> Result<(vk::Image, vk::ImageCreateInfo)> {
         let image_create_info = self.0;
-        let image = device.create_image(&image_create_info)?;
+        let image = device.create_image(&raw const image_create_info)?;
         Ok((image, image_create_info))
     }
 }
@@ -91,7 +91,7 @@ impl ImageViewCreator {
         device: &Device,
     ) -> Result<(vk::ImageView, vk::ImageViewCreateInfo)> {
         let image_view_create_info = self.0;
-        let image_view = device.create_image_view(&image_view_create_info)?;
+        let image_view = device.create_image_view(&raw const image_view_create_info)?;
         Ok((image_view, image_view_create_info))
     }
 }

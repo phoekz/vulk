@@ -8,8 +8,8 @@ pub(crate) struct DebugUtils {
 impl DebugUtils {
     pub(crate) unsafe fn create(instance: &vulk::Instance) -> Result<Self> {
         let debug_utils_messenger_create_info_ext = debug_utils_messenger_create_info_ext();
-        let debug_utils_messenger =
-            instance.create_debug_utils_messenger_ext(&debug_utils_messenger_create_info_ext)?;
+        let debug_utils_messenger = instance
+            .create_debug_utils_messenger_ext(&raw const debug_utils_messenger_create_info_ext)?;
         Ok(Self {
             debug_utils_messenger,
         })

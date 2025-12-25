@@ -398,7 +398,7 @@ impl Device {
             calibrated_timestamp_info_ext.len() as _,
             calibrated_timestamp_info_ext.as_ptr(),
             timestamps.as_mut_ptr(),
-            &mut max_deviation,
+            &raw mut max_deviation,
         )?;
         let host_domain = timestamps[0];
         let device_domain = timestamps[1];

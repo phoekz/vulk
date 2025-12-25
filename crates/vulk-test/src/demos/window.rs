@@ -512,10 +512,10 @@ unsafe fn redraw(
             p_wait_semaphores: &commands.rendering_complete(frame_index).handle(),
             swapchain_count: 1,
             p_swapchains: &swapchain.handle(),
-            p_image_indices: &image_index,
+            p_image_indices: &raw const image_index,
             p_results: result.as_mut_ptr(),
         };
-        device.queue_present_khr(device.queue_handle(), &present_info_khr)?;
+        device.queue_present_khr(device.queue_handle(), &raw const present_info_khr)?;
         let result = result.assume_init();
         ensure!(result == vk::Result::Success);
     }

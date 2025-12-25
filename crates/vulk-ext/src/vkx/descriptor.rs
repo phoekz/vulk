@@ -184,7 +184,7 @@ impl Descriptor {
                 ty,
                 size,
                 vk::DescriptorDataEXT {
-                    p_sampler: &sampler,
+                    p_sampler: &raw const sampler,
                 },
             ),
             DescriptorCreateInfo::AccelerationStructure(acceleration_structure) => {
@@ -266,8 +266,7 @@ impl DescriptorStorage {
         for (binding_index, binding) in bindings.iter().enumerate() {
             ensure!(
                 !binding.descriptors.is_empty(),
-                "Binding {} expected 1 or more descriptors",
-                binding_index
+                "Binding {binding_index} expected 1 or more descriptors",
             );
             for descriptor in binding.descriptors {
                 ensure!(
@@ -347,7 +346,7 @@ impl DescriptorStorage {
                 p_next: null(),
                 flags: vk::PipelineLayoutCreateFlags::empty(),
                 set_layout_count: 1,
-                p_set_layouts: &set_layout,
+                p_set_layouts: &raw const set_layout,
                 push_constant_range_count: 0,
                 p_push_constant_ranges: null(),
             };
@@ -357,9 +356,9 @@ impl DescriptorStorage {
                 pcr.size = push_constant_range.size;
                 pcr.offset = push_constant_range.offset;
                 create_info.push_constant_range_count = 1;
-                create_info.p_push_constant_ranges = &pcr;
+                create_info.p_push_constant_ranges = &raw const pcr;
             }
-            device.create_pipeline_layout(&create_info)?
+            device.create_pipeline_layout(&raw const create_info)?
         };
 
         Ok(Self {
@@ -429,7 +428,7 @@ impl DescriptorStorage {
             pcr.stage_flags,
             pcr.offset,
             pcr.size,
-            (data as *const T).cast(),
+            std::ptr::from_ref::<T>(data).cast(),
         );
         Ok(())
     }

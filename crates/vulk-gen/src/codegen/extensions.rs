@@ -18,7 +18,7 @@ pub const {{array_name}}_DEVICE_EXTENSIONS: [*const std::ffi::c_char; {{device_c
 ];
 "#;
 
-const TEMPLATE_EXTENSION_STRING: &str = r#"b"{{name}}\0".as_ptr().cast(),"#;
+const TEMPLATE_EXTENSION_STRING: &str = r#"c"{{name}}".as_ptr().cast(),"#;
 
 pub fn generate(ctx: &GeneratorContext<'_>) -> Result<String> {
     let test_win32_extension = |ext: &registry::Extension| -> bool {
